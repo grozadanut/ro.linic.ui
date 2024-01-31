@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="linic"
+            application="org.eclipse.e4.ui.workbench.swt.E4Application">
+         <property
+               name="appName"
+               value="linic">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/logo_16x16.png,icons/logo_32x32.png,icons/logo_48x48.png,icons/logo_64x64.png,icons/logo_128x128.png,icons/logo_256x256.png">
+         </property>
+         <property
+               name="lifeCycleURI"
+               value="bundleclass://ro.linic.ui.base/ro.linic.ui.base.E4LifeCycle">
+         </property>
+      </product>
+   </extension>
+
+</plugin>

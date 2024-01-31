@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/descriptor/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_SrUmEI0GEe6qNdK_29XQrA">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uH1JEI0HEe6qNdK_29XQrA" featurename="descriptors" parentElementId="xpath:/">
+    <elements xsi:type="basic:PartDescriptor" xmi:id="_Eys-gI0IEe6qNdK_29XQrA" elementId="ro.linic.ui.anaf.connector.partdescriptor.additionalinformation" label="AdditionalInformation" closeable="true" contributionURI="bundleclass://ro.linic.ui.anaf.connector/ro.linic.ui.anaf.connector.part.AdditionalInformationPart"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Q6dkEI0UEe6qNdK_29XQrA" featurename="commands" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="commands:Command" xmi:id="_V2kRsI0UEe6qNdK_29XQrA" elementId="ro.linic.ui.anaf.connector.command.info" commandName="Info"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_dpbxEI0UEe6qNdK_29XQrA" featurename="handlers" parentElementId="ro.linic.ui.base.application" positionInList="">
+    <elements xsi:type="commands:Handler" xmi:id="_gxl00I0UEe6qNdK_29XQrA" elementId="ro.linic.ui.anaf.connector.handler.info" contributionURI="bundleclass://ro.linic.ui.anaf.connector/ro.linic.ui.anaf.connector.handler.OpenViewHandler" command="_V2kRsI0UEe6qNdK_29XQrA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_FUWxsI0WEe6qNdK_29XQrA" featurename="toolBarContributions" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="menu:ToolBarContribution" xmi:id="_KzQqYI0WEe6qNdK_29XQrA" elementId="ro.linic.ui.anaf.connector.toolbarcontribution.0" parentId="org.eclipse.ui.main.toolbar">
+      <children xsi:type="menu:HandledToolItem" xmi:id="_OMOxUI0WEe6qNdK_29XQrA" elementId="ro.linic.ui.anaf.connector.handledtoolitem.info" label="Info" command="_V2kRsI0UEe6qNdK_29XQrA"/>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

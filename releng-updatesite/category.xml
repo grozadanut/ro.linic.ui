@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="ro.linic.ui.base.feature">
+      <category name="ro.linic.ui.update"/>
+   </feature>
+   <feature id="ro.linic.ui.connector.feature">
+      <category name="ro.linic.ui.update"/>
+   </feature>
+   <category-def name="ro.linic.ui.update" label="Linic Desktop">
+      <description>
+         Interfata utilizatorilor care interactioneaza cu serverul Linic Cloud.
+      </description>
+   </category-def>
+</site>

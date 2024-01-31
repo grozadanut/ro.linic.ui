@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ASCII"?>
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_cGVhQI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.application">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_tbP-oI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimmedwindow.linic" label="Linic Desktop" iconURI="platform:/plugin/ro.linic.ui.base/icons/logo_256x256.png" x="0" y="0" width="800" height="1024">
+    <mainMenu xmi:id="_cvKv8I0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.menu">
+      <children xsi:type="menu:Menu" xmi:id="_rWkeMI0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.menu" label="File">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_1s9DMI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.saveall" label="Save All" command="_qpX2cI0NEe6qNdK_29XQrA"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_CgjRgI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.menuseparator.0"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_G8htkI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.exit" label="Exit" command="_ufS_II0NEe6qNdK_29XQrA"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_7PKrkKC3Ee6rhYQcX-gzIg" elementId="org.eclipse.ui.help.menu" label="Help">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="Check for Updates" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+      </children>
+    </mainMenu>
+    <trimBars xmi:id="_nuIUsI0KEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimbar.top">
+      <children xsi:type="menu:ToolBar" xmi:id="_JeTDkI0LEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.toolbar" accessibilityPhrase=""/>
+    </trimBars>
+  </children>
+  <handlers xmi:id="_6ujxUI0NEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.saveall" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handler.SaveAllHandler" command="_qpX2cI0NEe6qNdK_29XQrA"/>
+  <handlers xmi:id="_Cjd4EI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.exit" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.ExitHandler" command="_ufS_II0NEe6qNdK_29XQrA"/>
+  <handlers xmi:id="_clxgYKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handler.update" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handler.UpdateHandler" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+  <commands xmi:id="_qpX2cI0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.saveAll" commandName="Save All"/>
+  <commands xmi:id="_ufS_II0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.exit" commandName="Exit"/>
+  <commands xmi:id="_YZa0sKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.command.update" commandName="Update"/>
+  <addons xmi:id="_cGVhQY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
+  <addons xmi:id="_cGVhQo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
+  <addons xmi:id="_cGVhQ40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
+  <addons xmi:id="_cGVhRI0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.workbench.commands.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.CommandProcessingAddon"/>
+  <addons xmi:id="_cGVhRY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
+  <addons xmi:id="_cGVhRo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+  <addons xmi:id="_cGVhR40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+</application:Application>
