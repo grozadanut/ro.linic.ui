@@ -3,6 +3,7 @@
 
 <product name="linic" uid="ro.linic.ui" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0" type="mixed" includeLaunchers="true" autoIncludeRequirements="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -13,6 +14,7 @@
 
    <windowImages i16="/ro.linic.ui.base/icons/logo_16x16.png" i32="/ro.linic.ui.base/icons/logo_32x32.png" i48="/ro.linic.ui.base/icons/logo_48x48.png" i64="/ro.linic.ui.base/icons/logo_64x64.png" i128="/ro.linic.ui.base/icons/logo_128x128.png" i256="/ro.linic.ui.base/icons/logo_256x256.png"/>
 
+
    <launcher name="linic">
       <win useIco="true">
          <ico path="/ro.linic.ui.base/icons/logo.ico"/>
@@ -20,8 +22,10 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
    </plugins>
@@ -32,6 +36,7 @@
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="ro.linic.ui.connector.feature" installMode="root"/>
+      <feature id="ro.linic.ui.legacy.feature" installMode="root"/>
    </features>
 
    <configurations>

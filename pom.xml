@@ -82,5 +82,7 @@
    <module>ro.linic.ui.base.feature</module>
    <module>ro.linic.ui.anaf.connector</module>
    <module>ro.linic.ui.connector.feature</module>
+   <module>ro.linic.ui.legacy</module>
+   <module>ro.linic.ui.legacy.feature</module>
  </modules>
 </project>

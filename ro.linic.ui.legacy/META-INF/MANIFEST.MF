@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Legacy
+Bundle-SymbolicName: ro.linic.ui.legacy
+Bundle-Version: 4.0.4
+Bundle-Vendor: LINIC
+Fragment-Host: ro.linic.ui.base;bundle-version="0.0.1"
+Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.100.v20230801-1255"
+Model-Fragment: fragment.e4xmi
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Automatic-Module-Name: ro.linic.ui.legacy
