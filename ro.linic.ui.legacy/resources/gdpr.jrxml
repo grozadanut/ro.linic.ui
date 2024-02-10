@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="gdpr" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c22eb204-bd93-494b-9ac8-82e32c1e3d31">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="nume" class="java.lang.String"/>
+	<parameter name="furnizorName" class="java.lang.String"/>
+	<parameter name="furnizorRowDetails" class="java.lang.String"/>
+	<parameter name="furnizorEmail" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="80" y="0" width="400" height="70" uuid="b5e72215-29f9-4f39-83fa-6b7df7cf5c76"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Declaraţie de consimţământ]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement x="20" y="10" width="530" height="100" uuid="a62d43a1-ac7f-4a98-a652-250d14cdbc31"/>
+				<textElement textAlignment="Justified">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Subsemnatul/a "+$P{nume}+", sunt de acord ca "+$P{furnizorName}+" cu sediul în "+$P{furnizorRowDetails}+", să colecteze și să prelucreze  datele mele cu caracter personal.\n\n"+
+"Consimțământul în ceea ce privește prelucrarea datelor cu caracter personal, precum și furnizarea datelor menționate în formularul GDPR sunt voluntare.  Acest consimțământ poate fi revocat în orice moment, cu efect ulterior printr-o notificare către "+$P{furnizorName}+".\n\n"+
+"Notificarea de revocare a consimțământului poate fi realizată prin e-mail către "+$P{furnizorEmail}+" sau printr-o cerere scrisă la "+$P{furnizorName}+" din "+$P{furnizorRowDetails}+". Vă rugăm să aveți în vedere faptul că revocarea consimțământului nu afectează legalitatea utilizării datelor înainte de retragerea consimțământului (notificarea nu are efect retroactiv). Dacă consimțământul nu este acordat sau a fost revocat, datele personale nu vor fi utilizate în scopurile menționate în formularul GDPR. În cazul în care aveți întrebări legate de această declarație de consimțământ sau de protecția datelor de către "+$P{furnizorName}+" în general, vă rugăm să nu ezitați să ne contactati la adresa de e-mail: "+$P{furnizorEmail}+"\n\n"+
+"Am înțeles această declarație de consimțământ și sunt de acord cu colectarea şi prelucrarea datelor mele personale în scopurile descrise în formularul GDPR."]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="128" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField textAdjust="ScaleFont" pattern="dd/MM /yyyy">
+				<reportElement x="20" y="20" width="140" height="40" uuid="d8547359-f209-42b8-b664-fa74f0c141de"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="20" y="0" width="56" height="16" uuid="4d560964-7722-4f4f-980f-e4f9cd72e330"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="480" y="0" width="76" height="16" uuid="8d09c43f-b037-4d90-9ceb-4410db7daf24"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Semnatura]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

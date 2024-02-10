@@ -1,2 +1,122 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_cBW_UMZUEe6UtK1nDebMVw"/>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/descriptor/basic" xmlns:basic_1="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_cBW_UMZUEe6UtK1nDebMVw">
+  <imports xsi:type="commands:BindingTable" xmi:id="_9yyXsMfvEe6wm9FSKxJZow" elementId="ro.linic.ui.base.bindingtable.root"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Ui6esMZ-Ee6UtK1nDebMVw" featurename="commands" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="commands:Command" xmi:id="_tmURwMZ-Ee6UtK1nDebMVw" elementId="linic_gest_client.command.inchideBon" commandName="inchideBonCommand"/>
+    <elements xsi:type="commands:Command" xmi:id="_5K2E4MZ-Ee6UtK1nDebMVw" elementId="linic_gest_client.command.newVanzariPart" commandName="Deschide Bon Nou"/>
+    <elements xsi:type="commands:Command" xmi:id="_8hxkcMZ-Ee6UtK1nDebMVw" elementId="linic_gest_client.command.registerZ" commandName="Inregistreaza Z"/>
+    <elements xsi:type="commands:Command" xmi:id="_-ySOgMZ-Ee6UtK1nDebMVw" elementId="linic_gest_client.command.incaseaza" commandName="Incaseaza"/>
+    <elements xsi:type="commands:Command" xmi:id="_A7syEMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.manager" commandName="Manager"/>
+    <elements xsi:type="commands:Command" xmi:id="_C7tiAMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.plateste" commandName="Plateste"/>
+    <elements xsi:type="commands:Command" xmi:id="_Em6fkMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.settings" commandName="Setari"/>
+    <elements xsi:type="commands:Command" xmi:id="_GrCTcMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.comenzi_furnizori" commandName="Comanda marfa"/>
+    <elements xsi:type="commands:Command" xmi:id="_I_AhMMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.audit_events" commandName="Audit"/>
+    <elements xsi:type="commands:Command" xmi:id="_LnniMMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.contabilitate" commandName="Contabilitate"/>
+    <elements xsi:type="commands:Command" xmi:id="_NyL8UMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.toggle_hide_unofficial_docs" commandName="Toggle HideUnofficialDocs"/>
+    <elements xsi:type="commands:Command" xmi:id="_Py_9gMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.sys_admin" commandName="SysAdmin"/>
+    <elements xsi:type="commands:Command" xmi:id="_RxRBAMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.puncte_fidelitate" commandName="Puncte Fidelitate"/>
+    <elements xsi:type="commands:Command" xmi:id="_T2avoMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.print_barcode" commandName="Printare Etichete"/>
+    <elements xsi:type="commands:Command" xmi:id="_Vqac0MZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.statistics" commandName="Statistici"/>
+    <elements xsi:type="commands:Command" xmi:id="_XegQoMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.salariati" commandName="Salariati"/>
+    <elements xsi:type="commands:Command" xmi:id="_Zka0QMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.rsmiley" commandName="Recenzie Smiley"/>
+    <elements xsi:type="commands:Command" xmi:id="_bbFa8MZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.rneutru" commandName="Recenzie Neutru"/>
+    <elements xsi:type="commands:Command" xmi:id="_dPbtcMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.rsad" commandName="Recenzie Sad"/>
+    <elements xsi:type="commands:Command" xmi:id="_fGbrUMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.xmltopdf" commandName="XML to PDF"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_i7ppYMZ_Ee6UtK1nDebMVw" featurename="handlers" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="commands:Handler" xmi:id="_lNH8wMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.handler.inchideBonCommand" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.InchideBonHandler" command="_tmURwMZ-Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_DWAb4MaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.newVanzariPart" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenNewVanzariPartHandler" command="_5K2E4MZ-Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_QxVYkMaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.registerZ" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.RegisterZHandler" command="_8hxkcMZ-Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_VtKZYMaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.incaseaza" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.CustomerDebtHandler" command="_-ySOgMZ-Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_oHRkQMaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.manager" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenManagerPartHandler" command="_A7syEMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_rGDpkMaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.plateste" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.SupplierDebtHandler" command="_C7tiAMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_uIyawMaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.setari" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.SettingsHandler" command="_Em6fkMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_xQFi4MaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.comenzi_furnizori" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenSupplierOrderPartHandler" command="_GrCTcMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_1bQi0MaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.audit_events" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenAuditEventsPartHandler" command="_I_AhMMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_SDwNQMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.contabilitate" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenAccountingPartHandler" command="_LnniMMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_U3RdwMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.toggle_hide_unofficial_docs" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.ToggleHideUnoffDocsHandler" command="_NyL8UMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_bk5MUMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.sys_admin" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenSysAdminPartHandler" command="_Py_9gMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_en-i0MaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.puncte_fidelitate" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.PuncteFidelitateHandler" command="_RxRBAMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_iHJ_cMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.print_barcode" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.PrintBarcodeHandler" command="_T2avoMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_ma9-AMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.statistics" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenStatisticsPartHandler" command="_Vqac0MZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_ov_UoMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.salariati" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenSalariatiPartHandler" command="_XegQoMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_rd66gMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.rsmiley" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.RecenzieSmileyHandler" command="_Zka0QMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_uOVzsMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.rneutru" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.RecenzieNeutruHandler" command="_bbFa8MZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_wtf9wMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.rsad" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.RecenzieSadHandler" command="_dPbtcMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_zhB1UMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.xmltopdf" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.XmlToPdfHandler" command="_fGbrUMZ_Ee6UtK1nDebMVw"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_XoPUEMaCEe6UtK1nDebMVw" featurename="children" parentElementId="org.eclipse.ui.contexts.window">
+    <elements xsi:type="commands:BindingContext" xmi:id="_dV2XIMaCEe6UtK1nDebMVw" elementId="linic_gest_client.bindingcontext.vanzari" name="In Vanzari Part"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_kpCQ4MaCEe6UtK1nDebMVw" featurename="bindingTables" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="commands:BindingTable" xmi:id="_mZT7sMaCEe6UtK1nDebMVw" elementId="linic_gest_client.bindingtable.vanzari" bindingContext="_dV2XIMaCEe6UtK1nDebMVw">
+      <bindings xmi:id="_s6ZDEMaCEe6UtK1nDebMVw" elementId="linic_gest_client.keybinding.f3" keySequence="F3" command="_tmURwMZ-Ee6UtK1nDebMVw">
+        <tags>type:user</tags>
+      </bindings>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="__BP6wMaCEe6UtK1nDebMVw" featurename="descriptors" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="basic:PartDescriptor" xmi:id="_Bjl7sMaDEe6UtK1nDebMVw" elementId="linic_gest_client.partdescriptor.vanzari" label="Vanzari" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_16x16.png" bindingContexts="_dV2XIMaCEe6UtK1nDebMVw" allowMultiple="true" closeable="true" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VanzarePart"/>
+    <elements xsi:type="basic:PartDescriptor" xmi:id="_NwNpkMaDEe6UtK1nDebMVw" elementId="linic_gest_client.partdescriptor.vanzari_bar" label="Vanzari Bar" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_16x16.png" bindingContexts="_dV2XIMaCEe6UtK1nDebMVw" allowMultiple="true" closeable="true" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VanzareBarPart"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O4C-4MaEEe6UtK1nDebMVw" featurename="toolBarContributions" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="menu:ToolBarContribution" xmi:id="_WJ400MaEEe6UtK1nDebMVw" elementId="ro.linic.ui.legacy.toolbarcontribution.0" parentId="org.eclipse.ui.main.toolbar">
+      <children xsi:type="menu:HandledToolItem" xmi:id="_hXA0kMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.vanzari" label="Deschide Bon Nou" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_32x32.png" command="_5K2E4MZ-Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_oTuIAMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.incaseaza" label="Incaseaza" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cash_32x32.png" command="_-ySOgMZ-Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_ur7AMMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.puncte_fidelitate" label="Puncte Fidelitate" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/piggy_bank_32x32.png" command="_RxRBAMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_2CFVcMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.registerZ" label="Inregistreaza Z" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/ecr_32x32.png" command="_8hxkcMZ-Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:ToolBarSeparator" xmi:id="_6xIegMaEEe6UtK1nDebMVw" elementId="ro.linic.ui.legacy.toolbarseparator.0"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_AzYU0MaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.manager" label="Manager" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/manager_32x32.png" command="_A7syEMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_E6AzAMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.plateste" label="Plateste" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/payment_32x32.png" command="_C7tiAMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_I7S3IMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.comenzi_furnizori" label="Comanda marfa" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_32x32.png" command="_GrCTcMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_Mrz7YMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.accounting" label="Contabilitate" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/contabilitate_32x32.png" command="_LnniMMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_QNq4kMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.statistics" label="Statistici" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/chart_32x32.png" command="_Vqac0MZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_WdzZ4MaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.salariati" label="Salariati" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/salarizare_32x32.png" command="_XegQoMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:ToolBarSeparator" xmi:id="_aMUTAMaFEe6UtK1nDebMVw" elementId="ro.linic.ui.legacy.toolbarseparator.1"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_bpNu0MaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.audit_events" label="Audit" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/audit_32x32.png" command="_I_AhMMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_fKqcUMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.settings" label="Setari" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/settings_32x32.png" command="_Em6fkMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_k0o8kMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.sys_admin" label="SysAdmin" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/sysadmin_32x32.png" command="_Py_9gMZ_Ee6UtK1nDebMVw"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hvGTQMcaEe6dhubwzOpIzg" featurename="children" parentElementId="ro.linic.ui.base.trimmedwindow.linic">
+    <elements xsi:type="basic_1:PartStack" xmi:id="_qkaHEMcaEe6dhubwzOpIzg" elementId="linic_gest_client.partstack.sample" selectedElement="_HujtEMcbEe6dhubwzOpIzg">
+      <children xsi:type="basic_1:Part" xmi:id="_wkdlAMcaEe6dhubwzOpIzg" elementId="linic_gest_client.part.clasament" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.ClasamentPart" label="Clasament" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/clasament_16x16.png"/>
+      <children xsi:type="basic_1:Part" xmi:id="_4dbsYMcaEe6dhubwzOpIzg" elementId="linic_gest_client.part.verify_operations" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VerifyOperationsPart" label="Sarcini" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/verify_16x16.png"/>
+      <children xsi:type="basic_1:Part" xmi:id="_HujtEMcbEe6dhubwzOpIzg" elementId="linic_gest_client.part.vanzari" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VanzarePart" label="Vanzari" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_16x16.png" bindingContexts="_dV2XIMaCEe6UtK1nDebMVw">
+        <toolbar xmi:id="_Yny7EMcbEe6dhubwzOpIzg" elementId="linic_gest_client.toolbar.vanzari">
+          <children xsi:type="menu:HandledToolItem" xmi:id="_aOt1kMcbEe6dhubwzOpIzg" elementId="linic_gest_client.handledtoolitem.print_barcode" label="Printare Etichete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/barcode_16x16.png" command="_T2avoMZ_Ee6UtK1nDebMVw"/>
+        </toolbar>
+      </children>
+      <children xsi:type="basic_1:Part" xmi:id="_hCBVYMcbEe6dhubwzOpIzg" elementId="linic_gest_client.part.vanzari_bar" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VanzareBarPart" label="Vanzari Bar" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_16x16.png" bindingContexts="_dV2XIMaCEe6UtK1nDebMVw">
+        <toolbar xmi:id="_lhcHAMcbEe6dhubwzOpIzg" elementId="linic_gest_client.toolbar.vanzari">
+          <children xsi:type="menu:HandledToolItem" xmi:id="_n9-a4McbEe6dhubwzOpIzg" elementId="linic_gest_client.handledtoolitem.print_barcode" label="Printare Etichete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/barcode_16x16.png" command="_T2avoMZ_Ee6UtK1nDebMVw"/>
+        </toolbar>
+      </children>
+      <children xsi:type="basic_1:Part" xmi:id="_0JdgUMcbEe6dhubwzOpIzg" elementId="linic_gest_client.part.manager" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.ManagerPart" label="Manager" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/manager_16x16.png" closeable="true">
+        <toolbar xmi:id="_7vZW8McbEe6dhubwzOpIzg" elementId="linic_gest_client.toolbar.0">
+          <children xsi:type="menu:HandledToolItem" xmi:id="_9JCqcMcbEe6dhubwzOpIzg" elementId="linic_gest_client.handledtoolitem.xmltopdf" label="XML to PDF" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/xml_to_pdf_16x16.png" command="_fGbrUMZ_Ee6UtK1nDebMVw"/>
+        </toolbar>
+      </children>
+      <children xsi:type="basic_1:Part" xmi:id="_ESD7kMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.terti" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.CatalogTertiPart" label="Catalog Terti" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_KV67cMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.produse" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.CatalogProdusePart" label="Catalog Produse" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_PO3nYMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.urmarire_parteneri" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.UrmarireParteneriPart" label="Urmarire Parteneri" closeable="true">
+        <toolbar xmi:id="_RyaiMMccEe6dhubwzOpIzg" elementId="linic_gest_client.toolbar.1">
+          <children xsi:type="menu:HandledToolItem" xmi:id="_UUzmcMccEe6dhubwzOpIzg" elementId="linic_gest_client.handledtoolitem.xmltopdf" label="XML to PDF" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/xml_to_pdf_16x16.png" command="_fGbrUMZ_Ee6UtK1nDebMVw"/>
+        </toolbar>
+      </children>
+      <children xsi:type="basic_1:Part" xmi:id="_a3vvAMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.comenzi_furnizori" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SupplierOrderPart" label="Comanda marfa" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_16x16.png" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_heGX8MccEe6dhubwzOpIzg" elementId="linic_gest_client.part.accounting" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.AccountingPart" label="Contabilitate" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/contabilitate_16x16.png" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_mkj7cMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.statistics" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.StatisticsPart" label="Statistici" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/chart_16x16.png" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_q8oH4MccEe6dhubwzOpIzg" elementId="linic_gest_client.part.salariati" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SalariatiPart" label="Salariati" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/salarizare_16x16.png" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_w4zycMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.audit_events" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.AuditEventsPart" label="Audit" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/audit_16x16.png" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_1O1XgMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.settings" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SettingsPart" label="Setari" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/settings_16x16.png" closeable="true"/>
+      <children xsi:type="basic_1:Part" xmi:id="_512l8MccEe6dhubwzOpIzg" elementId="linic_gest_client.part.sys_admin" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SysAdminPart" label="SysAdmin" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/sysadmin_16x16.png" closeable="true"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_WrDaMMceEe6dhubwzOpIzg" featurename="addons" parentElementId="ro.linic.ui.base.application">
+    <elements xsi:type="application:Addon" xmi:id="_efb8gMceEe6dhubwzOpIzg" elementId="ro.linic.ui.legacy.addon.login" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.LoginAddon"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_FVhwYMfwEe6wm9FSKxJZow" featurename="bindings" parentElementId="ro.linic.ui.base.bindingtable.root">
+    <elements xsi:type="commands:KeyBinding" xmi:id="_IxhWIMfwEe6wm9FSKxJZow" elementId="linic_gest_client.keybinding.m1m3l" keySequence="M1+M3+L" command="_NyL8UMZ_Ee6UtK1nDebMVw"/>
+  </fragments>
+</fragment:ModelFragments>

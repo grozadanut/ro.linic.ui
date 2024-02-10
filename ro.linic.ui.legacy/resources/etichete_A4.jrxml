@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="etichete_A4" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="18" bottomMargin="16" uuid="7c4986a4-ecde-4336-9893-39b4b6dd251a">
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="simpleDatasource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="promotiiDatasource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="promotiiCantitateDatasource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="simpleMiniDatasource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<parameter name="promotiiCantitateMiniDatasource" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<detail>
+		<band height="245" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[!$P{promotiiDatasource}.getData().isEmpty()]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="245" uuid="3fb7272f-307a-4a74-a7fe-3f2b67d13a56">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$P{promotiiDatasource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["eticheta_promotie.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="115">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[!$P{simpleDatasource}.getData().isEmpty()]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="115" uuid="abdd531c-4c89-41bc-9d8a-3b36c452170e">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$P{simpleDatasource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["eticheta_simple.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="115">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[!$P{promotiiCantitateDatasource}.getData().isEmpty()]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="115" uuid="47aadd88-590a-409f-85c6-2a13c8a6dc25">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$P{promotiiCantitateDatasource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["eticheta_promotie_cantitate.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="115">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[!$P{simpleMiniDatasource}.getData().isEmpty()]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="115" uuid="daf818a0-c9b6-43e1-a4a6-a3572f97277a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$P{simpleMiniDatasource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["eticheta_simple_mini.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="115">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<printWhenExpression><![CDATA[!$P{promotiiCantitateMiniDatasource}.getData().isEmpty()]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="115" uuid="c050b4ab-cbed-4f70-8581-0c309ca9e3cb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$P{promotiiCantitateMiniDatasource}]]></dataSourceExpression>
+				<subreportExpression><![CDATA["eticheta_promotie_cantitate_mini.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

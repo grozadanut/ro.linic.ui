@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eticheta" pageWidth="555" pageHeight="115" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="16831cf9-fe37-46f7-8ab2-d379cec74594">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="entity1" class="ro.linic.service.components.BarcodePrintable">
+		<fieldDescription><![CDATA[entity1]]></fieldDescription>
+	</field>
+	<field name="entity2" class="ro.linic.service.components.BarcodePrintable">
+		<fieldDescription><![CDATA[entity2]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="115" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<rectangle>
+				<reportElement mode="Opaque" x="10" y="92" width="260" height="20" forecolor="#000000" backcolor="#FFFF33" uuid="181c2305-c629-4b27-b81f-af42a4e8b345"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#FFFFFF"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Opaque" x="10" y="2" width="260" height="30" forecolor="#000000" backcolor="#FFFF33" uuid="c2decd6e-d87e-4798-aba6-777b5bd3a174">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#FFFFFF"/>
+				</graphicElement>
+			</rectangle>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="15" y="2" width="250" height="30" backcolor="#FFFFFF" uuid="41a02bc4-87d1-4d57-ba5f-7597a89722b0">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entity1}.getName()]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="90" y="32" width="150" height="80" backcolor="#FFFFFF" uuid="edb7c37f-477c-4faa-a294-9c3a5e5b50a3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font size="48" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entity1}.getPricePerUom()]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="240" y="32" width="30" height="80" backcolor="#FFFFFF" uuid="a1f1eebd-51ff-4f2d-9025-8d6a9c1691fb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RON/"+$F{entity1}.getUom()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="20" y="32" width="60" height="60" uuid="1e645a65-8820-4146-af79-9240f44fe30a"/>
+				<imageExpression><![CDATA["logo_256x256.png"]]></imageExpression>
+			</image>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="15" y="92" width="75" height="20" uuid="5a53558e-a94b-4f85-a15f-eeeafb102a10">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entity1}.getBarcode()]]></textFieldExpression>
+			</textField>
+			<rectangle radius="6">
+				<reportElement mode="Transparent" x="10" y="2" width="260" height="110" backcolor="#FFFFFF" uuid="749bbdf6-f962-439c-b9dc-b24283b525f7">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Opaque" x="275" y="92" width="260" height="20" forecolor="#000000" backcolor="#FFFF33" uuid="41560a5f-beaa-40ae-abe6-eba19f29e593"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#FFFFFF"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Opaque" x="275" y="2" width="260" height="30" forecolor="#000000" backcolor="#FFFF33" uuid="263bba04-66aa-4248-ad35-ee37834342e7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#FFFFFF"/>
+				</graphicElement>
+			</rectangle>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="280" y="2" width="250" height="30" backcolor="#FFFFFF" uuid="4f02f96d-6983-4d76-b2da-ca49ad33a8e1">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entity2}.getName()]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="355" y="32" width="150" height="80" backcolor="#FFFFFF" uuid="5e9f0cbe-ae73-41ca-8a0f-a876372ecdc0"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font size="48" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entity2}.getPricePerUom()]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="505" y="32" width="30" height="80" backcolor="#FFFFFF" uuid="e9f38ee0-56da-4cb7-baee-887b39786f7c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RON/"+$F{entity2}.getUom()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="285" y="32" width="60" height="60" uuid="dfc665a4-023c-4b40-aec8-75cf7461a599"/>
+				<imageExpression><![CDATA["logo_256x256.png"]]></imageExpression>
+			</image>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="280" y="92" width="75" height="20" uuid="fc8ebc25-a7c2-4a2e-a2e7-6111962a4100">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entity2}.getBarcode()]]></textFieldExpression>
+			</textField>
+			<rectangle radius="6">
+				<reportElement mode="Transparent" x="275" y="2" width="260" height="110" backcolor="#FFFFFF" uuid="b686a1ff-8c41-4d0c-a60e-66e37a229df4">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</detail>
+</jasperReport>

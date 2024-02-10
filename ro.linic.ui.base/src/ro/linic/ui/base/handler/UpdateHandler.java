@@ -15,9 +15,16 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.eclipse.equinox.p2.core.ProvisionException;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
+import org.eclipse.equinox.p2.query.IQuery;
+import org.eclipse.equinox.p2.query.IQueryResult;
+import org.eclipse.equinox.p2.query.IQueryable;
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -27,6 +34,43 @@ public class UpdateHandler {
 	        "file:/C:/work/repository");
 	
 	private boolean cancelled = false;
+	
+	
+	static IQueryResult<IInstallableUnit> getInstallableUnits(final IProvisioningAgent agent, final URI location, final IQuery<IInstallableUnit> query, final IProgressMonitor monitor) {
+		IQueryable<IInstallableUnit> queryable = null;
+		if (location == null) {
+			queryable = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+		} else {
+			queryable = getMetadataRepository(agent, location);
+		}
+		if (queryable != null)
+			return queryable.query(query, monitor);
+		return null;
+	}
+	
+	static IMetadataRepository getMetadataRepository(final IProvisioningAgent agent, final URI location) {
+		final IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+		if (manager == null)
+			throw new IllegalStateException("No metadata repository manager found");
+		try {
+			return manager.loadRepository(location, null);
+		} catch (final ProvisionException e) {
+			return null;
+		}
+	}
+	
+//	static void test() {
+//		URI uri = null;
+//	    try {
+//	        uri = new URI(REPOSITORY_LOC);
+//	        final IQueryResult<IInstallableUnit> units = getInstallableUnits(agent, uri, QueryUtil.ALL_UNITS, monitor);
+//	        System.out.println(units.iterator().next());
+//	    } catch (final URISyntaxException e) {
+//	        e.printStackTrace();
+//	    }
+//	}
+	
+	
 	
 	@Execute
 	public void execute(final IProvisioningAgent agent, final UISynchronize sync, final IWorkbench workbench) {

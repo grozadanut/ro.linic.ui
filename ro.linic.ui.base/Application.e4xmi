@@ -2,22 +2,43 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_cGVhQI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.application">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_tbP-oI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimmedwindow.linic" label="Linic Desktop" iconURI="platform:/plugin/ro.linic.ui.base/icons/logo_256x256.png" x="0" y="0" width="800" height="1024">
     <mainMenu xmi:id="_cvKv8I0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.menu">
-      <children xsi:type="menu:Menu" xmi:id="_rWkeMI0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.menu" label="File">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_1s9DMI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.saveall" label="Save All" command="_qpX2cI0NEe6qNdK_29XQrA"/>
+      <children xsi:type="menu:Menu" xmi:id="_rWkeMI0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.menu" label="&amp;File" mnemonics="">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Cjyw8MfiEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handledmenuitem.save" label="&amp;Save" command="_mPIBcMfhEe6wm9FSKxJZow"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_1s9DMI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.saveall" label="Save &amp;All" command="_qpX2cI0NEe6qNdK_29XQrA"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_CgjRgI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.menuseparator.0"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_G8htkI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.exit" label="Exit" command="_ufS_II0NEe6qNdK_29XQrA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_G8htkI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.exit" label="E&amp;xit" mnemonics="" command="_ufS_II0NEe6qNdK_29XQrA"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_7PKrkKC3Ee6rhYQcX-gzIg" elementId="org.eclipse.ui.help.menu" label="Help">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="Check for Updates" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+      <children xsi:type="menu:Menu" xmi:id="_7PKrkKC3Ee6rhYQcX-gzIg" elementId="org.eclipse.ui.help.menu" label="&amp;Help" mnemonics="">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="Check for &amp;Updates" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
       </children>
     </mainMenu>
     <trimBars xmi:id="_nuIUsI0KEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimbar.top">
       <children xsi:type="menu:ToolBar" xmi:id="_JeTDkI0LEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.toolbar" accessibilityPhrase=""/>
     </trimBars>
   </children>
-  <handlers xmi:id="_6ujxUI0NEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.saveall" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handler.SaveAllHandler" command="_qpX2cI0NEe6qNdK_29XQrA"/>
+  <handlers xmi:id="_rFi90MfhEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handler.save" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.SaveHandler" command="_mPIBcMfhEe6wm9FSKxJZow"/>
+  <handlers xmi:id="_6ujxUI0NEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.saveall" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.SaveAllHandler" command="_qpX2cI0NEe6qNdK_29XQrA"/>
   <handlers xmi:id="_Cjd4EI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.exit" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.ExitHandler" command="_ufS_II0NEe6qNdK_29XQrA"/>
   <handlers xmi:id="_clxgYKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handler.update" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handler.UpdateHandler" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+  <bindingTables xmi:id="_DD1OIMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.bindingtable.root" bindingContext="_2nYUgMZ8Ee6UtK1nDebMVw">
+    <bindings xmi:id="_LjDdMMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1q" keySequence="M1+Q" command="_ufS_II0NEe6qNdK_29XQrA">
+      <tags>type:user</tags>
+    </bindings>
+    <bindings xmi:id="_WdvCEMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1s" keySequence="M1+S" command="_mPIBcMfhEe6wm9FSKxJZow">
+      <tags>type:user</tags>
+    </bindings>
+    <bindings xmi:id="_jla-0MfiEe6wm9FSKxJZow" elementId="ro.linic.ui.base.keybinding.m1m2s" keySequence="M1+M2+S" command="_qpX2cI0NEe6qNdK_29XQrA">
+      <tags>type:user</tags>
+    </bindings>
+    <bindings xmi:id="_eCS_sMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1u" keySequence="M1+U" command="_YZa0sKC3Ee6rhYQcX-gzIg">
+      <tags>type:user</tags>
+    </bindings>
+  </bindingTables>
+  <rootContext xmi:id="_2nYUgMZ8Ee6UtK1nDebMVw" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
+    <children xmi:id="_5OvYUMZ8Ee6UtK1nDebMVw" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
+    <children xmi:id="_72caYMZ8Ee6UtK1nDebMVw" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
+  </rootContext>
+  <commands xmi:id="_mPIBcMfhEe6wm9FSKxJZow" elementId="org.eclipse.ui.file.save" commandName="Save"/>
   <commands xmi:id="_qpX2cI0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.saveAll" commandName="Save All"/>
   <commands xmi:id="_ufS_II0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.exit" commandName="Exit"/>
   <commands xmi:id="_YZa0sKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.command.update" commandName="Update"/>

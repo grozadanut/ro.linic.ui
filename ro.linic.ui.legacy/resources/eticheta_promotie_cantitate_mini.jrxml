@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="eticheta" pageWidth="555" pageHeight="115" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="16831cf9-fe37-46f7-8ab2-d379cec74594">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="pricePerUom" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[pricePerUom]]></fieldDescription>
+	</field>
+	<field name="barcode" class="java.lang.String">
+		<fieldDescription><![CDATA[barcode]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[name]]></fieldDescription>
+	</field>
+	<field name="uom" class="java.lang.String">
+		<fieldDescription><![CDATA[uom]]></fieldDescription>
+	</field>
+	<field name="promoCantitate1" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[promoCantitate1]]></fieldDescription>
+	</field>
+	<field name="promoPrice1" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[promoPrice1]]></fieldDescription>
+	</field>
+	<field name="promoCantitate2" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[promoCantitate2]]></fieldDescription>
+	</field>
+	<field name="promoPrice2" class="java.math.BigDecimal">
+		<fieldDescription><![CDATA[promoPrice2]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="115" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<rectangle>
+				<reportElement mode="Opaque" x="12" y="90" width="408" height="20" forecolor="#000000" backcolor="#33CC00" uuid="181c2305-c629-4b27-b81f-af42a4e8b345"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#FFFFFF"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement mode="Opaque" x="12" y="0" width="408" height="30" forecolor="#000000" backcolor="#33CC00" uuid="c2decd6e-d87e-4798-aba6-777b5bd3a174">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#FFFFFF"/>
+				</graphicElement>
+			</rectangle>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="20" y="0" width="360" height="30" backcolor="#FFFFFF" uuid="41a02bc4-87d1-4d57-ba5f-7597a89722b0">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="20" y="30" width="120" height="20" uuid="faa707c3-7ddf-488f-9d0b-e1c1a6b064ae"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["x 1.00 "+$F{uom}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="20" y="50" width="120" height="40" backcolor="#FFFFFF" uuid="edb7c37f-477c-4faa-a294-9c3a5e5b50a3"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font size="28" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pricePerUom}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="390" y="30" width="30" height="80" backcolor="#FFFFFF" uuid="a1f1eebd-51ff-4f2d-9025-8d6a9c1691fb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Right">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RON/"+$F{uom}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="390" y="0" width="30" height="30" uuid="1e645a65-8820-4146-af79-9240f44fe30a"/>
+				<imageExpression><![CDATA["logo_256x256.png"]]></imageExpression>
+			</image>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="20" y="90" width="120" height="20" uuid="5a53558e-a94b-4f85-a15f-eeeafb102a10">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{barcode}]]></textFieldExpression>
+			</textField>
+			<rectangle radius="6">
+				<reportElement mode="Transparent" x="12" y="0" width="408" height="110" backcolor="#FFFFFF" uuid="749bbdf6-f962-439c-b9dc-b24283b525f7">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="2.0"/>
+				</graphicElement>
+			</rectangle>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="140" y="30" width="130" height="20" uuid="d5695daa-3f1d-4d18-a8a4-254a6e4ee9b6"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["x "+$F{promoCantitate1}.setScale(2, RoundingMode.HALF_EVEN)+" "+$F{uom}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="140" y="50" width="130" height="40" backcolor="#FFFFFF" uuid="6dc779f8-3d32-4378-86b4-e495796a8c28"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font size="28" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{promoPrice1}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="270" y="30" width="120" height="20" uuid="5120a35f-d295-480d-917e-0fba4d573a4f"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["x "+$F{promoCantitate2}.setScale(2, RoundingMode.HALF_EVEN)+" "+$F{uom}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="270" y="50" width="120" height="40" backcolor="#FFFFFF" uuid="c4eaac45-f6c9-4bf6-b14d-0a41f919ca83"/>
+				<textElement textAlignment="Center" verticalAlignment="Top" markup="none">
+					<font size="28" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{promoPrice2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

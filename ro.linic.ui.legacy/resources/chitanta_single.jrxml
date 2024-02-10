@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="chitanta" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a0bdff0e-f555-42d8-b270-061ab166013a">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="firmaName" class="java.lang.String"/>
+	<parameter name="firmaDetails" class="java.lang.String"/>
+	<parameter name="seriaDoc" class="java.lang.String"/>
+	<parameter name="description" class="java.lang.String"/>
+	<parameter name="duplicateNr" class="java.lang.String"/>
+	<parameter name="signatureImage" class="java.lang.String"/>
+	<parameter name="stampImage" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="nrDoc" class="java.lang.String">
+		<fieldDescription><![CDATA[nrDoc]]></fieldDescription>
+	</field>
+	<field name="dataDoc" class="java.time.LocalDateTime">
+		<fieldDescription><![CDATA[dataDoc]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="265" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<rectangle>
+				<reportElement x="95" y="0" width="285" height="120" uuid="f6c380ea-2b93-4ffe-8998-00cd21195c54"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</rectangle>
+			<image hAlign="Center">
+				<reportElement x="0" y="0" width="90" height="90" uuid="509773ad-f5d1-44b0-a62e-ac84fd0a20eb">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA["logo_256x256.png"]]></imageExpression>
+			</image>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="95" y="30" width="285" height="90" uuid="d90e8f53-1a14-4d59-bdfb-12434398a758">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{firmaDetails}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="95" y="0" width="285" height="30" uuid="a6a4e285-0e6e-4ca1-ac28-38e9abc73485"/>
+				<textElement>
+					<font size="19" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{firmaName}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="530" y="0" width="25" height="25" backcolor="#CCCCCC" uuid="ee6f0b11-1c1d-4cfa-b616-df1e5b200aca">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="390" y="28" width="165" height="65" uuid="5f5bc9af-c5e5-41a2-a6f7-093fe5fedbf4"/>
+				<graphicElement>
+					<pen lineStyle="Dotted"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="390" y="28" width="165" height="20" uuid="f4981ff3-8230-4b9c-b927-52c7eb35d11f"/>
+				<textElement>
+					<font size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CHITANTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="63" width="38" height="15" uuid="3fc7fcef-0672-4b02-9365-79283ca59c53">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Numar]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="78" width="38" height="15" uuid="6f1e02ad-6bb1-42c0-8e6a-5cdb267b9af8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="390" y="48" width="38" height="15" uuid="b8e6d230-5114-48a7-98b2-07503f895c45">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Seria]]></text>
+			</staticText>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="430" y="63" width="124" height="15" uuid="a1e965bf-8dd7-4abc-87f9-34759bd36f7c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nrDoc}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="430" y="78" width="123" height="15" uuid="4eda5d5b-b57a-4cc9-8e1d-70e1f0c9a510">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dataDoc}.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/uuuu"))]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="430" y="48" width="124" height="15" uuid="58e2a279-8a69-4988-9da4-95533359fd5a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{seriaDoc}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="10" y="130" width="534" height="70" uuid="6e45daa5-c68f-4ece-9d1e-8af6ac0e9b38"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{description}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="340" y="200" width="71" height="20" uuid="19c5a1ba-56d4-4ba1-a3d1-061a33799cc2">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Semnatura,]]></text>
+			</staticText>
+			<line>
+				<reportElement x="3" y="260" width="552" height="1" uuid="e0a9273c-ce9e-4361-ba56-b363f99f0367">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="530" y="0" width="25" height="25" uuid="2d268e0a-9b6a-468c-96b2-4edfb05ba518"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="19" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{duplicateNr}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="RealSize" onErrorType="Blank">
+				<reportElement x="420" y="200" width="115" height="60" uuid="7383f313-e3d3-4735-a22f-4bac0b5bbc28">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{signatureImage}]]></imageExpression>
+			</image>
+			<image scaleImage="RealSize" onErrorType="Blank">
+				<reportElement x="430" y="200" width="115" height="60" uuid="61474416-94d7-4e49-b47c-649805537bd0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<imageExpression><![CDATA[$P{stampImage}]]></imageExpression>
+			</image>
+		</band>
+	</detail>
+</jasperReport>
