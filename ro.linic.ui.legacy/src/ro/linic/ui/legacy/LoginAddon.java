@@ -47,6 +47,8 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.FontData;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.collect.ImmutableList;
@@ -72,7 +74,7 @@ import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.MessagingService;
 import ro.linic.ui.legacy.session.NotificationManager;
-import ro.linic.ui.legacy.session.UIUtils;
+import ro.linic.ui.legacy.session.UIUtils; 
 
 public class LoginAddon
 {
@@ -106,7 +108,8 @@ public class LoginAddon
 		{
 			log.error(e);
 		}
-
+		
+		logVersion(log);
 		initDefaultFonts();
 		while (!ClientSession.instance().isLoggedIn())
 		{
@@ -133,6 +136,14 @@ public class LoginAddon
 		registerGeneralTopic(log, bundle, sync);
 	}
 	
+	private void logVersion(final Logger log)
+	{
+		final Bundle bundle = FrameworkUtil.getBundle(LoginAddon.class);
+		final Version v = bundle.getVersion();
+		log.info(String.format("%s %d.%d.%d", bundle.getSymbolicName(),
+				v.getMajor(), v.getMinor(), v.getMicro()));
+	}
+
 	private void update(final IEclipseContext workbenchContext, final IEclipsePreferences prefs, final UISynchronize sync)
 	{
 		final Logger log = (Logger) workbenchContext.get(Logger.class.getName());
