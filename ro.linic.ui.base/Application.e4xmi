@@ -8,8 +8,10 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_CgjRgI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_G8htkI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.exit" label="E&amp;xit" mnemonics="" command="_ufS_II0NEe6qNdK_29XQrA"/>
       </children>
+      <children xsi:type="menu:MenuSeparator" xmi:id="_n-lUcMgDEe6wm9FSKxJZow" elementId="additions" toBeRendered="false" visible="false"/>
       <children xsi:type="menu:Menu" xmi:id="_7PKrkKC3Ee6rhYQcX-gzIg" elementId="org.eclipse.ui.help.menu" label="&amp;Help" mnemonics="">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="Check for &amp;Updates" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="Check for &amp;Updates" iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_update_obj.png" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_itTisMphEe652r2Ev0tOtA" elementId="ro.linic.ui.base.handledmenuitem.install" label="Install New &amp;Software..." iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_obj.png" mnemonics="" command="_gnjzoMpgEe652r2Ev0tOtA"/>
       </children>
     </mainMenu>
     <trimBars xmi:id="_nuIUsI0KEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimbar.top">
@@ -19,7 +21,8 @@
   <handlers xmi:id="_rFi90MfhEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handler.save" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.SaveHandler" command="_mPIBcMfhEe6wm9FSKxJZow"/>
   <handlers xmi:id="_6ujxUI0NEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.saveall" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.SaveAllHandler" command="_qpX2cI0NEe6qNdK_29XQrA"/>
   <handlers xmi:id="_Cjd4EI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.exit" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.ExitHandler" command="_ufS_II0NEe6qNdK_29XQrA"/>
-  <handlers xmi:id="_clxgYKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handler.update" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handler.UpdateHandler" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+  <handlers xmi:id="_clxgYKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handler.update" contributionURI="bundleclass://ro.linic.ui.p2/ro.linic.ui.p2.handlers.UpdateHandler" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+  <handlers xmi:id="_p733oMpgEe652r2Ev0tOtA" elementId="ro.linic.ui.base.handler.install" contributionURI="bundleclass://ro.linic.ui.p2/ro.linic.ui.p2.handlers.InstallNewSoftwareHandler" command="_gnjzoMpgEe652r2Ev0tOtA"/>
   <bindingTables xmi:id="_DD1OIMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.bindingtable.root" bindingContext="_2nYUgMZ8Ee6UtK1nDebMVw">
     <bindings xmi:id="_LjDdMMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1q" keySequence="M1+Q" command="_ufS_II0NEe6qNdK_29XQrA">
       <tags>type:user</tags>
@@ -42,6 +45,7 @@
   <commands xmi:id="_qpX2cI0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.saveAll" commandName="Save All"/>
   <commands xmi:id="_ufS_II0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.exit" commandName="Exit"/>
   <commands xmi:id="_YZa0sKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.command.update" commandName="Update"/>
+  <commands xmi:id="_gnjzoMpgEe652r2Ev0tOtA" elementId="ro.linic.ui.base.command.install" commandName="Install New Software..."/>
   <addons xmi:id="_cGVhQY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_cGVhQo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_cGVhQ40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
@@ -49,4 +53,5 @@
   <addons xmi:id="_cGVhRY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
   <addons xmi:id="_cGVhRo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_cGVhR40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
+  <addons xmi:id="_06QS0MmGEe67JZ6a3I9GnA" elementId="ro.linic.ui.base.addon.provisioning" contributionURI="bundleclass://ro.linic.ui.p2/ro.linic.ui.p2.ui.addons.ProvUIAddon"/>
 </application:Application>

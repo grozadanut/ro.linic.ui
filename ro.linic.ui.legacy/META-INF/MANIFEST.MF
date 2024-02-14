@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Legacy
-Bundle-SymbolicName: ro.linic.ui.legacy
+Bundle-Name: Linic Platform Legacy
+Bundle-SymbolicName: ro.linic.ui.legacy;singleton:=true
 Bundle-Version: 4.0.4
 Bundle-ClassPath: libs/colibri_stat_ejb.jar,
  libs/gson-2.8.2.jar,

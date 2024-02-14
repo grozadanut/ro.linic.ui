@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ro.linic.ui.p2.repositoryTracker">
+   <implementation class="ro.linic.ui.p2.internal.ui.RepositoryTrackerComponent"/>
+   <service>
+      <provide interface="org.eclipse.equinox.p2.core.spi.IAgentServiceFactory"/>
+   </service>
+   <property name="p2.agent.servicename" type="String" value="org.eclipse.equinox.p2.operations.RepositoryTracker"/>
+</scr:component>

@@ -23,21 +23,18 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import javax.annotation.PreDestroy;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.EventTopic;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
-import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.equinox.internal.p2.core.helpers.LogHelper;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
@@ -261,10 +258,8 @@ public class LoginAddon
 		MessagingService.instance().registerMsgListener(GENERAL_TOPIC_REMOTE_JNDI, messageHandler, log);
 	}
 	
-	@Inject
-	@Optional
-	public void applicationShutdown(@EventTopic(UIEvents.UILifeCycle.APP_SHUTDOWN_STARTED) final Object event,
-			final IEclipseContext workbenchContext)
+	@PreDestroy
+	public void applicationShutdown(final IEclipseContext workbenchContext)
 	{
 		final Logger log = (Logger) workbenchContext.get(Logger.class.getName());
 		MessagingService.instance().closeSession(log);

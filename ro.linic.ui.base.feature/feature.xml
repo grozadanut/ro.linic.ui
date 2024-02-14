@@ -6,7 +6,12 @@
       provider-name="LINIC">
 
    <description url="http://www.example.com/description">
-      Acest modul asigura functionalitatile de baza necesare pentru toate celelalte module.
+      Acest modul asigura functionalitatile de baza necesare pentru
+toate celelalte module.
+
+Printre functionalitati se numara:
+- instalarea, dezinstalarea, updatarea fiecarui modul in parte
+- sistem unificat pentru managementul preferintelor utilizatorilor
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -23,9 +28,10 @@
 
    <plugin
          id="ro.linic.ui.base"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+         version="0.0.0"/>
+
+   <plugin
+         id="ro.linic.ui.p2"
+         version="0.0.0"/>
 
 </feature>

@@ -1,0 +1,535 @@
+package ro.linic.ui.p2.internal.ui.dialogs;
+
+import java.net.URI;
+import java.util.ArrayList;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.URIUtil;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.equinox.internal.provisional.p2.repository.RepositoryEvent;
+import org.eclipse.equinox.p2.core.ProvisionException;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.eclipse.equinox.p2.repository.IRepositoryManager;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.events.TreeEvent;
+import org.eclipse.swt.events.TreeListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
+
+import ro.linic.ui.p2.internal.ui.ProvUI;
+import ro.linic.ui.p2.internal.ui.ProvUIMessages;
+import ro.linic.ui.p2.internal.ui.ProvUIProvisioningListener;
+import ro.linic.ui.p2.internal.ui.QueryableMetadataRepositoryManager;
+import ro.linic.ui.p2.internal.ui.model.ElementUtils;
+import ro.linic.ui.p2.internal.ui.model.EmptyElementExplanation;
+import ro.linic.ui.p2.internal.ui.model.IRepositoryElement;
+import ro.linic.ui.p2.internal.ui.model.MetadataRepositories;
+import ro.linic.ui.p2.internal.ui.model.MetadataRepositoryElement;
+import ro.linic.ui.p2.internal.ui.model.ProvElement;
+import ro.linic.ui.p2.internal.ui.query.IUViewQueryContext;
+import ro.linic.ui.p2.internal.ui.viewers.DeferredQueryContentProvider;
+import ro.linic.ui.p2.internal.ui.viewers.IUColumnConfig;
+import ro.linic.ui.p2.internal.ui.viewers.IUComparator;
+import ro.linic.ui.p2.internal.ui.viewers.IUDetailsLabelProvider;
+import ro.linic.ui.p2.internal.ui.viewers.ProvElementComparer;
+import ro.linic.ui.p2.internal.ui.viewers.StructuredViewerProvisioningListener;
+import ro.linic.ui.p2.ui.LoadMetadataRepositoryJob;
+import ro.linic.ui.p2.ui.ProvisioningUI;
+
+/**
+ * An AvailableIUGroup is a reusable UI component that displays the
+ * IU's available for installation.  By default, content from all available
+ * repositories is shown.
+ *
+ * @since 3.4
+ */
+public class AvailableIUGroup extends StructuredIUGroup {
+
+	/**
+	 * Show contents from all repositories
+	 */
+	public static final int AVAILABLE_ALL = 1;
+
+	/**
+	 * Don't show any repository content
+	 */
+	public static final int AVAILABLE_NONE = 2;
+
+	/**
+	 * Show local repository content
+	 */
+	public static final int AVAILABLE_LOCAL = 3;
+
+	/**
+	 * Show content for a specific repository
+	 */
+	public static final int AVAILABLE_SPECIFIED = 4;
+
+	IUViewQueryContext queryContext;
+	int filterConstant = AVAILABLE_ALL;
+	URI repositoryFilter;
+	QueryableMetadataRepositoryManager queryableManager;
+	// We restrict the type of the filter used because PatternFilter does
+	// unnecessary accesses of children that cause problems with the deferred
+	// tree.
+	AvailableIUPatternFilter filter;
+	private boolean useBold = false;
+	private IUDetailsLabelProvider labelProvider;
+	private int repoFlags;
+	Display display;
+	DelayedFilterCheckboxTree filteredTree;
+	Job lastRequestedLoadJob;
+	private IEclipseContext ctx;
+
+	/**
+	 * Create a group that represents the available IU's from all available
+	 * repositories.  The default policy controls the visibility flags for
+	 * repositories and IU's.
+	 *
+	 * @param parent the parent composite for the group
+	 */
+	public AvailableIUGroup(final IEclipseContext ctx, final ProvisioningUI ui, final Composite parent) {
+		this(ctx, ui, parent, parent.getFont(), null, getDefaultColumnConfig(), AVAILABLE_ALL);
+	}
+
+	private static IUColumnConfig[] getDefaultColumnConfig() {
+		// increase primary column width because we might be nesting names under categories and require more space than a flat list
+		final IUColumnConfig nameColumn = new IUColumnConfig(ProvUIMessages.ProvUI_NameColumnTitle, IUColumnConfig.COLUMN_NAME, ILayoutConstants.DEFAULT_PRIMARY_COLUMN_WIDTH + 15);
+		final IUColumnConfig versionColumn = new IUColumnConfig(ProvUIMessages.ProvUI_VersionColumnTitle, IUColumnConfig.COLUMN_VERSION, ILayoutConstants.DEFAULT_COLUMN_WIDTH);
+		return new IUColumnConfig[] {nameColumn, versionColumn};
+	}
+
+	/**
+	 * Create a group that represents the available IU's.
+	 *
+	 * @param ui the policy to use for deciding what should be shown
+	 * @param parent the parent composite for the group
+	 * @param font The font to use for calculating pixel sizes.  This font is
+	 * not managed by the receiver.
+	 * @param queryContext the IUViewQueryContext that determines additional
+	 * information about what is shown, such as the visible repositories
+	 * @param columnConfig the description of the columns that should be shown.  If <code>null</code>, a default
+	 * will be used.
+	 * @param filterConstant a constant specifying which repositories are used when showing content
+	 */
+	public AvailableIUGroup(final IEclipseContext ctx, final ProvisioningUI ui, final Composite parent, final Font font, 
+			final IUViewQueryContext queryContext, final IUColumnConfig[] columnConfig, final int filterConstant) {
+		super(ui, parent, font, columnConfig);
+		this.ctx = ctx;
+		this.display = parent.getDisplay();
+		if (queryContext == null)
+			this.queryContext = ProvUI.getQueryContext(getPolicy());
+		else
+			this.queryContext = queryContext;
+		repoFlags = ui.getRepositoryTracker().getMetadataRepositoryFlags();
+		this.queryableManager = new QueryableMetadataRepositoryManager(ui, false);
+		this.filterConstant = filterConstant;
+		this.filter = new AvailableIUPatternFilter(getColumnConfig());
+		this.filter.setIncludeLeadingWildcard(true);
+		createGroupComposite(parent);
+	}
+
+	@Override
+	protected StructuredViewer createViewer(final Composite parent) {
+		// Table of available IU's
+		filteredTree = new DelayedFilterCheckboxTree(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER, filter, getPreFilterJobProvider());
+		final TreeViewer availableIUViewer = filteredTree.getViewer();
+
+		availableIUViewer.getTree().setFont(parent.getFont());
+		filteredTree.getFilterControl().setFont(parent.getFont());
+
+		// If the user expanded or collapsed anything while we were loading a repo
+		// in the background, we would not want to disrupt their work by making
+		// a newly loaded visible and expanding it.  Setting the load job to null
+		// will take care of this.
+		availableIUViewer.getTree().addTreeListener(new TreeListener() {
+			@Override
+			public void treeCollapsed(final TreeEvent e) {
+				lastRequestedLoadJob = null;
+			}
+
+			@Override
+			public void treeExpanded(final TreeEvent e) {
+				lastRequestedLoadJob = null;
+			}
+		});
+
+		labelProvider = new IUDetailsLabelProvider(ctx, filteredTree, getColumnConfig(), getShell());
+		labelProvider.setUseBoldFontForFilteredItems(useBold);
+		labelProvider.setToolTipProperty(IInstallableUnit.PROP_DESCRIPTION);
+
+		// Filters and sorters before establishing content, so we don't refresh unnecessarily.
+		final IUComparator comparator = new IUComparator(IUComparator.IU_NAME);
+		comparator.useColumnConfig(getColumnConfig());
+		availableIUViewer.setComparator(comparator);
+		availableIUViewer.setComparer(new ProvElementComparer());
+
+		// Now the content provider.
+		final DeferredQueryContentProvider contentProvider = new DeferredQueryContentProvider();
+		availableIUViewer.setContentProvider(contentProvider);
+
+		// Now the presentation, columns before label provider.
+		setTreeColumns(availableIUViewer.getTree());
+		availableIUViewer.setLabelProvider(labelProvider);
+
+		// Notify the filtered tree so that it can hook listeners on the
+		// content provider.  This is needed so that filtering is only allowed
+		// after content has been retrieved.
+		filteredTree.contentProviderSet(contentProvider);
+
+		final StructuredViewerProvisioningListener listener = new StructuredViewerProvisioningListener(ctx, getClass().getName(), availableIUViewer, ProvUIProvisioningListener.PROV_EVENT_METADATA_REPOSITORY, getProvisioningUI().getOperationRunner()) {
+			@Override
+			protected void repositoryAdded(final RepositoryEvent event) {
+				makeRepositoryVisible(event.getRepositoryLocation());
+			}
+
+			@Override
+			protected void refreshViewer() {
+				final TreeViewer treeViewer = filteredTree.getViewer();
+				final Tree tree = treeViewer.getTree();
+				if (Display.getCurrent() == null)
+					return;
+				if (tree != null && !tree.isDisposed()) {
+					updateAvailableViewState();
+				}
+
+			}
+		};
+		ProvUI.getProvisioningEventBus(getProvisioningUI().getSession()).addListener(listener);
+
+		availableIUViewer.getControl().addDisposeListener(e -> ProvUI.getProvisioningEventBus(getProvisioningUI().getSession()).removeListener(listener));
+		updateAvailableViewState();
+		return availableIUViewer;
+	}
+
+	private void setTreeColumns(final Tree tree) {
+		tree.setHeaderVisible(true);
+
+		final IUColumnConfig[] cols = getColumnConfig();
+		for (int i = 0; i < cols.length; i++) {
+			final TreeColumn tc = new TreeColumn(tree, SWT.NONE, i);
+			tc.setResizable(true);
+			tc.setText(cols[i].getColumnTitle());
+			tc.setWidth(cols[i].getWidthInPixels(tree));
+		}
+	}
+
+	Object getNewInput() {
+		if (repositoryFilter != null) {
+			return new MetadataRepositoryElement(ctx, queryContext, getProvisioningUI(), repositoryFilter, true);
+		} else if (filterConstant == AVAILABLE_NONE) {
+			// Dummy object that explains empty site list
+			return new ProvElement(ctx, null) {
+				@Override
+				public Object[] getChildren(final Object o) {
+					String description;
+					String name;
+					int severity;
+					if (!getPolicy().getRepositoriesVisible()) {
+						// shouldn't get here ideally.  No sites and no way to add any.
+						severity = IStatus.ERROR;
+						name = ProvUIMessages.AvailableIUGroup_NoSitesConfiguredExplanation;
+						description = ProvUIMessages.AvailableIUGroup_NoSitesConfiguredDescription;
+					} else {
+						severity = IStatus.INFO;
+						name = ProvUIMessages.AvailableIUGroup_NoSitesExplanation;
+						description = ProvUIMessages.ColocatedRepositoryManipulator_NoContentExplanation;
+					}
+					return new Object[] {new EmptyElementExplanation(ctx, null, severity, name, description)};
+				}
+
+				@Override
+				public String getLabel(final Object o) {
+					// Label not needed for input
+					return null;
+				}
+			};
+		} else {
+			queryableManager.setRespositoryFlags(repoFlags);
+			return new MetadataRepositories(ctx, queryContext, getProvisioningUI(), queryableManager);
+		}
+	}
+
+	/**
+	 * Set a boolean indicating whether a bold font should be used when
+	 * showing filtered items.  This method does not refresh the tree or
+	 * labels, so that must be done explicitly by the caller.
+	 * @param useBoldFont
+	 */
+	public void setUseBoldFontForFilteredItems(final boolean useBoldFont) {
+		if (labelProvider != null)
+			labelProvider.setUseBoldFontForFilteredItems(useBoldFont);
+	}
+
+	/**
+	 * Return the composite that contains the controls in this group.
+	 * @return the composite
+	 */
+	@Override
+	public Composite getComposite() {
+		return super.getComposite();
+	}
+
+	/**
+	 * Get the viewer used to represent the available IU's
+	 * @return the viewer
+	 */
+	@Override
+	public StructuredViewer getStructuredViewer() {
+		return super.getStructuredViewer();
+	}
+
+	/**
+	 * Get the selected IU's
+	 * @return the array of selected IU's
+	 */
+	// overridden for visibility in the public package
+	@Override
+	public java.util.List<IInstallableUnit> getSelectedIUs() {
+		return super.getSelectedIUs();
+	}
+
+	// overridden to weed out non-IU elements, such as repositories or empty explanations
+	@Override
+	public Object[] getSelectedIUElements() {
+		final Object[] elements = viewer.getStructuredSelection().toArray();
+		final ArrayList<Object> list = new ArrayList<>(elements.length);
+		for (final Object element : elements)
+			if (ElementUtils.getIU(element) != null)
+				list.add(element);
+		return list.toArray();
+	}
+
+	public CheckboxTreeViewer getCheckboxTreeViewer() {
+		return filteredTree.getCheckboxTreeViewer();
+	}
+
+	/**
+	 * Get the selected IU's
+	 * @return the array of checked IU's
+	 */
+	public IInstallableUnit[] getCheckedLeafIUs() {
+		final Object[] selections = filteredTree.getCheckedElements(); // Get all the elements that have been selected, not just the visible ones
+		if (selections.length == 0)
+			return new IInstallableUnit[0];
+		final ArrayList<IInstallableUnit> leaves = new ArrayList<>(selections.length);
+		for (final Object selection : selections) {
+			if (!getCheckboxTreeViewer().getGrayed(selection)) {
+				final IInstallableUnit iu = ProvUI.getAdapter(selection, IInstallableUnit.class);
+				if (iu != null && !ProvUI.isCategory(iu) && !leaves.contains(iu))
+					leaves.add(iu);
+			}
+		}
+		return leaves.toArray(new IInstallableUnit[leaves.size()]);
+	}
+
+	public Tree getTree() {
+		if (viewer == null)
+			return null;
+		return ((TreeViewer) viewer).getTree();
+	}
+
+	/*
+	 * Make the repository with the specified location visible in the viewer.
+	 */
+	void makeRepositoryVisible(final URI location) {
+		// If we are viewing by anything other than site, there is no specific way
+		// to make a repo visible.
+		if (!(queryContext.getViewType() == IUViewQueryContext.AVAILABLE_VIEW_BY_REPO)) {
+			if (Display.getCurrent() == null)
+				display.asyncExec(this::updateAvailableViewState);
+			else
+				updateAvailableViewState();
+			return;
+		}
+		// First reset the input so that the new repo shows up
+		final Runnable runnable = () -> {
+			final TreeViewer treeViewer = filteredTree.getViewer();
+			final Tree tree = treeViewer.getTree();
+			if (Display.getCurrent() == null)
+				return;
+			if (tree != null && !tree.isDisposed()) {
+				updateAvailableViewState();
+			}
+		};
+		if (Display.getCurrent() == null)
+			display.asyncExec(runnable);
+		else
+			runnable.run();
+		// We don't know if loading will be a fast or slow operation.
+		// We do it in a job to be safe, and when it's done, we update
+		// the UI.
+		final Job job = new Job(NLS.bind(ProvUIMessages.AvailableIUGroup_LoadingRepository, URIUtil.toUnencodedString(location))) {
+			@Override
+			protected IStatus run(final IProgressMonitor monitor) {
+				try {
+					getProvisioningUI().loadMetadataRepository(location, true, monitor);
+					return Status.OK_STATUS;
+				} catch (final ProvisionException e) {
+					return e.getStatus();
+				} catch (final OperationCanceledException e) {
+					return Status.CANCEL_STATUS;
+				}
+			}
+		};
+		job.setPriority(Job.LONG);
+		job.setSystem(true);
+		job.setUser(false);
+		job.addJobChangeListener(new JobChangeAdapter() {
+			@Override
+			public void done(final IJobChangeEvent event) {
+				if (event.getResult().isOK())
+					display.asyncExec(() -> {
+						final TreeViewer treeViewer = filteredTree.getViewer();
+						if (Display.getCurrent() == null)
+							return;
+						// Expand only if there have been no other jobs started for other repos.
+						if (event.getJob() == lastRequestedLoadJob) {
+							final Tree tree = treeViewer.getTree();
+							if (tree != null && !tree.isDisposed()) {
+								for (final TreeItem item : tree.getItems()) {
+									if (item.getData() instanceof IRepositoryElement) {
+										final URI url = ((IRepositoryElement<?>) item.getData()).getLocation();
+										if (url.equals(location)) {
+											treeViewer.expandToLevel(item.getData(), AbstractTreeViewer.ALL_LEVELS);
+											tree.select(item);
+											return;
+										}
+									}
+								}
+							}
+						}
+					});
+			}
+		});
+		lastRequestedLoadJob = job;
+		job.schedule();
+	}
+
+	public void updateAvailableViewState() {
+		if (getTree() == null || getTree().isDisposed())
+			return;
+		final Composite parent = getComposite().getParent();
+		setUseBoldFontForFilteredItems(queryContext.getViewType() != IUViewQueryContext.AVAILABLE_VIEW_FLAT);
+
+		BusyIndicator.showWhile(display, () -> {
+			parent.setRedraw(false);
+			getCheckboxTreeViewer().setInput(getNewInput());
+			parent.layout(true);
+			parent.setRedraw(true);
+		});
+	}
+
+	@Override
+	public Control getDefaultFocusControl() {
+		if (filteredTree != null)
+			return filteredTree.getFilterControl();
+		return null;
+	}
+
+	protected String getFilterString() {
+		return filteredTree.getFilterString();
+	}
+
+	@Override
+	protected GridData getViewerGridData() {
+		final GridData data = super.getViewerGridData();
+		data.heightHint = convertHeightInCharsToPixels(ILayoutConstants.DEFAULT_TABLE_HEIGHT);
+		return data;
+	}
+
+	/**
+	 * Set the checked elements to the specified selections.  This method
+	 * does not force visibility/expansion of the checked elements.  If they are not
+	 * visible, they will not be checked.
+	 * @param selections
+	 */
+	public void setChecked(final Object[] selections) {
+		filteredTree.getCheckboxTreeViewer().setCheckedElements(selections);
+		// TODO HACK ALERT!
+		// Since We don't have API for setAllChecked(boolean), clients have to use this method.
+		// We need to signal DelayedFilterCheckboxTree when everything needs to be deselected since
+		// we aren't firing an event for each item.
+		final Object element = selections.length == 0 ? DelayedFilterCheckboxTree.ALL_ITEMS_HACK : selections[0];
+		filteredTree.getCheckboxTreeViewer().fireCheckStateChanged(element, selections.length > 0);
+	}
+
+	public void setRepositoryFilter(final int filterFlag, final URI repoLocation) {
+		// If there has been no change, don't do anything.  We will be
+		// clearing out selection caches in this method and should not do
+		// so if there's really no change.
+		if (filterConstant == filterFlag) {
+			if (filterConstant != AVAILABLE_SPECIFIED)
+				return;
+			if (repoLocation != null && repoLocation.equals(repositoryFilter))
+				return;
+		}
+		filterConstant = filterFlag;
+
+		switch (filterFlag) {
+			case AVAILABLE_ALL :
+			case AVAILABLE_NONE :
+				repositoryFilter = null;
+				repoFlags &= ~IRepositoryManager.REPOSITORIES_LOCAL;
+				break;
+			case AVAILABLE_LOCAL :
+				repositoryFilter = null;
+				repoFlags |= IRepositoryManager.REPOSITORIES_LOCAL;
+				break;
+			default :
+				repositoryFilter = repoLocation;
+				break;
+		}
+		updateAvailableViewState();
+		filteredTree.clearCheckStateCache();
+	}
+
+	private IPreFilterJobProvider getPreFilterJobProvider() {
+		return () -> {
+			switch (filterConstant) {
+				case AVAILABLE_ALL :
+					final Job preFilterJob = new LoadMetadataRepositoryJob(ctx, getProvisioningUI());
+					preFilterJob.setProperty(LoadMetadataRepositoryJob.SUPPRESS_REPOSITORY_EVENTS, Boolean.toString(true));
+					return preFilterJob;
+				case AVAILABLE_NONE :
+				case AVAILABLE_LOCAL :
+					return null;
+				default :
+					if (repositoryFilter == null)
+						return null;
+					final Job job = new Job("Repository Load Job") { //$NON-NLS-1$
+						@Override
+						protected IStatus run(final IProgressMonitor monitor) {
+							try {
+								getProvisioningUI().loadMetadataRepository(repositoryFilter, false, monitor);
+								return Status.OK_STATUS;
+							} catch (final ProvisionException e) {
+								return e.getStatus();
+							}
+						}
+
+					};
+					job.setPriority(Job.SHORT);
+					return job;
+			}
+		};
+	}
+}

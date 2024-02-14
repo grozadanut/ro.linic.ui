@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="ro.linic.ui.p2.internal.ui.model.ProvElement"
+            class="ro.linic.ui.p2.internal.ui.ProvUIAdapterFactory">
+         <adapter
+               type="org.eclipse.equinox.p2.metadata.IInstallableUnit">
+         </adapter>
+         <adapter
+               type="org.eclipse.equinox.p2.engine.IProfile">
+         </adapter>
+         <adapter
+               type="org.eclipse.equinox.p2.repository.IRepository">
+         </adapter>
+         <adapter
+               type="org.eclipse.equinox.p2.repository.metadata.IMetadataRepository">
+         </adapter>
+         <adapter
+               type="org.eclipse.equinox.p2.repository.artifact.IArtifactRepository">
+         </adapter>
+      </factory>
+   </extension>
+
+</plugin>

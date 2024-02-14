@@ -31,8 +31,6 @@
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
-      <feature id="ro.linic.ui.connector.feature" installMode="root"/>
-      <feature id="ro.linic.ui.legacy.feature" installMode="root"/>
    </features>
 
    <configurations>
@@ -41,6 +39,8 @@
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
+      <property name="eclipse.p2.metadataRepository" value="file:/C:/work/repository" />
+      <property name="eclipse.p2.artifactRepository" value="file:/C:/work/repository" />
    </configurations>
 
    <preferencesInfo>
