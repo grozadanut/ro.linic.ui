@@ -1,19 +1,26 @@
 package ro.linic.ui.legacy.session;
 
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
+import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
 import javax.naming.Context;
 
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
 
@@ -21,6 +28,8 @@ import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
+import ro.linic.ui.legacy.parts.VanzareBarPart;
+import ro.linic.ui.legacy.service.SQLiteJDBC;
 
 public class ClientSession
 {
@@ -32,11 +41,13 @@ public class ClientSession
 	private String username;
 	private String password;
 	private User loggedUser;
+	private boolean offlineMode = false;
 	private String billSignatureProp;
 	private String billStampProp;
 	
 	private Properties properties = new Properties();
 	private List<Control> hideStateControls = new ArrayList<>();
+	private List<CLabel> workingModeControls = new ArrayList<>();
 	
 	// caching
 	private ImmutableList<PersistedProp> allPersistedProps;
@@ -97,6 +108,12 @@ public class ClientSession
 		control.addDisposeListener(e -> hideStateControls.remove(control));
 	}
 	
+	public void addWorkingModeControl(final CLabel control)
+	{
+		this.workingModeControls.add(control);
+		control.addDisposeListener(e -> workingModeControls.remove(control));
+	}
+	
 	public void setUsername(final String username)
 	{
 		this.username = username;
@@ -130,6 +147,97 @@ public class ClientSession
 	public Properties getProperties()
 	{
 		return properties;
+	}
+	
+	public boolean isOfflineMode()
+	{
+		return offlineMode;
+	}
+	
+	public void setOfflineMode(final boolean offlineMode, final EPartService partService, final Bundle bundle, final Logger log)
+	{
+		if (!this.offlineMode && offlineMode && !allBonuriClosed(partService))
+		{
+			if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Inchideti bonurile deschise?",
+					"ATENTIE! Aveti bonuri incepute care vor fi inchise si vor aparea din nou doar dupa ce reporniti"
+							+ " programul. Continuati?"))
+			{
+				partService.getParts().stream()
+				.filter(p -> p.getElementId().equals(VanzareBarPart.PART_ID))
+				.map(MPart::getObject)
+				.filter(Objects::nonNull)
+				.filter(VanzareBarPart.class::isInstance)
+				.map(VanzareBarPart.class::cast)
+				.filter(VanzareBarPart::bonTableNotEmpty)
+				.forEach(vanzareBonDeschis -> vanzareBonDeschis.updateBonCasa(null, true));
+
+				partService.getParts().stream()
+				.filter(p -> p.getElementId().equals(VanzareBarPart.PART_DESCRIPTOR_ID))
+				.map(MPart::getObject)
+				.filter(Objects::nonNull)
+				.filter(VanzareBarPart.class::isInstance)
+				.map(VanzareBarPart.class::cast)
+				.filter(VanzareBarPart::bonTableNotEmpty)
+				.forEach(vanzareBonDeschis -> vanzareBonDeschis.updateBonCasa(null, true));
+			}
+			else
+				return;
+		}
+		
+		if (this.offlineMode && !offlineMode)
+		{
+			if (!allBonuriClosed(partService))
+			{
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Bonuri deschise!",
+						"Inchideti bonurile inainte de a comuta intre modul OFFLINE - ONLINE!");
+				return;
+			}
+			
+			final InvocationResult result = SQLiteJDBC.instance(bundle, log).saveLocalToServer();
+			showResult(result);
+			if (result.statusCanceled())
+				return;
+		}
+		
+		this.offlineMode = offlineMode;
+		
+		final Color workingModeBgColor = offlineMode ?
+				Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED) :
+				Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN);
+				
+		workingModeControls.forEach(control -> 
+		{
+			control.setText(offlineMode ? "Offline" : "Online");
+			control.setBackground(workingModeBgColor);
+		});
+	}
+	
+	private boolean allBonuriClosed(final EPartService partService)
+	{
+		if (partService != null)
+		{
+			if (partService.getParts().stream()
+					.filter(p -> p.getElementId().equals(VanzareBarPart.PART_ID))
+					.map(MPart::getObject)
+					.filter(Objects::nonNull)
+					.filter(VanzareBarPart.class::isInstance)
+					.map(VanzareBarPart.class::cast)
+					.filter(VanzareBarPart::bonTableNotEmpty)
+					.findAny()
+					.isPresent() || partService.getParts().stream()
+						.filter(p -> p.getElementId().equals(VanzareBarPart.PART_DESCRIPTOR_ID))
+						.map(MPart::getObject)
+						.filter(Objects::nonNull)
+						.filter(VanzareBarPart.class::isInstance)
+						.map(VanzareBarPart.class::cast)
+						.filter(VanzareBarPart::bonTableNotEmpty)
+						.findAny()
+						.isPresent())
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public String getBillSignatureProp()

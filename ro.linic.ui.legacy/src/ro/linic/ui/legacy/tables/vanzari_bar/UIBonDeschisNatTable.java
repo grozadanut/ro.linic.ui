@@ -135,6 +135,11 @@ public class UIBonDeschisNatTable
 		return table;
 	}
 	
+	public EventList<Operatiune> getSourceData()
+	{
+		return sourceData;
+	}
+	
 	public List<Operatiune> selection()
 	{
 		return ((RowSelectionModel<Operatiune>) selectionLayer.getSelectionModel()).getSelectedRowObjects();

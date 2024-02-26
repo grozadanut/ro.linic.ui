@@ -582,6 +582,12 @@ public class BusinessDelegate
 		return bean.accountingDocumentById(doc.getId(), loadConnectionOps);
 	}
 	
+	public static InvocationResult saveLocalOps(final ImmutableList<Operatiune> localOps)
+	{
+		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);
+		return bean.saveLocalOps(localOps);
+	}
+	
 	public static InvocationResult closeBonCasa_Failed(final ImmutableSet<Long> bonIds)
 	{
 		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);

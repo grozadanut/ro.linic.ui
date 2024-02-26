@@ -168,8 +168,9 @@ public class CasaMarcat
 			else
 				resultPath = incaseazaPrinCasa(bon, cui);
 			
-			Job.create("Scoate Bon Fiscal", new ReadResult(resultPath, bonuri.stream().map(AccountingDocument::getId).collect(toImmutableSet()),
-					retriedBon)).schedule();
+			if (!ClientSession.instance().isOfflineMode())
+				Job.create("Scoate Bon Fiscal", new ReadResult(resultPath, bonuri.stream().map(AccountingDocument::getId).collect(toImmutableSet()),
+						retriedBon)).schedule();
 		}
 	}
 	

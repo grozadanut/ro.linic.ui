@@ -83,6 +83,7 @@ import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.VanzariIncarcaDocDialog;
 import ro.linic.ui.legacy.parts.components.VanzareInterface;
 import ro.linic.ui.legacy.service.PeripheralService;
+import ro.linic.ui.legacy.service.SQLiteJDBC;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -111,6 +112,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	private AccountingDocument bonCasa;
 	private ImmutableList<RulajPartener> partnersWithFidelityCard;
 
+	private BigDecimal tvaPercentDb;
+	
 	// UI
 	private SashForm horizontalSash;
 	
@@ -211,6 +214,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	public void createComposite(final Composite parent)
 	{
 		refreshPartners();
+		tvaPercentDb = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
+				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
 		
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
 				Boolean.TRUE.toString())))
@@ -220,7 +225,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		}
 
 		parent.setLayout(new GridLayout());
-		createTopBar(parent);
+		createTopBar(parent, partService, bundle, log);
 
 		search = new Text(parent, SWT.BORDER);
 		search.setMessage("Denumire");
@@ -414,7 +419,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		managerCasaButton = new Button(footerContainer, SWT.PUSH);
 		managerCasaButton.setText("Manager CasaMarcat");
 		UIUtils.setBannerFont(managerCasaButton);
-
+		
 		cancelBonButton = new Button(footerContainer, SWT.PUSH);
 		cancelBonButton.setText("CANCEL BON");
 		cancelBonButton.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
@@ -571,7 +576,14 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 							"Prima data trebuie adaugate produsele, apoi scanat cardul!");
 					return;
 				}
-
+				
+				if (ClientSession.instance().isOfflineMode())
+				{
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Not accepted!",
+							"Functia nu este activa in modul OFFLINE!");
+					return;
+				}
+				
 				changeClient();
 			}
 		});
@@ -641,6 +653,12 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
+				if (ClientSession.instance().isOfflineMode())
+				{
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Offline!", "Butonul Incarca Bon nu functioneaza in modul OFFLINE!");
+					return;
+				}
+				
 				final AccountingDocument currentBon = BusinessDelegate.reloadDoc(bonCasa);
 				new VanzariIncarcaDocDialog(Display.getCurrent().getActiveShell(), VanzareBarPart.this, sync).open();
 				updateBonCasa(currentBon, true);
@@ -669,6 +687,12 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
+				if (ClientSession.instance().isOfflineMode())
+				{
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Offline!", "Butonul Refresh nu functioneaza in modul OFFLINE!");
+					return;
+				}
+				
 				refreshPartners();
 				reloadProduct(null, true);
 				updateBonCasa(BusinessDelegate.reloadDoc(bonCasa), true);
@@ -735,8 +759,15 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			return;
 
 		final Long accDocId = Optional.ofNullable(bonCasa).map(AccountingDocument::getId).orElse(null);
-		final InvocationResult result = BusinessDelegate.addToBonCasa(product.get().getBarcode(), cantitate, 
-				null, accDocId, true, TransferType.FARA_TRANSFER, null, bundle, log);
+		InvocationResult result;
+		if (ClientSession.instance().isOfflineMode())
+			result = SQLiteJDBC.instance(bundle, log).addToBonCasa(bonCasa, product.get(), cantitate, null,
+					ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
+					ClientSession.instance().getLoggedUser().getId(), tvaPercentDb);
+		else
+			result = BusinessDelegate.addToBonCasa(product.get().getBarcode(), cantitate, 
+					null, accDocId, true, TransferType.FARA_TRANSFER, null, bundle, log);
+
 
 		if (!result.statusOk())
 		{
@@ -801,13 +832,20 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	private void deleteOperations(final ImmutableList<Operatiune> operations)
 	{
 		final ImmutableList<Operatiune> deletableOps = collectDeletableOperations(operations);
+		final ImmutableSet<Long> deletableOpIds = deletableOps.stream()
+				.map(Operatiune::getId)
+				.collect(toImmutableSet());
 		final ImmutableSet<String> operationBarcodes = deletableOps.stream().map(Operatiune::getBarcode)
 				.collect(toImmutableSet());
 		final ImmutableList<Product> productsToReload = allProductsTable.getSourceData().parallelStream()
 				.filter(p -> operationBarcodes.contains(p.getBarcode())).collect(toImmutableList());
 
-		final InvocationResult result = BusinessDelegate
-				.deleteOperations(deletableOps.stream().map(Operatiune::getId).collect(toImmutableSet()));
+		InvocationResult result;
+		if (ClientSession.instance().isOfflineMode())
+			result = SQLiteJDBC.instance(bundle, log).deleteOperations(bonCasa, deletableOpIds);
+		else
+			result = BusinessDelegate.deleteOperations(deletableOpIds);
+		
 		if (!result.statusOk())
 		{
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), result.toTextCodes(),
@@ -816,16 +854,25 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		}
 
 		// 3. update bonCasa(may be deleted) and reload affected products
-		updateBonCasa(BusinessDelegate.reloadDoc(bonCasa), true);
-		if (productsToReload.size() > 1)
-			reloadProduct(null, false);
+		if (ClientSession.instance().isOfflineMode())
+			updateBonCasa(bonCasa != null && !bonCasa.getOperatiuni().isEmpty() ? bonCasa : null,
+					true);
 		else
-			productsToReload.forEach(p -> reloadProduct(p, false));
+		{
+			updateBonCasa(BusinessDelegate.reloadDoc(bonCasa), true);
+			if (productsToReload.size() > 1)
+				reloadProduct(null, false);
+			else
+				productsToReload.forEach(p -> reloadProduct(p, false));
+		}
 	}
 	
 	private void changeClient()
 	{
 		if (bonCasa == null)
+			return;
+		
+		if (ClientSession.instance().isOfflineMode())
 			return;
 		
 		final InvocationResult result = BusinessDelegate.changeDocPartner(bonCasa.getId(), selectedPartnerId(), true);
@@ -843,12 +890,21 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	{
 		if (bonCasa != null)
 		{
+			if (ClientSession.instance().isOfflineMode() &&
+					!tipInchidere.equals(TipInchidere.PRIN_CASA) && !tipInchidere.equals(TipInchidere.PRIN_CARD))
+			{
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Not accepted!",
+						"In modul OFFLINE doar inchiderea PRIN CASA sau PRIN CARD este posibila!");
+				return;
+			}
+			
 			final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 					Display.getCurrent().getActiveShell(),
 					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), sync, bundle, log, tipInchidere));
 			if (wizardDialog.open() == Window.OK)
 			{
-				printEtichetaAroma();
+				if (!ClientSession.instance().isOfflineMode())
+					printEtichetaAroma();
 				updateBonCasa(null, false);
 				cardOrPhone.setText(EMPTY_STRING);
 			}
@@ -895,6 +951,11 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	public List<Product> selection()
 	{
 		return allProductsTable.selection();
+	}
+	
+	public boolean bonTableNotEmpty()
+	{
+		return !bonDeschisTable.getSourceData().isEmpty();
 	}
 	
 	private Optional<Long> selectedPartnerId()

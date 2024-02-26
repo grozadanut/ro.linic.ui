@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -40,6 +41,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -49,6 +52,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.osgi.framework.Bundle;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -332,6 +336,83 @@ public class UIUtils
 		gestiuneLabel.setLayoutData(gestiuneGD);
 		UIUtils.setBoldBannerFont(gestiuneLabel);
 		ClientSession.instance().addHideStateControl(gestiuneLabel);
+	}
+	
+	public static void createTopBar(final Composite parent, final EPartService partService, final Bundle bundle, final Logger log)
+	{
+		final Color bgColor = ClientSession.instance().getLoggedUser().isHideUnofficialDocs() ?
+				Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED) :
+				Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
+				
+		final Composite topBarContainer = new Composite(parent, SWT.NONE);
+		final GridLayout topBarLayout = new GridLayout(4, false);
+		topBarLayout.horizontalSpacing = 0;
+		topBarLayout.verticalSpacing = 0;
+		topBarLayout.marginWidth = 0;
+		topBarLayout.marginHeight = 0;
+		topBarContainer.setLayout(topBarLayout);
+		final GridData topBarGD = new GridData(SWT.FILL, SWT.CENTER, true, false);
+		topBarGD.horizontalSpan = 4;
+		topBarContainer.setLayoutData(topBarGD);
+		topBarContainer.setBackground(bgColor);
+		ClientSession.instance().addHideStateControl(topBarContainer);
+		
+		final CLabel dataLabel = new CLabel(topBarContainer, SWT.BORDER);
+		dataLabel.setText(displayLocalDate(LocalDate.now()));
+		dataLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+		dataLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW));
+		dataLabel.setAlignment(SWT.CENTER);
+		final GridData dataGD = new GridData();
+		dataGD.heightHint = TOP_BAR_HEIGHT;
+		dataGD.widthHint = 200;
+		dataGD.verticalAlignment = SWT.CENTER;
+		dataLabel.setLayoutData(dataGD);
+		UIUtils.setBoldBannerFont(dataLabel);
+
+		final CLabel operatorLabel = new CLabel(topBarContainer, SWT.BORDER);
+		operatorLabel.setText(safeString(ClientSession.instance().getLoggedUser(), User::displayName));
+		operatorLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+		operatorLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW));
+		operatorLabel.setAlignment(SWT.CENTER);
+		final GridData operatorGD = new GridData();
+		operatorGD.heightHint = TOP_BAR_HEIGHT;
+		operatorGD.widthHint = 300;
+		operatorLabel.setLayoutData(operatorGD);
+		UIUtils.setBoldBannerFont(operatorLabel);
+		
+		final String companyGestLabel = MessageFormat.format("{0} - {1}",
+				safeString(ClientSession.instance().getLoggedUser(), User::getSelectedCompany, Company::displayName),
+				safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getName));
+		final CLabel gestiuneLabel = new CLabel(topBarContainer, SWT.NONE);
+		gestiuneLabel.setText(companyGestLabel);
+		gestiuneLabel.setBackground(bgColor);
+		gestiuneLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW));
+		final GridData gestiuneGD = new GridData(SWT.CENTER, SWT.CENTER, true, false);
+		gestiuneGD.heightHint = TOP_BAR_HEIGHT;
+		gestiuneLabel.setLayoutData(gestiuneGD);
+		UIUtils.setBoldBannerFont(gestiuneLabel);
+		ClientSession.instance().addHideStateControl(gestiuneLabel);
+		
+		final Color workingModeBgColor = ClientSession.instance().isOfflineMode() ?
+				Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED) :
+				Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN);
+				
+		final CLabel workingModeLabel = new CLabel(topBarContainer, SWT.NONE);
+		workingModeLabel.setText(ClientSession.instance().isOfflineMode() ? "Offline" : "Online");
+		workingModeLabel.setBackground(workingModeBgColor);
+		workingModeLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		final GridData workingModeGD = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+		workingModeGD.heightHint = TOP_BAR_HEIGHT;
+		workingModeLabel.setLayoutData(workingModeGD);
+		UIUtils.setBoldBannerFont(workingModeLabel);
+		ClientSession.instance().addWorkingModeControl(workingModeLabel);
+		workingModeLabel.addMouseListener(new MouseAdapter()
+		{
+			@Override public void mouseUp(final MouseEvent e)
+			{
+				ClientSession.instance().setOfflineMode(!ClientSession.instance().isOfflineMode(), partService, bundle, log);
+			}
+		});
 	}
 	
 	public static void saveState(final String prefix, final NatTable table, final MPart part)

@@ -58,7 +58,8 @@ public class InchideBonWizard extends Wizard
 		two = new InchideBonFacturaOrBCPage(bonCasa, casaActive, sync, bundle, log);
 		if (!TipInchidere.FACTURA_BC.equals(tipInchidere))
 			addPage(one);
-		addPage(two);
+		if (!TipInchidere.PRIN_CARD.equals(tipInchidere) && !TipInchidere.PRIN_CASA.equals(tipInchidere))
+			addPage(two);
 	}
 
 	@Override

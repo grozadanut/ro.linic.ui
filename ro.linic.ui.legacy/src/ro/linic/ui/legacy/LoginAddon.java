@@ -66,6 +66,7 @@ import ro.linic.ui.legacy.dialogs.LoginDialog;
 import ro.linic.ui.legacy.dialogs.ReleaseNotesDialog;
 import ro.linic.ui.legacy.parts.VerifyOperationsPart;
 import ro.linic.ui.legacy.service.PeripheralService;
+import ro.linic.ui.legacy.service.SQLiteJDBC;
 import ro.linic.ui.legacy.service.WindowsNotificationService;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -116,6 +117,8 @@ public class LoginAddon
 				System.exit(-1);
 		}
 		// after successful login
+		SQLiteJDBC.instance(bundle, log).init();
+		SQLiteJDBC.instance(bundle, log).saveLocalToServer();
 		if (shouldClearPersistedState(prefs))
 			System.setProperty(E4Workbench.CLEAR_PERSISTED_STATE, "true"); //$NON-NLS-1$
 

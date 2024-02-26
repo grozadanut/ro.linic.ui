@@ -92,7 +92,7 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 	private Button saveDelegat;
 	
 	private boolean partnersAreUpdating = false;
-	private ImmutableList<ContBancar> allConturiBancare;
+	private ImmutableList<ContBancar> allConturiBancare = ImmutableList.of();
 	
 	public InchideBonFacturaOrBCPage(final AccountingDocument bonCasa, final boolean casaActive, final UISynchronize sync,
 			final Bundle bundle, final Logger log)
@@ -103,7 +103,8 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 		this.bundle = bundle;
 		this.log = log;
 		this.casaActive = casaActive;
-		allConturiBancare = BusinessDelegate.allConturiBancare();
+		if (!ClientSession.instance().isOfflineMode())
+			allConturiBancare = BusinessDelegate.allConturiBancare();
 	}
 
 	@Override
