@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/sqlite-jdbc-3.36.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/log4j-to-slf4j-2.22.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/log4j-slf4j-impl-2.22.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/log4j-core-2.22.1.jar"/>

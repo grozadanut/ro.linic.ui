@@ -17,6 +17,12 @@
     <trimBars xmi:id="_nuIUsI0KEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimbar.top">
       <children xsi:type="menu:ToolBar" xmi:id="_JeTDkI0LEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.toolbar" accessibilityPhrase=""/>
     </trimBars>
+    <trimBars xmi:id="_N-qkQNSEEe6-vvJup4LxvQ" elementId="ro.linic.ui.base.trimbar.bottom" side="Bottom">
+      <children xsi:type="menu:ToolControl" xmi:id="_GP1r0NSOEe6-vvJup4LxvQ" elementId="ro.linic.ui.base.toolcontrol.filler" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.widgets.SpacerControl">
+        <tags>stretch</tags>
+      </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_QvbbsNSEEe6-vvJup4LxvQ" elementId="ro.linic.ui.base.toolcontrol.statusline" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.widgets.ProgressMonitorControl"/>
+    </trimBars>
   </children>
   <handlers xmi:id="_rFi90MfhEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handler.save" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.SaveHandler" command="_mPIBcMfhEe6wm9FSKxJZow"/>
   <handlers xmi:id="_6ujxUI0NEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.saveall" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.SaveAllHandler" command="_qpX2cI0NEe6qNdK_29XQrA"/>
