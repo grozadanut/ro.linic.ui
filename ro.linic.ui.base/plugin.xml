@@ -19,6 +19,10 @@
                name="lifeCycleURI"
                value="bundleclass://ro.linic.ui.base/ro.linic.ui.base.E4LifeCycle">
          </property>
+         <property
+               name="modelResourceHandler"
+               value="bundleclass://ro.linic.ui.base/ro.linic.ui.base.eclipse.fixes.ResourceHandler">
+         </property>
       </product>
    </extension>
 

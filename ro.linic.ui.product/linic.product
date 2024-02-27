@@ -31,6 +31,7 @@
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
+      <feature id="ro.linic.ui.legacy.feature" installMode="root"/>
    </features>
 
    <configurations>
