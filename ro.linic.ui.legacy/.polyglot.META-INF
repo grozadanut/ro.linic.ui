@@ -9,7 +9,7 @@
     <relativePath>..\pom.xml</relativePath>
   </parent>
   <artifactId>ro.linic.ui.legacy</artifactId>
-  <version>4.0.4</version>
+  <version>4.0.5</version>
   <packaging>eclipse-plugin</packaging>
   <name>[bundle] Linic Platform Legacy</name>
   <organization>
