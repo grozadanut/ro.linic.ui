@@ -690,6 +690,14 @@ public class BusinessDelegate
 		return bean.inregistreazaZ(bfz, date, discount, numerar, contBancarIdToAmount);
 	}
 	
+	public static InvocationResult inregistreazaZ(final String bfz, final LocalDate date, final BigDecimal discount,
+			final BigDecimal prodFinit, final BigDecimal marfa, final BigDecimal servicii, final BigDecimal bacsis, final BigDecimal totalTva,
+			final ImmutableMap<Integer, BigDecimal> contBancarIdToAmount, final int nrCafele)
+	{
+		final ManagerBeanRemote bean = ServiceLocator.getBusinessService(ManagerBean.class, ManagerBeanRemote.class);
+		return bean.inregistreazaZ(bfz, date, discount, prodFinit, marfa, servicii, bacsis, totalTva, contBancarIdToAmount, nrCafele);
+	}
+	
 	public static void customerDebtDocs(final AsyncLoadResult<InvocationResult> provider, final UISynchronize sync)
 	{
 		final Job job = Job.create("Loading Customer Debts", (ICoreRunnable) monitor ->

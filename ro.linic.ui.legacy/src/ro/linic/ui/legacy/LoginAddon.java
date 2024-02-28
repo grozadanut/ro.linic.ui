@@ -143,7 +143,7 @@ public class LoginAddon
 	
 	private void logVersion(final Logger log)
 	{
-		final Bundle bundle = FrameworkUtil.getBundle(LoginAddon.class);
+		final Bundle bundle = FrameworkUtil.getBundle(getClass());
 		final Version v = bundle.getVersion();
 		log.info(String.format("%s %d.%d.%d", bundle.getSymbolicName(),
 				v.getMajor(), v.getMinor(), v.getMicro()));

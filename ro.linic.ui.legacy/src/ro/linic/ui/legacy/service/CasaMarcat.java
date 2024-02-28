@@ -212,7 +212,7 @@ public class CasaMarcat
 		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 		
 		final StringBuilder ecrCommands = new StringBuilder();
-		if (prefs.getBoolean(PreferenceKey.RAPORT_Z_AND_D, false))
+		if (prefs.getBoolean(PreferenceKey.RAPORT_Z_AND_D_KEY, false))
 			ecrCommands.append("69,D[\\t]").append(NEWLINE);
 		ecrCommands.append("69,Z[\\t]");
 		sendToEcr(ecrCommands);
