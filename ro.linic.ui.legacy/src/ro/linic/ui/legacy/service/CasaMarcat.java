@@ -34,15 +34,21 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.collect.ImmutableSet;
 
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.util.Benchmarking;
+import ro.linic.ui.legacy.LoginAddon;
+import ro.linic.ui.legacy.preferences.PreferenceKey;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 
@@ -202,7 +208,12 @@ public class CasaMarcat
 	
 	public void raportZ()
 	{
+		final Bundle bundle = FrameworkUtil.getBundle(LoginAddon.class);
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		
 		final StringBuilder ecrCommands = new StringBuilder();
+		if (prefs.getBoolean(PreferenceKey.RAPORT_Z_AND_D, false))
+			ecrCommands.append("69,D[\\t]").append(NEWLINE);
 		ecrCommands.append("69,Z[\\t]");
 		sendToEcr(ecrCommands);
 	}

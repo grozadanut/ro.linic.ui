@@ -28,6 +28,7 @@ import javax.annotation.PreDestroy;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
@@ -49,6 +50,7 @@ import org.osgi.framework.Version;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.collect.ImmutableList;
+import com.opcoach.e4.preferences.ScopedPreferenceStore;
 
 import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
@@ -134,6 +136,9 @@ public class LoginAddon
 
 		registerBarcodePrinter(log, bundle);
 		registerGeneralTopic(log, bundle, sync);
+		
+		workbenchContext.set("ro.linic.ui.legacy.prefStore",
+				new ScopedPreferenceStore(ConfigurationScope.INSTANCE, bundle.getSymbolicName()));
 	}
 	
 	private void logVersion(final Logger log)

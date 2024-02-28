@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferencePages">
+      <page
+            class="ro.linic.ui.legacy.preferences.RegisterZPage"
+            id="ro.linic.ui.legacy.preference.registerzpage"
+            name="Raport Z">
+      </page>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">
+      <preferenceStoreProvider
+            idInWorkbenchContext="ro.linic.ui.legacy.prefStore"
+            pluginId="ro.linic.ui.legacy">
+      </preferenceStoreProvider>
+   </extension>
 
 </plugin>
