@@ -23,11 +23,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.core.runtime.ICoreRunnable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -38,12 +41,8 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.helger.ubl21.UBL21Reader;
-import com.helger.ubl21.UBL21ReaderBuilder;
 
-import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import ro.colibri.entities.comercial.PersistedProp;
-import ro.colibri.wrappers.TwoEntityWrapperHet;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -221,7 +220,10 @@ public class AnafReporter
 			final Path inputFileAbsolutePath = Path.of(parentDirectory, inputFileName);
 			final String outputFileUri = UIUtils.removeFileExtension(inputFileAbsolutePath.toString()) + ".pdf";
 			final String invoiceXml = Files.readString(inputFileAbsolutePath);
-			RestCaller.post_WithSSL_DownloadFile(xmlToPdfUrl, invoiceXml, outputFileUri, List.of(),
+			String xmlStandard = "FACT1";
+			if (invoiceXml.contains("<CreditNote"))
+				xmlStandard = "FCN";
+			RestCaller.post_WithSSL_DownloadFile(xmlToPdfUrl+xmlStandard, invoiceXml, outputFileUri, List.of(),
 					Map.of("Content-Type", "text/plain"));
 			
 			try
@@ -256,8 +258,11 @@ public class AnafReporter
 		
 		final String xmlToPdfUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_XML_TO_PDF_BASE_URL_KEY)
 				.getValueOr(PersistedProp.ANAF_XML_TO_PDF_BASE_URL_DEFAULT);
+		String xmlStandard = "FACT1";
+		if (invoiceXml.contains("<CreditNote"))
+			xmlStandard = "FCN";
 		
-		RestCaller.post_WithSSL_DownloadFile(xmlToPdfUrl, invoiceXml, outputFileUri, List.of(),
+		RestCaller.post_WithSSL_DownloadFile(xmlToPdfUrl+xmlStandard, invoiceXml, outputFileUri, List.of(),
 				Map.of("Content-Type", "text/plain"));
 		
 		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN))
@@ -279,27 +284,19 @@ public class AnafReporter
 		return RestCaller.get_Json_WithSSL(searchUrl, params, ReceivedMessage.class, null);
 	}
 	
-	public static Job findReceivedInvoicesBetween(final AsyncLoadData<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> provider,
+	public static Job findInvoicesBetween(final AsyncLoadData<Invoice<?>> provider,
 			final UISynchronize sync, final Logger log, final LocalDate start, final LocalDate end)
 	{
 		final Job job = Job.create("Loading Received Invoices", (ICoreRunnable) monitor ->
 		{
 			try
 			{
-				final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-						.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
-				final String searchUrl = connectorBaseUrl + "/invoices/search/between";
-				final List<NameValuePair> params = List.of(new BasicNameValuePair("start", start.toString()),
-						new BasicNameValuePair("end", end.toString()));
-				final ImmutableList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> data = RestCaller.get_Json_WithSSL(searchUrl, params, ReceivedInvoice.class, sync)
-						.stream()
-						.sorted(Comparator.comparing(ReceivedInvoice::getIssueDate))
-						.map(recInv ->
-						{
-							final UBL21ReaderBuilder<InvoiceType> b = UBL21Reader.invoice();
-						    b.exceptionCallbacks().add(log::error);
-							return new TwoEntityWrapperHet<>(recInv, b.read(recInv.getXmlRaw()));
-						})
+				final SubMonitor sub = SubMonitor.convert(monitor, 3);
+				sub.beginTask("Find received invoices", 3);
+				final Stream<ReceivedInvoice> receivedInvoices = findReceivedInvoicesBetween(sync, start, end, sub.split(2));
+				final Stream<ReceivedCreditNote> receivedCreditNotes = findCreditNotesBetween(sync, start, end, sub.split(1));
+				final ImmutableList<Invoice<?>> data = Stream.concat(receivedInvoices, receivedCreditNotes)
+						.sorted(Comparator.comparing(Invoice::getIssueDate))
 						.collect(toImmutableList());
 				
 				if (!monitor.isCanceled())
@@ -315,5 +312,27 @@ public class AnafReporter
 		
 		job.schedule();
 		return job;
+	}
+	
+	private static Stream<ReceivedInvoice> findReceivedInvoicesBetween(final UISynchronize sync, final LocalDate start, final LocalDate end,
+			final IProgressMonitor monitor) {
+		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
+				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+		final String searchUrl = connectorBaseUrl + "/invoices/search/between";
+		final List<NameValuePair> params = List.of(new BasicNameValuePair("start", start.toString()),
+				new BasicNameValuePair("end", end.toString()));
+		
+		return RestCaller.get_Json_WithSSL(searchUrl, params, ReceivedInvoice.class, sync).stream();
+	}
+	
+	private static Stream<ReceivedCreditNote> findCreditNotesBetween(final UISynchronize sync, final LocalDate start, final LocalDate end,
+			final IProgressMonitor monitor) {
+		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
+				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+		final String searchUrl = connectorBaseUrl + "/creditNotes/search/between";
+		final List<NameValuePair> params = List.of(new BasicNameValuePair("start", start.toString()),
+				new BasicNameValuePair("end", end.toString()));
+		
+		return RestCaller.get_Json_WithSSL(searchUrl, params, ReceivedCreditNote.class, sync).stream();
 	}
 }

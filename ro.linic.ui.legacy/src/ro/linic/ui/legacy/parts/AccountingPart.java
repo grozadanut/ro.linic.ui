@@ -58,7 +58,6 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 
 import net.sf.jasperreports.engine.JRException;
-import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Document.TipDoc;
@@ -68,9 +67,8 @@ import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.wrappers.RulajPartener;
-import ro.colibri.wrappers.TwoEntityWrapperHet;
 import ro.linic.ui.legacy.anaf.AnafReporter;
-import ro.linic.ui.legacy.anaf.ReceivedInvoice;
+import ro.linic.ui.legacy.anaf.Invoice;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -504,9 +502,9 @@ public class AccountingPart implements IMouseAction
 		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selectedPartner().map(Partner::getId).orElse(null),
 		extractLocalDate(from), extractLocalDate(to), log);
 		
-		AnafReporter.findReceivedInvoicesBetween(new AsyncLoadData<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>()
+		AnafReporter.findInvoicesBetween(new AsyncLoadData<Invoice<?>>()
 		{
-			@Override public void success(final ImmutableList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> data)
+			@Override public void success(final ImmutableList<Invoice<?>> data)
 			{
 				recInvTable.loadData(data);
 			}
@@ -726,11 +724,11 @@ public class AccountingPart implements IMouseAction
 		{
 			JasperReportManager.instance(bundle, log).printDocs(bundle, table.selectedAccDocs(), true);
 			
-			recInvTable.selection().forEach(wrap ->
+			recInvTable.selection().forEach(invoice ->
 			{
 				try
 				{
-					AnafReporter.xmlToPdf(wrap.getEntity1().getXmlRaw(), wrap.getEntity1().getUploadIndex());
+					AnafReporter.xmlToPdf(invoice.getXmlRaw(), invoice.getUploadIndex());
 				}
 				catch (final IOException e)
 				{

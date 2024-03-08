@@ -72,9 +72,8 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.Par
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyTaxSchemeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
-import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
-import ro.colibri.wrappers.TwoEntityWrapperHet;
-import ro.linic.ui.legacy.anaf.ReceivedInvoice;
+import ro.linic.ui.legacy.anaf.Invoice;
+import ro.linic.ui.legacy.anaf.InvoiceUblType;
 import ro.linic.ui.legacy.tables.components.Column;
 import ro.linic.ui.legacy.tables.components.ExportMenuConfiguration;
 import ro.linic.ui.legacy.tables.components.FilterRowConfiguration;
@@ -88,14 +87,14 @@ public class ReceivedInvoiceNatTable
 	private static final int supplierTaxIdID = 1;
 	private static final int supplierNameID = 2;
 	
-	private static final Column uploadIndexColumn = new Column(0, "entity1.uploadIndex", "Index incarcare", 130);
+	private static final Column uploadIndexColumn = new Column(0, "uploadIndex", "Index incarcare", 130);
 	private static final Column supplierTaxIdColumn = new Column(supplierTaxIdID, "", "Cif emitent", 120);
 	private static final Column supplierNameColumn = new Column(supplierNameID, "", "Nume emitent", 220);
-	private static final Column issueDateColumn = new Column(3, "entity1.issueDate", "Data", 120);
-	private static final Column invoiceNumberColumn = new Column(4, "entity2.ID.value", "Numar", 120);
-	private static final Column totalColumn = new Column(5, "entity2.legalMonetaryTotal.taxInclusiveAmount.value", "ValCuTVA", 90);
-	private static final Column invoiceIdColumn = new Column(6, "entity1.invoiceId", "Id factura", 70);
-	private static final Column idColumn = new Column(7, "entity1.id", "Id", 70);
+	private static final Column issueDateColumn = new Column(3, "issueDate", "Data", 120);
+	private static final Column invoiceNumberColumn = new Column(4, "ublType.ID.value", "Numar", 120);
+	private static final Column totalColumn = new Column(5, "ublType.legalMonetaryTotal.taxInclusiveAmount.value", "ValCuTVA", 90);
+	private static final Column invoiceIdColumn = new Column(6, "invoiceId", "Id factura", 70);
+	private static final Column idColumn = new Column(7, "id", "Id", 70);
 	
 	private static ImmutableList<Column> ALL_COLUMNS = ImmutableList.<Column>builder()
 			.add(uploadIndexColumn)
@@ -108,12 +107,12 @@ public class ReceivedInvoiceNatTable
 			.add(idColumn)
 			.build();
 
-	private EventList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> sourceData;
+	private EventList<Invoice<?>> sourceData;
 	
 	private NatTable table;
-	private TextMatcherEditor<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> quickSearchFilter;
+	private TextMatcherEditor<Invoice<?>> quickSearchFilter;
 	
-	private RowSelectionProvider<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> selectionProvider;
+	private RowSelectionProvider<Invoice<?>> selectionProvider;
 	private SelectionLayer selectionLayer;
 	private ViewportLayer viewportLayer;
 	private DataChangeLayer dataChangeLayer;
@@ -124,18 +123,18 @@ public class ReceivedInvoiceNatTable
 
 	public void postConstruct(final Composite parent)
 	{
-		final IColumnPropertyAccessor<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> columnAccessor = new ColumnAccessor(ALL_COLUMNS.stream()
+		final IColumnPropertyAccessor<Invoice<?>> columnAccessor = new ColumnAccessor(ALL_COLUMNS.stream()
 				.map(Column::getProperty).collect(toImmutableList()));
 		
 		sourceData = GlazedLists.eventListOf();
-        final TransformedList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>, TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> rowObjectsGlazedList = GlazedLists.threadSafeList(sourceData);
+        final TransformedList<Invoice<?>, Invoice<?>> rowObjectsGlazedList = GlazedLists.threadSafeList(sourceData);
 
-        final FilterList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> filteredQuickData = new FilterList<>(rowObjectsGlazedList);
-        final FilterList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> filteredHeaderData = new FilterList<>(filteredQuickData);
-        final SortedList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> filteredSortedList = new SortedList<>(filteredHeaderData, null);
+        final FilterList<Invoice<?>> filteredQuickData = new FilterList<>(rowObjectsGlazedList);
+        final FilterList<Invoice<?>> filteredHeaderData = new FilterList<>(filteredQuickData);
+        final SortedList<Invoice<?>> filteredSortedList = new SortedList<>(filteredHeaderData, null);
 
 		// create the body layer stack
-        final IRowDataProvider<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> bodyDataProvider = new ListDataProvider<>(filteredSortedList, columnAccessor);
+        final IRowDataProvider<Invoice<?>> bodyDataProvider = new ListDataProvider<>(filteredSortedList, columnAccessor);
 		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));
 		for (int i = 0; i < ALL_COLUMNS.size(); i++)
@@ -143,11 +142,11 @@ public class ReceivedInvoiceNatTable
 		// add a DataChangeLayer that tracks data changes but directly updates
 		// the underlying data model
 		dataChangeLayer = new DataChangeLayer(bodyDataLayer, new IdIndexKeyHandler<>(bodyDataProvider, new RowIdAccessor()), false);
-		final GlazedListsEventLayer<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> glazedListsEventLayer = new GlazedListsEventLayer<>(dataChangeLayer, filteredSortedList);
+		final GlazedListsEventLayer<Invoice<?>> glazedListsEventLayer = new GlazedListsEventLayer<>(dataChangeLayer, filteredSortedList);
 		selectionLayer = new SelectionLayer(glazedListsEventLayer);
 		viewportLayer = new ViewportLayer(selectionLayer);
 		
-		selectionProvider = new RowSelectionProvider<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>(selectionLayer, bodyDataProvider);
+		selectionProvider = new RowSelectionProvider<>(selectionLayer, bodyDataProvider);
 		
 		// create the column header layer stack
 		final IDataProvider columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(ALL_COLUMNS.stream().map(Column::getName).toArray(String[]::new));
@@ -160,10 +159,10 @@ public class ReceivedInvoiceNatTable
 		// add the SortHeaderLayer to the column header layer stack
         // as we use GlazedLists, we use the GlazedListsSortModel which
         // delegates the sorting to the SortedList
-		final SortHeaderLayer<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> sortHeaderLayer = new SortHeaderLayer<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>(columnHeaderLayer,
-				new GlazedListsSortModel<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>(filteredSortedList, columnAccessor, configRegistry, columnHeaderDataLayer));
+		final SortHeaderLayer<Invoice<?>> sortHeaderLayer = new SortHeaderLayer<>(columnHeaderLayer,
+				new GlazedListsSortModel<>(filteredSortedList, columnAccessor, configRegistry, columnHeaderDataLayer));
 
-		final FilterRowHeaderComposite<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> filterRowHeaderLayer = new FilterRowHeaderComposite<>(
+		final FilterRowHeaderComposite<Invoice<?>> filterRowHeaderLayer = new FilterRowHeaderComposite<>(
 				new DefaultGlazedListsFilterStrategy<>(filteredHeaderData, columnAccessor, configRegistry),
 				sortHeaderLayer, columnHeaderDataLayer.getDataProvider(), configRegistry);
 
@@ -194,9 +193,9 @@ public class ReceivedInvoiceNatTable
 
 		// Custom selection configuration
 		selectionLayer.setSelectionModel(
-				new RowSelectionModel<>(selectionLayer, bodyDataProvider, new IRowIdAccessor<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>()
+				new RowSelectionModel<>(selectionLayer, bodyDataProvider, new IRowIdAccessor<Invoice<?>>()
 				{
-					@Override public Serializable getRowId(final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> rowObject)
+					@Override public Serializable getRowId(final Invoice<?> rowObject)
 					{
 						return rowObject.hashCode();
 					}
@@ -206,12 +205,12 @@ public class ReceivedInvoiceNatTable
 		table.addConfiguration(new RowOnlySelectionBindings());
 		table.configure();
 		
-		quickSearchFilter = new TextMatcherEditor<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>(new TextFilterator<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>()
+		quickSearchFilter = new TextMatcherEditor<Invoice<?>>(new TextFilterator<Invoice<?>>()
 		{
-			@Override public void getFilterStrings(final List<String> baseList, final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> element)
+			@Override public void getFilterStrings(final List<String> baseList, final Invoice<?> element)
 			{
-				Optional.ofNullable(element.getEntity2())
-				.map(InvoiceType::getAccountingSupplierParty)
+				Optional.ofNullable(element.getUblType())
+				.map(InvoiceUblType::getAccountingSupplierParty)
 				.map(SupplierPartyType::getParty)
 				.map(party -> party.getPartyName().stream().findFirst().orElse(null))
 				.map(PartyNameType::getNameValue)
@@ -223,7 +222,7 @@ public class ReceivedInvoiceNatTable
 		filteredQuickData.setMatcherEditor(quickSearchFilter);
 	}
 
-	public ReceivedInvoiceNatTable loadData(final ImmutableList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> data)
+	public ReceivedInvoiceNatTable loadData(final ImmutableList<Invoice<?>> data)
 	{
 		try
 		{
@@ -239,7 +238,7 @@ public class ReceivedInvoiceNatTable
 		return this;
 	}
 	
-	public ReceivedInvoiceNatTable replace(final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> old, final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> newP)
+	public ReceivedInvoiceNatTable replace(final Invoice<?> old, final Invoice<?> newP)
 	{
 		try
 		{
@@ -256,7 +255,7 @@ public class ReceivedInvoiceNatTable
 		return this;
 	}
 	
-	public ReceivedInvoiceNatTable add(final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> newP)
+	public ReceivedInvoiceNatTable add(final Invoice<?> newP)
 	{
 		try
 		{
@@ -270,7 +269,7 @@ public class ReceivedInvoiceNatTable
 		return this;
 	}
 	
-	public ReceivedInvoiceNatTable remove(final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> data)
+	public ReceivedInvoiceNatTable remove(final Invoice<?> data)
 	{
 		try
 		{
@@ -284,7 +283,7 @@ public class ReceivedInvoiceNatTable
 		return this;
 	}
 	
-	public EventList<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> getSourceData()
+	public EventList<Invoice<?>> getSourceData()
 	{
 		return sourceData;
 	}
@@ -326,9 +325,9 @@ public class ReceivedInvoiceNatTable
 		return table;
 	}
 	
-	public List<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>> selection()
+	public List<? extends Invoice<?>> selection()
 	{
-		return ((RowSelectionModel<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>) selectionLayer.getSelectionModel()).getSelectedRowObjects();
+		return ((RowSelectionModel<? extends Invoice<?>>) selectionLayer.getSelectionModel()).getSelectedRowObjects();
 	}
 	
 	public ViewportLayer getViewportLayer()
@@ -341,7 +340,7 @@ public class ReceivedInvoiceNatTable
 		return dataChangeLayer;
 	}
 	
-	private class ColumnAccessor extends ExtendedReflectiveColumnPropertyAccessor<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>
+	private class ColumnAccessor extends ExtendedReflectiveColumnPropertyAccessor<Invoice<?>>
 	{
 		public ColumnAccessor(final List<String> propertyNames)
 		{
@@ -349,20 +348,20 @@ public class ReceivedInvoiceNatTable
 	    }
 		
 		@Override
-		public Object getDataValue(final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> rowObject, final int columnIndex)
+		public Object getDataValue(final Invoice<?> rowObject, final int columnIndex)
 		{
 			switch (ALL_COLUMNS.get(columnIndex).getIndex())
 			{
 			case supplierTaxIdID:
-				return Optional.ofNullable(rowObject.getEntity2())
-						.map(InvoiceType::getAccountingSupplierParty)
+				return Optional.ofNullable(rowObject.getUblType())
+						.map(InvoiceUblType::getAccountingSupplierParty)
 						.map(SupplierPartyType::getParty)
 						.map(party -> party.getPartyTaxScheme().stream().findFirst().orElse(null))
 						.map(PartyTaxSchemeType::getCompanyIDValue)
 						.orElse(EMPTY_STRING);
 			case supplierNameID:
-				return Optional.ofNullable(rowObject.getEntity2())
-						.map(InvoiceType::getAccountingSupplierParty)
+				return Optional.ofNullable(rowObject.getUblType())
+						.map(InvoiceUblType::getAccountingSupplierParty)
 						.map(SupplierPartyType::getParty)
 						.map(party -> party.getPartyLegalEntity().stream().findFirst().orElse(null))
 						.map(PartyLegalEntityType::getRegistrationNameValue)
@@ -393,9 +392,9 @@ public class ReceivedInvoiceNatTable
 		}
 	}
 	
-	private static class RowIdAccessor implements IRowIdAccessor<TwoEntityWrapperHet<ReceivedInvoice, InvoiceType>>
+	private static class RowIdAccessor implements IRowIdAccessor<Invoice<?>>
 	{
-		@Override public Serializable getRowId(final TwoEntityWrapperHet<ReceivedInvoice, InvoiceType> rowObject)
+		@Override public Serializable getRowId(final Invoice<?> rowObject)
 		{
 			return rowObject.hashCode();
 		}

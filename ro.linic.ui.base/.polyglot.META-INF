@@ -9,7 +9,7 @@
     <relativePath>..\pom.xml</relativePath>
   </parent>
   <artifactId>ro.linic.ui.base</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
   <packaging>eclipse-plugin</packaging>
   <name>[bundle] Base UI</name>
   <organization>
