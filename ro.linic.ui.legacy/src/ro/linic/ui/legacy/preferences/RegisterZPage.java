@@ -4,7 +4,6 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 
-/** A sample preference page to show how it works */
 public class RegisterZPage extends FieldEditorPreferencePage {
 
 	public RegisterZPage() {

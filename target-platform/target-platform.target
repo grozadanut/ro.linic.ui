@@ -27,6 +27,16 @@
 		 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.23.900.v20230808-1403"/>
 		 <unit id="org.eclipse.platform.sdk" version="4.29.0.I20230903-1000"/>
 	 </location>
+	 <location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		 <dependencies>
+			 <dependency>
+				 <groupId>ro.linic.util</groupId>
+				 <artifactId>commons</artifactId>
+				 <version>0.0.3</version>
+				 <type>jar</type>
+			 </dependency>
+		 </dependencies>
+	 </location>
  </locations>
 	<includeBundles>
 		<plugin id="bcpg"/>
@@ -60,8 +70,8 @@
 		<plugin id="org.apache.batik.i18n.source" version="1.16.0.v20221027-0840"/>
 		<plugin id="org.apache.batik.util" version="1.16.0.v20221027-0840"/>
 		<plugin id="org.apache.batik.util.source" version="1.16.0.v20221027-0840"/>
-		<plugin id="org.apache.commons.codec" version="1.14.0.v20221112-0806"/>
 		<plugin id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
+		<plugin id="org.apache.commons.codec" version="1.14.0.v20221112-0806"/>
 		<plugin id="org.apache.commons.codec.source" version="1.14.0.v20221112-0806"/>
 		<plugin id="org.apache.commons.collections4"/>
 		<plugin id="org.apache.commons.collections4.source"/>
@@ -468,5 +478,6 @@
 		<plugin id="com.opcoach.e4.preferences.mainmenu"/>
 		<plugin id="com.opcoach.e4.preferences.source"/>
 		<plugin id="com.opcoach.e4.preferences"/>
+		<plugin id="wrapped.ro.linic.util.commons"/>
 	</includeBundles>
 </target>

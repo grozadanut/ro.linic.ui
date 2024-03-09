@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="ro.linic.ui.anaf.connector.internal.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferencePages">
+      <page
+            category="ro.linic.ui.base.preference.toolspage"
+            class="ro.linic.ui.anaf.connector.internal.preferences.XmlToPdfPage"
+            id="ro.linic.ui.anaf.connector.preference.xmltopdfpage"
+            name="XML to PDF">
+      </page>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">
+      <preferenceStoreProvider
+            class="bundleclass://ro.linic.ui.anaf.connector/ro.linic.ui.anaf.connector.internal.preferences.PreferenceStoreProvider"
+            pluginId="ro.linic.ui.anaf.connector">
+      </preferenceStoreProvider>
+   </extension>
+
+</plugin>

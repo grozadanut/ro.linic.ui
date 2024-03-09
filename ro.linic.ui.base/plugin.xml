@@ -25,5 +25,13 @@
          </property>
       </product>
    </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferencePages">
+      <page
+            class="ro.linic.ui.base.preferences.ToolsPage"
+            id="ro.linic.ui.base.preference.toolspage"
+            name="Tools">
+      </page>
+   </extension>
 
 </plugin>

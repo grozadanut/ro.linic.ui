@@ -34,4 +34,8 @@ Printre functionalitati se numara:
          id="ro.linic.ui.p2"
          version="0.0.0"/>
 
+   <plugin
+         id="ro.linic.ui.http"
+         version="0.0.0"/>
+
 </feature>

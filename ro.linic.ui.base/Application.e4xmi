@@ -8,6 +8,7 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_CgjRgI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_G8htkI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.exit" label="E&amp;xit" mnemonics="" command="_ufS_II0NEe6qNdK_29XQrA"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="_FA12sN0hEe65c_VQENcNPw" elementId="ro.linic.ui.base.menu.tools" label="&amp;Tools"/>
       <children xsi:type="menu:MenuSeparator" xmi:id="_n-lUcMgDEe6wm9FSKxJZow" elementId="additions" toBeRendered="false" visible="false"/>
       <children xsi:type="menu:Menu" xmi:id="_7PKrkKC3Ee6rhYQcX-gzIg" elementId="org.eclipse.ui.help.menu" label="&amp;Help" mnemonics="">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="Check for &amp;Updates" iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_update_obj.png" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
