@@ -7,7 +7,11 @@ import static ro.linic.ui.legacy.session.UIUtils.showException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -25,10 +29,12 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.util.InvocationResult;
+import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.service.SQLiteJDBC;
@@ -36,6 +42,8 @@ import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
+import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
+import ro.linic.ui.pos.base.services.ECRService;
 
 public class InchideBonFirstPage extends WizardPage
 {
@@ -55,9 +63,10 @@ public class InchideBonFirstPage extends WizardPage
 	
 	private Bundle bundle;
 	private Logger log;
+	private ECRService ecrService;
 
 	public InchideBonFirstPage(final AccountingDocument bonCasa, final boolean casaActive,
-			final Bundle bundle, final Logger log, final TipInchidere tipInchidere)
+			final Bundle bundle, final Logger log, final TipInchidere tipInchidere, final IEclipseContext ctx)
 	{
         super("InchideBonFirstPage");
         this.bonCasa = bonCasa;
@@ -65,6 +74,7 @@ public class InchideBonFirstPage extends WizardPage
         this.bundle = bundle;
         this.log = log;
         this.tipInchidere = tipInchidere;
+        this.ecrService = ctx.get(ECRService.class);
     }
 
 	@Override
@@ -296,12 +306,18 @@ public class InchideBonFirstPage extends WizardPage
 		try
 		{
 			// print bon to casa
-			CasaMarcat.instance(log).incaseaza(ImmutableList.of(bonCasa), cuiBonText.getText(), casaActive, incasarePrinCard, false);
+			if (casaActive)
+				ecrService.printReceipt(AccDocMapper.toReceipt(List.of(bonCasa)),
+						incasarePrinCard ? PaymentType.CARD : PaymentType.CASH, Optional.ofNullable(cuiBonText.getText()))
+				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(Set.of(bonCasa.getId()), false));
 		}
 		catch (final Exception e)
 		{
 			log.error(e);
 			showException(e, "Eroare la scoaterea bonului la casa de marcat.");
+			
+			if (!ClientSession.instance().isOfflineMode())
+				BusinessDelegate.closeBonCasa_Failed(ImmutableSet.of(bonCasa.getId()));
 		}
 		
 		// close dialog

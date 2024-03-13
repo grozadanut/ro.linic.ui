@@ -1,7 +1,7 @@
 package ro.linic.ui.legacy.wizards;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.wizard.Wizard;
 import org.osgi.framework.Bundle;
 
@@ -29,17 +29,17 @@ public class InchideBonWizard extends Wizard
 	private TipInchidere tipInchidere;
 	private AccountingDocument bonCasa;
 	private boolean casaActive;
-	private UISynchronize sync;
+	private IEclipseContext ctx;
 	private Bundle bundle;
 	private Logger log;
 	
 	public InchideBonWizard(final AccountingDocument bonCasa, final boolean casaActive,
-			final UISynchronize sync, final Bundle bundle, final Logger log, final TipInchidere tipInchidere)
+			final IEclipseContext ctx, final Bundle bundle, final Logger log, final TipInchidere tipInchidere)
 	{
 		super();
 		this.bonCasa = bonCasa;
 		this.casaActive = casaActive;
-		this.sync = sync;
+		this.ctx = ctx;
 		this.bundle = bundle;
 		this.log = log;
 		this.tipInchidere = tipInchidere;
@@ -54,8 +54,8 @@ public class InchideBonWizard extends Wizard
 	@Override
 	public void addPages()
 	{
-		one = new InchideBonFirstPage(bonCasa, casaActive, bundle, log, tipInchidere);
-		two = new InchideBonFacturaOrBCPage(bonCasa, casaActive, sync, bundle, log);
+		one = new InchideBonFirstPage(bonCasa, casaActive, bundle, log, tipInchidere, ctx);
+		two = new InchideBonFacturaOrBCPage(bonCasa, casaActive, ctx, bundle, log);
 		if (!TipInchidere.FACTURA_BC.equals(tipInchidere))
 			addPage(one);
 		if (!TipInchidere.PRIN_CARD.equals(tipInchidere) && !TipInchidere.PRIN_CASA.equals(tipInchidere))

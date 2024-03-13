@@ -3,11 +3,11 @@ package ro.linic.ui.legacy.handlers;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledToolItemImpl;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -24,7 +24,7 @@ public class CustomerDebtHandler
 {
 	private HandledToolItemImpl toolItem;
 	
-	@Inject private UISynchronize sync;
+	@Inject private IEclipseContext ctx;
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
 	
@@ -38,7 +38,7 @@ public class CustomerDebtHandler
 	@Execute
 	public void execute(final EPartService partService)
 	{
-		new CustomerDebtWizardDialog(Display.getCurrent().getActiveShell(), new CustomerDebtWizard(sync, bundle, log)).open();
+		new CustomerDebtWizardDialog(Display.getCurrent().getActiveShell(), new CustomerDebtWizard(ctx, bundle, log)).open();
 	}
 	
 	@CanExecute

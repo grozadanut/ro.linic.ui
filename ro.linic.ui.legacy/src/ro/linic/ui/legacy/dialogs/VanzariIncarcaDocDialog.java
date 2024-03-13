@@ -13,7 +13,9 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -40,11 +42,14 @@ import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.mappings.AccountingDocumentMapping;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.legacy.components.AsyncLoadData;
+import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.parts.components.VanzareInterface;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.tables.AccDocsNatTable;
+import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
+import ro.linic.ui.pos.base.services.ECRService;
 
 public class VanzariIncarcaDocDialog extends Dialog
 {
@@ -64,12 +69,14 @@ public class VanzariIncarcaDocDialog extends Dialog
 	private VanzareInterface vanzarePart;
 	private UISynchronize sync;
 	private boolean bonIncarcat = false;
+	private ECRService ecrService;
 	
-	public VanzariIncarcaDocDialog(final Shell parent, final VanzareInterface vanzarePart, final UISynchronize sync)
+	public VanzariIncarcaDocDialog(final Shell parent, final VanzareInterface vanzarePart, final IEclipseContext ctx)
 	{
 		super(parent);
 		this.vanzarePart = vanzarePart;
-		this.sync = sync;
+		this.sync = ctx.get(UISynchronize.class);
+		this.ecrService = ctx.get(ECRService.class);
 	}
 	
 	@Override
@@ -337,7 +344,9 @@ public class VanzariIncarcaDocDialog extends Dialog
 				return;
 			
 			final boolean incasarePrinCard = buttonIndex == 1;
-			CasaMarcat.instance(vanzarePart.log()).incaseaza(ImmutableList.of(vanzarePart.getBonCasa()), null, true, incasarePrinCard, true);
+			ecrService.printReceipt(AccDocMapper.toReceipt(List.of(vanzarePart.getBonCasa())),
+					incasarePrinCard ? PaymentType.CARD : PaymentType.CASH)
+			.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(Set.of(vanzarePart.getBonCasa().getId()), true));
 		}
 	}
 

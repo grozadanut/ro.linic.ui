@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.wizard.Wizard;
@@ -30,11 +31,16 @@ import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Document.TipDoc;
 import ro.colibri.entities.comercial.DocumentWithDiscount;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.ListUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
+import ro.linic.ui.pos.base.services.ECRService;
 
 public class CustomerDebtWizard extends Wizard
 {
@@ -44,6 +50,7 @@ public class CustomerDebtWizard extends Wizard
 	private UISynchronize sync;
 	private Bundle bundle;
 	private Logger log;
+	private ECRService ecrService;
 	
 	private List<AccountingDocument> sourceDocs = ImmutableList.of();
 	private List<AccountingDocument> paidDocs = ImmutableList.of();
@@ -78,12 +85,13 @@ public class CustomerDebtWizard extends Wizard
 		}
 	}
 	
-	public CustomerDebtWizard(final UISynchronize sync, final Bundle bundle, final Logger log)
+	public CustomerDebtWizard(final IEclipseContext ctx, final Bundle bundle, final Logger log)
 	{
 		super();
-		this.sync = sync;
+		this.sync = ctx.get(UISynchronize.class);
 		this.bundle = bundle;
 		this.log = log;
+		this.ecrService = ctx.get(ECRService.class);
 	}
 
 	@Override
@@ -115,12 +123,20 @@ public class CustomerDebtWizard extends Wizard
 		try
 		{
 			// 1. Scoate Bon Fiscal(daca e cazul)
-			CasaMarcat.instance(log).incaseaza(bonuriCasa, null, one.casaActiva(), one.contBancar() != null, false);
+			if (one.casaActiva())
+				ecrService.printReceipt(AccDocMapper.toReceipt(bonuriCasa),
+						one.contBancar() != null ? PaymentType.CARD : PaymentType.CASH)
+				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(bonuriCasa.stream()
+						.map(AccountingDocument::getId).collect(Collectors.toSet()), false));
 		}
 		catch (final Exception ex)
 		{
 			log.error(ex);
 			showException(ex, "Eroare in printarea bonului de casa. Scoateti bonul de casa manual!");
+			
+			if (!ClientSession.instance().isOfflineMode())
+				BusinessDelegate.closeBonCasa_Failed(bonuriCasa.stream()
+						.map(AccountingDocument::getId).collect(ListUtils.toImmutableSet()));
 		}
 
 		try

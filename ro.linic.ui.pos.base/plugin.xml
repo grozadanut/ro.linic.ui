@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.equinox.preferences.preferences">
+      <initializer
+            class="ro.linic.ui.pos.base.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">
+      <preferenceStoreProvider
+            class="bundleclass://ro.linic.ui.pos.base/ro.linic.ui.pos.base.preferences.PreferenceStoreProvider"
+            pluginId="ro.linic.ui.pos.base">
+      </preferenceStoreProvider>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferencePages">
+      <page
+            category="ro.linic.ui.pos.base.preference.ecrpage"
+            class="ro.linic.ui.pos.base.preferences.DudeECRDriverPage"
+            id="ro.linic.ui.pos.base.preference.datecspage"
+            name="Datecs">
+      </page>
+      <page
+            class="ro.linic.ui.pos.base.preferences.ECRDriverPage"
+            id="ro.linic.ui.pos.base.preference.ecrpage"
+            name="Casa De Marcat">
+      </page>
+      <page
+            category="ro.linic.ui.pos.base.preference.ecrpage"
+            class="ro.linic.ui.pos.base.preferences.FiscalNetECRDriverPage"
+            id="ro.linic.ui.pos.base.preference.partnerpage"
+            name="Partner">
+      </page>
+   </extension>
+
+</plugin>

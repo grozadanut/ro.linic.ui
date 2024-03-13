@@ -86,5 +86,6 @@
    <module>ro.linic.ui.legacy.feature</module>
    <module>ro.linic.ui.p2</module>
    <module>ro.linic.ui.http</module>
+   <module>ro.linic.ui.pos.base</module>
  </modules>
 </project>

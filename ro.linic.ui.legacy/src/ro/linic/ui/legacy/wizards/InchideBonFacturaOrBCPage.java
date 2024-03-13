@@ -21,7 +21,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -54,12 +56,16 @@ import ro.colibri.entities.comercial.Partner;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.ListUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
+import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
+import ro.linic.ui.pos.base.services.ECRService;
 
 public class InchideBonFacturaOrBCPage extends WizardPage
 {
@@ -70,6 +76,7 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 	private Bundle bundle;
 	private Logger log;
 	private boolean casaActive;
+	private ECRService ecrService;
 	
 	private ImmutableList<Partner> allPartners;
 	
@@ -94,12 +101,13 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 	private boolean partnersAreUpdating = false;
 	private ImmutableList<ContBancar> allConturiBancare = ImmutableList.of();
 	
-	public InchideBonFacturaOrBCPage(final AccountingDocument bonCasa, final boolean casaActive, final UISynchronize sync,
+	public InchideBonFacturaOrBCPage(final AccountingDocument bonCasa, final boolean casaActive, final IEclipseContext ctx,
 			final Bundle bundle, final Logger log)
 	{
 		super("InchideBonFacturaOrBCPage");
 		this.bonCasa = bonCasa;
-		this.sync = sync;
+		this.sync = ctx.get(UISynchronize.class);
+		this.ecrService = ctx.get(ECRService.class);
 		this.bundle = bundle;
 		this.log = log;
 		this.casaActive = casaActive;
@@ -401,16 +409,24 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 			return;
 		}
 		
+		final List<AccountingDocument> bonuriCasa = result.extra(InvocationResult.BONURI_CASA_KEY);
 		try
 		{
 			// scoate Bon Fiscal, daca e cazul
-			final List<AccountingDocument> bonuriCasa = result.extra(InvocationResult.BONURI_CASA_KEY);
-			CasaMarcat.instance(log).incaseaza(bonuriCasa, null, casaActive, contBancar() != null, false);
+			if (casaActive)
+				ecrService.printReceipt(AccDocMapper.toReceipt(bonuriCasa),
+						contBancar() != null ? PaymentType.CARD : PaymentType.CASH)
+				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(bonuriCasa.stream()
+						.map(AccountingDocument::getId).collect(Collectors.toSet()), false));
 		}
 		catch (final Exception ex)
 		{
 			log.error(ex);
 			showException(ex, "Eroare in printarea bonului de casa. Scoateti bonul de casa manual!");
+			
+			if (!ClientSession.instance().isOfflineMode())
+				BusinessDelegate.closeBonCasa_Failed(bonuriCasa.stream()
+						.map(AccountingDocument::getId).collect(ListUtils.toImmutableSet()));
 		}
 		
 		// print doc and chitanta

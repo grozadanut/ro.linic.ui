@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Focus;
@@ -153,6 +154,7 @@ public class VanzarePart implements VanzareInterface
 	@Inject private EPartService partService;
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
+	@Inject IEclipseContext ctx;
 
 	public static VanzarePart newPartForBon(final EPartService partService, final AccountingDocument bon)
 	{
@@ -558,7 +560,7 @@ public class VanzarePart implements VanzareInterface
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				new ManagerCasaDialog(Display.getCurrent().getActiveShell(), log).open();
+				new ManagerCasaDialog(Display.getCurrent().getActiveShell(), log, ctx).open();
 			}
 		});
 		
@@ -575,7 +577,7 @@ public class VanzarePart implements VanzareInterface
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				final AccountingDocument currentBon = BusinessDelegate.reloadDoc(bonCasa);
-				new VanzariIncarcaDocDialog(Display.getCurrent().getActiveShell(), VanzarePart.this, sync).open();
+				new VanzariIncarcaDocDialog(Display.getCurrent().getActiveShell(), VanzarePart.this, ctx).open();
 				updateBonCasa(currentBon, true);
 			}
 		});
@@ -915,7 +917,7 @@ public class VanzarePart implements VanzareInterface
 		{
 			final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 					Display.getCurrent().getActiveShell(),
-					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), sync, bundle, log, tipInchidere));
+					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), ctx, bundle, log, tipInchidere));
 			if (wizardDialog.open() == Window.OK)
 			{
 				updateBonCasa(null, false);

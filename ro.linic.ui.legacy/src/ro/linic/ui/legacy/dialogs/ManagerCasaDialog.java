@@ -1,19 +1,20 @@
 package ro.linic.ui.legacy.dialogs;
 
-import static ro.colibri.util.PresentationUtils.LIST_SEPARATOR;
 import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.extractLocalDate;
 import static ro.linic.ui.legacy.session.UIUtils.showException;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -31,8 +32,9 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.session.UIUtils;
+import ro.linic.ui.pos.base.services.ECRDriver.Result;
+import ro.linic.ui.pos.base.services.ECRService;
 
 public class ManagerCasaDialog extends Dialog
 {
@@ -44,11 +46,13 @@ public class ManagerCasaDialog extends Dialog
 	private DateTime raportMFPeriod;
 	
 	private Logger log;
+	private ECRService ecrService;
 	
-	public ManagerCasaDialog(final Shell parent, final Logger log)
+	public ManagerCasaDialog(final Shell parent, final Logger log, final IEclipseContext ctx)
 	{
 		super(parent);
 		this.log = log;
+		this.ecrService = ctx.get(ECRService.class);
 	}
 	
 	@Override
@@ -105,7 +109,7 @@ public class ManagerCasaDialog extends Dialog
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				CasaMarcat.instance(log).anulareBonFiscal();
+				ecrService.cancelReceipt();
 				okPressed();
 			}
 		});
@@ -114,7 +118,7 @@ public class ManagerCasaDialog extends Dialog
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				CasaMarcat.instance(log).raportX();
+				ecrService.reportX();
 				okPressed();
 			}
 		});
@@ -123,7 +127,7 @@ public class ManagerCasaDialog extends Dialog
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				CasaMarcat.instance(log).raportD();
+				ecrService.reportD();
 				okPressed();
 			}
 		});
@@ -132,7 +136,7 @@ public class ManagerCasaDialog extends Dialog
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				CasaMarcat.instance(log).raportZ();
+				ecrService.reportZ();
 				okPressed();
 			}
 		});
@@ -147,10 +151,12 @@ public class ManagerCasaDialog extends Dialog
 				
 				if (!isEmpty(chosenDirectory))
 				{
-					final Path resultPath = CasaMarcat.instance(log).raportMF(reportDate, chosenDirectory);
+					final LocalDateTime startDateTime = reportDate.withDayOfMonth(1).atStartOfDay();
+					final LocalDateTime endDateTime = reportDate.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
+					final CompletableFuture<Result> result = ecrService.reportMF(startDateTime, endDateTime, chosenDirectory);
 					try
 					{
-						new ProgressMonitorDialog(getParentShell()).run(true, true, new ShowResult(resultPath));
+						new ProgressMonitorDialog(getParentShell()).run(true, true, new ShowResult(result));
 					}
 					catch (final InvocationTargetException e1)
 					{
@@ -177,65 +183,37 @@ public class ManagerCasaDialog extends Dialog
 		return buttonBar;
 	}
 	
-	private static class ShowResult implements IRunnableWithProgress
+	private class ShowResult implements IRunnableWithProgress
 	{
-		private Path resultPath;
+		private CompletableFuture<Result> result;
 		
-		public ShowResult(final Path resultPath)
+		public ShowResult(final CompletableFuture<Result> result)
 		{
-			this.resultPath = resultPath;
+			this.result = result;
 		}
 
 		@Override public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 		{
-			if (resultPath == null)
-			{
-				monitor.done();
+			final SubMonitor sub = SubMonitor.convert(monitor, IProgressMonitor.UNKNOWN);
+			sub.beginTask("Exporta Raport MF", IProgressMonitor.UNKNOWN);
+
+			Result resultCode;
+			try {
+				resultCode = result.get();
+			} catch (InterruptedException | ExecutionException e) {
+				log.warn(e);
 				return;
 			}
-			
-			monitor.beginTask("Exporta Raport MF", IProgressMonitor.UNKNOWN);
-			
-			while (Files.notExists(resultPath))
+			Display.getDefault().asyncExec(new Runnable()
 			{
-				if (monitor.isCanceled())
-					throw new InterruptedException("Interrupted by user!");
-				Thread.sleep(200);
-			}
-			
-			try
-			{
-				Thread.sleep(200);
-				try (Stream<String> resultLines = Files.lines(resultPath))
+				@Override public void run()
 				{
-					final String resultCode = resultLines.collect(Collectors.joining(LIST_SEPARATOR));
-					Display.getDefault().asyncExec(new Runnable()
-					{
-						@Override public void run()
-						{
-							if (!resultCode.trim().startsWith("0:"))
-								MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "Cod: "+resultCode);
-							else
-							{
-								MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Succes", "Raportul a fost exportat!");
-								try
-								{
-									Files.deleteIfExists(resultPath);
-								}
-								catch (final IOException e)
-								{
-									showException(e);
-								}
-							}
-						}
-					});
+					if (resultCode.isOk())
+						MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Succes", "Raportul a fost exportat!");
+					else
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "Cod: "+resultCode.error());
 				}
-				monitor.done();
-			}
-			catch (final IOException e)
-			{
-				throw new InvocationTargetException(e);
-			}
+			});
 		}
 	}
 }
