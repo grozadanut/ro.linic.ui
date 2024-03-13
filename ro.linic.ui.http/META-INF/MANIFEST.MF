@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Http Client
 Bundle-SymbolicName: ro.linic.ui.http
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Export-Package: ro.linic.ui.http
 Require-Bundle: wrapped.ro.linic.util.commons
 Bundle-Vendor: LINIC
