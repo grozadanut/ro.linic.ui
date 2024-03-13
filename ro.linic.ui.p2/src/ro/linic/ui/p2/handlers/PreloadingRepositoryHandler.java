@@ -1,5 +1,7 @@
 package ro.linic.ui.p2.handlers;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -15,6 +17,7 @@ import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Shell;
 
@@ -34,7 +37,7 @@ import ro.linic.ui.p2.ui.addons.ProvUIAddon;
 abstract class PreloadingRepositoryHandler {
 
 	@Execute
-	public Object execute(final IEclipseContext ctx, final Shell shell, final UISynchronize sync) {
+	public void execute(final IEclipseContext ctx, final Shell shell, final UISynchronize sync) {
 		// Look for a profile.  We may not immediately need it in the
 		// handler, but if we don't have one, whatever we are trying to do
 		// will ultimately fail in a more subtle/low-level way.  So determine
@@ -55,9 +58,14 @@ abstract class PreloadingRepositoryHandler {
 			ProvUI.reportStatus(ctx, new Status(IStatus.WARNING, ProvUIAddon.PLUGIN_ID, ProvUIMessages.ProvSDKUIActivator_NoSelfProfile),
 					StatusManager.LOG);
 		} else {
+			try {
+				final ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell);
+				dialog.run(true, true, monitor -> refreshRepositories(ctx, monitor));
+			} catch (InvocationTargetException | InterruptedException e) {
+				e.printStackTrace();
+			}
 			BusyIndicator.showWhile(shell.getDisplay(), () -> doExecuteAndLoad(ctx, shell, sync));
 		}
-		return null;
 	}
 
 	void doExecuteAndLoad(final IEclipseContext ctx, final Shell shell, final UISynchronize sync) {
@@ -133,5 +141,11 @@ abstract class PreloadingRepositoryHandler {
 
 	protected ProvisioningUI getProvisioningUI(final IEclipseContext ctx) {
 		return ProvisioningUI.getDefaultUI(ctx);
+	}
+	
+	private void refreshRepositories(final IEclipseContext ctx, final IProgressMonitor monitor) {
+		final ProvisioningUI ui = getProvisioningUI(ctx);
+		ui.getRepositoryTracker().refreshRepositories(ui.getRepositoryTracker().getKnownRepositories(ui.getSession()),
+				ui.getSession(), monitor);
 	}
 }
