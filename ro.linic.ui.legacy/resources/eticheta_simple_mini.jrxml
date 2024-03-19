@@ -5,13 +5,13 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="entity1" class="ro.linic.service.components.BarcodePrintable">
+	<field name="entity1" class="ro.linic.ui.legacy.service.components.BarcodePrintable">
 		<fieldDescription><![CDATA[entity1]]></fieldDescription>
 	</field>
-	<field name="entity2" class="ro.linic.service.components.BarcodePrintable">
+	<field name="entity2" class="ro.linic.ui.legacy.service.components.BarcodePrintable">
 		<fieldDescription><![CDATA[entity2]]></fieldDescription>
 	</field>
-	<field name="entity3" class="ro.linic.service.components.BarcodePrintable">
+	<field name="entity3" class="ro.linic.ui.legacy.service.components.BarcodePrintable">
 		<fieldDescription><![CDATA[entity3]]></fieldDescription>
 	</field>
 	<background>
