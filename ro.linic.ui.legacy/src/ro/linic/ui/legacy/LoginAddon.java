@@ -2,7 +2,6 @@ package ro.linic.ui.legacy;
 
 import static ro.colibri.util.NumberUtils.parseToLong;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
-import static ro.colibri.util.PresentationUtils.LIST_SEPARATOR;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.colibri.util.ServerConstants.GENERAL_TOPIC_REMOTE_JNDI;
 import static ro.colibri.util.ServerConstants.JMS_MESSAGE_TYPE_KEY;
@@ -42,7 +41,6 @@ import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.FontData;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -64,7 +62,6 @@ import ro.colibri.util.ServerConstants.JMSMessageType;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.legacy.components.CommandHandler;
 import ro.linic.ui.legacy.components.JMSMessageHandler;
-import ro.linic.ui.legacy.dialogs.LoginDialog;
 import ro.linic.ui.legacy.dialogs.ReleaseNotesDialog;
 import ro.linic.ui.legacy.parts.VerifyOperationsPart;
 import ro.linic.ui.legacy.service.PeripheralService;
@@ -74,13 +71,12 @@ import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.MessagingService;
 import ro.linic.ui.legacy.session.NotificationManager;
-import ro.linic.ui.legacy.session.UIUtils; 
+import ro.linic.ui.legacy.session.UIUtils;
+import ro.linic.ui.security.services.AuthenticationSession;
+import ro.linic.ui.workbench.services.LinicWorkbench; 
 
 public class LoginAddon
 {
-	public static final String LOGGED_USER_PROP = "logged_user_email";
-	public static final String LOGGED_USER_ROLE_PROP = "logged_user_role";
-	public static final String LOGGED_USER_PERMS_PROP = "logged_user_permissions";
 	private static final String JUST_UPDATED_PROP = "justUpdated";
 	
 	private static void flushPrefs(final IEclipsePreferences prefs, final Logger log)
@@ -111,23 +107,12 @@ public class LoginAddon
 		
 		logVersion(log);
 		initDefaultFonts();
-		while (!ClientSession.instance().isLoggedIn())
-		{
-			final LoginDialog dialog = new LoginDialog(null, prefs, log);
-
-			if (dialog.open() != Window.OK)
-				System.exit(-1);
-		}
+		// force authentication early
+		workbenchContext.get(AuthenticationSession.class).authentication();
 		// after successful login
 		SQLiteJDBC.instance(bundle, log).init();
 		SQLiteJDBC.instance(bundle, log).saveLocalToServer();
-		if (shouldClearPersistedState(prefs))
-			System.setProperty(E4Workbench.CLEAR_PERSISTED_STATE, "true"); //$NON-NLS-1$
-
-		prefs.put(LOGGED_USER_PROP, ClientSession.instance().getLoggedUser().getEmail());
-		prefs.put(LOGGED_USER_ROLE_PROP, ClientSession.instance().getLoggedUser().getRole().displayName());
-		prefs.put(LOGGED_USER_PERMS_PROP, ClientSession.instance().getLoggedUser().getRole().permissionsToText(LIST_SEPARATOR));
-		flushPrefs(prefs, log);
+		workbenchContext.get(LinicWorkbench.class).switchWorkspace("workspace-"+ClientSession.instance().getLoggedUser().getId());
 
 		if (Boolean.valueOf(System.getProperty(NotificationManager.SHOW_NOTIFICATIONS_PROP_KEY,
 				NotificationManager.SHOW_NOTIFICATIONS_PROP_DEFAULT)) &&
@@ -209,17 +194,6 @@ public class LoginAddon
 		}
 	}
 
-	private boolean shouldClearPersistedState(final IEclipsePreferences prefs)
-	{
-		final String email = ClientSession.instance().getLoggedUser().getEmail();
-		final String role = ClientSession.instance().getLoggedUser().getRole().displayName();
-		final String permissions = ClientSession.instance().getLoggedUser().getRole().permissionsToText(LIST_SEPARATOR);
-		
-		return !prefs.get(LOGGED_USER_PROP, email).equalsIgnoreCase(email) ||
-				!prefs.get(LOGGED_USER_ROLE_PROP, role).equalsIgnoreCase(role) ||
-				!prefs.get(LOGGED_USER_PERMS_PROP, permissions).equalsIgnoreCase(permissions);
-	}
-
 	private void initDefaultFonts()
 	{
 		final int defaultFontSize = Integer.parseInt(System.getProperty(FONT_SIZE_KEY, FONT_SIZE_DEFAULT)); //12
@@ -255,7 +229,7 @@ public class LoginAddon
 				L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
 		final String barcodePrinter = System.getProperty(PeripheralService.BARCODE_PRINTER_KEY, PeripheralService.BARCODE_PRINTER_DEFAULT);
 		if (PeripheralService.instance(log).isPrinterConnected(barcodePrinter))
-			MessagingService.instance().registerMsgListener(remoteJndi, new PrintTopicListener(log, bundle), log);
+			MessagingService.instance().registerMsgListener(remoteJndi, new PrintTopicListener(log, bundle));
 	}
 	
 	private void registerGeneralTopic(final Logger log, final Bundle bundle, final UISynchronize sync)
@@ -263,14 +237,13 @@ public class LoginAddon
 		final JMSMessageHandler messageHandler = new JMSMessageHandler();
 		messageHandler.registerHandler(new ResetPropsHandler(log));
 		messageHandler.registerHandler(new WaitOrderReceivedHandler(log, sync));
-		MessagingService.instance().registerMsgListener(GENERAL_TOPIC_REMOTE_JNDI, messageHandler, log);
+		MessagingService.instance().registerMsgListener(GENERAL_TOPIC_REMOTE_JNDI, messageHandler);
 	}
 	
 	@PreDestroy
 	public void applicationShutdown(final IEclipseContext workbenchContext)
 	{
-		final Logger log = (Logger) workbenchContext.get(Logger.class.getName());
-		MessagingService.instance().closeSession(log);
+		MessagingService.instance().closeSession();
 	}
 	
 	private static class PrintTopicListener implements MessageListener

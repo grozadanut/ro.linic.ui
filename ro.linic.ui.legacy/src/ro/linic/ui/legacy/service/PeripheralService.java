@@ -81,7 +81,7 @@ public abstract class PeripheralService
 		{
 			final String remoteJndi = gestiune.get().isMatch(L1_NAME) ? 
 					L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
-			MessagingService.instance().sendMsg(remoteJndi, JMSMessageType.GENERAL, ImmutableMap.of(), printablesToSend, log);
+			MessagingService.instance().sendMsg(remoteJndi, JMSMessageType.GENERAL, ImmutableMap.of(), printablesToSend);
 			return;
 		}
 		
@@ -89,7 +89,7 @@ public abstract class PeripheralService
 		{
 			final String remoteJndi = ClientSession.instance().getLoggedUser().getSelectedGestiune().isMatch(L1_NAME) ? 
 					L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
-			MessagingService.instance().sendMsg(remoteJndi, JMSMessageType.GENERAL, ImmutableMap.of(), printablesToSend, log);
+			MessagingService.instance().sendMsg(remoteJndi, JMSMessageType.GENERAL, ImmutableMap.of(), printablesToSend);
 			return;
 		}
 		

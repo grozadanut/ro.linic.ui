@@ -12,12 +12,13 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
-import org.eclipse.e4.core.services.log.Logger;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -33,6 +34,8 @@ import ro.colibri.util.ServerConstants.JMSMessageType;
 
 public class MessagingService
 {
+	private static final Logger log = Logger.getLogger(MessagingService.class.getName());
+	
 	private static MessagingService instance;
 	
 	private Connection jmsConnection;
@@ -52,7 +55,7 @@ public class MessagingService
 	{
 	}
 	
-	public synchronized Optional<Connection> jmsConnection(final Logger log)
+	public synchronized Optional<Connection> jmsConnection()
 	{
 		if (jmsConnection == null)
 		{
@@ -78,20 +81,20 @@ public class MessagingService
 			{
 				e.printStackTrace();
 				if (log != null)
-					log.error(e);
+					log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		
 		return Optional.ofNullable(jmsConnection);
 	}
 	
-	public synchronized Optional<Session> jmsSession(final Logger log)
+	public synchronized Optional<Session> jmsSession()
 	{
 		if (jmsSession == null)
 		{
 			try
 			{
-				final Optional<Connection> jmsConn = jmsConnection(log);
+				final Optional<Connection> jmsConn = jmsConnection();
 				if (jmsConn.isPresent())
 					jmsSession = jmsConn.get().createSession(false, Session.AUTO_ACKNOWLEDGE);
 			}
@@ -99,14 +102,14 @@ public class MessagingService
 			{
 				e.printStackTrace();
 				if (log != null)
-					log.error(e);
+					log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
 		
 		return Optional.ofNullable(jmsSession);
 	}
 	
-	public synchronized void closeSession(final Logger log)
+	public synchronized void closeSession()
 	{
 		try
 		{
@@ -119,31 +122,31 @@ public class MessagingService
 			jmsConnection = null;
 			
 			if (log != null)
-				log.debug("JMS Session and Connection closed");
+				log.fine("JMS Session and Connection closed");
 			else
 				System.out.println("JMS Session and Connection closed");
 		}
 		catch (final Exception e)
 		{
 			if (log != null)
-				log.error(e);
+				log.log(Level.SEVERE, e.getMessage(), e);
 			else
 				e.printStackTrace();
 		}
 	}
 	
-	public synchronized void restoreListeners(final Logger log)
+	public synchronized void restoreListeners()
 	{
 		for (final Entry<String, MessageListener> listenerByTopic : listenersByTopic.entrySet())
-			registerMsgListener(listenerByTopic.getKey(), listenerByTopic.getValue(), false, log);
+			registerMsgListener(listenerByTopic.getKey(), listenerByTopic.getValue(), false);
 	}
 	
-	public void registerMsgListener(final String topicJndi, final MessageListener listener, final Logger log)
+	public void registerMsgListener(final String topicJndi, final MessageListener listener)
 	{
-		registerMsgListener(topicJndi, listener, true, log);
+		registerMsgListener(topicJndi, listener, true);
 	}
 	
-	private void registerMsgListener(final String topicJndi, final MessageListener listener, final boolean addListener, final Logger log)
+	private void registerMsgListener(final String topicJndi, final MessageListener listener, final boolean addListener)
 	{
 		try
 		{
@@ -171,12 +174,12 @@ public class MessagingService
 			final InitialContext ic = new InitialContext(jndiProps);
 			final Topic topic = (Topic) ic.lookup(topicJndi);
 			ic.close();
-			final MessageConsumer consumer = jmsSession(log).get().createConsumer(topic, messageSelector.toString(), true);
+			final MessageConsumer consumer = jmsSession().get().createConsumer(topic, messageSelector.toString(), true);
 			consumer.setMessageListener(listener);
 
 			if (!connectionStarted)
 			{
-				jmsConnection(log).get().start();
+				jmsConnection().get().start();
 				connectionStarted = true;
 			}
 			if (addListener)
@@ -185,14 +188,14 @@ public class MessagingService
 		catch (final Exception e)
 		{
 			if (log != null)
-				log.error(e);
+				log.log(Level.SEVERE, e.getMessage(), e);
 			else
 				e.printStackTrace();
 		} 
 	}
 	
 	public void sendMsg(final String topicJndi, final JMSMessageType messageType, final ImmutableMap<String, String> properties,
-			final Message message, final Logger log)
+			final Message message)
 	{
 		try
 		{
@@ -204,7 +207,7 @@ public class MessagingService
 			final InitialContext ic = new InitialContext(jndiProps);
 			final Topic topic = (Topic) ic.lookup(topicJndi);
 			ic.close();
-			final MessageProducer publisher = jmsSession(log).get().createProducer(topic);
+			final MessageProducer publisher = jmsSession().get().createProducer(topic);
 			message.setIntProperty(COMPANY_ID_KEY, ClientSession.instance().getLoggedUser().getSelectedCompany().getId());
 			message.setStringProperty(JMS_MESSAGE_TYPE_KEY, messageType.toString());
 			for (final Entry<String, String> prop : properties.entrySet())
@@ -214,21 +217,21 @@ public class MessagingService
 		}
 		catch (final Exception e)
 		{
-			log.error(e);
+			log.log(Level.SEVERE, e.getMessage(), e);
 			showException(e);
 		} 
 	}
 	
 	public void sendMsg(final String topicJndi, final JMSMessageType messageType, final ImmutableMap<String, String> properties,
-			final Serializable objectToSend, final Logger log)
+			final Serializable objectToSend)
 	{
 		try
 		{
-			sendMsg(topicJndi, messageType, properties, jmsSession(log).get().createObjectMessage(objectToSend), log);
+			sendMsg(topicJndi, messageType, properties, jmsSession().get().createObjectMessage(objectToSend));
 		}
 		catch (final Exception e)
 		{
-			log.error(e);
+			log.log(Level.SEVERE, e.getMessage(), e);
 			showException(e);
 		} 
 	}

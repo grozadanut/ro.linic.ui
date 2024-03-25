@@ -81,6 +81,9 @@ public class ProgressMonitorControl {
 					public void done(final IJobChangeEvent event) {
 						sync.syncExec(() -> {
 							runningTasks--;
+							if (progressBar.isDisposed())
+								return;
+							
 							if (runningTasks > 0) {
 								// --- some tasks are still running ---
 								progressBar.setToolTipText("Currently running: " + runningTasks + " jobs");

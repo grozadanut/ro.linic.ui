@@ -64,11 +64,11 @@ public class ClientSession
 	{
 	}
 	
-	public User login(final Logger log)
+	public User login()
 	{
 		loggedUser = BusinessDelegate.login();
-		MessagingService.instance().closeSession(log);
-		MessagingService.instance().restoreListeners(log);
+		MessagingService.instance().closeSession();
+		MessagingService.instance().restoreListeners();
 		reloadBillImages();
 		return loggedUser;
 	}
@@ -93,7 +93,7 @@ public class ClientSession
 	public void toggleHideUnofficialDocs(final Logger log)
 	{
 		BusinessDelegate.toggleHideUnofficialDocs();
-		login(log);
+		login();
 		
 		final Color bgColor = isLoggedIn() && getLoggedUser().isHideUnofficialDocs() ?
 				Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED) :

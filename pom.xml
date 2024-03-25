@@ -75,17 +75,26 @@
   </plugins>
  </build>
   <modules>
-   <!--TODO ADD YOUR MODULES HERE-->
    <module>releng-updatesite</module>
-   <module>ro.linic.ui.product</module>
    <module>ro.linic.ui.base</module>
    <module>ro.linic.ui.base.feature</module>
    <module>ro.linic.ui.anaf.connector</module>
    <module>ro.linic.ui.connector.feature</module>
    <module>ro.linic.ui.legacy</module>
    <module>ro.linic.ui.legacy.feature</module>
-   <module>ro.linic.ui.p2</module>
    <module>ro.linic.ui.http</module>
+   <module>ro.linic.ui.p2</module>
    <module>ro.linic.ui.pos.base</module>
+   <module>ro.linic.ui.workbench</module>
+   <module>ro.linic.ui.security</module>
  </modules>
+ 
+ <profiles>
+     <profile>
+       <id>product</id>
+          <modules>
+            <module>ro.linic.ui.product</module>
+          </modules> 
+      </profile>
+  </profiles>
 </project>

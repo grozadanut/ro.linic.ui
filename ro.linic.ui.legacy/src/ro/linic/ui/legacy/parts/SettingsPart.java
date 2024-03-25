@@ -821,7 +821,7 @@ public class SettingsPart
 			ClientSession.instance().setUsername(user.getEmail());
 			if (!isEmpty(user.getPassword()))
 				ClientSession.instance().setPassword(user.getPassword());
-			ClientSession.instance().login(log);
+			ClientSession.instance().login();
 		}
 		else
 			ClientSession.instance().reloadBillImages();

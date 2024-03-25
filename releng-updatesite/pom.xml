@@ -11,41 +11,47 @@
 	<groupId>ro.linic.ui</groupId>
     <artifactId>releng-updatesite</artifactId>
     <packaging>eclipse-repository</packaging>
-    
-    <build>
-		<plugins>
-			<plugin>
-			   <groupId>org.eclipse.tycho.extras</groupId>
-			   <artifactId>tycho-p2-extras-plugin</artifactId>
-			   <version>${tycho.version}</version>
-			   <executions>
-			      <execution>
-			         <id>add-to-update-site</id>
-			         <phase>package</phase>
-			         <goals>
-			            <goal>mirror</goal>
-			         </goals>
-			         <configuration>
-			            <source>
-			               <repository>
-			                  <url>${project.name}/target/repository</url>
-			               </repository>
-			            </source>
-			            <destination>${repository.path}</destination>
-			            <append>true</append>
-			         </configuration>
-			      </execution>
-			   </executions>
-			</plugin>
-			<plugin>
-		       <groupId>org.eclipse.tycho</groupId>
-		       <artifactId>tycho-p2-repository-plugin</artifactId>
-		       <version>${tycho.version}</version>
-		       <configuration>
-		          <includeAllDependencies>true</includeAllDependencies>
-		       </configuration>
-		    </plugin>
-		</plugins>
-    </build>
+
+	<profiles>
+		<profile>
+			<id>deploy</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho.extras</groupId>
+						<artifactId>tycho-p2-extras-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<executions>
+							<execution>
+								<id>add-to-update-site</id>
+								<phase>package</phase>
+								<goals>
+									<goal>mirror</goal>
+								</goals>
+								<configuration>
+									<source>
+										<repository>
+											<url>
+												${project.name}/target/repository</url>
+										</repository>
+									</source>
+									<destination>${repository.path}</destination>
+									<append>true</append>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-repository-plugin</artifactId>
+						<version>${tycho.version}</version>
+						<configuration>
+							<includeAllDependencies>true</includeAllDependencies>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project> 

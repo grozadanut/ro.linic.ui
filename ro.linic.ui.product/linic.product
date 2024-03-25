@@ -3,6 +3,7 @@
 
 <product name="linic" uid="ro.linic.ui" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.1" type="mixed" includeLaunchers="true" autoIncludeRequirements="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -19,6 +20,7 @@
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>

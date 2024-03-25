@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ro.linic.ui.legacy.LegacyAuthenticationManager">
+   <service>
+      <provide interface="ro.linic.ui.security.services.AuthenticationManager"/>
+   </service>
+   <implementation class="ro.linic.ui.legacy.LegacyAuthenticationManager"/>
+</scr:component>

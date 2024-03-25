@@ -11,10 +11,11 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -45,9 +47,11 @@ import ro.linic.ui.legacy.session.ServiceLocator;
 
 public class LoginDialog extends TitleAreaDialog
 {
+	private static final Logger log = Logger.getLogger(LoginDialog.class.getName());
+	
 	public static final String DB_USERS_PROP = "all_db_users";
 	public static final String DB_COMPANIES_PROP = "all_db_companies";
-
+	
 	private static final String PROP_ROW_SEP = ";";
 	private static final String PROP_VALUE_SEP = ":";
 	private static final String PROP_INNER_ROW_SEP = ">";
@@ -64,9 +68,8 @@ public class LoginDialog extends TitleAreaDialog
 	private org.eclipse.swt.widgets.List gestiune;
 	
 	private IEclipsePreferences prefs;
-	private Logger log;
 	
-	private static String toProp(final ImmutableMap<User, List<Company>> users)
+	public static String toProp(final ImmutableMap<User, List<Company>> users)
 	{
 		return users.entrySet().stream()
 				.map(e -> e.getKey().getId()+PROP_VALUE_SEP+e.getKey().getEmail()+PROP_VALUE_SEP+e.getKey().getName()
@@ -83,7 +86,7 @@ public class LoginDialog extends TitleAreaDialog
 				.collect(Collectors.joining(PROP_INNER_ROW_SEP));
 	}
 	
-	private static String toPropComp(final ImmutableMap<Company, List<Gestiune>> companies)
+	public static String toPropComp(final ImmutableMap<Company, List<Gestiune>> companies)
 	{
 		return companies.entrySet().stream()
 				.map(e -> e.getKey().getId()+PROP_VALUE_SEP+e.getKey().getName()
@@ -161,13 +164,12 @@ public class LoginDialog extends TitleAreaDialog
 		return b.build();
 	}
 
-	public LoginDialog(final Shell parent, final IEclipsePreferences prefs, final Logger log)
+	public LoginDialog(final Shell parent, final IEclipsePreferences prefs)
 	{
 		super(parent);
 		users = fromProp(prefs.get(DB_USERS_PROP, EMPTY_STRING));
 		companies = fromPropComp(prefs.get(DB_COMPANIES_PROP, EMPTY_STRING));
 		this.prefs = prefs;
-		this.log = log;
 	}
 
 	@Override
@@ -334,11 +336,16 @@ public class LoginDialog extends TitleAreaDialog
 				}
 			}
 			
-			final User user = ClientSession.instance().login(log);
+			final User user = ClientSession.instance().login();
 			if (user != null)
 			{
 				prefs.put(DB_USERS_PROP, toProp(BusinessDelegate.usersWithCompanyRoles()));
 				prefs.put(DB_COMPANIES_PROP, toPropComp(BusinessDelegate.companiesWithGestiuni()));
+				try {
+					prefs.flush();
+				} catch (final BackingStoreException e) {
+					log.log(Level.SEVERE, e.getMessage(), e);
+				}
 				super.okPressed();
 			}
 			else
@@ -346,7 +353,7 @@ public class LoginDialog extends TitleAreaDialog
 		}
 		catch (final EJBException e)
 		{
-			log.error(e);
+			log.log(Level.SEVERE, e.getMessage(), e);
 			if (e.getCausedByException() instanceof ConnectException)
 				setErrorMessage("Eroare de conexiune");
 			else
