@@ -5,6 +5,8 @@ import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 
+import ro.linic.ui.pos.base.Messages;
+
 public class DudeECRDriverPage extends FieldEditorPreferencePage {
 
 	public DudeECRDriverPage() {
@@ -13,16 +15,16 @@ public class DudeECRDriverPage extends FieldEditorPreferencePage {
 
 	@Override
 	protected void createFieldEditors() {
-		addField(new DirectoryFieldEditor(PreferenceKey.DUDE_ECR_FOLDER, "Folder comenzi", getFieldEditorParent()));
-		final StringFieldEditor ipFieldEditor = new StringFieldEditor(PreferenceKey.DUDE_ECR_IP, "IP", getFieldEditorParent());
+		addField(new DirectoryFieldEditor(PreferenceKey.DUDE_ECR_FOLDER, Messages.DudeECRDriverPage_Folder, getFieldEditorParent()));
+		final StringFieldEditor ipFieldEditor = new StringFieldEditor(PreferenceKey.DUDE_ECR_IP, Messages.DudeECRDriverPage_IP, getFieldEditorParent());
 		ipFieldEditor.setEmptyStringAllowed(false);
 		addField(ipFieldEditor);
-		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_PORT, "Port", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_OPERATOR, "Operator", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_PASSWORD, "Parola", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_NR_AMEF, "Nr AMEF", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_TAX_CODE, "Cota TVA", getFieldEditorParent()));
-		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_DEPT, "Departament", getFieldEditorParent()));
-		addField(new BooleanFieldEditor(PreferenceKey.DUDE_REPORT_Z_AND_D, "Scoate si raportul D la inchiderea zilei", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_PORT, Messages.DudeECRDriverPage_Port, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_OPERATOR, Messages.DudeECRDriverPage_Operator, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_PASSWORD, Messages.DudeECRDriverPage_Password, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_NR_AMEF, Messages.DudeECRDriverPage_AMEFNumber, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_TAX_CODE, Messages.DudeECRDriverPage_VATRate, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.DUDE_ECR_DEPT, Messages.DudeECRDriverPage_Department, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceKey.DUDE_REPORT_Z_AND_D, Messages.DudeECRDriverPage_ZAndD, getFieldEditorParent()));
 	}
 }

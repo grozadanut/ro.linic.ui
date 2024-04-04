@@ -22,6 +22,7 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.resource.JFaceResources;
@@ -42,6 +43,8 @@ public class Icons
 	public static final String OK_16x16_PATH = "icons/verify_16x16.png";
 	public static final String LOADING_16x16_PATH = "icons/loading_16x16.png";
 	public static final String ERROR_16x16_PATH = "icons/error_16x16.png";
+	public static final String USA_FLAG_32x32_PATH = "icons/usa_flag_32x32.png";
+	public static final String RO_FLAG_32x32_PATH = "icons/ro_flag_32x32.png";
 	
 	private static final Map<String, byte[]> imageCache = new HashMap<>();
 	private static URL localURL;
@@ -79,7 +82,7 @@ public class Icons
 	/**
 	 * The returned image should not be disposed as it is taken care of by JFaceResources
 	 */
-	public static Optional<Image> createImageResource(final Bundle bundle, final String imgPath, final Logger log)
+	public static Optional<Image> createImageResource(final Bundle bundle, final String imgPath, final ILog log)
 	{
 		Image img = JFaceResources.getImage(imgPath);
 		
@@ -95,7 +98,7 @@ public class Icons
 		}
 		catch (final IOException e)
 		{
-			log.error(e);
+			log.error(e.getMessage(), e);
 			return Optional.empty();
 		}
 		return Optional.ofNullable(img);

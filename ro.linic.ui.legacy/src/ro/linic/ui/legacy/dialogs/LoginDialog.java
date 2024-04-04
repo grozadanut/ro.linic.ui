@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -49,13 +50,13 @@ public class LoginDialog extends TitleAreaDialog
 {
 	private static final Logger log = Logger.getLogger(LoginDialog.class.getName());
 	
-	public static final String DB_USERS_PROP = "all_db_users";
-	public static final String DB_COMPANIES_PROP = "all_db_companies";
+	public static final String DB_USERS_PROP = "all_db_users"; //$NON-NLS-1$
+	public static final String DB_COMPANIES_PROP = "all_db_companies"; //$NON-NLS-1$
 	
-	private static final String PROP_ROW_SEP = ";";
-	private static final String PROP_VALUE_SEP = ":";
-	private static final String PROP_INNER_ROW_SEP = ">";
-	private static final String PROP_INNER_VALUE_SEP = "-";
+	private static final String PROP_ROW_SEP = ";"; //$NON-NLS-1$
+	private static final String PROP_VALUE_SEP = ":"; //$NON-NLS-1$
+	private static final String PROP_INNER_ROW_SEP = ">"; //$NON-NLS-1$
+	private static final String PROP_INNER_VALUE_SEP = "-"; //$NON-NLS-1$
 	
 	private ImmutableMap<User, List<Company>> users;
 	private ImmutableMap<Company, List<Gestiune>> companies;
@@ -66,8 +67,11 @@ public class LoginDialog extends TitleAreaDialog
 	private Text password;
 	private org.eclipse.swt.widgets.List company;
 	private org.eclipse.swt.widgets.List gestiune;
+//	private org.eclipse.swt.widgets.Button roLocale;
+//	private org.eclipse.swt.widgets.Button enLocale;
 	
 	private IEclipsePreferences prefs;
+	private IEclipseContext ctx;
 	
 	public static String toProp(final ImmutableMap<User, List<Company>> users)
 	{
@@ -164,20 +168,21 @@ public class LoginDialog extends TitleAreaDialog
 		return b.build();
 	}
 
-	public LoginDialog(final Shell parent, final IEclipsePreferences prefs)
+	public LoginDialog(final Shell parent, final IEclipsePreferences prefs, final IEclipseContext ctx)
 	{
 		super(parent);
 		users = fromProp(prefs.get(DB_USERS_PROP, EMPTY_STRING));
 		companies = fromPropComp(prefs.get(DB_COMPANIES_PROP, EMPTY_STRING));
 		this.prefs = prefs;
+		this.ctx = ctx;
 	}
 
 	@Override
 	protected Control createContents(final Composite parent)
 	{
 		final Control contents = super.createContents(parent);
-		setTitle("Login");
-		setMessage("Selectati un utilizator si introduceti parola!");
+		setTitle(Messages.LoginDialog_Title);
+		setMessage(Messages.LoginDialog_Message);
 		getButton(IDialogConstants.OK_ID).setEnabled(false);
 		return contents;
 	}
@@ -192,7 +197,7 @@ public class LoginDialog extends TitleAreaDialog
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		final Label userLabel = new Label(container, SWT.NULL);
-		userLabel.setText("Email");
+		userLabel.setText(Messages.LoginDialog_User);
 		setFont(userLabel);
 		
 		email = new Text(container, SWT.SINGLE | SWT.BORDER);
@@ -200,7 +205,7 @@ public class LoginDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(email);
 		
 		final Label passLabel = new Label(container, SWT.NULL);
-		passLabel.setText("Parola");
+		passLabel.setText(Messages.LoginDialog_Password);
 		setFont(passLabel);
 
 		password = new Text(container, SWT.PASSWORD | SWT.BORDER);
@@ -214,7 +219,7 @@ public class LoginDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(username);
 		
 		final Label companyLabel = new Label(container, SWT.NONE);
-		companyLabel.setText("Firma");
+		companyLabel.setText(Messages.LoginDialog_Company);
 		setFont(companyLabel);
 		company = new org.eclipse.swt.widgets.List(container, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);
 		company.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -222,12 +227,29 @@ public class LoginDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().applyTo(company);
 		
 		final Label gestiuneLabel = new Label(container, SWT.NONE);
-		gestiuneLabel.setText("Gestiune");
+		gestiuneLabel.setText(Messages.LoginDialog_Inventory);
 		setFont(gestiuneLabel);
 		gestiune = new org.eclipse.swt.widgets.List(container, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);
 		gestiune.setLayoutData(new GridData(GridData.FILL_BOTH));
 		setFont(gestiune);
 		GridDataFactory.fillDefaults().applyTo(gestiune);
+		
+//		final Composite bottomBar = new Composite(parent, SWT.NONE);
+//		bottomBar.setLayout(new GridLayout(2, false));
+//		GridDataFactory.swtDefaults().span(2, 1).align(SWT.FILL, SWT.TOP).applyTo(bottomBar);
+//		
+//		roLocale = new Button(bottomBar, SWT.RADIO);
+//		roLocale.setImage(Icons.createImageResource(FrameworkUtil.getBundle(getClass()), Icons.RO_FLAG_32x32_PATH, ILog.get()).orElse(null));
+//		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.CENTER).grab(true, false).applyTo(roLocale);
+//		
+//		enLocale = new Button(bottomBar, SWT.RADIO);
+//		enLocale.setImage(Icons.createImageResource(FrameworkUtil.getBundle(getClass()), Icons.USA_FLAG_32x32_PATH, ILog.get()).orElse(null));
+//		
+//		final Locale locale = Locale.getDefault();
+//		if (locale != null && "ro".equalsIgnoreCase(locale.getLanguage()))
+//			roLocale.setSelection(true);
+//		else
+//			enLocale.setSelection(true);
 		
 		username.addSelectionListener(new SelectionAdapter()
 		{
@@ -256,6 +278,18 @@ public class LoginDialog extends TitleAreaDialog
 		});
 		email.addModifyListener(e -> validate());
 		password.addModifyListener(e -> validate());
+		
+//		roLocale.addSelectionListener(new SelectionAdapter() {
+//			@Override public void widgetSelected(final SelectionEvent e) {
+//				ctx.get(LocaleService.class).changeLocale(new Locale("ro", "RO"));
+//			}
+//		});
+//		
+//		roLocale.addSelectionListener(new SelectionAdapter() {
+//			@Override public void widgetSelected(final SelectionEvent e) {
+//				ctx.get(LocaleService.class).changeLocale(Locale.ENGLISH);
+//			}
+//		});
 		
 		return area;
 	}
@@ -300,14 +334,14 @@ public class LoginDialog extends TitleAreaDialog
 		if (isEmpty(email.getText()))
 		{
 			getButton(IDialogConstants.OK_ID).setEnabled(false);
-			setErrorMessage("Selectati un utilizator");
+			setErrorMessage(Messages.LoginDialog_MissingUser);
 			return;
 		}
 		
 		if (isEmpty(password.getText()))
 		{
 			getButton(IDialogConstants.OK_ID).setEnabled(false);
-			setErrorMessage("Introduceti parola");
+			setErrorMessage(Messages.LoginDialog_MissingPassword);
 			return;
 		}
 		
@@ -349,15 +383,15 @@ public class LoginDialog extends TitleAreaDialog
 				super.okPressed();
 			}
 			else
-				setErrorMessage("Utilizatorul nu a fost gasit");
+				setErrorMessage(Messages.LoginDialog_UserNotFound);
 		}
 		catch (final EJBException e)
 		{
 			log.log(Level.SEVERE, e.getMessage(), e);
 			if (e.getCausedByException() instanceof ConnectException)
-				setErrorMessage("Eroare de conexiune");
+				setErrorMessage(Messages.LoginDialog_ConnectionError);
 			else
-				setErrorMessage("Parola gresita");
+				setErrorMessage(Messages.LoginDialog_WrongPassword);
 		}
 	}
 	

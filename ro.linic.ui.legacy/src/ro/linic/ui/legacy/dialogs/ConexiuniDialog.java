@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -97,8 +98,8 @@ public class ConexiuniDialog extends TitleAreaDialog
 	protected Control createContents(final Composite parent)
 	{
 		final Control contents = super.createContents(parent);
-		setTitle("Conexiuni");
-		setMessage("Editati conexiunile pentru un document. Conexiunile leaga documentul de vanzare(cumparare) cu documentul de incasare(plata).");
+		setTitle(Messages.ConexiuniDialog_Title);
+		setMessage(Messages.ConexiuniDialog_Message);
 		return contents;
 	}
 
@@ -117,12 +118,12 @@ public class ConexiuniDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
 		sc.setContent(container);
 		
-		UIUtils.setFont(new Label(container, SWT.NONE)).setText("Partener: " + accDoc.getPartner().displayName());
-		UIUtils.setFont(new Label(container, SWT.NONE)).setText("Documentul selectat: " + accDoc.displayName());
+		UIUtils.setFont(new Label(container, SWT.NONE)).setText(Messages.ConexiuniDialog_Partner + accDoc.getPartner().displayName());
+		UIUtils.setFont(new Label(container, SWT.NONE)).setText(Messages.ConexiuniDialog_SelectedDoc + accDoc.displayName());
 
 		if (TipDoc.CUMPARARE.equals(accDoc.getTipDoc()) || TipDoc.VANZARE.equals(accDoc.getTipDoc()))
 		{
-			UIUtils.setFont(new Label(container, SWT.NONE)).setText("Este platit de:");
+			UIUtils.setFont(new Label(container, SWT.NONE)).setText(Messages.ConexiuniDialog_PaidBy);
 			accDoc.getPaidBy().forEach(accDocMapping ->
 			{
 				final int index = partnerPaysDocs.indexOf(accDocMapping.getPays());
@@ -139,7 +140,7 @@ public class ConexiuniDialog extends TitleAreaDialog
 		}
 		else if (TipDoc.PLATA.equals(accDoc.getTipDoc()) || TipDoc.INCASARE.equals(accDoc.getTipDoc()))
 		{
-			UIUtils.setFont(new Label(container, SWT.NONE)).setText("Plateste:");
+			UIUtils.setFont(new Label(container, SWT.NONE)).setText(Messages.ConexiuniDialog_Pays);
 			accDoc.getPaidDocs().forEach(accDocMapping ->
 			{
 				final int index = partnerPaidDocs.indexOf(accDocMapping.getPaid());
@@ -198,7 +199,7 @@ public class ConexiuniDialog extends TitleAreaDialog
 	@Override
 	protected void createButtonsForButtonBar(final Composite parent)
 	{
-		createButton(parent, IDialogConstants.OK_ID, "Salveaza", true);
+		createButton(parent, IDialogConstants.OK_ID, Messages.Save, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 	
@@ -229,11 +230,11 @@ public class ConexiuniDialog extends TitleAreaDialog
 			GridDataFactory.swtDefaults().hint(100, SWT.DEFAULT).applyTo(connectedAmount);
 			
 			delete = new Button(this, SWT.PUSH);
-			final Optional<Image> trashImg = Icons.createImageResource(bundle, Icons.TRASH_16X16_PATH, log);
+			final Optional<Image> trashImg = Icons.createImageResource(bundle, Icons.TRASH_16X16_PATH, ILog.get());
 			if (trashImg.isPresent())
 				delete.setImage(trashImg.get());
 			else
-				delete.setText("Sterge");
+				delete.setText(Messages.Delete);
 			
 			addListeners();
 		}
@@ -244,7 +245,7 @@ public class ConexiuniDialog extends TitleAreaDialog
 			{
 				@Override public void widgetSelected(final SelectionEvent e)
 				{
-					connectedAmount.setText("0");
+					connectedAmount.setText("0"); //$NON-NLS-1$
 				}
 			});
 			

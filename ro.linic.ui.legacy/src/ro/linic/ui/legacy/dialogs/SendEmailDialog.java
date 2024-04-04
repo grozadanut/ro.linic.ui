@@ -74,11 +74,11 @@ public class SendEmailDialog extends TitleAreaDialog
 		final Composite contents = new Composite((Composite) super.createDialogArea(parent), SWT.NONE);
 		contents.setLayout(new GridLayout(2, false));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(contents);
-		setTitle("Trimite email");
-		setMessage("Trimite email catre client");
+		setTitle(Messages.SendEmailDialog_Title);
+		setMessage(Messages.SendEmailDialog_Message);
 		
 		final Label emailLabel = new Label(contents, SWT.NONE);
-		emailLabel.setText("Email:");
+		emailLabel.setText(Messages.SendEmailDialog_Email);
 		UIUtils.setFont(emailLabel);
 		
 		email = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -87,7 +87,7 @@ public class SendEmailDialog extends TitleAreaDialog
 		UIUtils.setFont(email);
 		
 		final Label subjectLabel = new Label(contents, SWT.NONE);
-		subjectLabel.setText("Titlu:");
+		subjectLabel.setText(Messages.SendEmailDialog_Subject);
 		UIUtils.setFont(subjectLabel);
 		
 		subject = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -96,7 +96,7 @@ public class SendEmailDialog extends TitleAreaDialog
 		UIUtils.setFont(subject);
 		
 		final Label textLabel = new Label(contents, SWT.NONE);
-		textLabel.setText("Mesaj:");
+		textLabel.setText(Messages.SendEmailDialog_Text);
 		UIUtils.setFont(textLabel);
 		
 		message = new Text(contents, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
@@ -105,7 +105,7 @@ public class SendEmailDialog extends TitleAreaDialog
 		UIUtils.setFont(message);
 		
 		final Label attachementLabel = new Label(contents, SWT.NONE);
-		attachementLabel.setText("Atasamente");
+		attachementLabel.setText(Messages.SendEmailDialog_Attachment);
 		UIUtils.setFont(attachementLabel);
 		
 		final Text attachement = new Text(contents, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.READ_ONLY);
@@ -133,12 +133,12 @@ public class SendEmailDialog extends TitleAreaDialog
 	{
 		if (isEmpty(email.getText()))
 		{
-			setErrorMessage("Emailul este obligatoriu!");
+			setErrorMessage(Messages.SendEmailDialog_EmailMissing);
 			return;
 		}
 		if (isEmpty(subject.getText()))
 		{
-			setErrorMessage("Titlul este obligatoriu!");
+			setErrorMessage(Messages.SendEmailDialog_SubjectMissing);
 			return;
 		}
 		

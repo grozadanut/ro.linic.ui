@@ -112,7 +112,7 @@ public class RetetarDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Retetar");
+		getShell().setText(Messages.RetetarDialog_Title);
 		
 		createLeftContainer(contents);
 		createRightContainer(contents);
@@ -146,15 +146,15 @@ public class RetetarDialog extends Dialog
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).span(4, 1).minSize(150, SWT.DEFAULT).applyTo(category);
 		
 		final Label searchModeLabel = new Label(leftContainer, SWT.NONE);
-		searchModeLabel.setText("Mod");
+		searchModeLabel.setText(Messages.RetetarDialog_Mode);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(searchModeLabel);
 		
 		final Label barcodeNameLabel = new Label(leftContainer, SWT.NONE);
-		barcodeNameLabel.setText("Cod sau Denumire");
+		barcodeNameLabel.setText(Messages.RetetarDialog_BarcodeName);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(barcodeNameLabel);
 		
 		final Label cantLabel = new Label(leftContainer, SWT.NONE);
-		cantLabel.setText("Cant");
+		cantLabel.setText(Messages.RetetarDialog_Quantity);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(cantLabel);
 		
 		searchMode = new Combo(leftContainer, SWT.DROP_DOWN);
@@ -170,7 +170,7 @@ public class RetetarDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).minSize(150, SWT.DEFAULT).applyTo(barcodeName);
 		
 		cantitate = new Text(leftContainer, SWT.BORDER);
-		cantitate.setText("0");
+		cantitate.setText("0"); //$NON-NLS-1$
 		cantitate.setTextLimit(11);
 		UIUtils.setFont(cantitate);
 		GridDataFactory.swtDefaults().hint(50, SWT.DEFAULT).applyTo(cantitate);
@@ -181,19 +181,19 @@ public class RetetarDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(newProductContainer);
 		
 		final Label newNameLabel = new Label(newProductContainer, SWT.NONE);
-		newNameLabel.setText("Produs finit");
+		newNameLabel.setText(Messages.RetetarDialog_ManufacturedProd);
 		newNameLabel.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		newNameLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.swtDefaults().applyTo(newNameLabel);
 		
 		final Label uomLabel = new Label(newProductContainer, SWT.NONE);
-		uomLabel.setText("UM");
+		uomLabel.setText(Messages.RetetarDialog_UOM);
 		uomLabel.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		uomLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.swtDefaults().applyTo(uomLabel);
 		
 		final Label pvLabel = new Label(newProductContainer, SWT.NONE);
-		pvLabel.setText("Pret");
+		pvLabel.setText(Messages.RetetarDialog_Price);
 		pvLabel.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		pvLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.swtDefaults().applyTo(pvLabel);
@@ -248,14 +248,14 @@ public class RetetarDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(adaosLei);
 		
 		adauga = new Button(rightContainer, SWT.PUSH);
-		adauga.setText("Adauga sau F4");
+		adauga.setText(Messages.RetetarDialog_Add);
 		adauga.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		adauga.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(adauga);
 		UIUtils.setBoldBannerFont(adauga);
 		
 		sterge = new Button(rightContainer, SWT.PUSH);
-		sterge.setText("Sterge");
+		sterge.setText(Messages.Delete);
 		sterge.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		sterge.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(sterge);
@@ -378,7 +378,7 @@ public class RetetarDialog extends Dialog
 	@Override
 	protected void createButtonsForButtonBar(final Composite parent)
 	{
-		createButton(parent, IDialogConstants.OK_ID, "Save", false);
+		createButton(parent, IDialogConstants.OK_ID, Messages.Save, false);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 	
@@ -408,7 +408,7 @@ public class RetetarDialog extends Dialog
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea produselor", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.RetetarDialog_LoadError, details);
 			}
 		}, sync, bundle, log);	
 	}
@@ -507,12 +507,12 @@ public class RetetarDialog extends Dialog
 		final BigDecimal pvCuTVA = produsFinit.getPricePerUom();
 		final BigDecimal pvFaraTVA = pvCuTVA.divide(tvaExtractDivisor, 2, RoundingMode.HALF_EVEN);
 		
-		valAchizitie.setText(MessageFormat.format("ValAch={0}", displayBigDecimal(puaFaraTVA)));
-		valAchizitie.setToolTipText("ValAchizitieMatPrima");
-		adaosPercent.setText(MessageFormat.format("Ad.com={0}", displayPercentage(calculateAdaosPercent(getLastBuyingPriceWithTva, pvCuTVA))));
-		adaosPercent.setToolTipText("((PVcuTVA - PUAcuTVA) / PUAcuTVA) * 100");
-		adaosLei.setText(MessageFormat.format("Ad.com(lei)={0}", displayBigDecimal(pvFaraTVA.subtract(puaFaraTVA), 2, RoundingMode.HALF_EVEN)));
-		adaosLei.setToolTipText("PVfaraTVA-puaFaraTVA");
+		valAchizitie.setText(MessageFormat.format(Messages.RetetarDialog_PValue, displayBigDecimal(puaFaraTVA)));
+		valAchizitie.setToolTipText(Messages.RetetarDialog_PValTooltip);
+		adaosPercent.setText(MessageFormat.format(Messages.RetetarDialog_MarginPerc, displayPercentage(calculateAdaosPercent(getLastBuyingPriceWithTva, pvCuTVA))));
+		adaosPercent.setToolTipText(Messages.RetetarDialog_MarginPercTooltip);
+		adaosLei.setText(MessageFormat.format(Messages.RetetarDialog_Margin, displayBigDecimal(pvFaraTVA.subtract(puaFaraTVA), 2, RoundingMode.HALF_EVEN)));
+		adaosLei.setToolTipText(Messages.RetetarDialog_MarginTooltip);
 	}
 	
 	private boolean isValid()

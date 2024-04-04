@@ -10,6 +10,7 @@ import static ro.linic.ui.legacy.session.UIUtils.insertDate;
 import static ro.linic.ui.legacy.session.UIUtils.showException;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -113,10 +114,10 @@ public class ScheduleDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(3, false));
-		getShell().setText("Programeaza");
+		getShell().setText(Messages.ScheduleDialog_Title);
 		
 		final Label partnerLabel = new Label(contents, SWT.NONE);
-		partnerLabel.setText("Partener");
+		partnerLabel.setText(Messages.ScheduleDialog_Partner);
 		UIUtils.setFont(partnerLabel);
 		
 		partner = new Combo(contents, SWT.DROP_DOWN);
@@ -124,12 +125,12 @@ public class ScheduleDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(partner);
 		
 		final Label deliveryLabel = new Label(contents, SWT.NONE);
-		deliveryLabel.setText("Adresa");
+		deliveryLabel.setText(Messages.ScheduleDialog_DeliveryAddress);
 		UIUtils.setFont(deliveryLabel);
 		
 		usedAddressProvider = new UsedAddressContentProposalProvider(log);
 		deliveryAddress = new Text(contents, SWT.BORDER);
-		deliveryAddress.setMessage("ORADEA");
+		deliveryAddress.setMessage(Messages.ScheduleDialog_DeliveryAddressMessage);
 		UIUtils.setFont(deliveryAddress);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(deliveryAddress);
 		deliveryProposalAdapter = new ContentProposalAdapter(deliveryAddress, new TextContentAdapter(), usedAddressProvider, null, null);
@@ -137,12 +138,12 @@ public class ScheduleDialog extends Dialog
 		deliveryProposalAdapter.addContentProposalListener(new UpdateUsedAddressListener());
 		
 		final Label phoneLabel = new Label(contents, SWT.NONE);
-		phoneLabel.setText("Telefon");
+		phoneLabel.setText(Messages.ScheduleDialog_Phone);
 		UIUtils.setFont(phoneLabel);
 		GridDataFactory.fillDefaults().applyTo(phoneLabel);
 		
 		phone = new Text(contents, SWT.BORDER);
-		phone.setMessage("07x");
+		phone.setMessage(Messages.ScheduleDialog_PhoneMessage);
 		UIUtils.setFont(phone);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(phone);
 		phoneProposalAdapter = new ContentProposalAdapter(phone, new TextContentAdapter(), usedAddressProvider, null, null);
@@ -150,7 +151,7 @@ public class ScheduleDialog extends Dialog
 		phoneProposalAdapter.addContentProposalListener(new UpdateUsedAddressListener());
 		
 		final Label indicatiiDocLabel = new Label(contents, SWT.NONE);
-		indicatiiDocLabel.setText("Indicatii");
+		indicatiiDocLabel.setText(Messages.ScheduleDialog_ExtraDoc);
 		UIUtils.setFont(indicatiiDocLabel);
 		GridDataFactory.fillDefaults().applyTo(indicatiiDocLabel);
 		
@@ -162,7 +163,7 @@ public class ScheduleDialog extends Dialog
 		indicatiiProposalAdapter.addContentProposalListener(new UpdateUsedAddressListener());
 		
 		final Label masinaLabel = new Label(contents, SWT.NONE);
-		masinaLabel.setText("Tip/Masina");
+		masinaLabel.setText(Messages.ScheduleDialog_Car);
 		UIUtils.setFont(masinaLabel);
 		GridDataFactory.fillDefaults().applyTo(masinaLabel);
 		
@@ -179,7 +180,7 @@ public class ScheduleDialog extends Dialog
 		.grab(true, false).applyTo(masina);
 		
 		final Label transportDateTimeLabel = new Label(contents, SWT.NONE);
-		transportDateTimeLabel.setText("Data si ora");
+		transportDateTimeLabel.setText(Messages.ScheduleDialog_TransportDate);
 		UIUtils.setFont(transportDateTimeLabel);
 		GridDataFactory.fillDefaults().applyTo(transportDateTimeLabel);
 		
@@ -194,12 +195,12 @@ public class ScheduleDialog extends Dialog
 		UIUtils.setFont(transportTime);
 		
 		final Label payAtDriverLabel = new Label(contents, SWT.NONE);
-		payAtDriverLabel.setText("Achitare");
+		payAtDriverLabel.setText(Messages.ScheduleDialog_Pay);
 		UIUtils.setFont(payAtDriverLabel);
 		GridDataFactory.fillDefaults().applyTo(payAtDriverLabel);
 		
 		payAtDriver = new Button(contents, SWT.CHECK);
-		payAtDriver.setText("Achitare la sofer");
+		payAtDriver.setText(Messages.ScheduleDialog_PayButton);
 		UIUtils.setFont(payAtDriver);
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(payAtDriver);
 		
@@ -212,11 +213,11 @@ public class ScheduleDialog extends Dialog
 		GridDataFactory.swtDefaults().span(3, 1).applyTo(bottomButtonsCont);
 		
 		printDocs = new Button(bottomButtonsCont, SWT.PUSH);
-		printDocs.setText("Printeaza documentele selectate");
+		printDocs.setText(Messages.ScheduleDialog_PrintDocs);
 		UIUtils.setFont(printDocs);
 		
 		printDocsComasat = new Button(bottomButtonsCont, SWT.PUSH);
-		printDocsComasat.setText("Printeaza documentele selectate comasate");
+		printDocsComasat.setText(Messages.ScheduleDialog_PrintDocsConsolidated);
 		UIUtils.setFont(printDocsComasat);
 		
 		addListeners();
@@ -282,7 +283,7 @@ public class ScheduleDialog extends Dialog
 				catch (final Exception ex)
 				{
 					log.error(ex);
-					showException(ex, "Documentele nu au putut fi printate!");
+					showException(ex, Messages.ScheduleDialog_PrintError);
 				}
 			}
 		});
@@ -299,7 +300,7 @@ public class ScheduleDialog extends Dialog
 				catch (final Exception ex)
 				{
 					log.error(ex);
-					showException(ex, "Documentele nu au putut fi printate!");
+					showException(ex, Messages.ScheduleDialog_PrintError);
 				}
 			}
 		});
@@ -320,7 +321,7 @@ public class ScheduleDialog extends Dialog
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea documentelor", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ScheduleDialog_LoadError, details);
 			}
 		}, sync, null, null);
 	}
@@ -388,33 +389,20 @@ public class ScheduleDialog extends Dialog
 	private void openEmailDialog(final AccountingDocument reloadedDoc)
 	{
 		final String partnerName = partner().map(Partner::getName).orElse(EMPTY_STRING);
-
-		final StringBuilder messageSB = new StringBuilder();
-		messageSB.append("Catre ").append(partnerName).append(NEWLINE).append(NEWLINE)
-		.append("Buna ziua,").append(NEWLINE).append(NEWLINE)
-		.append("Va rugam sa aveti in vedere programarea serviciilor dupa cum urmeaza:").append(NEWLINE)
-		.append(reloadedDoc.clientExplanation()).append(NEWLINE).append(NEWLINE)
-		.append(emailSignature);
-
 		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
-				partner().map(Partner::getEmail).orElse(EMPTY_STRING), "Programare servicii", messageSB.toString(), null, EMPTY_STRING);
+				partner().map(Partner::getEmail).orElse(EMPTY_STRING), Messages.ScheduleDialog_EmailTitle, 
+				MessageFormat.format(Messages.ScheduleDialog_EmailMessage, NEWLINE, partnerName, reloadedDoc.clientExplanation(), emailSignature),
+				null, EMPTY_STRING);
 	}
 
 	private void openRescheduleEmailDialog(final String oldAppointment, final AccountingDocument reloadedDoc)
 	{
 		final String partnerName = partner().map(Partner::getName).orElse(EMPTY_STRING);
-
-		final StringBuilder messageSB = new StringBuilder();
-		messageSB.append("Catre ").append(partnerName).append(NEWLINE).append(NEWLINE)
-		.append("Buna ziua,").append(NEWLINE).append(NEWLINE)
-		.append("Va informam ca programarea urmatoare:").append(NEWLINE)
-		.append(oldAppointment).append(NEWLINE)
-		.append("a fost reprogramata in:").append(NEWLINE)
-		.append(reloadedDoc.clientExplanation()).append(NEWLINE).append(NEWLINE)
-		.append(emailSignature);
-
 		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
-				partner().map(Partner::getEmail).orElse(EMPTY_STRING), "Reprogramare servicii curatenie", messageSB.toString(), null, EMPTY_STRING);
+				partner().map(Partner::getEmail).orElse(EMPTY_STRING), Messages.ScheduleDialog_RescheduleEmailTitle, 
+				MessageFormat.format(Messages.ScheduleDialog_RescheduleEmailMessage, NEWLINE, partnerName, oldAppointment,
+						reloadedDoc.clientExplanation(), emailSignature),
+				null, EMPTY_STRING);
 		}
 	
 	private void updateTransportFields()

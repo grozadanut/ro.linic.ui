@@ -59,7 +59,7 @@ public class FiltrePopup extends PopupDialog
 	private static final int BUTTON_WIDTH = 100;
 	private static final int BUTTON_HEIGHT = 250;
 	
-	private static final String FILTRE_STATE_PREFIX = "filtre.popup";
+	private static final String FILTRE_STATE_PREFIX = "filtre.popup"; //$NON-NLS-1$
 	
 	private TipOp tipOp;
 
@@ -124,7 +124,7 @@ public class FiltrePopup extends PopupDialog
 		createWidgetArea(container);
 		
 		executa = new Button(container, SWT.PUSH | SWT.WRAP);
-		executa.setText("Executa filtrarea");
+		executa.setText(Messages.FiltrePopup_Execute);
 		executa.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		executa.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(executa);
@@ -133,13 +133,13 @@ public class FiltrePopup extends PopupDialog
 		executa.setLayoutData(executaGD);
 		
 		maxRows = new Text(container, SWT.BORDER);
-		maxRows.setMessage("Max rows");
-		maxRows.setText("500");
+		maxRows.setMessage(Messages.FiltrePopup_MaxRows);
+		maxRows.setText("500"); //$NON-NLS-1$
 		UIUtils.setFont(maxRows);
 		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.TOP).hint(BUTTON_WIDTH-15, SWT.DEFAULT).applyTo(maxRows);
 		
 		inchide = new Button(container, SWT.PUSH | SWT.WRAP);
-		inchide.setText("Inchide");
+		inchide.setText(Messages.Close);
 		inchide.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		inchide.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBannerFont(inchide);
@@ -157,7 +157,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.swtDefaults().span(1, 2).applyTo(container);
 		
 		final Label categoryLabel = new Label(container, SWT.NONE);
-		categoryLabel.setText("Categorie");
+		categoryLabel.setText(Messages.FiltrePopup_Category);
 		UIUtils.setFont(categoryLabel);
 		
 		category = new Combo(container, SWT.DROP_DOWN);
@@ -169,25 +169,25 @@ public class FiltrePopup extends PopupDialog
 		new Label(container, SWT.NONE); // layout purpose
 		
 		maxim = new Button(container, SWT.PUSH);
-		maxim.setText("Maxim");
+		maxim.setText(Messages.Max);
 		maxim.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(maxim);
 		GridDataFactory.swtDefaults().applyTo(maxim);
 		
 		ziCurenta = new Button(container, SWT.PUSH);
-		ziCurenta.setText("ZiCrt");
+		ziCurenta.setText(Messages.CurrentDay);
 		ziCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(ziCurenta);
 		GridDataFactory.swtDefaults().applyTo(ziCurenta);
 		
 		lunaCurenta = new Button(container, SWT.PUSH);
-		lunaCurenta.setText("LunaCrt");
+		lunaCurenta.setText(Messages.CurrentMonth);
 		lunaCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(lunaCurenta);
 		GridDataFactory.swtDefaults().applyTo(lunaCurenta);
 		
 		anCurent = new Button(container, SWT.PUSH);
-		anCurent.setText("AnCrt");
+		anCurent.setText(Messages.CurrentYear);
 		anCurent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(anCurent);
 		GridDataFactory.swtDefaults().applyTo(anCurent);
@@ -195,31 +195,31 @@ public class FiltrePopup extends PopupDialog
 		new Label(container, SWT.NONE); // layout purpose
 		
 		maximRec = new Button(container, SWT.PUSH);
-		maximRec.setText("Maxim");
+		maximRec.setText(Messages.Max);
 		maximRec.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(maximRec);
 		GridDataFactory.swtDefaults().applyTo(maximRec);
 		
 		ziCurentaRec = new Button(container, SWT.PUSH);
-		ziCurentaRec.setText("ZiCrt");
+		ziCurentaRec.setText(Messages.CurrentDay);
 		ziCurentaRec.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(ziCurentaRec);
 		GridDataFactory.swtDefaults().applyTo(ziCurentaRec);
 		
 		lunaCurentaRec = new Button(container, SWT.PUSH);
-		lunaCurentaRec.setText("LunaCrt");
+		lunaCurentaRec.setText(Messages.CurrentMonth);
 		lunaCurentaRec.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(lunaCurentaRec);
 		GridDataFactory.swtDefaults().applyTo(lunaCurentaRec);
 		
 		anCurentRec = new Button(container, SWT.PUSH);
-		anCurentRec.setText("AnCrt");
+		anCurentRec.setText(Messages.CurrentYear);
 		anCurentRec.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(anCurentRec);
 		GridDataFactory.swtDefaults().applyTo(anCurentRec);
 		
 		final Label dataDocLabel = new Label(container, SWT.NONE);
-		dataDocLabel.setText("Data Doc");
+		dataDocLabel.setText(Messages.FiltrePopup_DocDate);
 		UIUtils.setFont(dataDocLabel);
 
 		from = new DateTime(container, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
@@ -231,7 +231,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(to);
 		
 		final Label dataRecLabel = new Label(container, SWT.NONE);
-		dataRecLabel.setText("Rec");
+		dataRecLabel.setText(Messages.FiltrePopup_ReceptionDate);
 		UIUtils.setFont(dataRecLabel);
 		
 		fromRec = new DateTime(container, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
@@ -243,7 +243,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(toRec);
 
 		final Label docLabel = new Label(container, SWT.NONE);
-		docLabel.setText("Tip Doc");
+		docLabel.setText(Messages.FiltrePopup_DocType);
 		UIUtils.setFont(docLabel);
 		
 		doc = new NatComboWidget(container, SWT.MULTI | SWT.CHECK);
@@ -252,7 +252,7 @@ public class FiltrePopup extends PopupDialog
 		setDocTypes();
 		
 		final Label nrDocLabel = new Label(container, SWT.NONE);
-		nrDocLabel.setText("Nr Doc");
+		nrDocLabel.setText(Messages.FiltrePopup_DocNumber);
 		UIUtils.setFont(nrDocLabel);
 		
 		nrDoc = new Text(container, SWT.BORDER);
@@ -260,7 +260,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(9, 1).applyTo(nrDoc);
 		
 		final Label partnerLabel = new Label(container, SWT.NONE);
-		partnerLabel.setText("Partener");
+		partnerLabel.setText(Messages.FiltrePopup_Partner);
 		UIUtils.setFont(partnerLabel);
 		
 		partner = new Combo(container, SWT.DROP_DOWN);
@@ -269,7 +269,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(9, 1).applyTo(partner);
 		
 		final Label barcodeLabel = new Label(container, SWT.NONE);
-		barcodeLabel.setText("Cod material");
+		barcodeLabel.setText(Messages.FiltrePopup_Barcode);
 		UIUtils.setFont(barcodeLabel);
 		
 		barcode = new Text(container, SWT.BORDER);
@@ -277,7 +277,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(9, 1).applyTo(barcode);
 		
 		final Label nameLabel = new Label(container, SWT.NONE);
-		nameLabel.setText("Denumire");
+		nameLabel.setText(Messages.FiltrePopup_Name);
 		UIUtils.setFont(nameLabel);
 		
 		denumire = new Text(container, SWT.BORDER);
@@ -285,7 +285,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(9, 1).applyTo(denumire);
 		
 		final Label gestiuneOpLabel = new Label(container, SWT.NONE);
-		gestiuneOpLabel.setText("Gestiune");
+		gestiuneOpLabel.setText(Messages.FiltrePopup_Inventory);
 		UIUtils.setFont(gestiuneOpLabel);
 		
 		gestiuneOp = new Combo(container, SWT.DROP_DOWN);
@@ -294,7 +294,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(9, 1).applyTo(gestiuneOp);
 		
 		final Label gestiuneDocLabel = new Label(container, SWT.NONE);
-		gestiuneDocLabel.setText("Gestiune Doc");
+		gestiuneDocLabel.setText(Messages.FiltrePopup_DocInventory);
 		UIUtils.setFont(gestiuneDocLabel);
 		
 		gestiuneDoc = new Combo(container, SWT.DROP_DOWN);
@@ -303,7 +303,7 @@ public class FiltrePopup extends PopupDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(9, 1).applyTo(gestiuneDoc);
 		
 		final Label userLabel = new Label(container, SWT.NONE);
-		userLabel.setText("Operator");
+		userLabel.setText(Messages.FiltrePopup_User);
 		UIUtils.setFont(userLabel);
 
 		user = new Combo(container, SWT.DROP_DOWN);
@@ -336,7 +336,7 @@ public class FiltrePopup extends PopupDialog
 
 					@Override public void error(final String details)
 					{
-						MessageDialog.openError(getShell(), "Eroare la filtrare", details);
+						MessageDialog.openError(getShell(), Messages.FiltrePopup_FilterError, details);
 						close();
 					}
 				}, sync, tipOp, category.getText(), extractLocalDate(from), extractLocalDate(to), selectedDocTypes(), nrDoc.getText(),
@@ -444,44 +444,44 @@ public class FiltrePopup extends PopupDialog
 		if (getShell() == null || getShell().isDisposed())
 			return;
 		
-		properties.put(prefix+".category", category.getText());
-		properties.put(prefix+".from", extractLocalDate(from));
-		properties.put(prefix+".to", extractLocalDate(to));
-		properties.put(prefix+".fromRec", extractLocalDate(fromRec));
-		properties.put(prefix+".toRec", extractLocalDate(toRec));
-		properties.put(prefix+".doc", doc.getSelection());
-		properties.put(prefix+".nrDoc", nrDoc.getText());
-		properties.put(prefix+".partner", partner.getSelectionIndex());
-		properties.put(prefix+".barcode", barcode.getText());
-		properties.put(prefix+".denumire", denumire.getText());
-		properties.put(prefix+".gestiuneOp", gestiuneOp.getSelectionIndex());
-		properties.put(prefix+".gestiuneDoc", gestiuneDoc.getSelectionIndex());
-		properties.put(prefix+".user", user.getSelectionIndex());
-		properties.put(prefix+".maxRows", maxRows.getText());
+		properties.put(prefix+".category", category.getText()); //$NON-NLS-1$
+		properties.put(prefix+".from", extractLocalDate(from)); //$NON-NLS-1$
+		properties.put(prefix+".to", extractLocalDate(to)); //$NON-NLS-1$
+		properties.put(prefix+".fromRec", extractLocalDate(fromRec)); //$NON-NLS-1$
+		properties.put(prefix+".toRec", extractLocalDate(toRec)); //$NON-NLS-1$
+		properties.put(prefix+".doc", doc.getSelection()); //$NON-NLS-1$
+		properties.put(prefix+".nrDoc", nrDoc.getText()); //$NON-NLS-1$
+		properties.put(prefix+".partner", partner.getSelectionIndex()); //$NON-NLS-1$
+		properties.put(prefix+".barcode", barcode.getText()); //$NON-NLS-1$
+		properties.put(prefix+".denumire", denumire.getText()); //$NON-NLS-1$
+		properties.put(prefix+".gestiuneOp", gestiuneOp.getSelectionIndex()); //$NON-NLS-1$
+		properties.put(prefix+".gestiuneDoc", gestiuneDoc.getSelectionIndex()); //$NON-NLS-1$
+		properties.put(prefix+".user", user.getSelectionIndex()); //$NON-NLS-1$
+		properties.put(prefix+".maxRows", maxRows.getText()); //$NON-NLS-1$
 	}
 	
 	public void loadState(final String prefix, final Properties properties)
 	{
-		category.setText(properties.getProperty(prefix+".category", EMPTY_STRING));
-		insertDate(from, (LocalDate)properties.getOrDefault(prefix+".from", LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())));
-		insertDate(to, (LocalDate)properties.getOrDefault(prefix+".to", LocalDate.now().with(TemporalAdjusters.lastDayOfMonth())));
-		insertDate(fromRec, (LocalDate)properties.getOrDefault(prefix+".fromRec", POSTGRES_MIN.toLocalDate()));
-		insertDate(toRec, (LocalDate)properties.getOrDefault(prefix+".toRec", POSTGRES_MAX.toLocalDate()));
-		final String[] docSavedItems = (String[]) properties.get(prefix+".doc");
+		category.setText(properties.getProperty(prefix+".category", EMPTY_STRING)); //$NON-NLS-1$
+		insertDate(from, (LocalDate)properties.getOrDefault(prefix+".from", LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()))); //$NON-NLS-1$
+		insertDate(to, (LocalDate)properties.getOrDefault(prefix+".to", LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()))); //$NON-NLS-1$
+		insertDate(fromRec, (LocalDate)properties.getOrDefault(prefix+".fromRec", POSTGRES_MIN.toLocalDate())); //$NON-NLS-1$
+		insertDate(toRec, (LocalDate)properties.getOrDefault(prefix+".toRec", POSTGRES_MAX.toLocalDate())); //$NON-NLS-1$
+		final String[] docSavedItems = (String[]) properties.get(prefix+".doc"); //$NON-NLS-1$
 		if (docSavedItems != null && doc.getItems().containsAll(ImmutableList.copyOf(docSavedItems)))
 			doc.setSelection(docSavedItems);
-		nrDoc.setText(properties.getProperty(prefix+".nrDoc", EMPTY_STRING));
-		partner.select((int)properties.getOrDefault(prefix+".partner", -1));
-		barcode.setText(properties.getProperty(prefix+".barcode", EMPTY_STRING));
-		denumire.setText(properties.getProperty(prefix+".denumire", EMPTY_STRING));
-		gestiuneOp.select((int)properties.getOrDefault(prefix+".gestiuneOp", -1));
-		gestiuneDoc.select((int)properties.getOrDefault(prefix+".gestiuneDoc", -1));
-		user.select((int)properties.getOrDefault(prefix+".user", -1));
-		maxRows.setText(properties.getProperty(prefix+".maxRows", "500"));
+		nrDoc.setText(properties.getProperty(prefix+".nrDoc", EMPTY_STRING)); //$NON-NLS-1$
+		partner.select((int)properties.getOrDefault(prefix+".partner", -1)); //$NON-NLS-1$
+		barcode.setText(properties.getProperty(prefix+".barcode", EMPTY_STRING)); //$NON-NLS-1$
+		denumire.setText(properties.getProperty(prefix+".denumire", EMPTY_STRING)); //$NON-NLS-1$
+		gestiuneOp.select((int)properties.getOrDefault(prefix+".gestiuneOp", -1)); //$NON-NLS-1$
+		gestiuneDoc.select((int)properties.getOrDefault(prefix+".gestiuneDoc", -1)); //$NON-NLS-1$
+		user.select((int)properties.getOrDefault(prefix+".user", -1)); //$NON-NLS-1$
+		maxRows.setText(properties.getProperty(prefix+".maxRows", "500")); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		if (!properties.containsKey(prefix+".gestiuneOp"))
+		if (!properties.containsKey(prefix+".gestiuneOp")) //$NON-NLS-1$
 			gestiuneOp.select(allGestiuni.indexOf(ClientSession.instance().getLoggedUser().getSelectedGestiune()));
-		if (!properties.containsKey(prefix+".partner"))
+		if (!properties.containsKey(prefix+".partner")) //$NON-NLS-1$
 			for (int i = 0; i < allPartners.size(); i++)
 			{
 				if (Partner.STANDARD_PARTNER_NAME.equalsIgnoreCase(allPartners.get(i).getName()))
@@ -577,7 +577,7 @@ public class FiltrePopup extends PopupDialog
 			break;
 
 		default:
-			throw new UnsupportedOperationException("Doar Receptie si Iesiri implementat! "+tipOp);
+			throw new UnsupportedOperationException(Messages.FiltrePopup_OpTypeUnsupported+tipOp);
 		}
 	}
 	

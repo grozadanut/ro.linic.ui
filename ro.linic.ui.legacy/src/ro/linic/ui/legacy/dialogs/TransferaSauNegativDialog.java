@@ -56,11 +56,11 @@ public class TransferaSauNegativDialog extends Dialog
 	protected void createButtonsForButtonBar(final Composite parent)
 	{
 		if (showTransferaTotButton)
-			createButton(parent, TRANSFERA_TOT_ID, "Transfera tot", false);
+			createButton(parent, TRANSFERA_TOT_ID, Messages.TransferaSauNegativDialog_TransferAll, false);
 		if (showTransferaButton)
-			createButton(parent, TRANSFERA_ID, "Transfera diferenta", false);
+			createButton(parent, TRANSFERA_ID, Messages.TransferaSauNegativDialog_TransferDifference, false);
 		
-		createButton(parent, INTRA_NEGATIV_ID, "Intra in negativ", true).setFocus();
+		createButton(parent, INTRA_NEGATIV_ID, Messages.TransferaSauNegativDialog_DontTransfer, true).setFocus();
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 	

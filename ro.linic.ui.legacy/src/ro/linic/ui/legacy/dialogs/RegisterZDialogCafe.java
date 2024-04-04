@@ -18,6 +18,7 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,8 +43,6 @@ import ro.linic.ui.legacy.session.UIUtils;
 
 public class RegisterZDialogCafe extends Dialog
 {
-	private static final String DESCRIPTION = "Introduceti valorile exact asa cum sunt scrise in raportul Z, fara a aduna sumele!";
-	
 	private Text bfz;
 	private DateTime data;
 	private Text nrCafele;
@@ -72,17 +71,17 @@ public class RegisterZDialogCafe extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Inregistreaza Z");
+		getShell().setText(Messages.RegisterZDialogCafe_Title);
 		
 		final Label descriptionLabel = new Label(contents, SWT.NONE);
-		descriptionLabel.setText(DESCRIPTION);
+		descriptionLabel.setText(Messages.RegisterZDialogCafe_Description);
 		final GridData descriptionGD = new GridData();
 		descriptionGD.horizontalSpan = 2;
 		descriptionLabel.setLayoutData(descriptionGD);
 		UIUtils.setFont(descriptionLabel);
 		
 		final Label bfzLabel = new Label(contents, SWT.NONE);
-		bfzLabel.setText("Nr BFZ");
+		bfzLabel.setText(Messages.RegisterZDialogCafe_Number);
 		UIUtils.setFont(bfzLabel);
 		
 		bfz = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -90,7 +89,7 @@ public class RegisterZDialogCafe extends Dialog
 		UIUtils.setFont(bfz);
 		
 		final Label dataLabel = new Label(contents, SWT.NONE);
-		dataLabel.setText("Data BFZ");
+		dataLabel.setText(Messages.RegisterZDialogCafe_Date);
 		UIUtils.setFont(dataLabel);
 		
 		data = new DateTime(contents, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
@@ -98,7 +97,7 @@ public class RegisterZDialogCafe extends Dialog
 		UIUtils.setFont(data);
 		
 		final Label nrCafeleLabel = new Label(contents, SWT.NONE);
-		nrCafeleLabel.setText("Contor rasnita");
+		nrCafeleLabel.setText(Messages.RegisterZDialogCafe_GrindCounter);
 		UIUtils.setFont(nrCafeleLabel);
 		
 		nrCafele = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -106,7 +105,7 @@ public class RegisterZDialogCafe extends Dialog
 		UIUtils.setFont(nrCafele);
 		
 		final Label discountLabel = new Label(contents, SWT.NONE);
-		discountLabel.setText("Discount");
+		discountLabel.setText(Messages.RegisterZDialogCafe_Discount);
 		UIUtils.setFont(discountLabel);
 		
 		discount = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -114,7 +113,7 @@ public class RegisterZDialogCafe extends Dialog
 		UIUtils.setFont(discount);
 		
 		final Label prodFinitLabel = new Label(contents, SWT.NONE);
-		prodFinitLabel.setText("Prod Finit");
+		prodFinitLabel.setText(Messages.RegisterZDialogCafe_FiniteProduct);
 		UIUtils.setFont(prodFinitLabel);
 		
 		prodFinit = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -122,7 +121,7 @@ public class RegisterZDialogCafe extends Dialog
 		UIUtils.setFont(prodFinit);
 		
 		final Label marfaLabel = new Label(contents, SWT.NONE);
-		marfaLabel.setText("Marfa");
+		marfaLabel.setText(Messages.RegisterZDialogCafe_Merchandise);
 		UIUtils.setFont(marfaLabel);
 		
 		marfa = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -130,7 +129,7 @@ public class RegisterZDialogCafe extends Dialog
 		UIUtils.setFont(marfa);
 		
 		final Label serviciiLabel = new Label(contents, SWT.NONE);
-		serviciiLabel.setText("Servicii");
+		serviciiLabel.setText(Messages.RegisterZDialogCafe_Services);
 		UIUtils.setFont(serviciiLabel);
 		
 		servicii = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -138,7 +137,7 @@ public class RegisterZDialogCafe extends Dialog
 		UIUtils.setFont(servicii);
 		
 		final Label bacsisLabel = new Label(contents, SWT.NONE);
-		bacsisLabel.setText("Bacsis");
+		bacsisLabel.setText(Messages.RegisterZDialogCafe_Tip);
 		UIUtils.setFont(bacsisLabel);
 		
 		bacsis = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -149,7 +148,7 @@ public class RegisterZDialogCafe extends Dialog
 				.collect(toImmutableMap(Function.identity(), contBancar ->
 				{
 					final Label cardLabel = new Label(contents, SWT.NONE);
-					cardLabel.setText("Card " + contBancar.displayName());
+					cardLabel.setText(NLS.bind(Messages.RegisterZDialogCafe_Card, contBancar.displayName()));
 					UIUtils.setFont(cardLabel);
 
 					final Text card = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -159,7 +158,7 @@ public class RegisterZDialogCafe extends Dialog
 				}));
 		
 		final Label totalTvaLabel = new Label(contents, SWT.NONE);
-		totalTvaLabel.setText("Total TVA");
+		totalTvaLabel.setText(Messages.RegisterZDialogCafe_VAT);
 		UIUtils.setFont(totalTvaLabel);
 		
 		totalTva = new Text(contents, SWT.SINGLE | SWT.BORDER);

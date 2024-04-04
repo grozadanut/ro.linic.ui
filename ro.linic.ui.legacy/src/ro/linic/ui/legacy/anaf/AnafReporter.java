@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -166,7 +167,7 @@ public class AnafReporter
 		else
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
 					response.get().getEntity() + NEWLINE +
-					"Reincarcati facturile!");
+					Messages.AnafReporter_ReloadBills);
 	}
 	
 	public static void downloadResponse(final String downloadId)
@@ -198,7 +199,7 @@ public class AnafReporter
 				Desktop.getDesktop().browseFileDirectory(new File(outputFileUri));
 			else
 				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
-						"Fisierul "+outputFileUri+" a fost salvat!");
+						NLS.bind(Messages.AnafReporter_FileSaved, outputFileUri));
 		}
 	}
 	
@@ -242,8 +243,7 @@ public class AnafReporter
 		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR))
 			Desktop.getDesktop().browseFileDirectory(new File(firstFileUri));
 		else
-			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
-					"Fisierele au fost salvate cu aceeasi denumire si extensia .pdf!");
+			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK", Messages.AnafReporter_AllSaved);
 	}
 	
 	public static void xmlToPdf(final String invoiceXml, final String outputFilename) throws IOException
@@ -271,7 +271,7 @@ public class AnafReporter
 			Desktop.getDesktop().browseFileDirectory(new File(outputFileUri));
 		else
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
-					"Fisierul "+outputFileUri+" a fost salvat!");
+					NLS.bind(Messages.AnafReporter_FileSaved, outputFileUri));
 	}
 	
 	public static Collection<ReceivedMessage> findAnafMessagesBetween(final LocalDateTime start, final LocalDateTime end)

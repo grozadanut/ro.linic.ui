@@ -19,10 +19,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
+import ro.linic.ui.anaf.connector.Messages;
 import ro.linic.ui.anaf.connector.internal.preferences.PreferenceKey;
 import ro.linic.ui.anaf.connector.services.AnafReporter;
 import ro.linic.ui.http.BodyProvider;
@@ -88,6 +90,6 @@ public class AnafReporterImpl implements AnafReporter {
 			Desktop.getDesktop().browseFileDirectory(new File(fileUri));
 		else
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
-					"Fisierul "+fileUri+" a fost salvat!");
+					NLS.bind(Messages.AnafReporterImpl_FileSaved, fileUri));
 	}
 }

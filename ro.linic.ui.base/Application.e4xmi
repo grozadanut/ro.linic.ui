@@ -1,25 +1,41 @@
 <?xml version="1.0" encoding="ASCII"?>
-<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_cGVhQI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.application">
+<application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_cGVhQI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.application">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_tbP-oI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimmedwindow.linic" label="Linic Desktop" iconURI="platform:/plugin/ro.linic.ui.base/icons/logo_256x256.png" x="0" y="0" width="800" height="1024">
     <mainMenu xmi:id="_cvKv8I0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.menu">
-      <children xsi:type="menu:Menu" xmi:id="_rWkeMI0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.menu" label="&amp;File" mnemonics="">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Cjyw8MfiEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handledmenuitem.save" label="&amp;Save" command="_mPIBcMfhEe6wm9FSKxJZow"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_1s9DMI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.saveall" label="Save &amp;All" command="_qpX2cI0NEe6qNdK_29XQrA"/>
+      <children xsi:type="menu:Menu" xmi:id="_rWkeMI0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.menu" label="%menu.label.file" mnemonics="">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Cjyw8MfiEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handledmenuitem.save" label="%handledmenuitem.label.save" command="_mPIBcMfhEe6wm9FSKxJZow"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_1s9DMI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.saveall" label="%handledmenuitem.label.saveall" command="_qpX2cI0NEe6qNdK_29XQrA"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_CgjRgI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.menuseparator.0"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_G8htkI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.exit" label="E&amp;xit" mnemonics="" command="_ufS_II0NEe6qNdK_29XQrA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_FOPcQOxFEe6ppJt5Ysxyww" elementId="ro.linic.ui.base.handledmenuitem.preferences" label="%handledmenuitem.label.preferences" command="_dHp94OxEEe6ppJt5Ysxyww"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_Z19DUPF4Ee6Y8NVamZwaxA" elementId="ro.linic.ui.base.menuseparator.1"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_G8htkI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.exit" label="%handledmenuitem.label.exit" mnemonics="" command="_ufS_II0NEe6qNdK_29XQrA"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_FA12sN0hEe65c_VQENcNPw" elementId="ro.linic.ui.base.menu.tools" label="&amp;Tools"/>
-      <children xsi:type="menu:MenuSeparator" xmi:id="_n-lUcMgDEe6wm9FSKxJZow" elementId="additions" toBeRendered="false" visible="false"/>
-      <children xsi:type="menu:Menu" xmi:id="_7PKrkKC3Ee6rhYQcX-gzIg" elementId="org.eclipse.ui.help.menu" label="&amp;Help" mnemonics="">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="Check for &amp;Updates" iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_update_obj.png" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_itTisMphEe652r2Ev0tOtA" elementId="ro.linic.ui.base.handledmenuitem.install" label="Install New &amp;Software..." iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_obj.png" mnemonics="" command="_gnjzoMpgEe652r2Ev0tOtA"/>
+      <children xsi:type="menu:Menu" xmi:id="_FA12sN0hEe65c_VQENcNPw" elementId="ro.linic.ui.base.menu.tools" label="%menu.label.tools"/>
+      <children xsi:type="menu:Menu" xmi:id="_7PKrkKC3Ee6rhYQcX-gzIg" elementId="org.eclipse.ui.help.menu" label="%menu.label.help" mnemonics="">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="%handledmenuitem.label.update" iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_update_obj.png" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_itTisMphEe652r2Ev0tOtA" elementId="ro.linic.ui.base.handledmenuitem.install" label="%handledmenuitem.label.install" iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_obj.png" mnemonics="" command="_gnjzoMpgEe652r2Ev0tOtA"/>
       </children>
     </mainMenu>
     <trimBars xmi:id="_nuIUsI0KEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimbar.top">
       <children xsi:type="menu:ToolBar" xmi:id="_JeTDkI0LEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.toolbar" accessibilityPhrase=""/>
+      <children xsi:type="menu:ToolControl" xmi:id="_bf5TsOw1Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.toolcontrol.filler.top" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.widgets.SpacerControl">
+        <tags>stretch</tags>
+      </children>
+      <children xsi:type="menu:ToolBar" xmi:id="_YAo1wPGfEe6Y8NVamZwaxA" elementId="ro.linic.ui.base.toolbar.right">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_57JN0Ow4Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handledtoolitem.language" label="" iconURI="platform:/plugin/ro.linic.ui.base/icons/usa_flag_32x32.png" command="_pfEYwOw_Ee6ppJt5Ysxyww">
+          <menu xmi:id="__7C6wOw4Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.menu.language">
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_OD5r0Ow5Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handledmenuitem.romana" label="" iconURI="platform:/plugin/ro.linic.ui.base/icons/ro_flag_32x32.png" command="_imphsOw6Ee6ppJt5Ysxyww">
+              <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_vO9a4PG9Ee6Y8NVamZwaxA" coreExpressionId="ro.linic.ui.base.locale.not.ro"/>
+            </children>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_VFpa0Ow6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handledmenuitem.english" label="" iconURI="platform:/plugin/ro.linic.ui.base/icons/usa_flag_32x32.png" command="_30G98Ow6Ee6ppJt5Ysxyww">
+              <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_nep_8PHAEe6Y8NVamZwaxA" coreExpressionId="ro.linic.ui.base.locale.not.default"/>
+            </children>
+          </menu>
+        </children>
+      </children>
     </trimBars>
     <trimBars xmi:id="_N-qkQNSEEe6-vvJup4LxvQ" elementId="ro.linic.ui.base.trimbar.bottom" side="Bottom">
-      <children xsi:type="menu:ToolControl" xmi:id="_GP1r0NSOEe6-vvJup4LxvQ" elementId="ro.linic.ui.base.toolcontrol.filler" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.widgets.SpacerControl">
+      <children xsi:type="menu:ToolControl" xmi:id="_GP1r0NSOEe6-vvJup4LxvQ" elementId="ro.linic.ui.base.toolcontrol.filler.bottom" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.widgets.SpacerControl">
         <tags>stretch</tags>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_QvbbsNSEEe6-vvJup4LxvQ" elementId="ro.linic.ui.base.toolcontrol.statusline" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.widgets.ProgressMonitorControl"/>
@@ -30,6 +46,10 @@
   <handlers xmi:id="_Cjd4EI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handler.exit" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.handlers.ExitHandler" command="_ufS_II0NEe6qNdK_29XQrA"/>
   <handlers xmi:id="_clxgYKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handler.update" contributionURI="bundleclass://ro.linic.ui.p2/ro.linic.ui.p2.handlers.UpdateHandler" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
   <handlers xmi:id="_p733oMpgEe652r2Ev0tOtA" elementId="ro.linic.ui.base.handler.install" contributionURI="bundleclass://ro.linic.ui.p2/ro.linic.ui.p2.handlers.InstallNewSoftwareHandler" command="_gnjzoMpgEe652r2Ev0tOtA"/>
+  <handlers xmi:id="_-eS-AOw6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handler.romana" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.RoLanguageHandler" command="_imphsOw6Ee6ppJt5Ysxyww"/>
+  <handlers xmi:id="_K5zccOw7Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handler.english" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.EnLanguageHandler" command="_30G98Ow6Ee6ppJt5Ysxyww"/>
+  <handlers xmi:id="_sxDt8Ow_Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handler.language" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.LanguageHandler" command="_pfEYwOw_Ee6ppJt5Ysxyww"/>
+  <handlers xmi:id="_qjnMsOxEEe6ppJt5Ysxyww" elementId="com.opcoach.e4.preferences.mainmenu.preferenceshandler" contributionURI="bundleclass://com.opcoach.e4.preferences/com.opcoach.e4.preferences.handlers.E4PreferencesHandler" command="_dHp94OxEEe6ppJt5Ysxyww"/>
   <bindingTables xmi:id="_DD1OIMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.bindingtable.root" bindingContext="_2nYUgMZ8Ee6UtK1nDebMVw">
     <bindings xmi:id="_LjDdMMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1q" keySequence="M1+Q" command="_ufS_II0NEe6qNdK_29XQrA">
       <tags>type:user</tags>
@@ -48,11 +68,15 @@
     <children xmi:id="_5OvYUMZ8Ee6UtK1nDebMVw" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
     <children xmi:id="_72caYMZ8Ee6UtK1nDebMVw" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
   </rootContext>
-  <commands xmi:id="_mPIBcMfhEe6wm9FSKxJZow" elementId="org.eclipse.ui.file.save" commandName="Save"/>
-  <commands xmi:id="_qpX2cI0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.saveAll" commandName="Save All"/>
-  <commands xmi:id="_ufS_II0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.exit" commandName="Exit"/>
-  <commands xmi:id="_YZa0sKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.command.update" commandName="Update"/>
-  <commands xmi:id="_gnjzoMpgEe652r2Ev0tOtA" elementId="ro.linic.ui.base.command.install" commandName="Install New Software..."/>
+  <commands xmi:id="_mPIBcMfhEe6wm9FSKxJZow" elementId="org.eclipse.ui.file.save" commandName="%command.commandname.save"/>
+  <commands xmi:id="_qpX2cI0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.saveAll" commandName="%command.commandname.saveall"/>
+  <commands xmi:id="_ufS_II0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.exit" commandName="%command.commandname.exit"/>
+  <commands xmi:id="_YZa0sKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.command.update" commandName="%command.commandname.update"/>
+  <commands xmi:id="_gnjzoMpgEe652r2Ev0tOtA" elementId="ro.linic.ui.base.command.install" commandName="%command.commandname.install"/>
+  <commands xmi:id="_imphsOw6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.romana" commandName="%command.commandname.romana"/>
+  <commands xmi:id="_30G98Ow6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.english" commandName="%command.commandname.english"/>
+  <commands xmi:id="_pfEYwOw_Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.language" commandName="%command.commandname.language"/>
+  <commands xmi:id="_dHp94OxEEe6ppJt5Ysxyww" elementId="org.eclipse.ui.window.preferences" commandName="%command.commandname.preferences"/>
   <addons xmi:id="_cGVhQY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_cGVhQo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_cGVhQ40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="ro.linic.ui.base.feature"
-      label="Base Feature"
+      label="Base Module"
       version="0.0.3"
       provider-name="LINIC">
 
    <description url="http://www.example.com/description">
-      Acest modul asigura functionalitatile de baza necesare pentru
+      Acest modul asigură funcționalitățile de bază necesare pentru
 toate celelalte module.
-
-Printre functionalitati se numara:
-- instalarea, dezinstalarea, updatarea fiecarui modul in parte
-- sistem unificat pentru managementul preferintelor utilizatorilor
+Printre funcționalități se numără:
+- instalarea, dezinstalarea, actualizarea fiecărui modul în parte
+- sistem unificat pentru managementul preferințelor utilizatorilor
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -36,6 +35,10 @@ Printre functionalitati se numara:
 
    <plugin
          id="ro.linic.ui.http"
+         version="0.0.0"/>
+
+   <plugin
+         id="ro.linic.ui.jface.localization"
          version="0.0.0"/>
 
 </feature>

@@ -12,9 +12,12 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.core.runtime.jobs.ProgressProvider;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ProgressBar;
+
+import ro.linic.ui.base.Messages;
 
 public class ProgressMonitorControl {
 
@@ -86,7 +89,7 @@ public class ProgressMonitorControl {
 							
 							if (runningTasks > 0) {
 								// --- some tasks are still running ---
-								progressBar.setToolTipText("Currently running: " + runningTasks + " jobs");
+								progressBar.setToolTipText(NLS.bind(Messages.ProgressMonitorControl_RunningTasks, runningTasks));
 
 							} else {
 								// --- all tasks are done ---

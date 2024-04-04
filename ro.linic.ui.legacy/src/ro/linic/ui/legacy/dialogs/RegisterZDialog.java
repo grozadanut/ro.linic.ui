@@ -17,6 +17,7 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -41,8 +42,6 @@ import ro.linic.ui.legacy.session.UIUtils;
 
 public class RegisterZDialog extends Dialog
 {
-	private static final String DESCRIPTION = "Introduceti valorile exact asa cum sunt scrise in raportul Z, fara a aduna sumele!";
-	
 	private Text bfz;
 	private DateTime data;
 	private Text discount;
@@ -66,17 +65,17 @@ public class RegisterZDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Inregistreaza Z");
+		getShell().setText(Messages.RegisterZDialog_Title);
 		
 		final Label descriptionLabel = new Label(contents, SWT.NONE);
-		descriptionLabel.setText(DESCRIPTION);
+		descriptionLabel.setText(Messages.RegisterZDialog_Description);
 		final GridData descriptionGD = new GridData();
 		descriptionGD.horizontalSpan = 2;
 		descriptionLabel.setLayoutData(descriptionGD);
 		UIUtils.setFont(descriptionLabel);
 		
 		final Label bfzLabel = new Label(contents, SWT.NONE);
-		bfzLabel.setText("Nr BFZ");
+		bfzLabel.setText(Messages.RegisterZDialog_Number);
 		UIUtils.setFont(bfzLabel);
 		
 		bfz = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -84,7 +83,7 @@ public class RegisterZDialog extends Dialog
 		UIUtils.setFont(bfz);
 		
 		final Label dataLabel = new Label(contents, SWT.NONE);
-		dataLabel.setText("Data BFZ");
+		dataLabel.setText(Messages.RegisterZDialog_Date);
 		UIUtils.setFont(dataLabel);
 		
 		data = new DateTime(contents, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
@@ -92,7 +91,7 @@ public class RegisterZDialog extends Dialog
 		UIUtils.setFont(data);
 		
 		final Label discountLabel = new Label(contents, SWT.NONE);
-		discountLabel.setText("Discount");
+		discountLabel.setText(Messages.RegisterZDialog_Discount);
 		UIUtils.setFont(discountLabel);
 		
 		discount = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -100,7 +99,7 @@ public class RegisterZDialog extends Dialog
 		UIUtils.setFont(discount);
 		
 		final Label marfaLabel = new Label(contents, SWT.NONE);
-		marfaLabel.setText("Numerar");
+		marfaLabel.setText(Messages.RegisterZDialog_Cash);
 		UIUtils.setFont(marfaLabel);
 		
 		marfa = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -111,7 +110,7 @@ public class RegisterZDialog extends Dialog
 				.collect(toImmutableMap(Function.identity(), contBancar ->
 				{
 					final Label cardLabel = new Label(contents, SWT.NONE);
-					cardLabel.setText("Card " + contBancar.displayName());
+					cardLabel.setText(NLS.bind(Messages.RegisterZDialog_Card, contBancar.displayName()));
 					UIUtils.setFont(cardLabel);
 
 					final Text card = new Text(contents, SWT.SINGLE | SWT.BORDER);

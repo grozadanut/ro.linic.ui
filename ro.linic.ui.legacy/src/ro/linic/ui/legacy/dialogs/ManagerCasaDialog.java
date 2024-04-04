@@ -20,6 +20,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -60,38 +61,38 @@ public class ManagerCasaDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
-		getShell().setText("Manager Casa");
+		getShell().setText(Messages.ManagerCasaDialog_Title);
 		
 		anulareBonFiscal = new Button(contents, SWT.PUSH);
-		anulareBonFiscal.setText("Anuleaza Bon Fiscal");
+		anulareBonFiscal.setText(Messages.ManagerCasaDialog_CancelReceipt);
 		anulareBonFiscal.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		anulareBonFiscal.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		anulareBonFiscal.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(anulareBonFiscal);
 		
 		raportX = new Button(contents, SWT.PUSH);
-		raportX.setText("raport X");
+		raportX.setText(Messages.ManagerCasaDialog_ReportX);
 		raportX.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		raportX.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		raportX.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(raportX);
 		
 		raportD = new Button(contents, SWT.PUSH);
-		raportD.setText("raport D");
+		raportD.setText(Messages.ManagerCasaDialog_ReportD);
 		raportD.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		raportD.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		raportD.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(raportD);
 		
 		raportZ = new Button(contents, SWT.PUSH);
-		raportZ.setText("raport Z");
+		raportZ.setText(Messages.ManagerCasaDialog_ReportZ);
 		raportZ.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		raportZ.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		raportZ.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(raportZ);
 		
 		raportMF = new Button(contents, SWT.PUSH);
-		raportMF.setText("raport MF");
+		raportMF.setText(Messages.ManagerCasaDialog_ReportMF);
 		raportMF.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		raportMF.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		raportMF.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -195,7 +196,7 @@ public class ManagerCasaDialog extends Dialog
 		@Override public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 		{
 			final SubMonitor sub = SubMonitor.convert(monitor, IProgressMonitor.UNKNOWN);
-			sub.beginTask("Exporta Raport MF", IProgressMonitor.UNKNOWN);
+			sub.beginTask(Messages.ManagerCasaDialog_ExportMF, IProgressMonitor.UNKNOWN);
 
 			Result resultCode;
 			try {
@@ -209,9 +210,9 @@ public class ManagerCasaDialog extends Dialog
 				@Override public void run()
 				{
 					if (resultCode.isOk())
-						MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Succes", "Raportul a fost exportat!");
+						MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Success, Messages.ManagerCasaDialog_ReportExported);
 					else
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "Cod: "+resultCode.error());
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Error, NLS.bind(Messages.ManagerCasaDialog_ErrorCode, resultCode.error()));
 				}
 			});
 		}

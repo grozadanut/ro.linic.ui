@@ -91,10 +91,10 @@ public class UserDialog extends TitleAreaDialog
 		final Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayout(new GridLayout(3, false));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(contents);
-		setTitle("Utilizator");
+		setTitle(Messages.UserDialog_Title);
 		
 		final Label emailLabel = new Label(contents, SWT.NONE);
-		emailLabel.setText("Email");
+		emailLabel.setText(Messages.UserDialog_Email);
 		UIUtils.setFont(emailLabel);
 		
 		email = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -102,7 +102,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(email);
 		
 		final Label nameLabel = new Label(contents, SWT.NONE);
-		nameLabel.setText("Nume");
+		nameLabel.setText(Messages.UserDialog_Name);
 		UIUtils.setFont(nameLabel);
 		
 		name = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -110,7 +110,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(name);
 		
 		final Label phoneLabel = new Label(contents, SWT.NONE);
-		phoneLabel.setText("Telefon");
+		phoneLabel.setText(Messages.UserDialog_Phone);
 		UIUtils.setFont(phoneLabel);
 		
 		phone = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -118,7 +118,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(phone);
 		
 		final Label passwordLabel = new Label(contents, SWT.NONE);
-		passwordLabel.setText("Parola");
+		passwordLabel.setText(Messages.UserDialog_Password);
 		UIUtils.setFont(passwordLabel);
 		
 		password = new Text(contents, SWT.PASSWORD | SWT.BORDER);
@@ -126,11 +126,11 @@ public class UserDialog extends TitleAreaDialog
 		UIUtils.setFont(password);
 		
 		nologin = new Button(contents, SWT.CHECK);
-		nologin.setText("Fara login");
+		nologin.setText(Messages.UserDialog_Nologin);
 		UIUtils.setFont(nologin);
 		
 		final Label cnpLabel = new Label(contents, SWT.NONE);
-		cnpLabel.setText("CNP");
+		cnpLabel.setText(Messages.UserDialog_SSN);
 		UIUtils.setFont(cnpLabel);
 		
 		cnp = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -138,7 +138,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(cnp);
 		
 		final Label roleLabel = new Label(contents, SWT.NONE);
-		roleLabel.setText("Rol");
+		roleLabel.setText(Messages.UserDialog_Role);
 		UIUtils.setFont(roleLabel);
 		
 		role = new Combo(contents, SWT.DROP_DOWN);
@@ -147,7 +147,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(role);
 		
 		final Label gestiuneLabel = new Label(contents, SWT.NONE);
-		gestiuneLabel.setText("Gestiune");
+		gestiuneLabel.setText(Messages.UserDialog_Inventory);
 		UIUtils.setFont(gestiuneLabel);
 		
 		selectedGestiune = new Combo(contents, SWT.DROP_DOWN);
@@ -159,7 +159,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(selectedGestiune);
 		
 		final Label companyLabel = new Label(contents, SWT.NONE);
-		companyLabel.setText("Companie");
+		companyLabel.setText(Messages.UserDialog_Company);
 		UIUtils.setFont(companyLabel);
 		
 		selectedCompany = new Combo(contents, SWT.DROP_DOWN);
@@ -168,7 +168,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(selectedCompany);
 		
 		final Label bonusSalarThresholdLabel = new Label(contents, SWT.NONE);
-		bonusSalarThresholdLabel.setText("Prag Bonus Salar(Ron/Zi)");
+		bonusSalarThresholdLabel.setText(Messages.UserDialog_IncomeBonusThreshold);
 		UIUtils.setFont(bonusSalarThresholdLabel);
 		
 		bonusSalarThreshold = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -176,7 +176,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(bonusSalarThreshold);
 		
 		final Label bonusSalarPercentLabel = new Label(contents, SWT.NONE);
-		bonusSalarPercentLabel.setText("% din profit Bonus Salar");
+		bonusSalarPercentLabel.setText(Messages.UserDialog_IncomeBonusPercent);
 		UIUtils.setFont(bonusSalarPercentLabel);
 		
 		bonusSalarPercent = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -184,7 +184,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(bonusSalarPercent);
 		
 		final Label masiniLabel = new Label(contents, SWT.NONE);
-		masiniLabel.setText("Masini");
+		masiniLabel.setText(Messages.UserDialog_Cars);
 		UIUtils.setFont(masiniLabel);
 		
 		masini = new List(contents, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
@@ -193,7 +193,7 @@ public class UserDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 80).span(2, 1).applyTo(masini);
 		
 		final Label semnaturaLabel = new Label(contents, SWT.NONE);
-		semnaturaLabel.setText("Semnatura");
+		semnaturaLabel.setText(Messages.UserDialog_Signature);
 		UIUtils.setFont(semnaturaLabel);
 		
 		semnaturaImage = new ImagePicker(contents, SWT.PUSH);
@@ -201,7 +201,7 @@ public class UserDialog extends TitleAreaDialog
 		UIUtils.setFont(semnaturaImage.widget());
 		
 		final Label stampilaLabel = new Label(contents, SWT.NONE);
-		stampilaLabel.setText("Stampila");
+		stampilaLabel.setText(Messages.UserDialog_Stamp);
 		UIUtils.setFont(stampilaLabel);
 		
 		stampilaImage = new ImagePicker(contents, SWT.PUSH);
@@ -251,27 +251,27 @@ public class UserDialog extends TitleAreaDialog
 	{
 		if (isEmpty(email.getText()))
 		{
-			setErrorMessage("Emailul este obligatoriu!");
+			setErrorMessage(Messages.UserDialog_EmailMandatory);
 			return;
 		}
 		if (isEmpty(cnp.getText()))
 		{
-			setErrorMessage("CNP-ul este obligatoriu!");
+			setErrorMessage(Messages.UserDialog_SSNMandatory);
 			return;
 		}
 		if (!selectedGestiune().isPresent())
 		{
-			setErrorMessage("Gestiunea este obligatorie!");
+			setErrorMessage(Messages.UserDialog_InventoryMandatory);
 			return;
 		}
 		if (!selectedCompany().isPresent())
 		{
-			setErrorMessage("Compania este obligatorie!");
+			setErrorMessage(Messages.UserDialog_CompanyMandatory);
 			return;
 		}
 		if (!selectedRole().isPresent())
 		{
-			setErrorMessage("Rolul este obligatoriu!");
+			setErrorMessage(Messages.UserDialog_RoleMandatory);
 			return;
 		}
 		

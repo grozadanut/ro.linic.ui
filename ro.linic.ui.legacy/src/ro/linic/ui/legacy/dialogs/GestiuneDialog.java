@@ -39,10 +39,10 @@ public class GestiuneDialog extends TitleAreaDialog
 		final Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayout(new GridLayout(2, false));
 		contents.setLayoutData(new GridData(GridData.FILL_BOTH));
-		setTitle("Gestiune");
+		setTitle(Messages.GestiuneDialog_Title);
 		
 		final Label nameLabel = new Label(contents, SWT.NONE);
-		nameLabel.setText("Nume");
+		nameLabel.setText(Messages.GestiuneDialog_Name);
 		UIUtils.setFont(nameLabel);
 		
 		name = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -50,7 +50,7 @@ public class GestiuneDialog extends TitleAreaDialog
 		UIUtils.setFont(name);
 		
 		final Label importNameLabel = new Label(contents, SWT.NONE);
-		importNameLabel.setText("Nume scurt");
+		importNameLabel.setText(Messages.GestiuneDialog_ImportName);
 		UIUtils.setFont(importNameLabel);
 		
 		importName = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -66,13 +66,13 @@ public class GestiuneDialog extends TitleAreaDialog
 	{
 		if (isEmpty(name.getText()))
 		{
-			setErrorMessage("Numele este obligatoriu!");
+			setErrorMessage(Messages.GestiuneDialog_MandatoryName);
 			return;
 		}
 		
 		if (isEmpty(importName.getText()))
 		{
-			setErrorMessage("Numele scurt este obligatoriu!");
+			setErrorMessage(Messages.GestiuneDialog_MandatoryImportName);
 			return;
 		}
 		

@@ -41,10 +41,10 @@ public class ContBancarDialog extends TitleAreaDialog
 		final Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayout(new GridLayout(2, false));
 		contents.setLayoutData(new GridData(GridData.FILL_BOTH));
-		setTitle("Cont Bancar");
+		setTitle(Messages.ContBancarDialog_Title);
 		
 		final Label nameLabel = new Label(contents, SWT.NONE);
-		nameLabel.setText("Nume");
+		nameLabel.setText(Messages.ContBancarDialog_Name);
 		UIUtils.setFont(nameLabel);
 		
 		name = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -52,7 +52,7 @@ public class ContBancarDialog extends TitleAreaDialog
 		UIUtils.setFont(name);
 		
 		final Label ibanLabel = new Label(contents, SWT.NONE);
-		ibanLabel.setText("IBAN");
+		ibanLabel.setText(Messages.ContBancarDialog_IBAN);
 		UIUtils.setFont(ibanLabel);
 		
 		iban = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -60,7 +60,7 @@ public class ContBancarDialog extends TitleAreaDialog
 		UIUtils.setFont(iban);
 		
 		final Label bancaLabel = new Label(contents, SWT.NONE);
-		bancaLabel.setText("Banca");
+		bancaLabel.setText(Messages.ContBancarDialog_Bank);
 		UIUtils.setFont(bancaLabel);
 		
 		banca = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -68,7 +68,7 @@ public class ContBancarDialog extends TitleAreaDialog
 		UIUtils.setFont(banca);
 		
 		final Label valutaLabel = new Label(contents, SWT.NONE);
-		valutaLabel.setText("Valuta");
+		valutaLabel.setText(Messages.ContBancarDialog_Currency);
 		UIUtils.setFont(valutaLabel);
 		
 		valuta = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -84,13 +84,13 @@ public class ContBancarDialog extends TitleAreaDialog
 	{
 		if (isEmpty(name.getText()))
 		{
-			setErrorMessage("Numele este obligatoriu!");
+			setErrorMessage(Messages.ContBancarDialog_NameMandatory);
 			return;
 		}
 		
 		if (isEmpty(iban.getText()))
 		{
-			setErrorMessage("IBAN-ul este obligatoriu!");
+			setErrorMessage(Messages.ContBancarDialog_IBANMandatory);
 			return;
 		}
 		

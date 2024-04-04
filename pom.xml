@@ -87,6 +87,7 @@
    <module>ro.linic.ui.pos.base</module>
    <module>ro.linic.ui.workbench</module>
    <module>ro.linic.ui.security</module>
+   <module>ro.linic.ui.jface.localization</module>
  </modules>
  
  <profiles>

@@ -25,11 +25,13 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
+import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
@@ -40,16 +42,16 @@ import ro.linic.util.commons.StringUtils;
 @Component
 public class FiscalNetECRDriver implements ECRDriver {
 	private static final Logger log = Logger.getLogger(FiscalNetECRDriver.class.getName());
-	private static final String ECR_REPORT_DATE_PATTERN = "dd/MM/yyyy HH:mm:ss";
+	private static final String ECR_REPORT_DATE_PATTERN = "dd/MM/yyyy HH:mm:ss"; //$NON-NLS-1$
 
 	private static String formatPrice(final BigDecimal price) {
 		// cu 2 zecimale fara delimitator (ex. 1000 – pentru 10 RON)
-		return price.multiply(new BigDecimal("100")).setScale(0, RoundingMode.HALF_EVEN).toString();
+		return price.multiply(new BigDecimal("100")).setScale(0, RoundingMode.HALF_EVEN).toString(); //$NON-NLS-1$
 	}
 	
 	private static String formatQuantity(final BigDecimal quantity) {
 		// CANTITATE – cu 3 zecimale fara delimitator (ex. 1000 – pentru 1)
-		return quantity.multiply(new BigDecimal("1000")).setScale(0, RoundingMode.HALF_EVEN).toString();
+		return quantity.multiply(new BigDecimal("1000")).setScale(0, RoundingMode.HALF_EVEN).toString(); //$NON-NLS-1$
 	}
 	
 	@Override
@@ -67,13 +69,13 @@ public class FiscalNetECRDriver implements ECRDriver {
 		
 		
 		final StringBuilder ecrCommands = new StringBuilder();
-		taxId.filter(StringUtils::notEmpty).ifPresent(tid -> ecrCommands.append("CF^"+tid).append(NEWLINE));
+		taxId.filter(StringUtils::notEmpty).ifPresent(tid -> ecrCommands.append("CF^"+tid).append(NEWLINE)); //$NON-NLS-1$
 		ecrCommands.append(saleLines(receipt));
 		
 		/* close receipt
 		 * P^TipPlata(1,2,3,4,5,…)^VALOARE 
 		 */
-		ecrCommands.append(MessageFormat.format("P^{0}^{1}", mapPaymentType(paymentType),
+		ecrCommands.append(MessageFormat.format("P^{0}^{1}", mapPaymentType(paymentType), //$NON-NLS-1$
 				formatPrice(receipt.total())));
 		
 		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
@@ -83,16 +85,16 @@ public class FiscalNetECRDriver implements ECRDriver {
 		// Tipuri de plata: 1=Numerar, 2=Card, 3=Credit, 4=Tichet masa, 5=Tichet valoric, 6=Voucher, 7=Plata moderna, 
 		// 8=Alte modalitati, 9=Alte modalitati
 		switch (paymentType) {
-		case CASH: return "1";
-		case CARD: return "2";
-		case CREDIT: return "3";
-		case MEAL_TICKET: return "4";
-		case VALUE_TICKET: return "5";
-		case VOUCHER: return "6";
-		case MODERN_PAYMENT: return "7";
-		case OTHER: return "8";
+		case CASH: return "1"; //$NON-NLS-1$
+		case CARD: return "2"; //$NON-NLS-1$
+		case CREDIT: return "3"; //$NON-NLS-1$
+		case MEAL_TICKET: return "4"; //$NON-NLS-1$
+		case VALUE_TICKET: return "5"; //$NON-NLS-1$
+		case VOUCHER: return "6"; //$NON-NLS-1$
+		case MODERN_PAYMENT: return "7"; //$NON-NLS-1$
+		case OTHER: return "8"; //$NON-NLS-1$
 		default:
-			throw new IllegalArgumentException("Unexpected value: " + paymentType);
+			throw new IllegalArgumentException(NLS.bind(Messages.FiscalNetECRDriver_PaymentTypeError, paymentType));
 		}
 	}
 
@@ -113,10 +115,10 @@ public class FiscalNetECRDriver implements ECRDriver {
 		 * Comanda Majorare valorica
 		 * MV^VALOARE
 		 */
-		ecrCommands.append("ST^").append(NEWLINE);
+		ecrCommands.append("ST^").append(NEWLINE); //$NON-NLS-1$
 		if (receipt.allowanceCharge() != null)
-			ecrCommands.append(MessageFormat.format("{0}^{1}",
-					safeString(receipt.allowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"),
+			ecrCommands.append(MessageFormat.format("{0}^{1}", //$NON-NLS-1$
+					safeString(receipt.allowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"), //$NON-NLS-1$ //$NON-NLS-2$
 					safeString(receipt.allowanceCharge(), AllowanceCharge::amountAbs, FiscalNetECRDriver::formatPrice)))
 			.append(NEWLINE);
 
@@ -133,7 +135,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 		 * GRDEP – grupa de articole, daca modelul de casa suporta (1,2,3,4,5,…) daca nu se completeaza cu 1
 		 */
 		final StringBuilder ecrCommands = new StringBuilder();
-		ecrCommands.append(MessageFormat.format("S^{0}^{1}^{2}^{3}^{4}^{5}", 
+		ecrCommands.append(MessageFormat.format("S^{0}^{1}^{2}^{3}^{4}^{5}",  //$NON-NLS-1$
 				line.name(),
 				formatPrice(line.price()),
 				formatQuantity(line.quantity()),
@@ -147,8 +149,8 @@ public class FiscalNetECRDriver implements ECRDriver {
 		 * MV^VALOARE
 		 */
 		if (line.allowanceCharge() != null)
-			ecrCommands.append(NEWLINE).append(MessageFormat.format("{0}^{1}",
-					safeString(line.allowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"),
+			ecrCommands.append(NEWLINE).append(MessageFormat.format("{0}^{1}", //$NON-NLS-1$
+					safeString(line.allowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"), //$NON-NLS-1$ //$NON-NLS-2$
 					safeString(line.allowanceCharge(), AllowanceCharge::amountAbs, FiscalNetECRDriver::formatPrice)));
 		return ecrCommands.toString();
 	}
@@ -156,21 +158,21 @@ public class FiscalNetECRDriver implements ECRDriver {
 	@Override
 	public void reportZ() {
 		final StringBuilder ecrCommands = new StringBuilder();
-		ecrCommands.append("Z^");
+		ecrCommands.append("Z^"); //$NON-NLS-1$
 		sendToEcr(ecrCommands);
 	}
 
 	@Override
 	public void reportX() {
 		final StringBuilder ecrCommands = new StringBuilder();
-		ecrCommands.append("X^");
+		ecrCommands.append("X^"); //$NON-NLS-1$
 		sendToEcr(ecrCommands);
 	}
 
 	@Override
 	public void reportD() {
-		Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), "Eroare",
-				"Driverul nu permite aceasta operatiune"));
+		Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.FiscalNetECRDriver_Error,
+				Messages.FiscalNetECRDriver_OperationNotPermitted));
 	}
 
 	@Override
@@ -178,7 +180,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 			final String chosenDirectory) {
 		final StringBuilder ecrCommands = new StringBuilder();
 
-		ecrCommands.append(MessageFormat.format("RF^{0}^{1}^{2}", 
+		ecrCommands.append(MessageFormat.format("RF^{0}^{1}^{2}",  //$NON-NLS-1$
 				reportStart.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)),
 				reportEnd.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)),
 				chosenDirectory));
@@ -188,7 +190,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 	@Override
 	public void cancelReceipt() {
 		final StringBuilder ecrCommands = new StringBuilder();
-		ecrCommands.append("VB^");
+		ecrCommands.append("VB^"); //$NON-NLS-1$
 		sendToEcr(ecrCommands);
 	}
 	
@@ -201,10 +203,10 @@ public class FiscalNetECRDriver implements ECRDriver {
 			
 			final String commandFolderPath = prefs.get(PreferenceKey.FISCAL_NET_COMMAND_FOLDER, PreferenceKey.FISCAL_NET_COMMAND_FOLDER_DEF);
 			int i = 1;
-			String filename = System.currentTimeMillis()+"_"+i+".txt";
+			String filename = System.currentTimeMillis()+"_"+i+".txt"; //$NON-NLS-1$ //$NON-NLS-2$
 			
 			while (Files.exists(Paths.get(commandFolderPath, filename)))
-				filename = System.currentTimeMillis()+"_"+ ++i+".txt";
+				filename = System.currentTimeMillis()+"_"+ ++i+".txt"; //$NON-NLS-1$ //$NON-NLS-2$
 			
 			Files.write(Paths.get(commandFolderPath, filename), ecrCommands.toString().getBytes());
 			final String responseFolderPath = prefs.get(PreferenceKey.FISCAL_NET_RESPONSE_FOLDER, PreferenceKey.FISCAL_NET_RESPONSE_FOLDER_DEF);
@@ -212,8 +214,9 @@ public class FiscalNetECRDriver implements ECRDriver {
 		}
 		catch (final IOException e)
 		{
-			log.log(Level.SEVERE, "Error writting ecr commands", e);
-			Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), "Eroare", "Eroare la scrierea fisierului de comenzi: "+e.getMessage()));
+			log.log(Level.SEVERE, "Error writting ecr commands", e); //$NON-NLS-1$
+			Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.FiscalNetECRDriver_Error,
+					NLS.bind(Messages.FiscalNetECRDriver_ErrorWrittingFileNLS, e.getMessage())));
 			return Optional.empty();
 		}
 	}
@@ -228,7 +231,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 		@Override
 		public Result get() {
 			if (resultPath.isEmpty())
-				return Result.error("Error writting file to disk");
+				return Result.error(Messages.FiscalNetECRDriver_ErrorWrittingFile);
 			
 			try {
 				while (Files.notExists(resultPath.get()))
@@ -248,8 +251,8 @@ public class FiscalNetECRDriver implements ECRDriver {
 			{
 				final String[] lines = resultLines.toArray(String[]::new);
 				
-				if (lines[0].equalsIgnoreCase("BONOK=0"))
-					return Result.error(MessageFormat.format("{0}; {1}", lines[1], lines.length > 2 ? lines[2] : EMPTY_STRING));
+				if (lines[0].equalsIgnoreCase("BONOK=0")) //$NON-NLS-1$
+					return Result.error(MessageFormat.format("{0}; {1}", lines[1], lines.length > 2 ? lines[2] : EMPTY_STRING)); //$NON-NLS-1$
 				else
 				{
 					Files.deleteIfExists(resultPath.get());

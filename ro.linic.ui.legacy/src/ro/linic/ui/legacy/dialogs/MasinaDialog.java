@@ -49,10 +49,10 @@ public class MasinaDialog extends TitleAreaDialog
 		final Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayout(new GridLayout(2, false));
 		contents.setLayoutData(new GridData(GridData.FILL_BOTH));
-		setTitle("Masina");
+		setTitle(Messages.MasinaDialog_Title);
 		
 		final Label nrLabel = new Label(contents, SWT.NONE);
-		nrLabel.setText("Numar");
+		nrLabel.setText(Messages.MasinaDialog_Number);
 		UIUtils.setFont(nrLabel);
 		
 		nr = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -60,7 +60,7 @@ public class MasinaDialog extends TitleAreaDialog
 		UIUtils.setFont(nr);
 		
 		final Label marcaLabel = new Label(contents, SWT.NONE);
-		marcaLabel.setText("Marca");
+		marcaLabel.setText(Messages.MasinaDialog_Make);
 		UIUtils.setFont(marcaLabel);
 		
 		marca = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -68,7 +68,7 @@ public class MasinaDialog extends TitleAreaDialog
 		UIUtils.setFont(marca);
 		
 		final Label culoareLabel = new Label(contents, SWT.NONE);
-		culoareLabel.setText("Culoare");
+		culoareLabel.setText(Messages.MasinaDialog_Color);
 		UIUtils.setFont(culoareLabel);
 		
 		culoare = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -76,7 +76,7 @@ public class MasinaDialog extends TitleAreaDialog
 		UIUtils.setFont(culoare);
 		
 		final Label gestiuneLabel = new Label(contents, SWT.NONE);
-		gestiuneLabel.setText("Gestiune");
+		gestiuneLabel.setText(Messages.MasinaDialog_Inventory);
 		UIUtils.setFont(gestiuneLabel);
 		
 		gestiune = new Combo(contents, SWT.DROP_DOWN);
@@ -93,13 +93,13 @@ public class MasinaDialog extends TitleAreaDialog
 	{
 		if (isEmpty(nr.getText()))
 		{
-			setErrorMessage("Numarul este obligatoriu!");
+			setErrorMessage(Messages.MasinaDialog_NumberMandatory);
 			return;
 		}
 		
 		if (!selectedGestiune().isPresent())
 		{
-			setErrorMessage("Gestiunea este obligatorie!");
+			setErrorMessage(Messages.MasinaDialog_InventoryMandatory);
 			return;
 		}
 		

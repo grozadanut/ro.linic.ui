@@ -3,6 +3,8 @@ package ro.linic.ui.anaf.connector.internal.preferences;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 
+import ro.linic.ui.anaf.connector.Messages;
+
 public class XmlToPdfPage extends FieldEditorPreferencePage {
 
 	public XmlToPdfPage() {
@@ -11,6 +13,6 @@ public class XmlToPdfPage extends FieldEditorPreferencePage {
 
 	@Override
 	protected void createFieldEditors() {
-		addField(new BooleanFieldEditor(PreferenceKey.XML_TO_PDF_VALIDATE, "Valideaza fisierul XML inainte de a-l converti in PDF", getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceKey.XML_TO_PDF_VALIDATE, Messages.XmlToPdfPage_ValidateDesc, getFieldEditorParent()));
 	}
 }

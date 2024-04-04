@@ -8,6 +8,7 @@ import static ro.colibri.util.PresentationUtils.safeString;
 import java.io.Serializable;
 import java.util.List;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
@@ -340,9 +341,9 @@ public class ClasamentNatTable
 			
 			// cell painters
 			final RecenziiImagePainter recenziiImgPainter = new RecenziiImagePainter(0, true);
-			recenziiImgPainter.add(Recenzie.SMILEY, Icons.createImageResource(bundle, Icons.SMILEY_32x32_PATH, log).orElse(null));
-			recenziiImgPainter.add(Recenzie.NEUTRU, Icons.createImageResource(bundle, Icons.OK_SMILEY_32x32_PATH, log).orElse(null));
-			recenziiImgPainter.add(Recenzie.SAD, Icons.createImageResource(bundle, Icons.SAD_32x32_PATH, log).orElse(null));
+			recenziiImgPainter.add(Recenzie.SMILEY, Icons.createImageResource(bundle, Icons.SMILEY_32x32_PATH, ILog.get()).orElse(null));
+			recenziiImgPainter.add(Recenzie.NEUTRU, Icons.createImageResource(bundle, Icons.OK_SMILEY_32x32_PATH, ILog.get()).orElse(null));
+			recenziiImgPainter.add(Recenzie.SAD, Icons.createImageResource(bundle, Icons.SAD_32x32_PATH, ILog.get()).orElse(null));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_PAINTER,
 					recenziiImgPainter, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(recenziiColumn));

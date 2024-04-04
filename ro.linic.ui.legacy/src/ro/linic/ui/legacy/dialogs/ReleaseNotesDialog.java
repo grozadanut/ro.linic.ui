@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 
 public class ReleaseNotesDialog extends TitleAreaDialog
 {
-	public static final String RELEASE_FILEPATH_KEY = "release_filepath";
+	public static final String RELEASE_FILEPATH_KEY = "release_filepath"; //$NON-NLS-1$
 	
 	private Logger log;
 	
@@ -28,8 +28,8 @@ public class ReleaseNotesDialog extends TitleAreaDialog
 	protected Control createContents(final Composite parent)
 	{
 		final Control contents = super.createContents(parent);
-		setTitle("Update");
-		setMessage("Aplicatia si-a facut update la o noua versiune. Va rugam sa o porniti din nou!");
+		setTitle(Messages.ReleaseNotesDialog_Title);
+		setMessage(Messages.ReleaseNotesDialog_Message);
 		return contents;
 	}
 	

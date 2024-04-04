@@ -6,10 +6,7 @@ import java.net.URL;
 import java.util.logging.LogManager;
 
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.extensions.Preference;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.osgi.framework.FrameworkUtil;
 
@@ -18,8 +15,7 @@ import ro.linic.ui.p2.ui.Policy;
 public class E4LifeCycle {
 
 	@PostContextCreate
-	void postContextCreate(final IEclipseContext ctx, @Preference final IEclipsePreferences prefs, 
-			final UISynchronize sync) {
+	void postContextCreate(final IEclipseContext ctx) {
 		registerLogHandler();
 		registerP2Policy(ctx);
 	}

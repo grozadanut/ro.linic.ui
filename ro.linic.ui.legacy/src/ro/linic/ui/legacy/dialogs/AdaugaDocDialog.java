@@ -59,6 +59,7 @@ import ro.colibri.util.InvocationResult;
 import ro.colibri.util.PresentationUtils;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.legacy.session.Messages;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.wizards.InchideBonWizard;
 
@@ -170,7 +171,7 @@ public class AdaugaDocDialog extends Window
 		final Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayout(new GridLayout(3, false));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(contents);
-		getShell().setText("Adauga Document");
+		getShell().setText(Messages.AdaugaDocDialog_AddDoc);
 		
 		final Composite topBarContainer = new Composite(contents, SWT.NONE);
 		topBarContainer.setLayout(new GridLayout(2, false));
@@ -208,7 +209,7 @@ public class AdaugaDocDialog extends Window
 		GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.TOP).indent(5, 5).applyTo(documentClass);
 		
 		adauga = new Button(contents, SWT.PUSH);
-		adauga.setText("Adauga - F4");
+		adauga.setText(Messages.AdaugaDocDialog_Add);
 		adauga.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		adauga.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(adauga);
@@ -221,13 +222,13 @@ public class AdaugaDocDialog extends Window
 		docContainer.setLayout(new GridLayout(7, false));
 		
 		final Label docLabel = new Label(docContainer, SWT.NONE);
-		docLabel.setText("Tip Doc");
+		docLabel.setText(Messages.AdaugaDocDialog_DocType);
 		docLabel.setAlignment(SWT.CENTER);
 		UIUtils.setFont(docLabel);
 		GridDataFactory.fillDefaults().applyTo(docLabel);
 		
 		final Label nrDocLabel = new Label(docContainer, SWT.NONE);
-		nrDocLabel.setText("Numar");
+		nrDocLabel.setText(Messages.AdaugaDocDialog_DocNumber);
 		nrDocLabel.setAlignment(SWT.CENTER);
 		UIUtils.setFont(nrDocLabel);
 		GridDataFactory.fillDefaults().applyTo(nrDocLabel);
@@ -237,19 +238,19 @@ public class AdaugaDocDialog extends Window
 		autoNr.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GRAY));
 		
 		final Label dataDocLabel = new Label(docContainer, SWT.NONE);
-		dataDocLabel.setText("Data");
+		dataDocLabel.setText(Messages.AdaugaDocDialog_Date);
 		dataDocLabel.setAlignment(SWT.CENTER);
 		UIUtils.setFont(dataDocLabel);
 		GridDataFactory.fillDefaults().applyTo(dataDocLabel);
 		
 		final Label scadentaLabel = new Label(docContainer, SWT.NONE);
-		scadentaLabel.setText("Scadent");
+		scadentaLabel.setText(Messages.AdaugaDocDialog_Due);
 		scadentaLabel.setAlignment(SWT.CENTER);
 		UIUtils.setFont(scadentaLabel);
 		GridDataFactory.fillDefaults().applyTo(scadentaLabel);
 		
 		final Label tvaLabel = new Label(docContainer, SWT.NONE);
-		tvaLabel.setText("TVA%");
+		tvaLabel.setText(Messages.VAT_Percentage);
 		tvaLabel.setAlignment(SWT.CENTER);
 		UIUtils.setFont(tvaLabel);
 		GridDataFactory.fillDefaults().applyTo(tvaLabel);
@@ -295,13 +296,13 @@ public class AdaugaDocDialog extends Window
 		GridDataFactory.fillDefaults().applyTo(totalLabel);
 		
 		final Label totalTvaLabel = new Label(docContainer, SWT.NONE);
-		totalTvaLabel.setText("TVA");
+		totalTvaLabel.setText(Messages.VAT);
 		totalTvaLabel.setAlignment(SWT.CENTER);
 		UIUtils.setFont(totalTvaLabel);
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(totalTvaLabel);
 		
 		final Label nameLabel = new Label(docContainer, SWT.NONE);
-		nameLabel.setText("Descriere");
+		nameLabel.setText(Messages.AdaugaDocDialog_NameLabel);
 		nameLabel.setAlignment(SWT.CENTER);
 		UIUtils.setFont(nameLabel);
 		GridDataFactory.fillDefaults().span(3, 1).applyTo(nameLabel);
@@ -324,7 +325,7 @@ public class AdaugaDocDialog extends Window
 		GridDataFactory.fillDefaults().span(4, 1).applyTo(name);
 		
 		rpz = new Button(docContainer, SWT.CHECK);
-		rpz.setText("Daca aceasta operatie intra in raportul zilnic de gestiune al gestiunii curente, bifati aici");
+		rpz.setText(Messages.AdaugaDocDialog_RPZ);
 		rpz.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(rpz);
 		GridDataFactory.fillDefaults().span(7, 1).applyTo(rpz);

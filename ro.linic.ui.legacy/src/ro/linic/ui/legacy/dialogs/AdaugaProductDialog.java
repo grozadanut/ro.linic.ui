@@ -66,8 +66,8 @@ public class AdaugaProductDialog extends TitleAreaDialog
 	protected Control createContents(final Composite parent)
 	{
 		final Control contents = super.createContents(parent);
-		setTitle("Adauga Produs");
-		setMessage("Creeati un produs nou");
+		setTitle(Messages.AdaugaProductDialog_Title);
+		setMessage(Messages.AdaugaProductDialog_Message);
 		return contents;
 	}
 
@@ -80,14 +80,14 @@ public class AdaugaProductDialog extends TitleAreaDialog
 		container.setLayout(new GridLayout(2, false));
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		new Label(container, SWT.NONE).setText("Categorie");
+		new Label(container, SWT.NONE).setText(Messages.AdaugaProductDialog_Category);
 		category = new Combo(container, SWT.DROP_DOWN);
 		category.setItems(Product.ALL_CATEGORIES.toArray(new String[] {}));
 		category.select(Product.ALL_CATEGORIES.asList().indexOf(Product.MARFA_CATEGORY));
 		UIUtils.setFont(category);
 		GridDataFactory.swtDefaults().applyTo(category);
 		
-		new Label(container, SWT.NONE).setText("Raion");
+		new Label(container, SWT.NONE).setText(Messages.AdaugaProductDialog_Department);
 		raion = new Combo(container, SWT.DROP_DOWN);
 		raion.setItems(raioane.stream().map(Raion::displayName).toArray(String[]::new));
 		if (raioane.size() == 1)
@@ -95,32 +95,32 @@ public class AdaugaProductDialog extends TitleAreaDialog
 		UIUtils.setFont(raion);
 		GridDataFactory.swtDefaults().applyTo(raion);
 		
-		new Label(container, SWT.NONE).setText("Cod");
+		new Label(container, SWT.NONE).setText(Messages.AdaugaProductDialog_Code);
 		barcode = new Text(container, SWT.BORDER);
 		UIUtils.setFont(barcode);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(barcode);
 		
-		new Label(container, SWT.NONE).setText("Denumire");
+		new Label(container, SWT.NONE).setText(Messages.AdaugaProductDialog_Name);
 		name = new Text(container, SWT.BORDER);
 		UIUtils.setFont(name);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(name);
 		
-		new Label(container, SWT.NONE).setText("UM");
+		new Label(container, SWT.NONE).setText(Messages.UOM);
 		uom = new Text(container, SWT.BORDER);
 		UIUtils.setFont(uom);
 		GridDataFactory.swtDefaults().applyTo(uom);
 		
-		new Label(container, SWT.NONE).setText("UlPret fara TVA");
+		new Label(container, SWT.NONE).setText(Messages.AdaugaProductDialog_LastPriceNoVAT);
 		ulpFTVA = new Text(container, SWT.BORDER);
 		UIUtils.setFont(ulpFTVA);
 		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(ulpFTVA);
 		
-		new Label(container, SWT.NONE).setText("Pret");
+		new Label(container, SWT.NONE).setText(Messages.AdaugaProductDialog_Price);
 		pret = new Text(container, SWT.BORDER);
 		UIUtils.setFont(pret);
 		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(pret);
 		
-		new Label(container, SWT.NONE).setText("Stoc Min");
+		new Label(container, SWT.NONE).setText(Messages.AdaugaProductDialog_MinStock);
 		stocMin = new Text(container, SWT.BORDER);
 		UIUtils.setFont(stocMin);
 		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(stocMin);
@@ -128,13 +128,13 @@ public class AdaugaProductDialog extends TitleAreaDialog
 		adaosPercent = new Label(container, SWT.NONE);
 		adaosPercent.setAlignment(SWT.RIGHT);
 		adaosPercent.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
-		adaosPercent.setToolTipText("((PVcuTVA � PUAcuTVA) / PUAcuTVA) * 100");
+		adaosPercent.setToolTipText(Messages.MarginPercFormula);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(adaosPercent);
 		
 		adaosLei = new Label(container, SWT.NONE);
 		adaosLei.setAlignment(SWT.RIGHT);
 		adaosLei.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
-		adaosLei.setToolTipText("valVanzFaraTva-valAchFaraTva");
+		adaosLei.setToolTipText(Messages.MarginFormula);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(adaosLei);
 		
 		applyAdaosPopup(pret, () -> parse(ulpFTVA.getText()).multiply(tvaExtractDivisor),
@@ -189,13 +189,13 @@ public class AdaugaProductDialog extends TitleAreaDialog
 			parse(pret.getText())
 			.subtract(getLastBuyingPriceWithTva)
 			.divide(getLastBuyingPriceWithTva, 4, RoundingMode.HALF_EVEN)
-			.multiply(new BigDecimal("100"));
+			.multiply(new BigDecimal("100")); //$NON-NLS-1$
 		
 		final BigDecimal valVanzFaraTVA = parse(pret.getText()).divide(tvaExtractDivisor, 2, RoundingMode.HALF_EVEN);
 		final BigDecimal adaosComLei = valVanzFaraTVA.subtract(parse(ulpFTVA.getText()));
 		
-		adaosPercent.setText(MessageFormat.format("Ad.com={0}%", displayBigDecimal(adaosPerc)));
-		adaosLei.setText(MessageFormat.format("Ad.com(lei)={0}", displayBigDecimal(adaosComLei)));
+		adaosPercent.setText(MessageFormat.format(Messages.MarginPercNLS, displayBigDecimal(adaosPerc)));
+		adaosLei.setText(MessageFormat.format(Messages.MarginNLS, displayBigDecimal(adaosComLei)));
 	}
 
 	public void setCategory(final String category)

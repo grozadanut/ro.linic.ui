@@ -20,18 +20,18 @@
             category="ro.linic.ui.pos.base.preference.ecrpage"
             class="ro.linic.ui.pos.base.preferences.DudeECRDriverPage"
             id="ro.linic.ui.pos.base.preference.datecspage"
-            name="Datecs">
+            name="%page.name.datecs">
       </page>
       <page
             class="ro.linic.ui.pos.base.preferences.ECRDriverPage"
             id="ro.linic.ui.pos.base.preference.ecrpage"
-            name="Casa De Marcat">
+            name="%page.name.ecr">
       </page>
       <page
             category="ro.linic.ui.pos.base.preference.ecrpage"
             class="ro.linic.ui.pos.base.preferences.FiscalNetECRDriverPage"
             id="ro.linic.ui.pos.base.preference.partnerpage"
-            name="Partner">
+            name="%page.name.partner">
       </page>
    </extension>
 

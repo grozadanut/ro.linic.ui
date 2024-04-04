@@ -32,7 +32,7 @@
 			 <dependency>
 				 <groupId>ro.linic.util</groupId>
 				 <artifactId>commons</artifactId>
-				 <version>0.0.4</version>
+				 <version>0.0.5</version>
 				 <type>jar</type>
 			 </dependency>
 		 </dependencies>
@@ -475,7 +475,6 @@
 		<plugin id="org.eclipse.debug.core.source"/>
 		<plugin id="org.eclipse.compare.core"/>
 		<plugin id="org.eclipse.compare.core.source"/>
-		<plugin id="com.opcoach.e4.preferences.mainmenu"/>
 		<plugin id="com.opcoach.e4.preferences.source"/>
 		<plugin id="com.opcoach.e4.preferences"/>
 		<plugin id="wrapped.ro.linic.util.commons"/>

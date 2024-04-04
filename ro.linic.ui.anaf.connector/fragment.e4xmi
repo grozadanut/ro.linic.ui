@@ -2,10 +2,10 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_SrUmEI0GEe6qNdK_29XQrA">
   <imports xsi:type="menu:Menu" xmi:id="_WxkGUN0hEe65c_VQENcNPw" elementId="ro.linic.ui.base.menu.tools"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ZOcYcN0hEe65c_VQENcNPw" featurename="children" parentElementId="ro.linic.ui.base.menu.tools">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ikilIN0hEe65c_VQENcNPw" elementId="ro.linic.ui.anaf.connector.handledmenuitem.xmltopdf" label="&amp;XML to PDF" iconURI="platform:/plugin/ro.linic.ui.anaf.connector/icons/xml_to_pdf_16x16.png" command="_ADRUAN0iEe65c_VQENcNPw"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ikilIN0hEe65c_VQENcNPw" elementId="ro.linic.ui.anaf.connector.handledmenuitem.xmltopdf" label="%handledmenuitem.label.xmltopdf" iconURI="platform:/plugin/ro.linic.ui.anaf.connector/icons/xml_to_pdf_16x16.png" command="_ADRUAN0iEe65c_VQENcNPw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4S_1oN0hEe65c_VQENcNPw" featurename="commands" parentElementId="xpath:/">
-    <elements xsi:type="commands:Command" xmi:id="_ADRUAN0iEe65c_VQENcNPw" elementId="ro.linic.ui.anaf.connector.command.xmltopdf" commandName="XML to PDF"/>
+    <elements xsi:type="commands:Command" xmi:id="_ADRUAN0iEe65c_VQENcNPw" elementId="ro.linic.ui.anaf.connector.command.xmltopdf" commandName="%command.xmltopdf"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EqkPQN0iEe65c_VQENcNPw" featurename="handlers" parentElementId="xpath:/">
     <elements xsi:type="commands:Handler" xmi:id="_IJ-VYN0iEe65c_VQENcNPw" elementId="ro.linic.ui.anaf.connector.handler.xmltopdf" contributionURI="bundleclass://ro.linic.ui.anaf.connector/ro.linic.ui.anaf.connector.handlers.XmlToPdfHandler" command="_ADRUAN0iEe65c_VQENcNPw"/>

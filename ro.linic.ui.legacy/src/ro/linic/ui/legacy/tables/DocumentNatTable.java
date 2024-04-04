@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.nebula.widgets.nattable.Messages;
@@ -1057,9 +1058,9 @@ public class DocumentNatTable
         public AnafReportStateImagePainter()
         {
             super();
-            this.validImg = Icons.createImageResource(bundle, Icons.OK_16x16_PATH, log).orElse(null);
-            this.waitingImg = Icons.createImageResource(bundle, Icons.LOADING_16x16_PATH, log).orElse(null);
-            this.invalidImg = Icons.createImageResource(bundle, Icons.ERROR_16x16_PATH, log).orElse(null);
+            this.validImg = Icons.createImageResource(bundle, Icons.OK_16x16_PATH, ILog.get()).orElse(null);
+            this.waitingImg = Icons.createImageResource(bundle, Icons.LOADING_16x16_PATH, ILog.get()).orElse(null);
+            this.invalidImg = Icons.createImageResource(bundle, Icons.ERROR_16x16_PATH, ILog.get()).orElse(null);
         }
         
 		@Override protected Image getImage(final ILayerCell cell, final IConfigRegistry configRegistry)

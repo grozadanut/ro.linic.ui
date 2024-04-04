@@ -16,6 +16,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
+import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ECRDriver;
@@ -48,8 +49,8 @@ public class ECRServiceImpl implements ECRService {
 	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
 		return findDriver()
 				.map(driver -> driver.printReceipt(receipt, paymentType, taxId))
-				.map(cf -> cf.completeOnTimeout(Result.error("Read result timeout"), RESULT_READ_TIMEOUT_S, TimeUnit.SECONDS))
-				.orElse(CompletableFuture.completedFuture(Result.error("Driverul casei de marcat nu a fost gasit!")));
+				.map(cf -> cf.completeOnTimeout(Result.error(Messages.ECRServiceImpl_Timeout), RESULT_READ_TIMEOUT_S, TimeUnit.SECONDS))
+				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class ECRServiceImpl implements ECRService {
 			final String chosenDirectory) {
 		return findDriver()
 				.map(driver -> driver.reportMF(reportStart, reportEnd, chosenDirectory))
-				.orElse(CompletableFuture.completedFuture(Result.error("Driverul casei de marcat nu a fost gasit!")));
+				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
 	}
 	
 	@Override

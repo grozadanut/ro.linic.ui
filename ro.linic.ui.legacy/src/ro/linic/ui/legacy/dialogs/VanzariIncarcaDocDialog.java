@@ -9,6 +9,7 @@ import static ro.linic.ui.legacy.session.UIUtils.setFont;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -103,7 +104,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 		final Composite container = (Composite) super.createDialogArea(parent);
 		container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
 		container.setLayout(new GridLayout(7, false));
-		getShell().setText("Incarca Bon");
+		getShell().setText(Messages.VanzariIncarcaDocDialog_Title);
 		
 		infoArea = new Text(container, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY);
 		final GridData infoAreaGD = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -117,7 +118,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 		docsTable.getTable().setLayoutData(docsTableGD);
 		
 		incarca = new Button(container, SWT.PUSH | SWT.WRAP);
-		incarca.setText("Incarca");
+		incarca.setText(Messages.VanzariIncarcaDocDialog_Load);
 		final GridData incarcaGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
 		incarca.setLayoutData(incarcaGD);
 		incarca.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
@@ -125,7 +126,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 		setFont(incarca);
 		
 		printare = new Button(container, SWT.PUSH | SWT.WRAP);
-		printare.setText("Printare document");
+		printare.setText(Messages.VanzariIncarcaDocDialog_Print);
 		final GridData printareGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
 		printare.setLayoutData(printareGD);
 		printare.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
@@ -133,7 +134,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 		setFont(printare);
 		
 		printareFaraDisc = new Button(container, SWT.PUSH | SWT.WRAP);
-		printareFaraDisc.setText("Printare document fara Discount");
+		printareFaraDisc.setText(Messages.VanzariIncarcaDocDialog_PrintDocNoDisc);
 		final GridData printareFaraDiscGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
 		printareFaraDisc.setLayoutData(printareFaraDiscGD);
 		printareFaraDisc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
@@ -141,7 +142,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 		setFont(printareFaraDisc);
 		
 		printCasaMarcat = new Button(container, SWT.PUSH | SWT.WRAP);
-		printCasaMarcat.setText("Re-Printare bon casa marcat");
+		printCasaMarcat.setText(Messages.VanzariIncarcaDocDialog_ReprintReceipt);
 		final GridData printCasaMarcatGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
 		printCasaMarcat.setLayoutData(printCasaMarcatGD);
 		printCasaMarcat.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
@@ -149,7 +150,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 		setFont(printCasaMarcat);
 		
 		inchide = new Button(container, SWT.PUSH | SWT.WRAP);
-		inchide.setText("OK si inchide");
+		inchide.setText(Messages.VanzariIncarcaDocDialog_Close);
 		final GridData inchideGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
 		inchide.setLayoutData(inchideGD);
 		inchide.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
@@ -186,18 +187,13 @@ public class VanzariIncarcaDocDialog extends Dialog
 						.orElse(BigDecimal.ZERO);
 				final BigDecimal totalPrinCasa = total.subtract(totalFacturi).subtract(totalAvize);
 				
-				final StringBuilder info = new StringBuilder();
-				info.append(displayLocalDate(LocalDate.now())).append(NEWLINE);
-				info.append("TOTAL = ").append(displayBigDecimal(total)).append(" RON").append(NEWLINE);
-				info.append("PRIN CASA = ").append(displayBigDecimal(totalPrinCasa)).append(" RON").append(NEWLINE);
-				info.append("FACTURA = ").append(displayBigDecimal(totalFacturi)).append(" RON").append(NEWLINE);
-				info.append("AVIZE = ").append(displayBigDecimal(totalAvize)).append(" RON").append(NEWLINE);
-				infoArea.setText(info.toString());
+				infoArea.setText(MessageFormat.format(Messages.VanzariIncarcaDocDialog_Info, NEWLINE, displayLocalDate(LocalDate.now()),
+						displayBigDecimal(total), displayBigDecimal(totalPrinCasa), displayBigDecimal(totalFacturi), displayBigDecimal(totalAvize)));
 			}
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(getShell(), "Eroare la incarcarea bonurilor", details);
+				MessageDialog.openError(getShell(), Messages.VanzariIncarcaDocDialog_ErrorLoading, details);
 			}
 		}, sync);
 	}
@@ -230,7 +226,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 				catch (IOException | JRException ex)
 				{
 					vanzarePart.log().error(ex);
-					MessageDialog.openError(getShell(), "Eroare la printare", ex.getMessage());
+					MessageDialog.openError(getShell(), Messages.VanzariIncarcaDocDialog_ErrorPrinting, ex.getMessage());
 				}
 			}
 		});
@@ -246,7 +242,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 				catch (IOException | JRException ex)
 				{
 					vanzarePart.log().error(ex);
-					MessageDialog.openError(getShell(), "Eroare la printare", ex.getMessage());
+					MessageDialog.openError(getShell(), Messages.VanzariIncarcaDocDialog_ErrorPrinting, ex.getMessage());
 				}
 			}
 		});
@@ -338,7 +334,8 @@ public class VanzariIncarcaDocDialog extends Dialog
 		final boolean isBonCasa = globalIsMatch(vanzarePart.getBonCasa().getDoc(), AccountingDocument.BON_CASA_NAME, TextFilterMethod.EQUALS);
 		if (isBonCasa)
 		{
-			final int buttonIndex = MessageDialog.open(MessageDialog.QUESTION, getShell(), "Re-Printare bon", "Cum vreti sa achitati?", SWT.NONE, "NUMERAR", "CARD");
+			final int buttonIndex = MessageDialog.open(MessageDialog.QUESTION, getShell(), Messages.VanzariIncarcaDocDialog_ReprintReceipt,
+					Messages.VanzariIncarcaDocDialog_PaymentType, SWT.NONE, Messages.VanzariIncarcaDocDialog_Cash, Messages.VanzariIncarcaDocDialog_Card);
 			
 			if(buttonIndex == -1)
 				return;

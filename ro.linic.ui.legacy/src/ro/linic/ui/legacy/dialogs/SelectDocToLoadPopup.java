@@ -102,7 +102,7 @@ public class SelectDocToLoadPopup extends PopupDialog implements IMouseAction
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(getShell(), "Eroare la incarcarea documentelor", details);
+				MessageDialog.openError(getShell(), Messages.SelectDocToLoadPopup_Error, details);
 			}
 		}, sync, tipDoc, from, to, incarcaBonuri, log);
 	}

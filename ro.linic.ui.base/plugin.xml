@@ -30,8 +30,38 @@
       <page
             class="ro.linic.ui.base.preferences.ToolsPage"
             id="ro.linic.ui.base.preference.toolspage"
-            name="Tools">
+            name="%page.name.tools">
       </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="ro.linic.ui.base.handlers.LocalePropertyTester"
+            id="ro.linic.ui.base.localePropertyTester"
+            namespace="ro.linic.ui.base"
+            properties="locale"
+            type="java.lang.Object">
+      </propertyTester>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="ro.linic.ui.base.locale.not.ro">
+         <not>
+            <test
+                  property="ro.linic.ui.base.locale"
+                  value="ro_RO">
+            </test>
+         </not>
+      </definition>
+      <definition
+            id="ro.linic.ui.base.locale.not.default">
+         <not>
+            <test
+                  property="ro.linic.ui.base.locale">
+            </test>
+         </not>
+      </definition>
    </extension>
 
 </plugin>

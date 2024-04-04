@@ -53,17 +53,17 @@ public class CategoriiUIDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Categorii Vizuale");
+		getShell().setText(Messages.CategoriiUIDialog_Title);
 		
 		adauga = new Button(contents, SWT.PUSH);
-		adauga.setText("Adauga");
+		adauga.setText(Messages.Add);
 		adauga.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		adauga.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(adauga);
 		UIUtils.setBoldBannerFont(adauga);
 		
 		sterge = new Button(contents, SWT.PUSH);
-		sterge.setText("Sterge");
+		sterge.setText(Messages.Delete);
 		sterge.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		sterge.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(sterge);
@@ -110,7 +110,7 @@ public class CategoriiUIDialog extends Dialog
 	@Override
 	protected void createButtonsForButtonBar(final Composite parent)
 	{
-		createButton(parent, IDialogConstants.OK_ID, "Save", false);
+		createButton(parent, IDialogConstants.OK_ID, Messages.Save, false);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 	
@@ -136,7 +136,7 @@ public class CategoriiUIDialog extends Dialog
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea categoriilor vizuale", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.CategoriiUIDialog_LoadingError, details);
 			}
 		}, sync, false, true, bundle, log);
 	}

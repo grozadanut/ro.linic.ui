@@ -41,10 +41,10 @@ public class PuncteFidelitateDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Puncte Fidelitate");
+		getShell().setText(Messages.PuncteFidelitateDialog_Title);
 		
 		final Label partnerFilterLabel = new Label(contents, SWT.NONE);
-		partnerFilterLabel.setText("Nume/Card/Telefon");
+		partnerFilterLabel.setText(Messages.PuncteFidelitateDialog_Filter);
 		UIUtils.setFont(partnerFilterLabel);
 		
 		partnerFilter = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -76,7 +76,7 @@ public class PuncteFidelitateDialog extends Dialog
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea rulajelor", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.PuncteFidelitateDialog_Error, details);
 			}
 		}, sync);
 	}

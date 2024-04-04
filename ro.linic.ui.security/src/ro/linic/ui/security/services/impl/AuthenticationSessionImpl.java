@@ -6,14 +6,9 @@ import java.time.Instant;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.eclipse.core.runtime.ICoreRunnable;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
-import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
@@ -21,9 +16,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.event.EventHandler;
 
 import ro.linic.ui.security.exception.AuthenticationException;
 import ro.linic.ui.security.model.AnonymousAuthenticationToken;
@@ -32,9 +24,8 @@ import ro.linic.ui.security.model.RestoreAuthenticationToken;
 import ro.linic.ui.security.services.AuthenticationManager;
 import ro.linic.ui.security.services.AuthenticationSession;
 
-@Component(immediate = true, service = {AuthenticationSession.class, EventHandler.class}, 
-property = EventConstants.EVENT_TOPIC + "=" + UIEvents.UILifeCycle.APP_STARTUP_COMPLETE)
-public class AuthenticationSessionImpl implements AuthenticationSession, EventHandler {
+@Component(immediate = true)
+public class AuthenticationSessionImpl implements AuthenticationSession {
 	private static final Logger log = Logger.getLogger(AuthenticationSessionImpl.class.getName());
 	
 	private static final String SAVE_TIME_KEY = "save_time";
@@ -42,15 +33,17 @@ public class AuthenticationSessionImpl implements AuthenticationSession, EventHa
 	private static final String CREDENTIALS_KEY = "credentials";
 	private static final Duration SESSION_INVALIDATE_DURATION = Duration.ofSeconds(60);
 	
-	private IWorkbench workbench;
 	private AuthenticationManager authManager;
-	
 	private Authentication authentication;
-	private boolean restartWhenReady = false;
+	
+	@Override
+	public boolean isAuthenticated() {
+		return authentication != null && authentication.isAuthenticated();
+	}
 	
 	@Override
 	public Authentication authentication() throws AuthenticationException {
-		if (authentication == null || !authentication.isAuthenticated())
+		if (!isAuthenticated())
 			authentication = authManager == null ?
 					AnonymousAuthenticationToken.unauthenticated() :
 						authManager.authenticate(authentication);
@@ -94,12 +87,9 @@ public class AuthenticationSessionImpl implements AuthenticationSession, EventHa
 	}
 
 	@Override
-	public void restartPreservingSession() {
-		final Authentication auth = authentication();
-		if (auth.isAuthenticated())
-			storeSession(auth);
-		
-		restart();
+	public void storeSession() {
+		if (isAuthenticated())
+			storeSession(authentication());
 	}
 
 	private void storeSession(final Authentication auth) {
@@ -117,35 +107,6 @@ public class AuthenticationSessionImpl implements AuthenticationSession, EventHa
 		}
 	}
 
-	private void restart() {
-		if (workbench != null)
-			Display.getDefault().execute(() -> workbench.restart());
-		else
-			restartWhenReady = true;
-	}
-	
-	@Override
-    public void handleEvent(final Event event) {
-		if (restartWhenReady)
-			Job.create("Restart", (ICoreRunnable) monitor -> Display.getDefault().syncExec(() -> workbench.restart()))
-			.schedule(1);
-		restartWhenReady = false;
-    }
-	
-	@Reference(
-            service = IWorkbench.class,
-            cardinality = ReferenceCardinality.OPTIONAL,
-            policy = ReferencePolicy.DYNAMIC
-    )
-    private void setWorkbench(final IWorkbench workbench) {
-        this.workbench = workbench;
-	}
-
-	@SuppressWarnings("unused")
-	private void unsetWorkbench(final IWorkbench workbench) {
-		this.workbench = null;
-	}
-	
 	@Reference(
             service = AuthenticationManager.class,
             cardinality = ReferenceCardinality.OPTIONAL,

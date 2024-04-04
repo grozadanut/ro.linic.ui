@@ -61,20 +61,20 @@ public class PrintBarcodeDialog extends Dialog
 		this.allGestiuni = BusinessDelegate.allGestiuni();
 		
 		final Composite contents = (Composite) super.createDialogArea(parent);
-		getShell().setText("Printare Etichete");
+		getShell().setText(Messages.PrintBarcodeDialog_Title);
 		
 		final Composite upperContainer = new Composite(contents, SWT.NONE);
 		upperContainer.setLayout(new GridLayout(3, false));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(upperContainer);
 		
-		new Label(upperContainer, SWT.NONE).setText("Tip Eticheta");
+		new Label(upperContainer, SWT.NONE).setText(Messages.PrintBarcodeDialog_LabelType);
 		labelType = new Combo(upperContainer, SWT.DROP_DOWN);
 		labelType.setItems(allLabelTypes.stream().map(LabelType::displayName).toArray(String[]::new));
 		UIUtils.setFont(labelType);
 		GridDataFactory.swtDefaults().applyTo(labelType);
 		
 		setLabelType = new Button(upperContainer, SWT.PUSH);
-		setLabelType.setText("Seteaza pentru toate");
+		setLabelType.setText(Messages.PrintBarcodeDialog_ForAll);
 		UIUtils.setFont(setLabelType);
 		GridDataFactory.swtDefaults().applyTo(setLabelType);
 		
@@ -116,7 +116,7 @@ public class PrintBarcodeDialog extends Dialog
 	protected void createButtonsForButtonBar(final Composite parent)
 	{
 		// create OK and Cancel buttons by default
-		createButton(parent, IDialogConstants.OK_ID, "Printare", true);
+		createButton(parent, IDialogConstants.OK_ID, Messages.PrintBarcodeDialog_Print, true);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 	

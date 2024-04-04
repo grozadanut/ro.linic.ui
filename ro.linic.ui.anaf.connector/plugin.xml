@@ -13,7 +13,7 @@
             category="ro.linic.ui.base.preference.toolspage"
             class="ro.linic.ui.anaf.connector.internal.preferences.XmlToPdfPage"
             id="ro.linic.ui.anaf.connector.preference.xmltopdfpage"
-            name="XML to PDF">
+            name="%page.name.xmltopdf">
       </page>
    </extension>
    <extension

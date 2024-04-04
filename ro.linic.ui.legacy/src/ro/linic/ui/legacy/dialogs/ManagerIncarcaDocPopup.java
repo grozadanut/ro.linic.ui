@@ -40,7 +40,7 @@ public class ManagerIncarcaDocPopup extends PopupDialog
 	private static final int BUTTON_WIDTH = 150;
 	private static final int BUTTON_HEIGHT = 250;
 	
-	private static final String INCARCA_STATE_PREFIX = "manager_incarca_doc.popup";
+	private static final String INCARCA_STATE_PREFIX = "manager_incarca_doc.popup"; //$NON-NLS-1$
 	
 	private Point initialLocation;
 	private TipDoc tipDoc;
@@ -78,7 +78,7 @@ public class ManagerIncarcaDocPopup extends PopupDialog
 		container.setLayout(new GridLayout(3, false));
 		
 		incarca = new Button(container, SWT.PUSH | SWT.WRAP);
-		incarca.setText("Incarca");
+		incarca.setText(Messages.ManagerIncarcaDocPopup_Load);
 		final GridData incarcaGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
 		incarcaGD.verticalSpan = 9;
 		incarca.setLayoutData(incarcaGD);
@@ -88,12 +88,12 @@ public class ManagerIncarcaDocPopup extends PopupDialog
 		
 		from = new DateTime(container, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
 		from.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
-		from.setToolTipText("De la");
+		from.setToolTipText(Messages.ManagerIncarcaDocPopup_From);
 		UIUtils.setFont(from);
 		insertDate(from, LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()));
 		
 		inchide = new Button(container, SWT.PUSH | SWT.WRAP);
-		inchide.setText("Inchide");
+		inchide.setText(Messages.Close);
 		final GridData inchideGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
 		inchideGD.verticalSpan = 9;
 		inchide.setLayoutData(inchideGD);
@@ -103,50 +103,50 @@ public class ManagerIncarcaDocPopup extends PopupDialog
 		
 		to = new DateTime(container, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
 		to.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
-		to.setToolTipText("Pana la");
+		to.setToolTipText(Messages.ManagerIncarcaDocPopup_To);
 		UIUtils.setFont(to);
 		insertDate(to, LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
 		
 		anulPrecedent = new Button(container, SWT.PUSH | SWT.WRAP);
-		anulPrecedent.setText("Anul precedent");
+		anulPrecedent.setText(Messages.ManagerIncarcaDocPopup_LastYear);
 		anulPrecedent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		anulPrecedent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		anulPrecedent.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(anulPrecedent);
 		
 		lunaCurenta = new Button(container, SWT.PUSH | SWT.WRAP);
-		lunaCurenta.setText("Luna curenta");
+		lunaCurenta.setText(Messages.ManagerIncarcaDocPopup_ThisMonth);
 		lunaCurenta.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		lunaCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		lunaCurenta.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(lunaCurenta);
 		
 		anulCurent = new Button(container, SWT.PUSH | SWT.WRAP);
-		anulCurent.setText("Anul curent");
+		anulCurent.setText(Messages.ManagerIncarcaDocPopup_ThisYear);
 		anulCurent.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		anulCurent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		anulCurent.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(anulCurent);
 		
 		maxPeriod = new Button(container, SWT.PUSH | SWT.WRAP);
-		maxPeriod.setText("Toata baza de date");
+		maxPeriod.setText(Messages.ManagerIncarcaDocPopup_MaxPeriod);
 		maxPeriod.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		maxPeriod.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		maxPeriod.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(maxPeriod);
 		
 		faraBonuri = new Button(container, SWT.RADIO);
-		faraBonuri.setText("FARA bonuri de casa");
+		faraBonuri.setText(Messages.ManagerIncarcaDocPopup_NoFiscalReceipts);
 		faraBonuri.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		UIUtils.setBoldFont(faraBonuri);
 		
 		siBonuri = new Button(container, SWT.RADIO);
-		siBonuri.setText("Incarca SI bonuri de casa");
+		siBonuri.setText(Messages.ManagerIncarcaDocPopup_WithFiscalReceipts);
 		siBonuri.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		UIUtils.setBoldFont(siBonuri);
 		
 		doarBonuri = new Button(container, SWT.RADIO);
-		doarBonuri.setText("Incarca DOAR bonuri de casa");
+		doarBonuri.setText(Messages.ManagerIncarcaDocPopup_OnlyFiscalReceipts);
 		doarBonuri.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		UIUtils.setBoldFont(doarBonuri);
 		
@@ -233,20 +233,20 @@ public class ManagerIncarcaDocPopup extends PopupDialog
 		if (getShell() == null || getShell().isDisposed())
 			return;
 		
-		properties.put(prefix+".from", extractLocalDate(from));
-		properties.put(prefix+".to", extractLocalDate(to));
-		properties.put(prefix+".faraBonuri", faraBonuri.getSelection());
-		properties.put(prefix+".siBonuri", siBonuri.getSelection());
-		properties.put(prefix+".doarBonuri", doarBonuri.getSelection());
+		properties.put(prefix+".from", extractLocalDate(from)); //$NON-NLS-1$
+		properties.put(prefix+".to", extractLocalDate(to)); //$NON-NLS-1$
+		properties.put(prefix+".faraBonuri", faraBonuri.getSelection()); //$NON-NLS-1$
+		properties.put(prefix+".siBonuri", siBonuri.getSelection()); //$NON-NLS-1$
+		properties.put(prefix+".doarBonuri", doarBonuri.getSelection()); //$NON-NLS-1$
 	}
 	
 	public void loadState(final String prefix, final Properties properties)
 	{
-		insertDate(from, (LocalDate)properties.getOrDefault(prefix+".from", LocalDate.now().with(TemporalAdjusters.firstDayOfMonth())));
-		insertDate(to, (LocalDate)properties.getOrDefault(prefix+".to", LocalDate.now().with(TemporalAdjusters.lastDayOfMonth())));
-		faraBonuri.setSelection((boolean)properties.getOrDefault(prefix+".faraBonuri", true));
-		siBonuri.setSelection((boolean)properties.getOrDefault(prefix+".siBonuri", false));
-		doarBonuri.setSelection((boolean)properties.getOrDefault(prefix+".doarBonuri", false));
+		insertDate(from, (LocalDate)properties.getOrDefault(prefix+".from", LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()))); //$NON-NLS-1$
+		insertDate(to, (LocalDate)properties.getOrDefault(prefix+".to", LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()))); //$NON-NLS-1$
+		faraBonuri.setSelection((boolean)properties.getOrDefault(prefix+".faraBonuri", true)); //$NON-NLS-1$
+		siBonuri.setSelection((boolean)properties.getOrDefault(prefix+".siBonuri", false)); //$NON-NLS-1$
+		doarBonuri.setSelection((boolean)properties.getOrDefault(prefix+".doarBonuri", false)); //$NON-NLS-1$
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/descriptor/basic" xmlns:basic_1="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_cBW_UMZUEe6UtK1nDebMVw">
   <imports xsi:type="commands:BindingTable" xmi:id="_9yyXsMfvEe6wm9FSKxJZow" elementId="ro.linic.ui.base.bindingtable.root"/>
+  <imports xsi:type="menu:ToolControl" xmi:id="_MIL38Ow3Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.toolcontrol.filler.top"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Ui6esMZ-Ee6UtK1nDebMVw" featurename="commands" parentElementId="ro.linic.ui.base.application">
     <elements xsi:type="commands:Command" xmi:id="_tmURwMZ-Ee6UtK1nDebMVw" elementId="linic_gest_client.command.inchideBon" commandName="inchideBonCommand"/>
     <elements xsi:type="commands:Command" xmi:id="_5K2E4MZ-Ee6UtK1nDebMVw" elementId="linic_gest_client.command.newVanzariPart" commandName="Deschide Bon Nou"/>
@@ -60,7 +61,7 @@
     <elements xsi:type="basic:PartDescriptor" xmi:id="_NwNpkMaDEe6UtK1nDebMVw" elementId="linic_gest_client.partdescriptor.vanzari_bar" label="Vanzari Bar" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_16x16.png" bindingContexts="_dV2XIMaCEe6UtK1nDebMVw" allowMultiple="true" closeable="true" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VanzareBarPart"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_O4C-4MaEEe6UtK1nDebMVw" featurename="toolBarContributions" parentElementId="ro.linic.ui.base.application">
-    <elements xsi:type="menu:ToolBarContribution" xmi:id="_WJ400MaEEe6UtK1nDebMVw" elementId="ro.linic.ui.legacy.toolbarcontribution.0" parentId="org.eclipse.ui.main.toolbar">
+    <elements xsi:type="menu:ToolBarContribution" xmi:id="_WJ400MaEEe6UtK1nDebMVw" elementId="ro.linic.ui.legacy.toolbarcontribution.0" parentId="org.eclipse.ui.main.toolbar" positionInParent="">
       <children xsi:type="menu:HandledToolItem" xmi:id="_hXA0kMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.vanzari" label="Deschide Bon Nou" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_32x32.png" command="_5K2E4MZ-Ee6UtK1nDebMVw"/>
       <children xsi:type="menu:HandledToolItem" xmi:id="_oTuIAMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.incaseaza" label="Incaseaza" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cash_32x32.png" command="_-ySOgMZ-Ee6UtK1nDebMVw"/>
       <children xsi:type="menu:HandledToolItem" xmi:id="_ur7AMMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.puncte_fidelitate" label="Puncte Fidelitate" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/piggy_bank_32x32.png" command="_RxRBAMZ_Ee6UtK1nDebMVw"/>

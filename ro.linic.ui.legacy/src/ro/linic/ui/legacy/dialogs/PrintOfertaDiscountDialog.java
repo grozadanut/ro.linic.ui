@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -45,8 +46,6 @@ import ro.linic.ui.legacy.session.UIUtils;
 
 public class PrintOfertaDiscountDialog extends Dialog
 {
-	private static final String DESCRIPTION = "Selectati o grupa de interes sau introduceti un discount manual!";
-	
 	private ImmutableList<Product> products;
 	private ImmutableList<GrupaInteres> allGrupeInteres;
 	private BigDecimal tvaPercentDb;
@@ -77,26 +76,26 @@ public class PrintOfertaDiscountDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Selecteaza %discount");
+		getShell().setText(Messages.PrintOfertaDiscountDialog_Title);
 		
 		final Label descriptionLabel = new Label(contents, SWT.NONE);
-		descriptionLabel.setText(DESCRIPTION);
+		descriptionLabel.setText(Messages.PrintOfertaDiscountDialog_Description);
 		final GridData descriptionGD = new GridData();
 		descriptionGD.horizontalSpan = 2;
 		descriptionLabel.setLayoutData(descriptionGD);
 		UIUtils.setFont(descriptionLabel);
 		
 		final Label thresholdLabel = new Label(contents, SWT.NONE);
-		thresholdLabel.setText("%Prag");
+		thresholdLabel.setText(Messages.PrintOfertaDiscountDialog_Threshold);
 		UIUtils.setFont(thresholdLabel);
 		
 		threshold = new Text(contents, SWT.SINGLE | SWT.BORDER);
 		threshold.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		UIUtils.setFont(threshold);
-		threshold.setText("15");
+		threshold.setText("15"); //$NON-NLS-1$
 		
 		final Label grupaInteresLabel = new Label(contents, SWT.NONE);
-		grupaInteresLabel.setText("Grupa Interes");
+		grupaInteresLabel.setText(Messages.PrintOfertaDiscountDialog_InterestGroup);
 		UIUtils.setFont(grupaInteresLabel);
 		
 		grupaInteres = new Combo(contents, SWT.DROP_DOWN);
@@ -107,7 +106,7 @@ public class PrintOfertaDiscountDialog extends Dialog
 		UIUtils.setFont(grupaInteres);
 		
 		final Label discountLabel = new Label(contents, SWT.NONE);
-		discountLabel.setText("%Discount");
+		discountLabel.setText(Messages.PrintOfertaDiscountDialog_Discount);
 		UIUtils.setFont(discountLabel);
 		
 		discount = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -115,7 +114,7 @@ public class PrintOfertaDiscountDialog extends Dialog
 		UIUtils.setFont(discount);
 		
 		final Label adaosLabel = new Label(contents, SWT.NONE);
-		adaosLabel.setText("%Adaos minim");
+		adaosLabel.setText(Messages.PrintOfertaDiscountDialog_MinMargin);
 		UIUtils.setFont(adaosLabel);
 		
 		cappedAdaos = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -124,7 +123,7 @@ public class PrintOfertaDiscountDialog extends Dialog
 		
 		new Label(contents, SWT.NONE);
 		withImage = new Button(contents, SWT.CHECK);
-		withImage.setText("Cu Poza Produs");
+		withImage.setText(Messages.PrintOfertaDiscountDialog_WithImage);
 		withImage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		UIUtils.setFont(withImage);
 		
@@ -189,7 +188,7 @@ public class PrintOfertaDiscountDialog extends Dialog
 					final BigDecimal lastBuyingPriceWithTva = p.getLastBuyingPriceNoTva().multiply(tvaExtractDivisor);
 					final BigDecimal pvDupaDisc = p.getPricePerUomAfterDiscount(getDiscount(), getCappedAdaos(), tvaExtractDivisor);
 					final BigDecimal adaosPercent = calculateAdaosPercent(lastBuyingPriceWithTva, pvDupaDisc);
-					return MessageFormat.format("{1} - {2}{0}PUAcuTVA = {3} lei{0}PVcuTVAdupaDisc = {4} lei{0}Adaos/UM = {5} lei",
+					return MessageFormat.format(Messages.PrintOfertaDiscountDialog_PriceWarning,
 							NEWLINE, p.getName(), displayPercentage(adaosPercent),
 							displayBigDecimal(lastBuyingPriceWithTva),
 							displayBigDecimal(pvDupaDisc),
@@ -198,8 +197,8 @@ public class PrintOfertaDiscountDialog extends Dialog
 				.collect(Collectors.joining(NEWLINE));
 		
 		if (!isEmpty(warnings))
-			InfoDialog.open(getShell(), "Adaos sub "+displayPercentage(threshold),
-					MessageFormat.format("ATENTIE!!!{0}Urmatoarele produse au adaos dupa discount sub {1}:{0}{0}{2}",
+			InfoDialog.open(getShell(), NLS.bind(Messages.PrintOfertaDiscountDialog_MarginBelow, displayPercentage(threshold)),
+					MessageFormat.format(Messages.PrintOfertaDiscountDialog_MarginWarning,
 							NEWLINE, displayPercentage(threshold), warnings));
 	}
 	

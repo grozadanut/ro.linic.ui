@@ -41,17 +41,17 @@ public class ReducereDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Reduceri");
+		getShell().setText(Messages.ReducereDialog_Title);
 		
 		adauga = new Button(contents, SWT.PUSH);
-		adauga.setText("Adauga");
+		adauga.setText(Messages.Add);
 		adauga.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		adauga.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(adauga);
 		UIUtils.setBoldBannerFont(adauga);
 		
 		sterge = new Button(contents, SWT.PUSH);
-		sterge.setText("Sterge");
+		sterge.setText(Messages.Delete);
 		sterge.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		sterge.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(sterge);
@@ -98,7 +98,7 @@ public class ReducereDialog extends Dialog
 	@Override
 	protected void createButtonsForButtonBar(final Composite parent)
 	{
-		createButton(parent, IDialogConstants.OK_ID, "Save", false);
+		createButton(parent, IDialogConstants.OK_ID, Messages.Save, false);
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 	

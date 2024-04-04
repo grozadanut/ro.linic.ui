@@ -172,7 +172,7 @@ public class VerifyDialog extends Dialog
 	protected void configureShell(final Shell shell)
 	{
 		super.configureShell(shell);
-		shell.setText("Verifica");
+		shell.setText(Messages.VerifyDialog_Title);
 	}
 
 	@Override
@@ -212,7 +212,7 @@ public class VerifyDialog extends Dialog
 		GridDataFactory.fillDefaults().applyTo(textContainer);
 		
 		final Label transferLabel = new Label(textContainer, SWT.NONE);
-		transferLabel.setText("Transferat");
+		transferLabel.setText(Messages.VerifyDialog_Transfer);
 		final GridData transferLabelGD = new GridData();
 		transferLabelGD.exclude = !isAutoTransfer;
 		transferLabel.setLayoutData(transferLabelGD);
@@ -224,7 +224,7 @@ public class VerifyDialog extends Dialog
 		transferText.setLayoutData(transferTextGD);
 		
 		final Label textLabel = new Label(textContainer, SWT.NONE);
-		textLabel.setText("Livrat");
+		textLabel.setText(Messages.VerifyDialog_Delivered);
 		
 		text = new Text(textContainer, getInputTextStyle());
 		text.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));

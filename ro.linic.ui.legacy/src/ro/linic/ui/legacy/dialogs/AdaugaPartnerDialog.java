@@ -89,8 +89,8 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 	protected Control createContents(final Composite parent)
 	{
 		final Control contents = super.createContents(parent);
-		setTitle("Adauga Partener");
-		setMessage("Creati un partener nou persoana fizica sau juridica");
+		setTitle(Messages.AdaugaPartnerDialog_Title);
+		setMessage(Messages.AdaugaPartnerDialog_Message);
 		return contents;
 	}
 	
@@ -104,21 +104,21 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		final Label partnerTypeLabel = new Label(container, SWT.NONE);
-		partnerTypeLabel.setText("Tip Partener");
+		partnerTypeLabel.setText(Messages.AdaugaPartnerDialog_PartnerType);
 		UIUtils.setFont(partnerTypeLabel);
 		
 		persoanaFizica = new Button(container, SWT.RADIO);
-		persoanaFizica.setText("Persoana Fizica");
+		persoanaFizica.setText(Messages.AdaugaPartnerDialog_Individual);
 		UIUtils.setBoldFont(persoanaFizica);
 		GridDataFactory.swtDefaults().applyTo(persoanaFizica);
 		
 		persoanaJuridica = new Button(container, SWT.RADIO);
-		persoanaJuridica.setText("Firma");
+		persoanaJuridica.setText(Messages.AdaugaPartnerDialog_Company);
 		UIUtils.setBoldFont(persoanaJuridica);
 		GridDataFactory.swtDefaults().applyTo(persoanaJuridica);
 		
 		final Label nameLabel = new Label(container, SWT.NONE);
-		nameLabel.setText("Nume");
+		nameLabel.setText(Messages.AdaugaPartnerDialog_Name);
 		UIUtils.setFont(nameLabel);
 		GridDataFactory.swtDefaults().applyTo(nameLabel);
 		
@@ -127,7 +127,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(name);
 		
 		final Label cuiLabel = new Label(container, SWT.NONE);
-		cuiLabel.setText("Cod fiscal");
+		cuiLabel.setText(Messages.AdaugaPartnerDialog_TaxCode);
 		UIUtils.setFont(cuiLabel);
 		GridDataFactory.swtDefaults().applyTo(cuiLabel);
 		
@@ -137,14 +137,14 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(cui);
 		
 		preiaDate = new Button(container, SWT.PUSH);
-		preiaDate.setText("Preia date");
+		preiaDate.setText(Messages.AdaugaPartnerDialog_RetrieveInfo);
 		preiaDate.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		preiaDate.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(preiaDate);
 		GridDataFactory.swtDefaults().applyTo(preiaDate);
 		
 		final Label regComLabel = new Label(container, SWT.NONE);
-		regComLabel.setText("RegComert");
+		regComLabel.setText(Messages.AdaugaPartnerDialog_RegistrationId);
 		UIUtils.setFont(regComLabel);
 		GridDataFactory.swtDefaults().applyTo(regComLabel);
 		
@@ -154,7 +154,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(regCom);
 		
 		final Label addresaLabel = new Label(container, SWT.NONE);
-		addresaLabel.setText("Adresa facturare");
+		addresaLabel.setText(Messages.AdaugaPartnerDialog_BillingAddress);
 		UIUtils.setFont(addresaLabel);
 		GridDataFactory.swtDefaults().applyTo(addresaLabel);
 		
@@ -166,7 +166,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		adresa.getModel().setJudet("RO-BH");
 		
 		final Label addresaLivrareLabel = new Label(container, SWT.NONE);
-		addresaLivrareLabel.setText("Adresa livrare");
+		addresaLivrareLabel.setText(Messages.AdaugaPartnerDialog_DeliveryAddress);
 		UIUtils.setFont(addresaLivrareLabel);
 		GridDataFactory.swtDefaults().applyTo(addresaLivrareLabel);
 		
@@ -175,7 +175,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(adresaLivrare);
 		
 		final Label phoneLabel = new Label(container, SWT.NONE);
-		phoneLabel.setText("Telefon");
+		phoneLabel.setText(Messages.AdaugaPartnerDialog_Phone);
 		UIUtils.setFont(phoneLabel);
 		GridDataFactory.swtDefaults().applyTo(phoneLabel);
 		
@@ -184,7 +184,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(telefon);
 		
 		final Label emailLabel = new Label(container, SWT.NONE);
-		emailLabel.setText("Email");
+		emailLabel.setText(Messages.AdaugaPartnerDialog_Email);
 		UIUtils.setFont(emailLabel);
 		GridDataFactory.swtDefaults().applyTo(emailLabel);
 		
@@ -193,7 +193,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(email);
 		
 		final Label bancaLabel = new Label(container, SWT.NONE);
-		bancaLabel.setText("Banca");
+		bancaLabel.setText(Messages.AdaugaPartnerDialog_Bank);
 		UIUtils.setFont(bancaLabel);
 		GridDataFactory.swtDefaults().applyTo(bancaLabel);
 		
@@ -202,7 +202,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(banca);
 		
 		final Label contLabel = new Label(container, SWT.NONE);
-		contLabel.setText("Cont");
+		contLabel.setText(Messages.AdaugaPartnerDialog_Account);
 		UIUtils.setFont(contLabel);
 		GridDataFactory.swtDefaults().applyTo(contLabel);
 		
@@ -211,7 +211,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(cont);
 		
 		final Label delegatLabel = new Label(container, SWT.NONE);
-		delegatLabel.setText("Delegat");
+		delegatLabel.setText(Messages.AdaugaPartnerDialog_Delegate);
 		UIUtils.setFont(delegatLabel);
 		GridDataFactory.swtDefaults().applyTo(delegatLabel);
 		
@@ -220,7 +220,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatName);
 		
 		final Label cnpLabel = new Label(container, SWT.NONE);
-		cnpLabel.setText("CNP");
+		cnpLabel.setText(Messages.AdaugaPartnerDialog_SocialSecurityNumber);
 		UIUtils.setFont(cnpLabel);
 		GridDataFactory.swtDefaults().applyTo(cnpLabel);
 		
@@ -229,7 +229,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatCNP);
 		
 		final Label seriaLabel = new Label(container, SWT.NONE);
-		seriaLabel.setText("CI seria/Nr");
+		seriaLabel.setText(Messages.AdaugaPartnerDialog_Serie);
 		UIUtils.setFont(seriaLabel);
 		GridDataFactory.swtDefaults().applyTo(seriaLabel);
 		
@@ -238,7 +238,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatCI);
 		
 		final Label elibLabel = new Label(container, SWT.NONE);
-		elibLabel.setText("Elib de");
+		elibLabel.setText(Messages.AdaugaPartnerDialog_ReleasedBy);
 		UIUtils.setFont(elibLabel);
 		GridDataFactory.swtDefaults().applyTo(elibLabel);
 		
@@ -247,7 +247,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatElib);
 		
 		final Label autoLabel = new Label(container, SWT.NONE);
-		autoLabel.setText("Auto");
+		autoLabel.setText(Messages.AdaugaPartnerDialog_Auto);
 		UIUtils.setFont(autoLabel);
 		GridDataFactory.swtDefaults().applyTo(autoLabel);
 		
@@ -256,7 +256,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatAuto);
 		
 		final Label fidelityNrLabel = new Label(container, SWT.NONE);
-		fidelityNrLabel.setText("Card fidelitate");
+		fidelityNrLabel.setText(Messages.AdaugaPartnerDialog_FidelityCard);
 		UIUtils.setFont(fidelityNrLabel);
 		GridDataFactory.swtDefaults().applyTo(fidelityNrLabel);
 		
@@ -265,7 +265,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(fidelityNumber);
 
 		final Label fidelityDiscLabel = new Label(container, SWT.NONE);
-		fidelityDiscLabel.setText("%Discount");
+		fidelityDiscLabel.setText(Messages.AdaugaPartnerDialog_DiscPerc);
 		UIUtils.setFont(fidelityDiscLabel);
 		GridDataFactory.swtDefaults().applyTo(fidelityDiscLabel);
 		
@@ -274,7 +274,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH/2, SWT.DEFAULT).applyTo(fidelityDiscountPercentage);
 		
 		final Label termenPlataLabel = new Label(container, SWT.NONE);
-		termenPlataLabel.setText("Termen plata");
+		termenPlataLabel.setText(Messages.AdaugaPartnerDialog_PaymentTerm);
 		UIUtils.setFont(termenPlataLabel);
 		GridDataFactory.swtDefaults().applyTo(termenPlataLabel);
 		
@@ -283,7 +283,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(termenPlata);
 		
 		final Label grupaLabel = new Label(container, SWT.NONE);
-		grupaLabel.setText("Grupe interes");
+		grupaLabel.setText(Messages.AdaugaPartnerDialog_InterestGroups);
 		UIUtils.setFont(grupaLabel);
 		GridDataFactory.swtDefaults().applyTo(grupaLabel);
 		
@@ -338,7 +338,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 	protected void okPressed()
 	{
 		if (isEmpty(name.getText()))
-			setErrorMessage("Trebuie specificat un nume pentru partener!");
+			setErrorMessage(Messages.AdaugaPartnerDialog_EmptyNameError);
 		else
 		{
 			final InvocationResult result = BusinessDelegate.mergePartner(partnerFromFields());
@@ -403,7 +403,7 @@ public class AdaugaPartnerDialog extends TitleAreaDialog
 	private void updateFields(final Partner partner)
 	{
 		if (partner != null && partner.isInactivNullCheck())
-			setErrorMessage("ATENTIE!!! In urma verificarii la ANAF, partenerul figureaza ca INACTIV!!!");
+			setErrorMessage(Messages.AdaugaPartnerDialog_InactivePartnerWarning);
 		
 		name.setText(safeString(partner, Partner::getName));
 		cui.setText(safeString(partner, Partner::getCodFiscal));

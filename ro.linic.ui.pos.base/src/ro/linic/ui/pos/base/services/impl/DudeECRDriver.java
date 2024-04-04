@@ -29,11 +29,13 @@ import java.util.stream.Stream;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
+import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
@@ -44,8 +46,8 @@ import ro.linic.util.commons.StringUtils;
 @Component
 public class DudeECRDriver implements ECRDriver {
 	private static final Logger log = Logger.getLogger(DudeECRDriver.class.getName());
-	private static final String RESULT_SUFFIX = "_result";
-	private static final String ECR_REPORT_DATE_PATTERN = "dd-MM-yy HH:mm:ss"; //DD-MM-YY hh:mm:ss DST
+	private static final String RESULT_SUFFIX = "_result"; //$NON-NLS-1$
+	private static final String ECR_REPORT_DATE_PATTERN = "dd-MM-yy HH:mm:ss"; //DD-MM-YY hh:mm:ss DST //$NON-NLS-1$
 	private static final int ECR_MAX_ITEM_NAME_LENGTH = 72;
 	private static final int ECR_MAX_ITEM_UOM_LENGTH = 6;
 
@@ -71,7 +73,7 @@ public class DudeECRDriver implements ECRDriver {
 			resultPath = printReceiptCard(receipt, taxId);
 			break;
 		default:
-			return CompletableFuture.failedFuture(new IllegalArgumentException(paymentType+" not implemented. Only CASH or CARD permitted!"));
+			return CompletableFuture.failedFuture(new IllegalArgumentException(NLS.bind(Messages.DudeECRDriver_IllegalPaymentType, paymentType)));
 		}
 
 		return CompletableFuture.supplyAsync(new ReadResult(resultPath));
@@ -82,8 +84,8 @@ public class DudeECRDriver implements ECRDriver {
 		final StringBuilder ecrCommands = addSaleLines(receipt, taxId);
 		
 		// close receipt
-		ecrCommands.append("53,0[\\t][\\t]").append(NEWLINE);
-		ecrCommands.append("56").append(NEWLINE);
+		ecrCommands.append("53,0[\\t][\\t]").append(NEWLINE); //$NON-NLS-1$
+		ecrCommands.append("56").append(NEWLINE); //$NON-NLS-1$
 		// update display
 		ecrCommands.append("47, MULTUMIM ! [\\t]").append(NEWLINE);
 		ecrCommands.append("35, VA MAI ASTEPTAM [\\t]");
@@ -95,8 +97,8 @@ public class DudeECRDriver implements ECRDriver {
 		final StringBuilder ecrCommands = addSaleLines(receipt, taxId);
 		
 		// close receipt
-		ecrCommands.append("53,1[\\t][\\t]").append(NEWLINE);
-		ecrCommands.append("56").append(NEWLINE);
+		ecrCommands.append("53,1[\\t][\\t]").append(NEWLINE); //$NON-NLS-1$
+		ecrCommands.append("56").append(NEWLINE); //$NON-NLS-1$
 		// update display
 		ecrCommands.append("47, MULTUMIM ! [\\t]").append(NEWLINE);
 		ecrCommands.append("35, VA MAI ASTEPTAM [\\t]");
@@ -106,7 +108,7 @@ public class DudeECRDriver implements ECRDriver {
 	@Override
 	public void cancelReceipt() {
 		final StringBuilder ecrCommands = new StringBuilder();
-		ecrCommands.append("60");
+		ecrCommands.append("60"); //$NON-NLS-1$
 		sendToEcr(ecrCommands);
 	}
 	
@@ -117,22 +119,22 @@ public class DudeECRDriver implements ECRDriver {
 		
 		final StringBuilder ecrCommands = new StringBuilder();
 		if (prefs.getBoolean(PreferenceKey.DUDE_REPORT_Z_AND_D, PreferenceKey.DUDE_REPORT_Z_AND_D_DEF))
-			ecrCommands.append("69,D[\\t]").append(NEWLINE);
-		ecrCommands.append("69,Z[\\t]");
+			ecrCommands.append("69,D[\\t]").append(NEWLINE); //$NON-NLS-1$
+		ecrCommands.append("69,Z[\\t]"); //$NON-NLS-1$
 		sendToEcr(ecrCommands);
 	}
 	
 	@Override
 	public void reportX() {
 		final StringBuilder ecrCommands = new StringBuilder();
-		ecrCommands.append("69,X[\\t]");
+		ecrCommands.append("69,X[\\t]"); //$NON-NLS-1$
 		sendToEcr(ecrCommands);
 	}
 	
 	@Override
 	public void reportD() {
 		final StringBuilder ecrCommands = new StringBuilder();
-		ecrCommands.append("69,D[\\t]");
+		ecrCommands.append("69,D[\\t]"); //$NON-NLS-1$
 		sendToEcr(ecrCommands);
 	}
 	
@@ -141,10 +143,10 @@ public class DudeECRDriver implements ECRDriver {
 		// DD-MM-YY hh:mm:ss DST
 		final StringBuilder ecrCommands = new StringBuilder();
 
-		final String dstStart = isInDst(reportStart, "Europe/Bucharest") ? " DST" : EMPTY_STRING;
-		final String dstEnd = isInDst(reportEnd, "Europe/Bucharest") ? " DST" : EMPTY_STRING;
+		final String dstStart = isInDst(reportStart, "Europe/Bucharest") ? " DST" : EMPTY_STRING; //$NON-NLS-2$
+		final String dstEnd = isInDst(reportEnd, "Europe/Bucharest") ? " DST" : EMPTY_STRING; //$NON-NLS-2$
 
-		ecrCommands.append(MessageFormat.format("raportmf&{0}&{1}&{2}", 
+		ecrCommands.append(MessageFormat.format("raportmf&{0}&{1}&{2}",  //$NON-NLS-1$
 				reportStart.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)) + dstStart,
 				reportEnd.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)) + dstEnd,
 				chosenDirectory));
@@ -160,15 +162,15 @@ public class DudeECRDriver implements ECRDriver {
 			
 			final String folderPath = prefs.get(PreferenceKey.DUDE_ECR_FOLDER, PreferenceKey.DUDE_ECR_FOLDER_DEF);
 			int i = 0;
-			String filename = "print_"+LocalDate.now().toString()+"_"+i+".in";
+			String filename = "print_"+LocalDate.now().toString()+"_"+i+".in"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			while (Files.exists(Paths.get(folderPath, filename)))
-				filename = "print_"+LocalDate.now().toString()+"_"+ ++i+".in";
+				filename = "print_"+LocalDate.now().toString()+"_"+ ++i+".in"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			final String ecrIp = prefs.get(PreferenceKey.DUDE_ECR_IP, null);
 			
 			if (ecrIp == null) {
-				Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), "Eroare configurare", "Setati IP-ul casei de marcat!"));
+				Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.DudeECRDriver_ConfigError, Messages.DudeECRDriver_SetIp));
 				return Optional.empty();
 			}
 			
@@ -185,7 +187,8 @@ public class DudeECRDriver implements ECRDriver {
 		catch (final IOException e)
 		{
 			log.log(Level.SEVERE, "Error writting ecr commands", e);
-			Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), "Eroare", "Eroare la scrierea fisierului de comenzi: "+e.getMessage()));
+			Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.DudeECRDriver_Error,
+					NLS.bind(Messages.DudeECRDriver_ErrorWrittingFileNLS, e.getMessage())));
 			return Optional.empty();
 		}
 	}
@@ -198,11 +201,11 @@ public class DudeECRDriver implements ECRDriver {
 		
 		// Open fiscal receipt
 		// {OpCode}<SEP>{OpPwd}<SEP>{TillNmb}<SEP>{Invoice}<SEP>{ClientTAXN}<SEP>{AirPortID}<SEP>
-		ecrCommands.append(MessageFormat.format("48,{0}[\\t]{1}[\\t]{2}[\\t]{3}[\\t]{4}[\\t]", 
+		ecrCommands.append(MessageFormat.format("48,{0}[\\t]{1}[\\t]{2}[\\t]{3}[\\t]{4}[\\t]",  //$NON-NLS-1$
 				prefs.get(PreferenceKey.DUDE_ECR_OPERATOR, PreferenceKey.DUDE_ECR_OPERATOR_DEF),
 				prefs.get(PreferenceKey.DUDE_ECR_PASSWORD, PreferenceKey.DUDE_ECR_PASSWORD_DEF),
 				prefs.get(PreferenceKey.DUDE_ECR_NR_AMEF, PreferenceKey.DUDE_ECR_NR_AMEF_DEF),
-				taxId.filter(StringUtils::notEmpty).map(id -> "I").orElse(EMPTY_STRING),
+				taxId.filter(StringUtils::notEmpty).map(id -> "I").orElse(EMPTY_STRING), //$NON-NLS-1$
 				taxId.filter(StringUtils::notEmpty).orElse(EMPTY_STRING)))
 		.append(NEWLINE);
 		
@@ -213,8 +216,8 @@ public class DudeECRDriver implements ECRDriver {
 
 		// Subtotal
 		// {Print}<SEP>{Display}<SEP>{DiscountType}<SEP>{DiscountValue}<SEP>
-		ecrCommands.append(MessageFormat.format("51,1[\\t]1[\\t]{0}[\\t]{1}[\\t]",
-				Optional.ofNullable(receipt.allowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING),
+		ecrCommands.append(MessageFormat.format("51,1[\\t]1[\\t]{0}[\\t]{1}[\\t]", //$NON-NLS-1$
+				Optional.ofNullable(receipt.allowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING), //$NON-NLS-1$ //$NON-NLS-2$
 				safeString(receipt.allowanceCharge(), AllowanceCharge::amountAbs, amt -> truncate(amt, 2), BigDecimal::toString)))
 		.append(NEWLINE);
 
@@ -226,12 +229,12 @@ public class DudeECRDriver implements ECRDriver {
 		// Registration of sale
 		// {PluName}<SEP>{TaxCd}<SEP>{Price}<SEP>{Quantity}<SEP>{DiscountType}<SEP
 		// >{DiscountValue}<SEP>{Department}<SEP>{Unit}<SEP>
-		return MessageFormat.format("49,{0}[\\t]{1}[\\t]{2}[\\t]{3}[\\t]{4}[\\t]{5}[\\t]{6}[\\t]{7}[\\t]", 
+		return MessageFormat.format("49,{0}[\\t]{1}[\\t]{2}[\\t]{3}[\\t]{4}[\\t]{5}[\\t]{6}[\\t]{7}[\\t]",  //$NON-NLS-1$
 				truncate(line.name(), ECR_MAX_ITEM_NAME_LENGTH),
 				safeString(line.taxCode(), prefs.get(PreferenceKey.DUDE_ECR_TAX_CODE, PreferenceKey.DUDE_ECR_TAX_CODE_DEF)),
 				safeString(truncate(line.price(), 2), BigDecimal::toString),
 				safeString(truncate(line.quantity(), 2), BigDecimal::toString),
-				Optional.ofNullable(line.allowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING),
+				Optional.ofNullable(line.allowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING), //$NON-NLS-1$ //$NON-NLS-2$
 				safeString(line.allowanceCharge(), AllowanceCharge::amountAbs, amt -> truncate(amt, 2), BigDecimal::toString),
 				safeString(line.departmentCode(), prefs.get(PreferenceKey.DUDE_ECR_DEPT, PreferenceKey.DUDE_ECR_DEPT_DEF)),
 				truncate(line.uom(), ECR_MAX_ITEM_UOM_LENGTH));
@@ -247,7 +250,7 @@ public class DudeECRDriver implements ECRDriver {
 		@Override
 		public Result get() {
 			if (resultPath.isEmpty())
-				return Result.error("Error writting file to disk");
+				return Result.error(Messages.DudeECRDriver_ErrorWrittingFile);
 			
 			try {
 				while (Files.notExists(resultPath.get()))
@@ -260,7 +263,7 @@ public class DudeECRDriver implements ECRDriver {
 			try (Stream<String> resultLines = Files.lines(resultPath.get()))
 			{
 				final String resultCode = resultLines.collect(Collectors.joining(LIST_SEPARATOR));
-				if (!resultCode.trim().startsWith("0:"))
+				if (!resultCode.trim().startsWith("0:")) //$NON-NLS-1$
 					return Result.error(resultCode);
 				else
 				{

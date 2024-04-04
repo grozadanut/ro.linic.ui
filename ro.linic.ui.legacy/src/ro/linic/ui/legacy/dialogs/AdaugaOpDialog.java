@@ -134,7 +134,7 @@ public class AdaugaOpDialog extends Dialog
 	{
 		final Composite contents = (Composite) super.createDialogArea(parent);
 		contents.setLayout(new GridLayout(2, false));
-		getShell().setText("Adauga");
+		getShell().setText(Messages.AdaugaOpDialog_Add);
 		
 		createLeftContainer(contents);
 		createRightContainer(contents);
@@ -167,24 +167,24 @@ public class AdaugaOpDialog extends Dialog
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).span(5, 1).minSize(300, SWT.DEFAULT).applyTo(category);
 		
 		final Label searchModeLabel = new Label(leftContainer, SWT.NONE);
-		searchModeLabel.setText("Mod");
+		searchModeLabel.setText(Messages.AdaugaOpDialog_Mode);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(searchModeLabel);
 		
 		final Label barcodeNameLabel = new Label(leftContainer, SWT.NONE);
-		barcodeNameLabel.setText("Cod sau Denumire");
+		barcodeNameLabel.setText(Messages.AdaugaOpDialog_BarcodeName);
 		GridDataFactory.swtDefaults().grab(true, false).align(SWT.CENTER, SWT.CENTER).applyTo(barcodeNameLabel);
 		
 		autoCode = new Button(leftContainer, SWT.PUSH);
-		autoCode.setText("A");
+		autoCode.setText("A"); //$NON-NLS-1$
 		autoCode.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GRAY));
 		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.CENTER).applyTo(autoCode);
 		
 		final Label cantLabel = new Label(leftContainer, SWT.NONE);
-		cantLabel.setText("Cant");
+		cantLabel.setText(Messages.AdaugaOpDialog_Quantity);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(cantLabel);
 		
 		final Label gestLabel = new Label(leftContainer, SWT.NONE);
-		gestLabel.setText("L1/L2");
+		gestLabel.setText("L1/L2"); //$NON-NLS-1$
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).applyTo(gestLabel);
 		
 		searchMode = new Combo(leftContainer, SWT.DROP_DOWN);
@@ -200,7 +200,7 @@ public class AdaugaOpDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).minSize(300, SWT.DEFAULT).span(2, 1).applyTo(barcodeName);
 		
 		cantitate = new Text(leftContainer, SWT.BORDER);
-		cantitate.setText("0");
+		cantitate.setText("0"); //$NON-NLS-1$
 		cantitate.setTextLimit(11);
 		UIUtils.setFont(cantitate);
 		GridDataFactory.swtDefaults().hint(50, SWT.DEFAULT).applyTo(cantitate);
@@ -217,13 +217,13 @@ public class AdaugaOpDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).span(5, 1).applyTo(newProductContainer);
 		
 		final Label newNameLabel = new Label(newProductContainer, SWT.NONE);
-		newNameLabel.setText("Denumire");
+		newNameLabel.setText(Messages.AdaugaOpDialog_Name);
 		newNameLabel.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		newNameLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.swtDefaults().applyTo(newNameLabel);
 		
 		final Label uomLabel = new Label(newProductContainer, SWT.NONE);
-		uomLabel.setText("UM");
+		uomLabel.setText(Messages.UOM);
 		uomLabel.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		uomLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.swtDefaults().applyTo(uomLabel);
@@ -243,12 +243,12 @@ public class AdaugaOpDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).span(5, 1).applyTo(discountContainer);
 		
 		discountPercent = new Text(discountContainer, SWT.BORDER);
-		discountPercent.setMessage("%");
+		discountPercent.setMessage("%"); //$NON-NLS-1$
 		UIUtils.setFont(discountPercent);
 		GridDataFactory.fillDefaults().hint(70, SWT.DEFAULT).applyTo(discountPercent);
 		
 		discountValue = new Text(discountContainer, SWT.BORDER);
-		discountValue.setMessage("Valoare");
+		discountValue.setMessage(Messages.AdaugaOpDialog_Value);
 		UIUtils.setFont(discountValue);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(discountValue);
 		
@@ -274,15 +274,15 @@ public class AdaugaOpDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(categoryLabel);
 		
 		final Label puaFaraTVALabel = new Label(rightContainer, SWT.NONE);
-		puaFaraTVALabel.setText("PUAchFaraTVA");
+		puaFaraTVALabel.setText(Messages.AdaugaOpDialog_PUAfTVA);
 		GridDataFactory.swtDefaults().applyTo(puaFaraTVALabel);
 		
 		final Label valAchFaraTVALabel = new Label(rightContainer, SWT.NONE);
-		valAchFaraTVALabel.setText("ValAchFaraTVA");
+		valAchFaraTVALabel.setText(Messages.AdaugaOpDialog_VAfTVA);
 		GridDataFactory.swtDefaults().applyTo(valAchFaraTVALabel);
 		
 		final Label valAchTVALabel = new Label(rightContainer, SWT.NONE);
-		valAchTVALabel.setText("ValAchTVA");
+		valAchTVALabel.setText(Messages.AdaugaOpDialog_VATVA);
 		GridDataFactory.swtDefaults().applyTo(valAchTVALabel);
 		
 		puaFaraTVA = new Text(rightContainer, SWT.SINGLE | SWT.BORDER);
@@ -298,15 +298,15 @@ public class AdaugaOpDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(valAchTVA);
 		
 		final Label pvCuTVALabel = new Label(rightContainer, SWT.NONE);
-		pvCuTVALabel.setText("PV cu TVA");
+		pvCuTVALabel.setText(Messages.AdaugaOpDialog_PV);
 		GridDataFactory.swtDefaults().applyTo(pvCuTVALabel);
 		
 		final Label valVanzFaraTVALabel = new Label(rightContainer, SWT.NONE);
-		valVanzFaraTVALabel.setText("VVFaraTVA");
+		valVanzFaraTVALabel.setText(Messages.AdaugaOpDialog_VVfTVA);
 		GridDataFactory.swtDefaults().applyTo(valVanzFaraTVALabel);
 		
 		final Label valVanzTVALabel = new Label(rightContainer, SWT.NONE);
-		valVanzTVALabel.setText("VVTVA");
+		valVanzTVALabel.setText(Messages.AdaugaOpDialog_VVTVA);
 		GridDataFactory.swtDefaults().applyTo(valVanzTVALabel);
 		
 		pvCuTVA = new Text(rightContainer, SWT.SINGLE | SWT.BORDER);
@@ -335,14 +335,14 @@ public class AdaugaOpDialog extends Dialog
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(adaosLei);
 		
 		salvare = new Button(rightContainer, SWT.PUSH);
-		salvare.setText("Salvare sau F4");
+		salvare.setText(Messages.AdaugaOpDialog_Save);
 		salvare.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		salvare.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(salvare);
 		UIUtils.setBoldBannerFont(salvare);
 		
 		inchide = new Button(rightContainer, SWT.PUSH);
-		inchide.setText("Inchide - Esc");
+		inchide.setText(Messages.AdaugaOpDialog_Close);
 		inchide.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		inchide.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(inchide);
@@ -549,7 +549,7 @@ public class AdaugaOpDialog extends Dialog
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea produselor", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AdaugaOpDialog_ErrorLoadingProducts, details);
 			}
 		}, sync, bundle, log);		
 	}
@@ -605,14 +605,14 @@ public class AdaugaOpDialog extends Dialog
 		barcodeName.setText(EMPTY_STRING);
 		newDenumire.setText(EMPTY_STRING);
 		newUM.setText(EMPTY_STRING);
-		puaFaraTVA.setText("0");
-		pvCuTVA.setText("0");
-		valAchFaraTVA.setText("0");
-		valAchTVA.setText("0");
-		valVanzFaraTVA.setText("0");
-		valVanzTVA.setText("0");
-		adaosPercent.setText("Ad.com=0%");
-		adaosLei.setText("Ad.com(lei)=0");
+		puaFaraTVA.setText("0"); //$NON-NLS-1$
+		pvCuTVA.setText("0"); //$NON-NLS-1$
+		valAchFaraTVA.setText("0"); //$NON-NLS-1$
+		valAchTVA.setText("0"); //$NON-NLS-1$
+		valVanzFaraTVA.setText("0"); //$NON-NLS-1$
+		valVanzTVA.setText("0"); //$NON-NLS-1$
+		adaosPercent.setText(Messages.MarginPerc);
+		adaosLei.setText(Messages.Margin);
 	}
 	
 	private void updateAmounts()
@@ -640,10 +640,10 @@ public class AdaugaOpDialog extends Dialog
 		final BigDecimal lastBuyingPriceWithTva = parse(puaFaraTVA.getText())
 				.multiply(tvaExtractDivisor);
 		
-		adaosPercent.setText(MessageFormat.format("Ad.com={0}", displayPercentage(calculateAdaosPercent(lastBuyingPriceWithTva, parse(pvCuTVA.getText())))));
-		adaosPercent.setToolTipText("((PVcuTVA � PUAcuTVA) / PUAcuTVA) * 100");
-		adaosLei.setText(MessageFormat.format("Ad.com(lei)={0}", displayBigDecimal(parse(valVanzFaraTVA.getText()).subtract(parse(valAchFaraTVA.getText())))));
-		adaosLei.setToolTipText("valVanzFaraTva-valAchFaraTva");
+		adaosPercent.setText(MessageFormat.format(Messages.MarginPercNLS, displayPercentage(calculateAdaosPercent(lastBuyingPriceWithTva, parse(pvCuTVA.getText())))));
+		adaosPercent.setToolTipText(Messages.MarginPercFormula);
+		adaosLei.setText(MessageFormat.format(Messages.MarginNLS, displayBigDecimal(parse(valVanzFaraTVA.getText()).subtract(parse(valAchFaraTVA.getText())))));
+		adaosLei.setToolTipText(Messages.MarginFormula);
 	}
 
 	private void updateCategory(final String category)

@@ -6,9 +6,7 @@ Bundle-Version: 0.0.1
 Export-Package: ro.linic.ui.security.exception,
  ro.linic.ui.security.model,
  ro.linic.ui.security.services
-Import-Package: org.eclipse.swt.widgets
 Require-Bundle: org.eclipse.osgi.services;bundle-version="3.11.100",
- org.eclipse.e4.ui.workbench;bundle-version="1.15.100",
  org.eclipse.equinox.security;bundle-version="1.4.0",
  org.eclipse.osgi;bundle-version="3.18.500",
  org.eclipse.core.runtime;bundle-version="3.29.0"

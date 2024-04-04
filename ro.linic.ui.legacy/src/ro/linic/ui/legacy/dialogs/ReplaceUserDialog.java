@@ -40,10 +40,10 @@ public class ReplaceUserDialog extends TitleAreaDialog
 		final Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayout(new GridLayout(2, false));
 		contents.setLayoutData(new GridData(GridData.FILL_BOTH));
-		setTitle("Inlocuieste Utilizator");
+		setTitle(Messages.ReplaceUserDialog_Title);
 		
 		final Label replacedWithLabel = new Label(contents, SWT.NONE);
-		replacedWithLabel.setText("Inlocuieste cu");
+		replacedWithLabel.setText(Messages.ReplaceUserDialog_ReplacedWith);
 		UIUtils.setFont(replacedWithLabel);
 		
 		replacedWith = new Combo(contents, SWT.DROP_DOWN);
@@ -59,12 +59,12 @@ public class ReplaceUserDialog extends TitleAreaDialog
 	{
 		if (!selectedReplacedWithUser().isPresent())
 		{
-			setErrorMessage("Selectati un utilizator care va inlocui utilizatorul pe care vreti sa il stergeti!");
+			setErrorMessage(Messages.ReplaceUserDialog_MissingError);
 			return;
 		}
 		
 		final InvocationResult result = BusinessDelegate.replaceUserWith(userToDelete.getId(), selectedReplacedWithUser().get().getId());
-		MessageDialog.openInformation(null, "Rezultat", result.toTextDescription());
+		MessageDialog.openInformation(null, Messages.ReplaceUserDialog_Result, result.toTextDescription());
 		super.okPressed();
 	}
 	

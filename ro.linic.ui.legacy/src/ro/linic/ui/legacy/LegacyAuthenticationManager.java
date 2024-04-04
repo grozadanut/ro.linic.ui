@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.window.Window;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -41,10 +43,12 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 	private Authentication login() {
 		final Bundle bundle = FrameworkUtil.getBundle(getClass());
 		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(bundle.getSymbolicName());
+		IEclipseContext ctx = EclipseContextFactory.getServiceContext(getClass());
+		ctx = ctx.getActiveLeaf();
 		
 		while (!ClientSession.instance().isLoggedIn())
 		{
-			final LoginDialog dialog = new LoginDialog(null, prefs);
+			final LoginDialog dialog = new LoginDialog(null, prefs, ctx);
 
 			if (dialog.open() != Window.OK)
 				System.exit(0);

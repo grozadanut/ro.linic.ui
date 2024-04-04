@@ -51,10 +51,10 @@ public class RoleDialog extends TitleAreaDialog
 		final Composite contents = new Composite(parent, SWT.NONE);
 		contents.setLayout(new GridLayout(2, false));
 		contents.setLayoutData(new GridData(GridData.FILL_BOTH));
-		setTitle("Rol");
+		setTitle(Messages.RoleDialog_Title);
 		
 		final Label nameLabel = new Label(contents, SWT.NONE);
-		nameLabel.setText("Nume");
+		nameLabel.setText(Messages.RoleDialog_Name);
 		UIUtils.setFont(nameLabel);
 		
 		name = new Text(contents, SWT.SINGLE | SWT.BORDER);
@@ -62,7 +62,7 @@ public class RoleDialog extends TitleAreaDialog
 		UIUtils.setFont(name);
 		
 		final Label permissionsLabel = new Label(contents, SWT.NONE);
-		permissionsLabel.setText("Permisiuni");
+		permissionsLabel.setText(Messages.RoleDialog_Permissions);
 		UIUtils.setFont(permissionsLabel);
 		
 		permissions = new List(contents, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
@@ -86,7 +86,7 @@ public class RoleDialog extends TitleAreaDialog
 	{
 		if (isEmpty(name.getText()))
 		{
-			setErrorMessage("Numele rolului este obligatoriu!");
+			setErrorMessage(Messages.RoleDialog_RoleMandatory);
 			return;
 		}
 		
