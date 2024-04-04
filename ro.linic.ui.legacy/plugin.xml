@@ -6,7 +6,7 @@
       <page
             class="ro.linic.ui.legacy.preferences.RegisterZPage"
             id="ro.linic.ui.legacy.preference.registerzpage"
-            name="Raport Z">
+            name="%page.name">
       </page>
    </extension>
    <extension
