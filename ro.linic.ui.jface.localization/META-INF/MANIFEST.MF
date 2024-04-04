@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Localization for JFace Variables
 Bundle-SymbolicName: ro.linic.ui.jface.localization
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Bundle-Vendor: LINIC
 Fragment-Host: org.eclipse.jface;bundle-version="3.31.0"
 Automatic-Module-Name: ro.linic.ui.jface.localization

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Security
 Bundle-SymbolicName: ro.linic.ui.security;singleton:=true
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Export-Package: ro.linic.ui.security.exception,
  ro.linic.ui.security.model,
  ro.linic.ui.security.services

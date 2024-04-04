@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Workbench Tools
 Bundle-SymbolicName: ro.linic.ui.workbench
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Export-Package: ro.linic.ui.workbench.services
 Import-Package: org.eclipse.swt.widgets
 Require-Bundle: org.eclipse.osgi.services;bundle-version="3.11.100",

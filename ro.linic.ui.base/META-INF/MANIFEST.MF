@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Base UI
 Bundle-SymbolicName: ro.linic.ui.base;singleton:=true
-Bundle-Version: 0.0.3
+Bundle-Version: 0.0.4
 Bundle-Vendor: LINIC
 Export-Package: ro.linic.ui.base.dialogs,
  ro.linic.ui.base.services
