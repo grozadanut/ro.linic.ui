@@ -58,6 +58,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -254,6 +255,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 
 		createTotalsBar(parent);
 		createBottomBar(parent);
+		parent.setTabList(new Control[] {search, horizontalSash});
 		
 		loadVisualState();
 		addListeners();
@@ -354,6 +356,9 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			.align(SWT.RIGHT, SWT.CENTER)
 			.hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT/2)
 			.applyTo(inchideCardButton);
+		
+		container.setTabList(new Control[] {cantitateText});
+		parent.setTabList(new Control[] {container});
 	}
 	
 	private void createTotalsBar(final Composite parent)
@@ -479,7 +484,10 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void keyPressed(final KeyEvent e)
 			{
 				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR))
-					cantitateText.setFocus();
+					if (selectedProduct().isPresent())
+						addNewOperationToBon(selectedProduct());
+					else
+						cantitateText.setFocus();
 				
 				if (e.keyCode == SWT.ARROW_DOWN)
 				{
@@ -499,7 +507,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void keyPressed(final KeyEvent e)
 			{
 				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) && isNumeric(cantitateText.getText()))
-					addNewOperationToBon();
+					addNewOperationToBon(selectedProduct());
 
 				if (e.keyCode == SWT.ARROW_DOWN)
 				{
@@ -519,6 +527,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				cantitateText.setText(parse(cantitateText.getText()).subtract(BigDecimal.ONE).toString());
+				search.setFocus();
 			}
 		});
 		
@@ -527,6 +536,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				cantitateText.setText(parse(cantitateText.getText()).add(BigDecimal.ONE).toString());
+				search.setFocus();
 			}
 		});
 		
@@ -535,6 +545,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				cantitateText.setText(parse(cantitateText.getText()).add(new BigDecimal("5")).toString());
+				search.setFocus();
 			}
 		});
 		
@@ -543,6 +554,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				cantitateText.setText("1");
+				search.setFocus();
 			}
 		});
 		
@@ -551,7 +563,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				if (isNumeric(cantitateText.getText()))
-					addNewOperationToBon();
+					addNewOperationToBon(selectedProduct());
 				changeClient();
 			}
 		});
@@ -619,6 +631,14 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 			@Override public void focusGained(final FocusEvent e)
 			{
 				cantitateText.selectAll();
+			}
+		});
+		
+		search.addFocusListener(new FocusAdapter()
+		{
+			@Override public void focusGained(final FocusEvent e)
+			{
+				search.selectAll();
 			}
 		});
 		
@@ -707,7 +727,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	{
 		// double click
 		if (isNumeric(cantitateText.getText()))
-			addNewOperationToBon();
+			addNewOperationToBon(allProductsTable.selection().stream().findFirst());
 	}
 	
 	private void loadData()
@@ -752,14 +772,23 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		}
 	}
 
-	private void addNewOperationToBon()
+	private Optional<Product> selectedProduct()
 	{
-		final BigDecimal cantitate = parse(cantitateText.getText());
-		final Optional<Product> product = allProductsTable.selection().stream().findFirst();
-		
+		return uiCategoriesTable.getSourceData().stream()
+				.flatMap(uiCat -> uiCat.getProducts().stream())
+				.filter(p -> p.getBarcode().equalsIgnoreCase(search.getText().strip()))
+				.findFirst()
+				.or(() -> allProductsTable.selection().stream().findFirst())
+				.or(() -> allProductsTable.getFilteredSortedData().size() == 1 ?
+						allProductsTable.getFilteredSortedData().stream().findFirst() : Optional.empty());
+	}
+	
+	private void addNewOperationToBon(final Optional<Product> product)
+	{
 		if (!product.isPresent())
 			return;
 
+		final BigDecimal cantitate = parse(cantitateText.getText());
 		final Long accDocId = Optional.ofNullable(bonCasa).map(AccountingDocument::getId).orElse(null);
 		InvocationResult result;
 		if (ClientSession.instance().isOfflineMode())

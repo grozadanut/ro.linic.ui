@@ -69,6 +69,7 @@ public class UIProductsSimpleTable
 {
 	private EventList<Product> sourceData;
 	private NatTable table;
+	private SortedList<Product> sortedData;
 	
 	private TextMatcherEditor<Product> quickSearchFilter;
 	private SelectionLayer selectionLayer;
@@ -92,7 +93,7 @@ public class UIProductsSimpleTable
 		sourceData = GlazedLists.eventListOf();
         final TransformedList<Product, Product> rowObjectsGlazedList = GlazedLists.threadSafeList(sourceData);
         final FilterList<Product> filteredData = new FilterList<>(rowObjectsGlazedList);
-        final SortedList<Product> sortedData = new SortedList<>(filteredData, null);
+        sortedData = new SortedList<>(filteredData, null);
 
 		// create the body layer stack
 		final IRowDataProvider<Product> bodyDataProvider = new ListDataProvider<>(sortedData, columnAccessor);
@@ -177,8 +178,12 @@ public class UIProductsSimpleTable
 		try
 		{
 			this.sourceData.getReadWriteLock().writeLock().lock();
-			sourceData.set(sourceData.indexOf(oldProduct), newProduct);
-			table.refresh();
+			final int productIndex = sourceData.indexOf(oldProduct);
+			if (productIndex != -1)
+			{
+				sourceData.set(productIndex, newProduct);
+				table.refresh();
+			}
 		}
 		finally
 		{
@@ -214,6 +219,11 @@ public class UIProductsSimpleTable
 	public EventList<Product> getSourceData()
 	{
 		return sourceData;
+	}
+	
+	public EventList<Product> getFilteredSortedData()
+	{
+		return sortedData;
 	}
 	
 	public NatTable getTable()
