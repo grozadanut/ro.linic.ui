@@ -3,12 +3,12 @@
    <feature id="ro.linic.ui.base.feature">
       <category name="ro.linic.ui.update"/>
    </feature>
-   <bundle id="ro.linic.ui.anaf.connector">
+   <feature id="ro.linic.ui.legacy.feature">
       <category name="ro.linic.ui.update"/>
-   </bundle>
-   <bundle id="ro.linic.ui.legacy">
+   </feature>
+   <feature id="ro.linic.ui.anaf.connector.feature">
       <category name="ro.linic.ui.update"/>
-   </bundle>
+   </feature>
    <category-def name="ro.linic.ui.update" label="Linic Desktop">
       <description>
          Interfata utilizatorilor care interactioneaza cu serverul Linic Cloud.

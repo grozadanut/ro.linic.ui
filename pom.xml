@@ -79,7 +79,9 @@
    <module>ro.linic.ui.base</module>
    <module>ro.linic.ui.base.feature</module>
    <module>ro.linic.ui.anaf.connector</module>
+   <module>ro.linic.ui.anaf.connector.feature</module>
    <module>ro.linic.ui.legacy</module>
+   <module>ro.linic.ui.legacy.feature</module>
    <module>ro.linic.ui.http</module>
    <module>ro.linic.ui.p2</module>
    <module>ro.linic.ui.pos.base</module>

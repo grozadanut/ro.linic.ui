@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ro.linic.ui.anaf.connector.feature"
+      label="Connector"
+      version="0.0.3"
+      provider-name="LINIC">
+
+   <description url="http://www.example.com/description">
+      Acest modul adauga functionalitati pentru conectarea cu sistemul eFactura Anaf.
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <plugin
+         id="ro.linic.ui.anaf.connector"
+         version="0.0.0"/>
+
+</feature>
