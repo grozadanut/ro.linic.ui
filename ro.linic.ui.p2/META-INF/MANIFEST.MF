@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse e4 P2 UI
 Bundle-SymbolicName: ro.linic.ui.p2;singleton:=true
-Bundle-Version: 0.0.3
+Bundle-Version: 0.0.4
 Export-Package: ro.linic.ui.p2.handlers,
  ro.linic.ui.p2.ui,
  ro.linic.ui.p2.ui.addons
