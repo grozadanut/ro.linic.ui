@@ -41,6 +41,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.FocusAdapter;
@@ -99,17 +100,17 @@ import ro.linic.ui.legacy.wizards.InchideBonWizardDialog;
 
 public class VanzarePart implements VanzareInterface
 {
-	public static final String PART_ID = "linic_gest_client.part.vanzari";
-	public static final String PART_DESCRIPTOR_ID = "linic_gest_client.partdescriptor.vanzari";
+	public static final String PART_ID = "linic_gest_client.part.vanzari"; //$NON-NLS-1$
+	public static final String PART_DESCRIPTOR_ID = "linic_gest_client.partdescriptor.vanzari"; //$NON-NLS-1$
 	
-	public static final String VANZARE_PART_TYPE_KEY = "vanzare_part_type_key";
-	public static final String VANZARE_PART_TYPE_DEFAULT = "1";
+	public static final String VANZARE_PART_TYPE_KEY = "vanzare_part_type_key"; //$NON-NLS-1$
+	public static final String VANZARE_PART_TYPE_DEFAULT = "1"; //$NON-NLS-1$
 	
-	private static final String PRODUCTS_TABLE_STATE_PREFIX = "vanzari.all_products_nt";
-	private static final String BON_DESCHIS_TABLE_STATE_PREFIX = "vanzari.bon_deschis_nt";
-	private static final String INITIAL_PART_LOAD_PROP = "initial_part_load";
-	private static final String VERTICAL_SASH_STATE_PREFIX = "vanzari.vertical_sash";
-	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari.horizontal_sash";
+	private static final String PRODUCTS_TABLE_STATE_PREFIX = "vanzari.all_products_nt"; //$NON-NLS-1$
+	private static final String BON_DESCHIS_TABLE_STATE_PREFIX = "vanzari.bon_deschis_nt"; //$NON-NLS-1$
+	private static final String INITIAL_PART_LOAD_PROP = "initial_part_load"; //$NON-NLS-1$
+	private static final String VERTICAL_SASH_STATE_PREFIX = "vanzari.vertical_sash"; //$NON-NLS-1$
+	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari.horizontal_sash"; //$NON-NLS-1$
 
 	// MODEL
 	private AccountingDocument bonCasa;
@@ -198,9 +199,9 @@ public class VanzarePart implements VanzareInterface
 
 			// 2. delete operations
 			if (!deletableOps.isEmpty() && !MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
-					"Stergeti conexiuni",
+					Messages.VanzarePart_DeleteConn,
 					MessageFormat.format(
-							"Operatiunea{3}{0}{3}contine alte {1} operatiuni conectate:{3}{2}{3}Stergeti si aceste operatiuni?",
+							Messages.VanzarePart_DeleteConnMess,
 							lastOwner.displayName(), 
 							deletableOps.size(),
 							deletableOps.stream().map(Operatiune::displayName).collect(Collectors.joining(NEWLINE)),
@@ -259,21 +260,21 @@ public class VanzarePart implements VanzareInterface
 		GridDataFactory.fillDefaults().applyTo(searchMode);
 
 		denumireText = new Text(leftContainer, SWT.BORDER);
-		denumireText.setMessage("Denumire");
+		denumireText.setMessage(Messages.VanzarePart_Name);
 		denumireText.setTextLimit(255);
 		denumireText.setFocus();
 		UIUtils.setBannerFont(denumireText);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(denumireText);
 
 		cantitateText = new Text(leftContainer, SWT.BORDER);
-		cantitateText.setMessage("Cant");
-		cantitateText.setText("1");
+		cantitateText.setMessage(Messages.VanzarePart_Quant);
+		cantitateText.setText("1"); //$NON-NLS-1$
 		cantitateText.setTextLimit(10);
 		UIUtils.setBannerFont(cantitateText);
 		GridDataFactory.fillDefaults().applyTo(cantitateText);
 		
 		scheduleButton = new Button(leftContainer, SWT.PUSH);
-		scheduleButton.setText("Programeaza");
+		scheduleButton.setText(Messages.Schedule);
 		scheduleButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		scheduleButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(scheduleButton);
@@ -284,11 +285,11 @@ public class VanzarePart implements VanzareInterface
 		GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(partner);
 		
 		createPartner = new Button(leftContainer, SWT.PUSH);
-		createPartner.setText("Adauga Partener");
+		createPartner.setText(Messages.VanzarePart_AddPartner);
 		UIUtils.setFont(createPartner);
 		
 		inchideCasaButton = new Button(leftContainer, SWT.PUSH | SWT.WRAP);
-		inchideCasaButton.setText("Inchidere prin casa - F3");
+		inchideCasaButton.setText(Messages.VanzarePart_CloseCash);
 		inchideCasaButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		inchideCasaButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(inchideCasaButton);
@@ -298,7 +299,7 @@ public class VanzarePart implements VanzareInterface
 			.applyTo(inchideCasaButton);
 		
 		inchideFacturaBCButton = new Button(leftContainer, SWT.PUSH | SWT.WRAP);
-		inchideFacturaBCButton.setText("Inchidere prin Factura, BonConsum");
+		inchideFacturaBCButton.setText(Messages.VanzarePart_CloseInvoice);
 		inchideFacturaBCButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		inchideFacturaBCButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(inchideFacturaBCButton);
@@ -309,7 +310,7 @@ public class VanzarePart implements VanzareInterface
 			.applyTo(inchideFacturaBCButton);
 		
 		inchideCardButton = new Button(leftContainer, SWT.PUSH | SWT.WRAP);
-		inchideCardButton.setText("Inchidere prin CARD/POS");
+		inchideCardButton.setText(Messages.VanzarePart_CloseCard);
 		inchideCardButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		inchideCardButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(inchideCardButton);
@@ -320,14 +321,14 @@ public class VanzarePart implements VanzareInterface
 			.applyTo(inchideCardButton);
 		
 		casaActivaButton = new Button(leftContainer, SWT.CHECK);
-		casaActivaButton.setText("casa marcat activa?");
+		casaActivaButton.setText(Messages.VanzarePart_ECRActive);
 		casaActivaButton.setSelection(true);
 		casaActivaButton.setEnabled(ClientSession.instance().hasPermission(Permissions.CLOSE_WITHOUT_CASA));
 		setFont(casaActivaButton);
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(casaActivaButton);
 
 		ofertaPretButton = new Button(leftContainer, SWT.PUSH);
-		ofertaPretButton.setText("Oferta");
+		ofertaPretButton.setText(Messages.VanzarePart_Offer);
 		setFont(ofertaPretButton);
 		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.TOP).applyTo(ofertaPretButton);
 		
@@ -344,10 +345,10 @@ public class VanzarePart implements VanzareInterface
 		totalsContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		final Label totalFaraTVAHint = new Label(totalsContainer, SWT.NONE);
-		totalFaraTVAHint.setText("TOTAL fara TVA");
+		totalFaraTVAHint.setText(Messages.VanzarePart_TotalNoVAT);
 
 		totalFaraTVALabel = new Label(totalsContainer, SWT.BORDER);
-		totalFaraTVALabel.setText("0");
+		totalFaraTVALabel.setText("0"); //$NON-NLS-1$
 		totalFaraTVALabel.setAlignment(SWT.RIGHT);
 		totalFaraTVALabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
 		totalFaraTVALabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -357,10 +358,10 @@ public class VanzarePart implements VanzareInterface
 		UIUtils.setBoldBannerFont(totalFaraTVALabel);
 
 		final Label totalTVAHint = new Label(totalsContainer, SWT.NONE);
-		totalTVAHint.setText("TVA");
+		totalTVAHint.setText(Messages.VanzarePart_VAT);
 
 		tvaLabel = new Label(totalsContainer, SWT.BORDER);
-		tvaLabel.setText("0");
+		tvaLabel.setText("0"); //$NON-NLS-1$
 		tvaLabel.setAlignment(SWT.RIGHT);
 		tvaLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
 		tvaLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -370,10 +371,10 @@ public class VanzarePart implements VanzareInterface
 		UIUtils.setBoldBannerFont(tvaLabel);
 
 		final Label totalCuTVAHint = new Label(totalsContainer, SWT.NONE);
-		totalCuTVAHint.setText("TOTAL cu TVA");
+		totalCuTVAHint.setText(Messages.VanzarePart_TotalWVAT);
 
 		totalCuTVALabel = new Label(totalsContainer, SWT.BORDER);
-		totalCuTVALabel.setText("0");
+		totalCuTVALabel.setText("0"); //$NON-NLS-1$
 		totalCuTVALabel.setAlignment(SWT.CENTER);
 		totalCuTVALabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
 		totalCuTVALabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -388,23 +389,23 @@ public class VanzarePart implements VanzareInterface
 		footerContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		incarcaBonuriButton = new Button(footerContainer, SWT.PUSH);
-		incarcaBonuriButton.setText("Incarca Bon");
+		incarcaBonuriButton.setText(Messages.VanzarePart_LoadDoc);
 		UIUtils.setBannerFont(incarcaBonuriButton);
 
 		refreshButton = new Button(footerContainer, SWT.PUSH);
-		refreshButton.setText("Refresh");
+		refreshButton.setText(Messages.Refresh);
 		UIUtils.setBannerFont(refreshButton);
 
 		managerCasaButton = new Button(footerContainer, SWT.PUSH);
-		managerCasaButton.setText("Manager CasaMarcat");
+		managerCasaButton.setText(Messages.VanzarePart_ECRManager);
 		UIUtils.setBannerFont(managerCasaButton);
 		
 		printPlanuriButton = new Button(footerContainer, SWT.PUSH);
-		printPlanuriButton.setText("Printare Trasee");
+		printPlanuriButton.setText(Messages.VanzarePart_PrintRoutes);
 		UIUtils.setBannerFont(printPlanuriButton);
 		
 		transferaButton = new Button(footerContainer, SWT.PUSH);
-		transferaButton.setText("Transfera");
+		transferaButton.setText(Messages.Transfer);
 		transferaButton.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		transferaButton.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData transferaGD = new GridData(GridData.FILL_HORIZONTAL);
@@ -413,7 +414,7 @@ public class VanzarePart implements VanzareInterface
 		UIUtils.setBoldBannerFont(transferaButton);
 
 		cancelBonButton = new Button(footerContainer, SWT.PUSH);
-		cancelBonButton.setText("CANCEL BON");
+		cancelBonButton.setText(Messages.VanzarePart_CancelDoc);
 		cancelBonButton.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		cancelBonButton.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData cancelGD = new GridData();
@@ -422,7 +423,7 @@ public class VanzarePart implements VanzareInterface
 		UIUtils.setBoldBannerFont(cancelBonButton);
 
 		stergeRandButton = new Button(footerContainer, SWT.PUSH);
-		stergeRandButton.setText("sterge rand");
+		stergeRandButton.setText(Messages.VanzarePart_DeleteRow);
 		stergeRandButton.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		stergeRandButton.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData stergeGD = new GridData();
@@ -438,11 +439,11 @@ public class VanzarePart implements VanzareInterface
 		saveState(BON_DESCHIS_TABLE_STATE_PREFIX, bonDeschisTable.getTable(), part);
 		
 		final int[] verticalWeights = verticalSash.getWeights();
-		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".0", String.valueOf(verticalWeights[0]));
-		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".1", String.valueOf(verticalWeights[1]));
+		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".0", String.valueOf(verticalWeights[0])); //$NON-NLS-1$
+		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".1", String.valueOf(verticalWeights[1])); //$NON-NLS-1$
 		final int[] horizontalWeights = horizontalSash.getWeights();
-		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".0", String.valueOf(horizontalWeights[0]));
-		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".1", String.valueOf(horizontalWeights[1]));
+		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".0", String.valueOf(horizontalWeights[0])); //$NON-NLS-1$
+		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".1", String.valueOf(horizontalWeights[1])); //$NON-NLS-1$
 	}
 	
 	private void loadVisualState()
@@ -451,12 +452,12 @@ public class VanzarePart implements VanzareInterface
 		loadState(PRODUCTS_TABLE_STATE_PREFIX, allProductsTable.getTable(), part);
 		
 		final int[] verticalWeights = new int[2];
-		verticalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".0", "200"));
-		verticalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".1", "200"));
+		verticalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".0", "200")); //$NON-NLS-1$ //$NON-NLS-2$
+		verticalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".1", "200")); //$NON-NLS-1$ //$NON-NLS-2$
 		verticalSash.setWeights(verticalWeights);
 		final int[] horizontalWeights = new int[2];
-		horizontalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".0", "200"));
-		horizontalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".1", "200"));
+		horizontalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".0", "200")); //$NON-NLS-1$ //$NON-NLS-2$
+		horizontalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".1", "200")); //$NON-NLS-1$ //$NON-NLS-2$
 		horizontalSash.setWeights(horizontalWeights);
 	}
 	
@@ -591,8 +592,8 @@ public class VanzarePart implements VanzareInterface
 						.map(Operatiune.class::cast)
 						.collect(toImmutableList());
 				if (!sel.isEmpty() && MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), 
-						"Transferati?", 
-						"Sunteti sigur ca doriti sa transferati stoc din alta gestiune pentru operatiunile("+sel.size()+") selectate?"))
+						Messages.Transfer, 
+						NLS.bind(Messages.VanzarePart_TransferMess, sel.size())))
 					transferOperations(sel);
 			}
 		});
@@ -612,7 +613,7 @@ public class VanzarePart implements VanzareInterface
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				if (bonCasa != null && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Anulare bon", "Sunteti sigur ca doriti sa anulati bonul?"))
+				if (bonCasa != null && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.VanzarePart_CancelDoc, Messages.VanzarePart_CancelDocMess))
 					deleteOperations(ImmutableList.copyOf(bonCasa.getOperatiuni()));
 			}
 		});
@@ -679,11 +680,11 @@ public class VanzarePart implements VanzareInterface
 		if (updateTotalLabels)
 		{
 			totalFaraTVALabel.setText(Optional.ofNullable(this.bonCasa).map(accDoc -> accDoc.getTotal().subtract(accDoc.getTotalTva()))
-					.map(PresentationUtils::displayBigDecimal).orElse("0"));
+					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
 			tvaLabel.setText(Optional.ofNullable(this.bonCasa).map(AccountingDocument::getTotalTva)
-					.map(PresentationUtils::displayBigDecimal).orElse("0"));
+					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
 			totalCuTVALabel.setText(Optional.ofNullable(this.bonCasa).map(AccountingDocument::getTotal)
-					.map(PresentationUtils::displayBigDecimal).orElse("0"));
+					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
 		}
 	}
 
@@ -716,8 +717,8 @@ public class VanzarePart implements VanzareInterface
 				{
 					// intra in negativ obligatoriu
 					final TransferaSauNegativDialog dialog = new TransferaSauNegativDialog(
-							Display.getCurrent().getActiveShell(), false, false, "Stoc insuficient",
-							"Nu aveti stoc suficient. Intrati in negativ?");
+							Display.getCurrent().getActiveShell(), false, false, Messages.VanzarePart_StockTooLow,
+							Messages.VanzarePart_StockTooLowMess);
 
 					if (dialog.open() != TransferaSauNegativDialog.INTRA_NEGATIV_ID)
 						return;
@@ -730,8 +731,8 @@ public class VanzarePart implements VanzareInterface
 					// transfera sau intra in negativ
 					final TransferaSauNegativDialog dialog = new TransferaSauNegativDialog(
 							Display.getCurrent().getActiveShell(), true, cantitate.compareTo(otherGestStocMapping.getStoc()) <= 0,
-							"Transfer?",
-							"Transferati diferenta din cealalta gestiune?");
+							Messages.Transfer,
+							Messages.VanzarePart_TransferOther);
 
 					final int dialogResult = dialog.open();
 					if (dialogResult == TransferaSauNegativDialog.INTRA_NEGATIV_ID)
@@ -800,7 +801,7 @@ public class VanzarePart implements VanzareInterface
 				allProductsTable.add(result.extra(InvocationResult.PRODUCT_KEY));
 			updateBonCasa(result.extra(InvocationResult.ACCT_DOC_KEY), true);
 			denumireText.setText(EMPTY_STRING);
-			cantitateText.setText("1");
+			cantitateText.setText("1"); //$NON-NLS-1$
 			denumireText.setFocus();
 		}
 	}
@@ -820,14 +821,14 @@ public class VanzarePart implements VanzareInterface
 					allProductsTable.loadData(data, ImmutableList.of(), ImmutableList.of(), ImmutableList.of(), ImmutableList.of());
 
 					if (showConfirmation)
-						MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Succes",
-								"Produsele au fost incarcate cu succes!");
+						MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.Success,
+								Messages.VanzarePart_SuccessMess);
 				}
 
 				@Override
 				public void error(final String details)
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea produselor",
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzarePart_ErrorLoading,
 							details);
 				}
 			}, sync, bundle, log);
@@ -883,7 +884,7 @@ public class VanzarePart implements VanzareInterface
 		else
 		{
 			final SelectEntityDialog<Gestiune> gestiuneDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-					"Transfer", "Selectati gestiunea din care doriti sa transferati", "Gestiune", gestiuni, "OK", "Cancel");
+					Messages.Transfer, Messages.VanzarePart_SelectInventory, Messages.VanzarePart_Inventory, gestiuni, Messages.OK, Messages.Cancel);
 			final int dialogResult = gestiuneDialog.open();
 			
 			if (dialogResult != 0)

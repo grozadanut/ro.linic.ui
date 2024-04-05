@@ -66,11 +66,11 @@ import ro.linic.ui.legacy.widgets.NatComboWidget;
 
 public class StatisticsPart
 {
-	public static final String PART_ID = "linic_gest_client.part.statistics";
+	public static final String PART_ID = "linic_gest_client.part.statistics"; //$NON-NLS-1$
 	
-	private static final String RAION_TABLE_STATE_PREFIX = "statistics.raion_profitability_nt";
-	private static final String TABLE_STATE_PREFIX = "statistics.product_profitability_nt";
-	private static final String HORIZONTAL_SASH_STATE_PREFIX = "statistics.horizontal_sash";
+	private static final String RAION_TABLE_STATE_PREFIX = "statistics.raion_profitability_nt"; //$NON-NLS-1$
+	private static final String TABLE_STATE_PREFIX = "statistics.product_profitability_nt"; //$NON-NLS-1$
+	private static final String HORIZONTAL_SASH_STATE_PREFIX = "statistics.horizontal_sash"; //$NON-NLS-1$
 	
 	private NatComboWidget docTypes;
 	private Combo gestiune;
@@ -115,25 +115,25 @@ public class StatisticsPart
 		new Label(container, SWT.NONE);//layout
 		
 		maxim = new Button(container, SWT.PUSH);
-		maxim.setText("Maxim");
+		maxim.setText(Messages.Max);
 		maxim.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(maxim);
 		GridDataFactory.swtDefaults().applyTo(maxim);
 		
 		ziCurenta = new Button(container, SWT.PUSH);
-		ziCurenta.setText("ZiCrt");
+		ziCurenta.setText(Messages.Today);
 		ziCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(ziCurenta);
 		GridDataFactory.swtDefaults().applyTo(ziCurenta);
 		
 		lunaCurenta = new Button(container, SWT.PUSH);
-		lunaCurenta.setText("LunaCrt");
+		lunaCurenta.setText(Messages.ThisMonth);
 		lunaCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(lunaCurenta);
 		GridDataFactory.swtDefaults().applyTo(lunaCurenta);
 		
 		anCurent = new Button(container, SWT.PUSH);
-		anCurent.setText("AnCrt");
+		anCurent.setText(Messages.ThisYear);
 		anCurent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(anCurent);
 		GridDataFactory.swtDefaults().applyTo(anCurent);
@@ -160,7 +160,7 @@ public class StatisticsPart
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(to);
 		
 		execute = new Button(container, SWT.PUSH | SWT.WRAP);
-		execute.setText("Executa filtrarea");
+		execute.setText(Messages.Execute);
 		execute.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		execute.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(execute);
@@ -185,8 +185,8 @@ public class StatisticsPart
 		loadState(TABLE_STATE_PREFIX, productProfTable.getTable(), part);
 		
 		final int[] verticalWeights = new int[2];
-		verticalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".0", "180"));
-		verticalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".1", "220"));
+		verticalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".0", "180")); //$NON-NLS-1$ //$NON-NLS-2$
+		verticalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".1", "220")); //$NON-NLS-1$ //$NON-NLS-2$
 		horizontalSash.setWeights(verticalWeights);
 		
 		createButtonsArea(container);
@@ -202,28 +202,28 @@ public class StatisticsPart
 		GridDataFactory.fillDefaults().grab(true, false).span(7, 1).applyTo(container);
 		
 		salesPerHours = new Button(container, SWT.PUSH | SWT.WRAP);
-		salesPerHours.setText("Afiseaza Vanzari pe Ore");
+		salesPerHours.setText(Messages.StatisticsPart_HourSales);
 		salesPerHours.setToolTipText(SalesPerHours.hint());
 		salesPerHours.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		salesPerHours.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(salesPerHours);
 		
 		salesPerOperators = new Button(container, SWT.PUSH | SWT.WRAP);
-		salesPerOperators.setText("Afiseaza Vanzari pe Operatori");
+		salesPerOperators.setText(Messages.StatisticsPart_UserSales);
 		salesPerOperators.setToolTipText(SalesPerOperators.hint());
 		salesPerOperators.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		salesPerOperators.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(salesPerOperators);
 		
 		lastYearStats = new Button(container, SWT.PUSH | SWT.WRAP);
-		lastYearStats.setText("Afiseaza Statistici pe Ultimul An");
+		lastYearStats.setText(Messages.StatisticsPart_ShowLastYearStats);
 		lastYearStats.setToolTipText(LastYearStats.hint());
 		lastYearStats.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		lastYearStats.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(lastYearStats);
 		
 		pointsPerCar = new Button(container, SWT.PUSH | SWT.WRAP);
-		pointsPerCar.setText("Afiseaza Puncte Pe Masini");
+		pointsPerCar.setText(Messages.StatisticsPart_ShowCarPoints);
 		pointsPerCar.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		pointsPerCar.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(pointsPerCar);
@@ -236,8 +236,8 @@ public class StatisticsPart
 		saveState(TABLE_STATE_PREFIX, productProfTable.getTable(), part);
 		
 		final int[] verticalWeights = horizontalSash.getWeights();
-		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".0", String.valueOf(verticalWeights[0]));
-		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".1", String.valueOf(verticalWeights[1]));
+		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".0", String.valueOf(verticalWeights[0])); //$NON-NLS-1$
+		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".1", String.valueOf(verticalWeights[1])); //$NON-NLS-1$
 	}
 	
 	@PreDestroy
@@ -369,7 +369,7 @@ public class StatisticsPart
 			@Override public void error(final String details)
 			{
 				execute.setEnabled(true);
-				MessageDialog.openError(execute.getShell(), "Eroare la filtrare", details);
+				MessageDialog.openError(execute.getShell(), Messages.ErrorFiltering, details);
 			}
 		}, sync, extractLocalDate(from), extractLocalDate(to), selectedGestiune().orElse(null), selectedDocTypes());
 		
@@ -403,9 +403,9 @@ public class StatisticsPart
 				try
 				{
 					JasperReportManager.instance(bundle, log)
-					.printBarchart(bundle, "Vanzarile din ultima luna pe zile si ore", gest, JasperChartSerie.fromVanzari(result));
+					.printBarchart(bundle, Messages.StatisticsPart_HourDaySales, gest, JasperChartSerie.fromVanzari(result));
 					JasperReportManager.instance(bundle, log)
-					.printBarchart(bundle, "Iesiri introduse pe minut", gest, JasperChartSerie.fromOpsPerMinute(result));
+					.printBarchart(bundle, Messages.StatisticsPart_OutgMinute, gest, JasperChartSerie.fromOpsPerMinute(result));
 				}
 				catch (IOException | JRException e)
 				{
@@ -417,7 +417,7 @@ public class StatisticsPart
 			@Override public void error(final String details)
 			{
 				salesPerHours.setEnabled(true);
-				MessageDialog.openError(salesPerHours.getShell(), "Eroare", details);
+				MessageDialog.openError(salesPerHours.getShell(), Messages.Error, details);
 			}
 		}, sync, gest, selectedDocTypes());
 	}
@@ -436,9 +436,9 @@ public class StatisticsPart
 				try
 				{
 					JasperReportManager.instance(bundle, log)
-					.printBarchart(bundle, "Vanzarile din ultima luna pe operatori", gest, JasperChartSerie.fromVanzari(result));
+					.printBarchart(bundle, Messages.StatisticsPart_OperatorsSales, gest, JasperChartSerie.fromVanzari(result));
 					JasperReportManager.instance(bundle, log)
-					.printBarchart(bundle, "Iesiri introduse pe minut", gest, JasperChartSerie.fromOpsPerMinute(result));
+					.printBarchart(bundle, Messages.StatisticsPart_OutgMinute, gest, JasperChartSerie.fromOpsPerMinute(result));
 				}
 				catch (IOException | JRException e)
 				{
@@ -450,7 +450,7 @@ public class StatisticsPart
 			@Override public void error(final String details)
 			{
 				salesPerOperators.setEnabled(true);
-				MessageDialog.openError(salesPerOperators.getShell(), "Eroare", details);
+				MessageDialog.openError(salesPerOperators.getShell(), Messages.Error, details);
 			}
 		}, sync, gest, selectedDocTypes());
 	}
@@ -469,7 +469,7 @@ public class StatisticsPart
 				try
 				{
 					JasperReportManager.instance(bundle, log)
-					.printBarchart(bundle, "Statistici pe ultimul an", gest, JasperChartSerie.from(result));
+					.printBarchart(bundle, Messages.StatisticsPart_LastYearStats, gest, JasperChartSerie.from(result));
 				}
 				catch (IOException | JRException e)
 				{
@@ -481,7 +481,7 @@ public class StatisticsPart
 			@Override public void error(final String details)
 			{
 				lastYearStats.setEnabled(true);
-				MessageDialog.openError(lastYearStats.getShell(), "Eroare", details);
+				MessageDialog.openError(lastYearStats.getShell(), Messages.Error, details);
 			}
 		}, sync, gest);
 	}
@@ -498,7 +498,7 @@ public class StatisticsPart
 				pointsPerCar.setEnabled(true);
 				try
 				{
-					InfoDialog.open(pointsPerCar.getShell(), "Puncte pe masini", result);
+					InfoDialog.open(pointsPerCar.getShell(), Messages.StatisticsPart_CarPoints, result);
 				}
 				catch (final Exception e)
 				{
@@ -510,7 +510,7 @@ public class StatisticsPart
 			@Override public void error(final String details)
 			{
 				pointsPerCar.setEnabled(true);
-				MessageDialog.openError(pointsPerCar.getShell(), "Eroare", details);
+				MessageDialog.openError(pointsPerCar.getShell(), Messages.Error, details);
 			}
 		}, sync, extractLocalDate(from), extractLocalDate(to));
 	}

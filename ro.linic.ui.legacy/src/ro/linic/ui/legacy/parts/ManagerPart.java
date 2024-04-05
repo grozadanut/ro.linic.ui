@@ -52,6 +52,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.FocusAdapter;
@@ -119,9 +120,9 @@ import ro.linic.ui.legacy.wizards.EFacturaFileWizard;
 
 public class ManagerPart implements IMouseAction
 {
-	public static final String PART_ID = "linic_gest_client.part.manager";
+	public static final String PART_ID = "linic_gest_client.part.manager"; //$NON-NLS-1$
 	
-	private static final String OPERATIONS_TABLE_STATE_PREFIX = "manager.operations_nt";
+	private static final String OPERATIONS_TABLE_STATE_PREFIX = "manager.operations_nt"; //$NON-NLS-1$
 	
 	private static final int TOP_BAR_HEIGHT = 50;
 	
@@ -208,14 +209,14 @@ public class ManagerPart implements IMouseAction
 		int tipOp;
 		
 		if (dbDoc == null)
-			throw new IllegalArgumentException("Documentul nu a fost gasit in baza de date!");
+			throw new IllegalArgumentException(Messages.ManagerPart_DocNotFound);
 		
 		if (TipDoc.CUMPARARE.equals(dbDoc.getTipDoc()))
 			tipOp = TIP_OP_RECEPTIE;
 		else if (TipDoc.VANZARE.equals(dbDoc.getTipDoc()))
 			tipOp = TIP_OP_IESIRE;
 		else
-			throw new UnsupportedOperationException("TipDoc "+dbDoc.getTipDoc()+" nu poate fi incarcat in Manager");
+			throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_DocTypeError, dbDoc.getTipDoc()));
 		
 		managerPart.updateSelectedTipOp(tipOp);
 		managerPart.updateDoc(dbDoc);
@@ -243,9 +244,9 @@ public class ManagerPart implements IMouseAction
 
 			// 2. delete operations
 			if (!deletableOps.isEmpty() && !MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
-					"Stergeti conexiuni",
+					Messages.ManagerPart_DeleteConn,
 					MessageFormat.format(
-							"Operatiunea{3}{0}{3}contine alte {1} operatiuni conectate:{3}{2}{3}Stergeti si aceste operatiuni?",
+							Messages.ManagerPart_DeleteConnMessage,
 							operation.displayName(), 
 							deletableOps.size(),
 							deletableOps.stream().map(Operatiune::displayName).collect(Collectors.joining(NEWLINE)),
@@ -356,7 +357,7 @@ public class ManagerPart implements IMouseAction
 		tipOpLabel.setLayoutData(tipOpGD);
 		UIUtils.setBoldBannerFont(tipOpLabel);
 		
-		final String companyGestLabel = MessageFormat.format("{0} - {1}",
+		final String companyGestLabel = MessageFormat.format("{0} - {1}", //$NON-NLS-1$
 				safeString(ClientSession.instance().getLoggedUser(), User::getSelectedCompany, Company::displayName),
 				safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getName));
 		final CLabel gestiuneLabel = new CLabel(topBarContainer, SWT.NONE);
@@ -383,7 +384,7 @@ public class ManagerPart implements IMouseAction
 		leftBarContainer.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		
 		receptii = new Button(leftBarContainer, SWT.PUSH);
-		receptii.setText("Receptii");
+		receptii.setText(Messages.ManagerPart_Reception);
 		receptii.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		receptii.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData receptiiGD = new GridData();
@@ -393,7 +394,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setBoldBannerFont(receptii);
 		
 		iesiri = new Button(leftBarContainer, SWT.PUSH);
-		iesiri.setText("Iesiri");
+		iesiri.setText(Messages.ManagerPart_OutgoingOps);
 		iesiri.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		iesiri.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData iesiriGD = new GridData();
@@ -403,7 +404,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setBoldBannerFont(iesiri);
 		
 		etichete = new Button(leftBarContainer, SWT.PUSH);
-		etichete.setText("Printare Etichete");
+		etichete.setText(Messages.PrintLabels);
 		etichete.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
 		etichete.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData eticheteGD = new GridData();
@@ -414,7 +415,7 @@ public class ManagerPart implements IMouseAction
 		etichete.setLayoutData(eticheteGD);
 		
 		terti = new Button(leftBarContainer, SWT.PUSH);
-		terti.setText("Catalog Terti");
+		terti.setText(Messages.ManagerPart_PartnerCatalog);
 		terti.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		terti.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData tertiGD = new GridData();
@@ -424,7 +425,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(terti);
 		
 		produse = new Button(leftBarContainer, SWT.PUSH);
-		produse.setText("Catalog Produse");
+		produse.setText(Messages.ManagerPart_ProductsCatalog);
 		produse.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		produse.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData produseGD = new GridData();
@@ -434,7 +435,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(produse);
 		
 		urmarireParteneri = new Button(leftBarContainer, SWT.PUSH);
-		urmarireParteneri.setText("Urmarire Parteneri");
+		urmarireParteneri.setText(Messages.ManagerPart_PartnerCRM);
 		urmarireParteneri.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		urmarireParteneri.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData urmarireParteneriGD = new GridData();
@@ -483,7 +484,7 @@ public class ManagerPart implements IMouseAction
 				else if (TipDoc.VANZARE.equals(opToOpen.getAccDoc().getTipDoc()))
 					tipOp = TIP_OP_IESIRE;
 				else
-					throw new UnsupportedOperationException("TipDoc "+opToOpen.getAccDoc().getTipDoc()+" nu poate fi incarcat in Manager");
+					throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_DocTypeError, opToOpen.getAccDoc().getTipDoc()));
 				
 				updateSelectedTipOp(tipOp);
 				updateDoc(BusinessDelegate.reloadDoc(opToOpen.getAccDoc()));
@@ -514,7 +515,7 @@ public class ManagerPart implements IMouseAction
 		textContainer.setLayout(new GridLayout(5, false));
 		
 		final Label docLabel = new Label(textContainer, SWT.NONE);
-		docLabel.setText("Doc");
+		docLabel.setText(Messages.ManagerPart_DocType);
 		docLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(docLabel);
 		
@@ -525,7 +526,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(doc);
 		doc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
 		
-		printare = new ExportButton(textContainer, SWT.RIGHT, ImmutableList.of("Printare", "Email", "XML(UBL 2.1)", "eFactura"), "down_0_inv");
+		printare = new ExportButton(textContainer, SWT.RIGHT, ImmutableList.of(Messages.Print, Messages.Email, "XML(UBL 2.1)", Messages.EInvoice), "down_0_inv"); //$NON-NLS-3$ //$NON-NLS-5$
 		final GridData printareGD = new GridData(SWT.TOP, SWT.FILL, false, false);
 		printareGD.verticalSpan = 4;
 		printare.setLayoutData(printareGD);
@@ -534,7 +535,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setBoldFont(printare);
 		
 		final Label nrDocLabel = new Label(textContainer, SWT.NONE);
-		nrDocLabel.setText("Nr/Data Doc");
+		nrDocLabel.setText(Messages.ManagerPart_NoDocDate);
 		nrDocLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(nrDocLabel);
 		
@@ -547,7 +548,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(dataDoc);
 		
 		autoNr = new Button(textContainer, SWT.PUSH | SWT.WRAP);
-		autoNr.setText("autoNr");
+		autoNr.setText(Messages.ManagerPart_AutoNo);
 		final GridData autoNrGD = new GridData(SWT.TOP, SWT.FILL, false, false);
 		autoNrGD.verticalSpan = 2;
 		autoNr.setLayoutData(autoNrGD);
@@ -556,7 +557,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setBoldFont(autoNr);
 		
 		final Label nrReceptieLabel = new Label(textContainer, SWT.NONE);
-		nrReceptieLabel.setText("Nr/Data Rec");
+		nrReceptieLabel.setText(Messages.ManagerPart_NoRecDate);
 		nrReceptieLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(nrReceptieLabel);
 		
@@ -569,7 +570,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(dataReceptie);
 		
 		final Label partnerLabel = new Label(textContainer, SWT.NONE);
-		partnerLabel.setText("Partener");
+		partnerLabel.setText(Messages.ManagerPart_Partner);
 		partnerLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(partnerLabel);
 		
@@ -579,7 +580,7 @@ public class ManagerPart implements IMouseAction
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).hint(380, SWT.DEFAULT).applyTo(partner);
 		
 		final Label tvaLabel = new Label(textContainer, SWT.NONE);
-		tvaLabel.setText("TVA");
+		tvaLabel.setText(Messages.ManagerPart_VAT);
 		tvaLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(tvaLabel);
 		
@@ -594,7 +595,7 @@ public class ManagerPart implements IMouseAction
 		tva.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
 		
 		rpz = new Button(textContainer, SWT.CHECK);
-		rpz.setText("Raport zilnic");
+		rpz.setText(Messages.ManagerPart_DailyRep);
 		rpz.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData rpzGD = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 		rpzGD.horizontalSpan = 2;
@@ -602,7 +603,7 @@ public class ManagerPart implements IMouseAction
 		setFont(rpz);
 		
 		oferta = new Button(textContainer, SWT.PUSH | SWT.WRAP);
-		oferta.setText("Oferta");
+		oferta.setText(Messages.ManagerPart_Offer);
 		oferta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
 		oferta.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(oferta);
@@ -615,35 +616,35 @@ public class ManagerPart implements IMouseAction
 		rightBarContainer.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
 		
 		modificaAntet = new Button(rightBarContainer, SWT.PUSH | SWT.WRAP);
-		modificaAntet.setText("modifica antet");
+		modificaAntet.setText(Messages.ManagerPart_ModifyLines);
 		modificaAntet.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		modificaAntet.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		modificaAntet.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(modificaAntet);
 		
 		comaseazaOps = new Button(rightBarContainer, SWT.PUSH | SWT.WRAP);
-		comaseazaOps.setText("Comasare Linii");
+		comaseazaOps.setText(Messages.ManagerPart_MergeLines);
 		comaseazaOps.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		comaseazaOps.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		comaseazaOps.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(comaseazaOps);
 		
 		duplicate = new Button(rightBarContainer, SWT.PUSH | SWT.WRAP);
-		duplicate.setText("Duplicare");
+		duplicate.setText(Messages.ManagerPart_Duplicate);
 		duplicate.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		duplicate.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		duplicate.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(duplicate);
 		
 		schedule = new Button(rightBarContainer, SWT.PUSH | SWT.WRAP);
-		schedule.setText("Programeaza");
+		schedule.setText(Messages.Schedule);
 		schedule.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		schedule.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		schedule.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(schedule);
 		
 		filtre = new Button(rightBarContainer, SWT.PUSH | SWT.WRAP);
-		filtre.setText("Filtre");
+		filtre.setText(Messages.ManagerPart_Filters);
 		filtre.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
 		filtre.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		filtre.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
@@ -656,51 +657,51 @@ public class ManagerPart implements IMouseAction
 		bottomBarContainer.setLayoutData(bottomBarGD);
 		
 		docNou = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		docNou.setText("Doc nou");
+		docNou.setText(Messages.ManagerPart_NewDoc);
 		docNou.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		docNou.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(docNou);
 		
 		adauga = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		adauga.setText("Adauga");
+		adauga.setText(Messages.Add);
 		adauga.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		adauga.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(adauga);
 		
 		salvare = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		salvare.setText("Salvare");
+		salvare.setText(Messages.Save);
 		salvare.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		salvare.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(salvare);
 		
 		incarcaDoc = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		incarcaDoc.setText("Incarca doc");
+		incarcaDoc.setText(Messages.ManagerPart_LoadDoc);
 		incarcaDoc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		incarcaDoc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(incarcaDoc);
 		
 		refresh = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		refresh.setText("Refresh");
+		refresh.setText(Messages.Refresh);
 		refresh.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		refresh.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(refresh);
 		
 		transfera = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		transfera.setText("Transfera");
+		transfera.setText(Messages.Transfer);
 		transfera.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		transfera.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		transfera.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(transfera);
 		
 		stergeTot = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		stergeTot.setText("sterge tot");
+		stergeTot.setText(Messages.ManagerPart_DeleteAll);
 		stergeTot.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		stergeTot.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(stergeTot);
 		
 		final Optional<Image> trashImage = Icons.createImage(bundle, Icons.TRASH_16X16_PATH, log);
 		stergeRand = new Button(bottomBarContainer, SWT.PUSH | SWT.WRAP);
-		stergeRand.setText("Sterge");
+		stergeRand.setText(Messages.Delete);
 		stergeRand.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		stergeRand.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		stergeRand.setImage(trashImage.orElse(null));
@@ -711,7 +712,7 @@ public class ManagerPart implements IMouseAction
 	private void createMasterTotals(final Composite totalsContainer)
 	{
 		final Label achFTVALabel = new Label(totalsContainer, SWT.NONE);
-		achFTVALabel.setText("Ach-fTVA");
+		achFTVALabel.setText(Messages.ManagerPart_AqNoVAT);
 		UIUtils.setFont(achFTVALabel);
 		
 		final int textWidth = 180;
@@ -726,7 +727,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(achFTVA);
 		
 		final Label achTVALabel = new Label(totalsContainer, SWT.NONE);
-		achTVALabel.setText("TVA-achiz");
+		achTVALabel.setText(Messages.ManagerPart_VATAq);
 		UIUtils.setFont(achTVALabel);
 		
 		achTVA = new Label(totalsContainer, SWT.READ_ONLY);
@@ -739,7 +740,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(achTVA);
 		
 		final Label achTotalLabel = new Label(totalsContainer, SWT.NONE);
-		achTotalLabel.setText("TOTAL-achiz");
+		achTotalLabel.setText(Messages.ManagerPart_AqTotal);
 		UIUtils.setFont(achTotalLabel);
 		
 		achTotal = new Label(totalsContainer, SWT.READ_ONLY);
@@ -752,7 +753,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(achTotal);
 		
 		final Label vanzFTVALabel = new Label(totalsContainer, SWT.NONE);
-		vanzFTVALabel.setText("Vanz-fTVA");
+		vanzFTVALabel.setText(Messages.ManagerPart_SellNoVAT);
 		UIUtils.setFont(vanzFTVALabel);
 		
 		vanzFTVA = new Label(totalsContainer, SWT.READ_ONLY);
@@ -765,7 +766,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(vanzFTVA);
 		
 		final Label vanzTVALabel = new Label(totalsContainer, SWT.NONE);
-		vanzTVALabel.setText("TVA-vanz");
+		vanzTVALabel.setText(Messages.ManagerPart_SellVAT);
 		UIUtils.setFont(vanzTVALabel);
 		
 		vanzTVA = new Label(totalsContainer, SWT.READ_ONLY);
@@ -778,7 +779,7 @@ public class ManagerPart implements IMouseAction
 		UIUtils.setFont(vanzTVA);
 		
 		final Label vanzTotalLabel = new Label(totalsContainer, SWT.NONE);
-		vanzTotalLabel.setText("TOTAL-vanz");
+		vanzTotalLabel.setText(Messages.ManagerPart_SellTotal);
 		UIUtils.setFont(vanzTotalLabel);
 		
 		vanzTotal = new Label(totalsContainer, SWT.READ_ONLY);
@@ -862,7 +863,7 @@ public class ManagerPart implements IMouseAction
 					break;
 
 				default:
-					throw new UnsupportedOperationException("tipOp Case "+tipOp+" not implemented!");
+					throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 				}
 			}
 		});
@@ -917,7 +918,7 @@ public class ManagerPart implements IMouseAction
 			{
 				askSave();
 				
-				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Modifica antet", "Sunteti sigur ca doriti sa modificati operatiunile selectate?"))
+				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), Messages.ManagerPart_ModifyLines, Messages.ManagerPart_ModifyLinesMessage))
 				{
 					final ImmutableSet<Long> selectedOps = operationsTable.selection().stream().map(Operatiune::getId).collect(toImmutableSet());
 					final ImmutableSet<Long> sourceOps = operationsTable.getSourceData().stream().map(Operatiune::getId).collect(toImmutableSet());
@@ -951,7 +952,7 @@ public class ManagerPart implements IMouseAction
 				if (docIncarcat == null)
 					return;
 				
-				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Duplicare document", "Sunteti sigur ca doriti sa creati o copie a acestui document?"))
+				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), Messages.ManagerPart_DuplicateDoc, Messages.ManagerPart_DuplicateDocMessage))
 				{
 					final AccountingDocument duplicateDoc = docIncarcat.duplicate();
 					final Iterator<Operatiune> opIterator = docIncarcat.getOperatiuni_Stream()
@@ -994,7 +995,7 @@ public class ManagerPart implements IMouseAction
 				if (docIncarcat == null)
 					return;
 
-				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Comaseaza linii", "Sunteti sigur ca doriti sa comasati liniile din documentul incarcat?"))
+				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), Messages.ManagerPart_MergeLines, Messages.ManagerPart_MergeLinesMessage))
 				{
 					final InvocationResult result = BusinessDelegate.comaseazaOpsFromDoc(docIncarcat.getId());
 
@@ -1046,8 +1047,8 @@ public class ManagerPart implements IMouseAction
 			{
 				final ImmutableList<Operatiune> selection = ImmutableList.copyOf(operationsTable.selection());
 				if (!selection.isEmpty() && MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
-						"Stergeti operatiuni?", 
-						"Sunteti sigur ca doriti sa stergeti toate operatiunile("+selection.size()+") selectate?"))
+						Messages.ManagerPart_DeleteOps, 
+						NLS.bind(Messages.ManagerPart_DeleteOpsMessage, selection.size())))
 					deleteOperations(selection);
 			}
 		});
@@ -1058,8 +1059,8 @@ public class ManagerPart implements IMouseAction
 			{
 				final List<Operatiune> sel = operationsTable.selection();
 				if (!sel.isEmpty() && MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), 
-						"Transferati?", 
-						"Sunteti sigur ca doriti sa transferati stoc din alta gestiune pentru operatiunile("+sel.size()+") selectate?"))
+						Messages.Transfer, 
+						NLS.bind(Messages.ManagerPart_TransferMessage, sel.size())))
 					transferOperations(sel);
 			}
 		});
@@ -1069,8 +1070,8 @@ public class ManagerPart implements IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				if (docIncarcat != null && MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), 
-						"Stergeti tot?", 
-						"Sunteti sigur ca doriti sa stergeti toate operatiunile("+docIncarcat.getOperatiuni().size()+") din documentul incarcat?"))
+						Messages.ManagerPart_DeleteAll, 
+						NLS.bind(Messages.ManagerPart_DeleteAllMessage, docIncarcat.getOperatiuni().size())))
 					deleteOperations(ImmutableList.copyOf(docIncarcat.getOperatiuni()));
 			}
 		});
@@ -1191,21 +1192,21 @@ public class ManagerPart implements IMouseAction
 		switch (tipOp)
 		{
 		case TIP_OP_RECEPTIE:
-			tipOpLabel.setText("intrare");
+			tipOpLabel.setText(Messages.ManagerPart_Incoming);
 			doc.setItems(AccountingDocument.ALL_INTRARI_OPERATION_DOC_TYPES.toArray(new String[] {}));
 			receptii.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 			iesiri.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 			break;
 			
 		case TIP_OP_IESIRE:
-			tipOpLabel.setText("iesire");
+			tipOpLabel.setText(Messages.ManagerPart_Outgoing);
 			doc.setItems(AccountingDocument.ALL_IESIRI_OPERATION_DOC_TYPES.toArray(new String[] {}));
 			receptii.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 			iesiri.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 			break;
 
 		default:
-			throw new UnsupportedOperationException("Doar Receptie si Iesiri implementat! "+tipOp);
+			throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 		}
 	}
 	
@@ -1308,7 +1309,7 @@ public class ManagerPart implements IMouseAction
 				.orElse(null);
 		if (p.isPresent() && TipOp.IESIRE.equals(op.getTipOp()) && Product.shouldModifyStoc(p.get()) && 
 				op.getCantitate().compareTo(BigDecimal.ZERO) >= 0 && op.getCantitate().compareTo(stocMapping.getStoc()) > 0)
-			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Stoc negativ", "In urma operatiunii stocul va fi negativ!");
+			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.ManagerPart_NegativeStock, Messages.ManagerPart_NegativeStockMessage);
 		
 		// select OtherGest if INTRARE Transfer
 		Integer gestiuneId = null;
@@ -1322,7 +1323,7 @@ public class ManagerPart implements IMouseAction
 			else
 			{
 				final SelectEntityDialog<Gestiune> gestiuneDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-						"Transfer", "Selectati gestiunea din care doriti sa transferati", "Gestiune", gestiuni, "OK", "Cancel");
+						Messages.Transfer, Messages.ManagerPart_SelectInventory, Messages.ManagerPart_Inventory, gestiuni, Messages.OK, Messages.Cancel);
 				final int dialogResult = gestiuneDialog.open();
 
 				if (dialogResult != 0)
@@ -1341,7 +1342,7 @@ public class ManagerPart implements IMouseAction
 					selectedPartnerId(), rpz.getSelection(), op, gestiuneId);
 			
 			if (result.statusOk() && ((AccountingDocument) result.extra(InvocationResult.ACCT_DOC_KEY)).getPartner().isInactivNullCheck())
-				MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "ATENTIE", "In urma verificarii la ANAF, partenerul figureaza ca INACTIV!!!");
+				MessageDialog.openWarning(Display.getCurrent().getActiveShell(), Messages.Warning, Messages.ManagerPart_PartnerInactive);
 		}
 		
 		showResult(result);
@@ -1361,7 +1362,7 @@ public class ManagerPart implements IMouseAction
 		else
 		{
 			final SelectEntityDialog<Gestiune> gestiuneDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-					"Transfer", "Selectati gestiunea din care doriti sa transferati", "Gestiune", gestiuni, "OK", "Cancel");
+					Messages.Transfer, Messages.ManagerPart_SelectInventory, Messages.ManagerPart_Inventory, gestiuni, Messages.OK, Messages.Cancel);
 			final int dialogResult = gestiuneDialog.open();
 			
 			if (dialogResult != 0)
@@ -1401,7 +1402,7 @@ public class ManagerPart implements IMouseAction
 				{
 					if (isEmpty(safeString(docIncarcat.getPartner(), Partner::getDelegat, Delegat::getName)))
 					{
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru partenerul curent in Catalog Terti!");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_MissingDelegate, Messages.ManagerPart_MissingDelegateMessage);
 						return;
 					}
 						
@@ -1412,7 +1413,7 @@ public class ManagerPart implements IMouseAction
 				break;
 
 			default:
-				throw new UnsupportedOperationException("tipOp Case "+tipOp+" not implemented!");
+				throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 			}
 		}
 		catch (final IOException | JRException ex)
@@ -1432,7 +1433,7 @@ public class ManagerPart implements IMouseAction
 			switch (tipOp)
 			{
 			case TIP_OP_RECEPTIE:
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot trimite prin email!");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_WrongDoc, Messages.ManagerPart_WrongDocMessage);
 				break;
 
 			case TIP_OP_IESIRE:
@@ -1440,7 +1441,7 @@ public class ManagerPart implements IMouseAction
 				{
 					if (isEmpty(safeString(docIncarcat.getPartner(), Partner::getDelegat, Delegat::getName)))
 					{
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru partenerul curent in Catalog Terti!");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_MissingDelegate, Messages.ManagerPart_MissingDelegateMessage);
 						return;
 					}
 					
@@ -1448,7 +1449,7 @@ public class ManagerPart implements IMouseAction
 							.getValueOr(PersistedProp.HAS_MAIL_SMTP_DEFAULT));
 					if (!hasMailConfigured)
 					{
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "MAIL_SMTP nu este configurat! Adresati-va administratorului de sistem pentru configurare!");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, Messages.ManagerPart_MailSMTPErr);
 						return;
 					}
 					
@@ -1456,11 +1457,11 @@ public class ManagerPart implements IMouseAction
 							docIncarcat.getPaidBy().stream().map(AccountingDocumentMapping::getPays).findFirst().orElse(null));
 				}
 				else
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot trimite prin email!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_WrongDoc, Messages.ManagerPart_WrongDocMessage);
 				break;
 
 			default:
-				throw new UnsupportedOperationException("tipOp Case "+tipOp+" not implemented!");
+				throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 			}
 		}
 		catch (final IOException | JRException ex)
@@ -1478,7 +1479,7 @@ public class ManagerPart implements IMouseAction
 		switch (tipOp)
 		{
 		case TIP_OP_RECEPTIE:
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot exporta in XML(UBL)!");
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_WrongDoc, Messages.ManagerPart_WrongDocMessageXml);
 			break;
 
 		case TIP_OP_IESIRE:
@@ -1486,12 +1487,12 @@ public class ManagerPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docIncarcat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru partenerul curent in Catalog Terti!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_MissingDelegate, Messages.ManagerPart_MissingDelegateMessage);
 					return;
 				}
 
 				final FileDialog chooser = new FileDialog(printare.getShell(), SWT.SAVE);
-				chooser.setFileName("Factura_"+docIncarcat.getNrDoc()+".xml");
+				chooser.setFileName(Messages.Invoice_+docIncarcat.getNrDoc()+".xml"); //$NON-NLS-2$
 				final String filepath = chooser.open();
 				
 				if (isEmpty(filepath))
@@ -1501,11 +1502,11 @@ public class ManagerPart implements IMouseAction
 						new EFacturaFileWizard(log, docIncarcat, filepath)).open();
 			}
 			else
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot exporta in XML(UBL)!");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_WrongDoc, Messages.ManagerPart_WrongDocMessageXml);
 			break;
 
 		default:
-			throw new UnsupportedOperationException("tipOp Case "+tipOp+" not implemented!");
+			throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 		}
 	}
 	
@@ -1517,7 +1518,7 @@ public class ManagerPart implements IMouseAction
 		switch (tipOp)
 		{
 		case TIP_OP_RECEPTIE:
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Doar facturile de iesire se pot exporta la ANAF eFactura!");
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_WrongDoc, Messages.ManagerPart_WrongDocMessageAnaf);
 			break;
 
 		case TIP_OP_IESIRE:
@@ -1526,22 +1527,22 @@ public class ManagerPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docIncarcat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru partenerul curent in Catalog Terti!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_MissingDelegate, Messages.ManagerPart_MissingDelegateMessage);
 					return;
 				}
 				
-				if (!MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Raporteaza", 
-						MessageFormat.format("Doriti sa raportati factura {0} la ANAF?", docIncarcat.displayNameShort())))
+				if (!MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.ManagerPart_Report, 
+						MessageFormat.format(Messages.ManagerPart_ReportMessage, docIncarcat.displayNameShort())))
 					return;
 
 				AnafReporter.reportInvoice(docIncarcat.getCompany().getId(), docIncarcat.getId());
 			}
 			else
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Doar facturile de iesire se pot exporta la ANAF eFactura!");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_WrongDoc, Messages.ManagerPart_WrongDocMessageAnaf);
 			break;
 
 		default:
-			throw new UnsupportedOperationException("tipOp Case "+tipOp+" not implemented!");
+			throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 		}
 	}
 	
@@ -1556,7 +1557,7 @@ public class ManagerPart implements IMouseAction
 			return TipDoc.VANZARE;
 
 		default:
-			throw new UnsupportedOperationException("tipDoc Case "+tipOp+" not implemented!");
+			throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 		}
 	}
 	
@@ -1571,7 +1572,7 @@ public class ManagerPart implements IMouseAction
 			return TipOp.IESIRE;
 
 		default:
-			throw new UnsupportedOperationException("tipOp Case "+tipOp+" not implemented!");
+			throw new UnsupportedOperationException(NLS.bind(Messages.ManagerPart_OpTypeNotImpl, tipOp));
 		}
 	}
 	
@@ -1594,7 +1595,7 @@ public class ManagerPart implements IMouseAction
 	
 	private void askSave()
 	{
-		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Salveaza", "Salvati modificarile facute?"))
+		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.Save, Messages.SaveMessage))
 			onSave();
 	}
 }

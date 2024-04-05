@@ -41,6 +41,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -80,10 +81,10 @@ import ro.linic.ui.legacy.widgets.ExportButton;
 
 public class VerifyOperationsPart
 {
-	public static final String PART_ID = "linic_gest_client.part.verify_operations";
+	public static final String PART_ID = "linic_gest_client.part.verify_operations"; //$NON-NLS-1$
 	
-	private static final String INTRARI_TABLE_STATE_PREFIX = "verify_operations.intrari_tree_operations_nt";
-	private static final String IESIRI_TABLE_STATE_PREFIX = "verify_operations.iesiri_tree_operations_nt";
+	private static final String INTRARI_TABLE_STATE_PREFIX = "verify_operations.intrari_tree_operations_nt"; //$NON-NLS-1$
+	private static final String IESIRI_TABLE_STATE_PREFIX = "verify_operations.iesiri_tree_operations_nt"; //$NON-NLS-1$
 	
 	private TreeOperationsNatTable intrariTable;
 	private TreeOperationsNatTable iesiriTable;
@@ -143,7 +144,7 @@ public class VerifyOperationsPart
 		createTopBar(container);
 		
 		final Label intrariLabel = new Label(container, SWT.NONE);
-		intrariLabel.setText("INTRARI");
+		intrariLabel.setText(Messages.VerifyOperationsPart_Incoming);
 		setBoldBannerFont(intrariLabel);
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(intrariLabel);
 		
@@ -160,7 +161,7 @@ public class VerifyOperationsPart
 		loadState(INTRARI_TABLE_STATE_PREFIX, intrariTable.getTable(), part);
 		
 		final Label iesiriLabel = new Label(container, SWT.NONE);
-		iesiriLabel.setText("IESIRI");
+		iesiriLabel.setText(Messages.VerifyOperationsPart_Outgoing);
 		setBoldBannerFont(iesiriLabel);
 		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(iesiriLabel);
 		
@@ -188,19 +189,19 @@ public class VerifyOperationsPart
 		container.setLayout(new GridLayout(3, false));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(container);
 		
-		printare = new ExportButton(container, SWT.RIGHT, ImmutableList.of("Printare", "Email"), "down_0_inv");
+		printare = new ExportButton(container, SWT.RIGHT, ImmutableList.of(Messages.Print, Messages.Email), "down_0_inv"); //$NON-NLS-3$
 		printare.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
 		printare.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(printare);
 		
 		schedule = new Button(container, SWT.PUSH);
-		schedule.setText("Programeaza");
+		schedule.setText(Messages.Schedule);
 		schedule.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		schedule.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(schedule);
 		
 		refresh = new Button(container, SWT.PUSH);
-		refresh.setText("Refresh");
+		refresh.setText(Messages.Refresh);
 		UIUtils.setBoldFont(refresh);
 	}
 	
@@ -303,7 +304,7 @@ public class VerifyOperationsPart
 		.append(emailSignature);
 
 		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
-				entry.getKey().getEmail(), "Programare servicii", messageSB.toString(), null, EMPTY_STRING);
+				entry.getKey().getEmail(), Messages.VerifyOperationsPart_ScheduleServices, messageSB.toString(), null, EMPTY_STRING);
 	}
 	
 	private void loadData()
@@ -318,7 +319,7 @@ public class VerifyOperationsPart
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcare", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VerifyOperationsPart_ErrorLoading, details);
 			}
 		}, sync, log);
 	}
@@ -363,8 +364,8 @@ public class VerifyOperationsPart
 					.collect(toImmutableList());
 			
 			final ConfirmDialog confirmDialog = new ConfirmDialog(Display.getCurrent().getActiveShell(),
-					"Verifica tot bonul",
-					MessageFormat.format("Verificati toate operatiunile de pe bon({0})?{1}{2}",
+					Messages.VerifyOperationsPart_VerifyAll,
+					MessageFormat.format(Messages.VerifyOperationsPart_VerifyAllMess,
 							unverifiedOps.size(),
 							NEWLINE,
 							unverifiedOps.stream()
@@ -469,7 +470,7 @@ public class VerifyOperationsPart
 			case INCASARE:
 			case PLATA:
 			case VOUCHER:
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot trimite prin email!");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VerifyOperationsPart_WrongDoc, Messages.VerifyOperationsPart_WrongDocMess);
 				break;
 
 			case VANZARE:
@@ -477,7 +478,7 @@ public class VerifyOperationsPart
 				{
 					if (isEmpty(safeString(docIncarcat.getPartner(), Partner::getDelegat, Delegat::getName)))
 					{
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru partenerul curent in Catalog Terti!");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VerifyOperationsPart_DelegateMissing, Messages.VerifyOperationsPart_DelegateMissingMess);
 						return;
 					}
 					
@@ -485,7 +486,7 @@ public class VerifyOperationsPart
 							.getValueOr(PersistedProp.HAS_MAIL_SMTP_DEFAULT));
 					if (!hasMailConfigured)
 					{
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "MAIL_SMTP nu este configurat! Adresati-va administratorului de sistem pentru configurare!");
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, Messages.VerifyOperationsPart_MailSMTPError);
 						return;
 					}
 					
@@ -493,11 +494,11 @@ public class VerifyOperationsPart
 							docIncarcat.getPaidBy().stream().map(AccountingDocumentMapping::getPays).findFirst().orElse(null));
 				}
 				else
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot trimite prin email!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VerifyOperationsPart_WrongDoc, Messages.VerifyOperationsPart_WrongDocMess);
 				break;
 
 			default:
-				throw new UnsupportedOperationException("TipDoc Case "+docIncarcat.getTipDoc()+" not implemented!");
+				throw new UnsupportedOperationException(NLS.bind(Messages.DocTypeNotImpl, docIncarcat.getTipDoc()));
 			}
 		}
 		catch (final IOException | JRException ex)

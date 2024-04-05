@@ -46,9 +46,9 @@ import ro.linic.ui.legacy.tables.AuditEventsNatTable;
 
 public class AuditEventsPart
 {
-	public static final String PART_ID = "linic_gest_client.part.audit_events";
+	public static final String PART_ID = "linic_gest_client.part.audit_events"; //$NON-NLS-1$
 	
-	private static final String TABLE_STATE_PREFIX = "audit_events.events_nt";
+	private static final String TABLE_STATE_PREFIX = "audit_events.events_nt"; //$NON-NLS-1$
 	
 	private Combo type;
 	private Combo user;
@@ -84,31 +84,31 @@ public class AuditEventsPart
 		container.setLayout(new GridLayout(9, false));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(container);
 		
-		setFont(new Label(container, SWT.NONE)).setText("Tip");//layout
-		setFont(new Label(container, SWT.NONE)).setText("Utilizator");//layout
+		setFont(new Label(container, SWT.NONE)).setText(Messages.AuditEventsPart_Type);//layout
+		setFont(new Label(container, SWT.NONE)).setText(Messages.AuditEventsPart_User);//layout
 		new Label(container, SWT.NONE);//layout
 		new Label(container, SWT.NONE);//layout
 		
 		maxim = new Button(container, SWT.PUSH);
-		maxim.setText("Maxim");
+		maxim.setText(Messages.Max);
 		maxim.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(maxim);
 		GridDataFactory.swtDefaults().applyTo(maxim);
 		
 		ziCurenta = new Button(container, SWT.PUSH);
-		ziCurenta.setText("ZiCrt");
+		ziCurenta.setText(Messages.Today);
 		ziCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(ziCurenta);
 		GridDataFactory.swtDefaults().applyTo(ziCurenta);
 		
 		lunaCurenta = new Button(container, SWT.PUSH);
-		lunaCurenta.setText("LunaCrt");
+		lunaCurenta.setText(Messages.ThisMonth);
 		lunaCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(lunaCurenta);
 		GridDataFactory.swtDefaults().applyTo(lunaCurenta);
 		
 		anCurent = new Button(container, SWT.PUSH);
-		anCurent.setText("AnCrt");
+		anCurent.setText(Messages.ThisYear);
 		anCurent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(anCurent);
 		GridDataFactory.swtDefaults().applyTo(anCurent);
@@ -130,7 +130,7 @@ public class AuditEventsPart
 		UIUtils.setFont(gestiune);
 		
 		descriere = new Text(container, SWT.BORDER);
-		descriere.setMessage("Descriere");
+		descriere.setMessage(Messages.AuditEventsPart_Description);
 		UIUtils.setFont(descriere);
 		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(descriere);
 		
@@ -145,7 +145,7 @@ public class AuditEventsPart
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(to);
 		
 		execute = new Button(container, SWT.PUSH | SWT.WRAP);
-		execute.setText("Executa filtrarea");
+		execute.setText(Messages.Execute);
 		execute.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		execute.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(execute);
@@ -223,7 +223,7 @@ public class AuditEventsPart
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcare", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AuditEventsPart_ErrorLoading, details);
 			}
 		}, sync, selectedType().orElse(null), selectedUser().map(User::getId).orElse(null), selectedGestiune().map(Gestiune::getId).orElse(null),
 		extractLocalDate(from), extractLocalDate(to), descriere.getText(), log);

@@ -39,6 +39,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseEvent;
@@ -83,15 +84,15 @@ import ro.linic.ui.legacy.wizards.EFacturaFileWizard;
 
 public class AccountingPart implements IMouseAction
 {
-	public static final String PART_ID = "linic_gest_client.part.accounting";
+	public static final String PART_ID = "linic_gest_client.part.accounting"; //$NON-NLS-1$
 	
-	private static final String TABLE_STATE_PREFIX = "accounting.documents_nt";
-	private static final String TABLE_REC_INV_STATE_PREFIX = "accounting.received_invoices_nt";
-	private static final String VERTICAL_SASH_STATE_PREFIX = "vanzari.vertical_sash";
+	private static final String TABLE_STATE_PREFIX = "accounting.documents_nt"; //$NON-NLS-1$
+	private static final String TABLE_REC_INV_STATE_PREFIX = "accounting.received_invoices_nt"; //$NON-NLS-1$
+	private static final String VERTICAL_SASH_STATE_PREFIX = "vanzari.vertical_sash"; //$NON-NLS-1$
 	
-	private static final String RAP_FISA_PARTENERI_CONTA = "Fisa pe Parteneri Contabila";
-	private static final String RAP_ALL_DOCS = "Raport cu Toate Documentele";
-	private static final String RAP_TVA_DOCS = "Raport Documente TVA";
+	private static final String RAP_FISA_PARTENERI_CONTA = Messages.AccountingPart_RepPartners;
+	private static final String RAP_ALL_DOCS = Messages.AccountingPart_RepAllDocs;
+	private static final String RAP_TVA_DOCS = Messages.AccountingPart_RepVAT;
 	
 	private Combo partner;
 	private Combo gestiune;
@@ -141,25 +142,25 @@ public class AccountingPart implements IMouseAction
 		new Label(container, SWT.NONE);//layout
 		
 		maxim = new Button(container, SWT.PUSH);
-		maxim.setText("Maxim");
+		maxim.setText(Messages.Max);
 		maxim.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(maxim);
 		GridDataFactory.swtDefaults().applyTo(maxim);
 		
 		ziCurenta = new Button(container, SWT.PUSH);
-		ziCurenta.setText("ZiCrt");
+		ziCurenta.setText(Messages.Today);
 		ziCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(ziCurenta);
 		GridDataFactory.swtDefaults().applyTo(ziCurenta);
 		
 		lunaCurenta = new Button(container, SWT.PUSH);
-		lunaCurenta.setText("LunaCrt");
+		lunaCurenta.setText(Messages.ThisMonth);
 		lunaCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(lunaCurenta);
 		GridDataFactory.swtDefaults().applyTo(lunaCurenta);
 		
 		anCurent = new Button(container, SWT.PUSH);
-		anCurent.setText("AnCrt");
+		anCurent.setText(Messages.ThisYear);
 		anCurent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(anCurent);
 		GridDataFactory.swtDefaults().applyTo(anCurent);
@@ -186,7 +187,7 @@ public class AccountingPart implements IMouseAction
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(to);
 		
 		execute = new Button(container, SWT.PUSH | SWT.WRAP);
-		execute.setText("Executa filtrarea");
+		execute.setText(Messages.Execute);
 		execute.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		execute.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(execute);
@@ -222,7 +223,7 @@ public class AccountingPart implements IMouseAction
 		GridDataFactory.fillDefaults().grab(true, false).span(7, 1).applyTo(container);
 		
 		final Label tvaDePlataLabel = new Label(container, SWT.WRAP);
-		tvaDePlataLabel.setText("TVA de plata");
+		tvaDePlataLabel.setText(Messages.AccountingPart_PayableVAT);
 		UIUtils.setBoldBannerFont(tvaDePlataLabel);
 		
 		tvaDePlata = new Text(container, SWT.READ_ONLY | SWT.SINGLE | SWT.BORDER);
@@ -260,14 +261,14 @@ public class AccountingPart implements IMouseAction
 		GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 50).span(7, 1).applyTo(container);
 		
 		salveaza = new Button(container, SWT.PUSH);
-		salveaza.setText("Salveaza");
+		salveaza.setText(Messages.Save);
 		salveaza.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		salveaza.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(salveaza);
 		GridDataFactory.swtDefaults().grab(true, true).align(SWT.RIGHT, SWT.FILL).applyTo(salveaza);
 		
 		closeAll = new Button(container, SWT.PUSH);
-		closeAll.setText("Inchide toate documentele");
+		closeAll.setText(Messages.AccountingPart_CloseAllDocs);
 		closeAll.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		closeAll.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		closeAll.setEnabled(ClientSession.instance().hasStrictPermission(Permissions.SET_EDITABLE_ACC_DOCS));
@@ -275,14 +276,14 @@ public class AccountingPart implements IMouseAction
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(closeAll);
 		
 		openAll = new Button(container, SWT.PUSH);
-		openAll.setText("Deschide toate documentele");
+		openAll.setText(Messages.AccountingPart_OpenAllDocs);
 		openAll.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		openAll.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		openAll.setEnabled(ClientSession.instance().hasStrictPermission(Permissions.SET_EDITABLE_ACC_DOCS));
 		UIUtils.setBoldFont(openAll);
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(openAll);
 		
-		printareDocs = new ExportButton(container, SWT.PUSH, ImmutableList.of("Printare", "Email", "XML(UBL 2.1)", "eFactura"), "down_0_inv");
+		printareDocs = new ExportButton(container, SWT.PUSH, ImmutableList.of(Messages.Print, Messages.Email, "XML(UBL 2.1)", Messages.EInvoice), "down_0_inv"); //$NON-NLS-3$ //$NON-NLS-5$
 		printareDocs.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		printareDocs.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(printareDocs);
@@ -296,8 +297,8 @@ public class AccountingPart implements IMouseAction
 		saveState(TABLE_REC_INV_STATE_PREFIX, recInvTable.getTable(), part);
 		
 		final int[] verticalWeights = verticalSash.getWeights();
-		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".0", String.valueOf(verticalWeights[0]));
-		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".1", String.valueOf(verticalWeights[1]));
+		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".0", String.valueOf(verticalWeights[0])); //$NON-NLS-1$
+		part.getPersistedState().put(VERTICAL_SASH_STATE_PREFIX+".1", String.valueOf(verticalWeights[1])); //$NON-NLS-1$
 	}
 	
 	private void loadVisualState()
@@ -306,8 +307,8 @@ public class AccountingPart implements IMouseAction
 		loadState(TABLE_REC_INV_STATE_PREFIX, recInvTable.getTable(), part);
 		
 		final int[] verticalWeights = new int[2];
-		verticalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".0", "250"));
-		verticalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".1", "150"));
+		verticalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".0", "250")); //$NON-NLS-1$ //$NON-NLS-2$
+		verticalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX+".1", "150")); //$NON-NLS-1$ //$NON-NLS-2$
 		verticalSash.setWeights(verticalWeights);
 	}
 	
@@ -368,7 +369,7 @@ public class AccountingPart implements IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				askSave();
-				if (!MessageDialog.openQuestion(closeAll.getShell(), "Inchideti tot", "Inchideti toate documentele incarcate?"))
+				if (!MessageDialog.openQuestion(closeAll.getShell(), Messages.AccountingPart_CloseAll, Messages.AccountingPart_CloseMessage))
 					return;
 					
 				closeAll.setEnabled(false);
@@ -385,7 +386,8 @@ public class AccountingPart implements IMouseAction
 				openAll.setEnabled(true);
 				
 				if (result.statusOk())
-					MessageDialog.openInformation(closeAll.getShell(), "Success", "Au fost inchise "+result.extraLong(InvocationResult.UPDATE_COUNT_KEY)+" documente");
+					MessageDialog.openInformation(closeAll.getShell(), Messages.Success, 
+							NLS.bind(Messages.AccountingPart_ClosedDocs, result.extraLong(InvocationResult.UPDATE_COUNT_KEY)));
 			}
 		});
 		
@@ -394,7 +396,7 @@ public class AccountingPart implements IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				askSave();
-				if (!MessageDialog.openQuestion(openAll.getShell(), "Deschideti tot", "Deschideti toate documentele incarcate?"))
+				if (!MessageDialog.openQuestion(openAll.getShell(), Messages.AccountingPart_OpenAll, Messages.AccountingPart_OpenMessage))
 					return;
 					
 				closeAll.setEnabled(false);
@@ -411,7 +413,8 @@ public class AccountingPart implements IMouseAction
 				openAll.setEnabled(true);
 
 				if (result.statusOk())
-					MessageDialog.openInformation(openAll.getShell(), "Success", "Au fost deschise "+result.extraLong(InvocationResult.UPDATE_COUNT_KEY)+" documente");
+					MessageDialog.openInformation(openAll.getShell(), Messages.Success,
+							NLS.bind(Messages.AccountingPart_OpenedDocs, result.extraLong(InvocationResult.UPDATE_COUNT_KEY)));
 			}
 		});
 		
@@ -497,7 +500,7 @@ public class AccountingPart implements IMouseAction
 			@Override public void error(final String details)
 			{
 				execute.setEnabled(true);
-				MessageDialog.openError(execute.getShell(), "Eroare la filtrare", details);
+				MessageDialog.openError(execute.getShell(), Messages.ErrorFiltering, details);
 			}
 		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selectedPartner().map(Partner::getId).orElse(null),
 		extractLocalDate(from), extractLocalDate(to), log);
@@ -511,7 +514,7 @@ public class AccountingPart implements IMouseAction
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(execute.getShell(), "Eroare la filtrare Anaf", details);
+				MessageDialog.openError(execute.getShell(), Messages.AccountingPart_ErrorFilteringAnaf, details);
 			}
 		}, sync, log, extractLocalDate(from), extractLocalDate(to));
 	}
@@ -585,7 +588,7 @@ public class AccountingPart implements IMouseAction
 			@Override public void error(final String details)
 			{
 				printFisaParteneri.setEnabled(true);
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea raportului", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AccountingPart_ErrorLoading, details);
 			}
 		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selPartnerId, fromDate, toDate, log);
 	}
@@ -644,7 +647,7 @@ public class AccountingPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docSelectat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru partenerul curent in Catalog Terti!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AccountingPart_MissingDelegate, Messages.AccountingPart_MissingDelegateMessage);
 					return;
 				}
 
@@ -652,14 +655,14 @@ public class AccountingPart implements IMouseAction
 						.getValueOr(PersistedProp.HAS_MAIL_SMTP_DEFAULT));
 				if (!hasMailConfigured)
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "MAIL_SMTP nu este configurat! Adresati-va administratorului de sistem pentru configurare!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, Messages.AccountingPart_SMTPError);
 					return;
 				}
 
 				JasperReportManager.instance(bundle, log).printFactura_ClientDuplicate(bundle, docSelectat, null);
 			}
 			else
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot trimite prin email!");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AccountingPart_WrongDoc, Messages.AccountingPart_OnlyInvoice);
 		}
 		catch (final IOException | JRException ex)
 		{
@@ -676,12 +679,13 @@ public class AccountingPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docSelectat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru "+docSelectat.getDoc()+" nr: "+docSelectat.getNrDoc());
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AccountingPart_MissingDelegate, 
+							NLS.bind(Messages.AccountingPart_EnterDelegate, docSelectat.getDoc(), docSelectat.getNrDoc()));
 					return;
 				}
 
 				final FileDialog chooser = new FileDialog(printareDocs.getShell(), SWT.SAVE);
-				chooser.setFileName("Factura_"+docSelectat.getNrDoc()+".xml");
+				chooser.setFileName(Messages.Invoice_+docSelectat.getNrDoc()+".xml"); //$NON-NLS-2$
 				final String filepath = chooser.open();
 
 				if (isEmpty(filepath))
@@ -695,8 +699,8 @@ public class AccountingPart implements IMouseAction
 	
 	private void sendSelectedDocsTo_eFactura()
 	{
-		if (!MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Raporteaza", 
-				MessageFormat.format("Doriti sa raportati {0} facturi la ANAF?",
+		if (!MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.AccountingPart_Report, 
+				MessageFormat.format(Messages.AccountingPart_ReportMessage,
 						table.selectedAccDocs_Stream()
 						.filter(accDoc -> TipDoc.VANZARE.equals(accDoc.getTipDoc()) && AccountingDocument.FACTURA_NAME.equalsIgnoreCase(accDoc.getDoc()))
 						.count())))
@@ -709,7 +713,8 @@ public class AccountingPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docSelectat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru "+docSelectat.getDoc()+" nr: "+docSelectat.getNrDoc());
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AccountingPart_MissingDelegate,
+							NLS.bind(Messages.AccountingPart_EnterDelegate, docSelectat.getDoc(), docSelectat.getNrDoc()));
 					return;
 				}
 				
@@ -762,7 +767,7 @@ public class AccountingPart implements IMouseAction
 	
 	private void askSave()
 	{
-		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Salveaza", "Salvati modificarile facute?"))
+		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.Save, Messages.SaveMessage))
 			onSave();
 	}
 }

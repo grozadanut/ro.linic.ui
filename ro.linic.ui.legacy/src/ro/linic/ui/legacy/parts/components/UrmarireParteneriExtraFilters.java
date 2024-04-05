@@ -35,6 +35,7 @@ import ro.colibri.entities.comercial.AccountingDocument.ContaLoad;
 import ro.colibri.entities.comercial.ContBancar;
 import ro.colibri.entities.user.User;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.legacy.session.Messages;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.widgets.ExtraFilterPopup;
 
@@ -86,31 +87,31 @@ public class UrmarireParteneriExtraFilters extends ExtraFilterPopup
 		GridDataFactory.swtDefaults().span(1, 2).applyTo(container);
 
 		dateLabel = new Label(container, SWT.NONE);
-		dateLabel.setText("Programat intre");
+		dateLabel.setText(Messages.UrmarireParteneriExtraFilters_BetweenLabel);
 		dateLabel.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(dateLabel);
 		GridDataFactory.swtDefaults().span(4, 1).applyTo(dateLabel);
 		
 		maxim = new Button(container, SWT.PUSH);
-		maxim.setText("Maxim");
+		maxim.setText(Messages.UrmarireParteneriExtraFilters_Max);
 		maxim.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(maxim);
 		GridDataFactory.swtDefaults().applyTo(maxim);
 		
 		ziCurenta = new Button(container, SWT.PUSH);
-		ziCurenta.setText("ZiCrt");
+		ziCurenta.setText(Messages.UrmarireParteneriExtraFilters_Today);
 		ziCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(ziCurenta);
 		GridDataFactory.swtDefaults().applyTo(ziCurenta);
 		
 		lunaCurenta = new Button(container, SWT.PUSH);
-		lunaCurenta.setText("LunaCrt");
+		lunaCurenta.setText(Messages.UrmarireParteneriExtraFilters_ThisMonth);
 		lunaCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(lunaCurenta);
 		GridDataFactory.swtDefaults().applyTo(lunaCurenta);
 		
 		anCurent = new Button(container, SWT.PUSH);
-		anCurent.setText("AnCrt");
+		anCurent.setText(Messages.UrmarireParteneriExtraFilters_ThisYear);
 		anCurent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(anCurent);
 		GridDataFactory.swtDefaults().applyTo(anCurent);
@@ -131,27 +132,27 @@ public class UrmarireParteneriExtraFilters extends ExtraFilterPopup
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(bancaGroup);
 		
 		doarBanca = new Button(bancaGroup, SWT.RADIO);
-		doarBanca.setText("doar Banca");
+		doarBanca.setText(Messages.UrmarireParteneriExtraFilters_BankOnly);
 		doarBanca.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		doarBanca.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doarBanca);
 		
 		faraBanca = new Button(bancaGroup, SWT.RADIO);
-		faraBanca.setText("fara Banca");
+		faraBanca.setText(Messages.UrmarireParteneriExtraFilters_NoBank);
 		faraBanca.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		faraBanca.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().applyTo(faraBanca);
 
 		indiferentBanca = new Button(bancaGroup, SWT.RADIO);
-		indiferentBanca.setText("indiferent");
+		indiferentBanca.setText(Messages.UrmarireParteneriExtraFilters_Indifferent);
 		indiferentBanca.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		indiferentBanca.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().applyTo(indiferentBanca);
 		
 		contBancar = new Combo(container, SWT.DROP_DOWN);
 		contBancar.setItems(allConturiBancare.stream().map(ContBancar::displayName).toArray(String[]::new));
-		contBancar.setText("Cont bancar");
-		contBancar.setToolTipText("Folosit doar in cazurile: doar Banca, fara Banca");
+		contBancar.setText(Messages.UrmarireParteneriExtraFilters_BankAcct);
+		contBancar.setToolTipText(Messages.UrmarireParteneriExtraFilters_UsedOnly);
 		UIUtils.setFont(contBancar);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(contBancar);
 		
@@ -161,19 +162,19 @@ public class UrmarireParteneriExtraFilters extends ExtraFilterPopup
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(contaGroup);
 		
 		doarConta = new Button(contaGroup, SWT.RADIO);
-		doarConta.setText("doar Conta");
+		doarConta.setText(Messages.UrmarireParteneriExtraFilters_AccountingOnly);
 		doarConta.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		doarConta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doarConta);
 		
 		faraConta = new Button(contaGroup, SWT.RADIO);
-		faraConta.setText("fara Conta");
+		faraConta.setText(Messages.UrmarireParteneriExtraFilters_NoAccounting);
 		faraConta.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		faraConta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().applyTo(faraConta);
 
 		indiferentConta = new Button(contaGroup, SWT.RADIO);
-		indiferentConta.setText("indiferent");
+		indiferentConta.setText(Messages.UrmarireParteneriExtraFilters_Indifferent);
 		indiferentConta.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		indiferentConta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().applyTo(indiferentConta);
@@ -184,26 +185,26 @@ public class UrmarireParteneriExtraFilters extends ExtraFilterPopup
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(transportGroup);
 		
 		doarTransport = new Button(transportGroup, SWT.RADIO);
-		doarTransport.setText("doar Transport");
+		doarTransport.setText(Messages.UrmarireParteneriExtraFilters_TransportOnly);
 		doarTransport.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		doarTransport.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doarTransport);
 		
 		faraTransport = new Button(transportGroup, SWT.RADIO);
-		faraTransport.setText("fara Transport");
+		faraTransport.setText(Messages.UrmarireParteneriExtraFilters_NoTransport);
 		faraTransport.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		faraTransport.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().applyTo(faraTransport);
 
 		indiferentTransport = new Button(transportGroup, SWT.RADIO);
-		indiferentTransport.setText("indiferent");
+		indiferentTransport.setText(Messages.UrmarireParteneriExtraFilters_Indifferent);
 		indiferentTransport.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		indiferentTransport.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridDataFactory.fillDefaults().applyTo(indiferentTransport);
 		
 		user = new Combo(container, SWT.DROP_DOWN);
 		user.setItems(allUsers.stream().map(User::displayName).sorted().toArray(String[]::new));
-		user.setText("Operator");
+		user.setText(Messages.UrmarireParteneriExtraFilters_User);
 		UIUtils.setFont(user);
 		GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(user);
 	}

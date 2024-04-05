@@ -59,9 +59,9 @@ import ro.linic.ui.legacy.widgets.AddressWidget;
 
 public class CatalogTertiPart
 {
-	public static final String PART_ID = "linic_gest_client.part.terti";
+	public static final String PART_ID = "linic_gest_client.part.terti"; //$NON-NLS-1$
 	
-	private static final String PARTNERS_TABLE_STATE_PREFIX = "terti.parteneri_nt";
+	private static final String PARTNERS_TABLE_STATE_PREFIX = "terti.parteneri_nt"; //$NON-NLS-1$
 	private static final int TEXT_WIDTH = 150;
 	
 	private Button adauga;
@@ -131,35 +131,35 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(container);
 		
 		adauga = new Button(container, SWT.PUSH);
-		adauga.setText("Adauga");
+		adauga.setText(Messages.Add);
 		adauga.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		adauga.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(adauga);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(adauga);
 		
 		salvare = new Button(container, SWT.PUSH);
-		salvare.setText("Salvare");
+		salvare.setText(Messages.Save);
 		salvare.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		salvare.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(salvare);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(salvare);
 		
 		sterge = new Button(container, SWT.PUSH);
-		sterge.setText("Sterge");
+		sterge.setText(Messages.Delete);
 		sterge.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		sterge.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(sterge);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(sterge);
 		
 		refresh = new Button(container, SWT.PUSH);
-		refresh.setText("Refresh");
+		refresh.setText(Messages.Refresh);
 		refresh.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		refresh.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(refresh);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(refresh);
 		
 		grupeInteres = new Button(container, SWT.PUSH);
-		grupeInteres.setText("Grupe Interes");
+		grupeInteres.setText(Messages.CatalogTertiPart_InterestGroups);
 		grupeInteres.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		grupeInteres.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(grupeInteres);
@@ -178,7 +178,7 @@ public class CatalogTertiPart
 		scrollable.setContent(container);
 		
 		final Label nameLabel = new Label(container, SWT.NONE);
-		nameLabel.setText("Denumire TERT");
+		nameLabel.setText(Messages.CatalogTertiPart_PartnerName);
 		nameLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		nameLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(nameLabel);
@@ -189,38 +189,38 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(name);
 		
 		final Label cuiLabel = new Label(container, SWT.NONE);
-		cuiLabel.setText("Cod fiscal");
+		cuiLabel.setText(Messages.CatalogTertiPart_TaxId);
 		cuiLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		cuiLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(cuiLabel);
 		GridDataFactory.swtDefaults().applyTo(cuiLabel);
 		
 		cui = new Text(container, SWT.BORDER);
-		cui.setMessage("RO");
+		cui.setMessage(Messages.CatalogTertiPart_TaxIdMessage);
 		UIUtils.setFont(cui);
 		GridDataFactory.fillDefaults().grab(true, false).minSize(200, SWT.DEFAULT).applyTo(cui);
 		
 		preiaDate = new Button(container, SWT.PUSH);
-		preiaDate.setText("Preia date");
+		preiaDate.setText(Messages.CatalogTertiPart_TakeData);
 		preiaDate.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		preiaDate.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(preiaDate);
 		GridDataFactory.swtDefaults().applyTo(preiaDate);
 		
 		final Label regComLabel = new Label(container, SWT.NONE);
-		regComLabel.setText("RegComert");
+		regComLabel.setText(Messages.CatalogTertiPart_RegCom);
 		regComLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		regComLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(regComLabel);
 		GridDataFactory.swtDefaults().applyTo(regComLabel);
 		
 		regCom = new Text(container, SWT.BORDER);
-		regCom.setMessage("J05/");
+		regCom.setMessage(Messages.CatalogTertiPart_RegComMessage);
 		UIUtils.setFont(regCom);
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(regCom);
 		
 		final Label addresaLabel = new Label(container, SWT.NONE);
-		addresaLabel.setText("Adresa facturare");
+		addresaLabel.setText(Messages.CatalogTertiPart_BillingAddress);
 		addresaLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		addresaLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(addresaLabel);
@@ -231,7 +231,7 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(adresa);
 		
 		final Label addresaLivrareLabel = new Label(container, SWT.NONE);
-		addresaLivrareLabel.setText("Adresa livrare");
+		addresaLivrareLabel.setText(Messages.CatalogTertiPart_DeliveryAddress);
 		addresaLivrareLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		addresaLivrareLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(addresaLivrareLabel);
@@ -242,7 +242,7 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(adresaLivrare);
 		
 		final Label phoneLabel = new Label(container, SWT.NONE);
-		phoneLabel.setText("Telefon");
+		phoneLabel.setText(Messages.CatalogTertiPart_Phone);
 		phoneLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		phoneLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(phoneLabel);
@@ -253,7 +253,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(telefon);
 		
 		final Label emailLabel = new Label(container, SWT.NONE);
-		emailLabel.setText("Email");
+		emailLabel.setText(Messages.Email);
 		emailLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		emailLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(emailLabel);
@@ -264,7 +264,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(email);
 		
 		final Label bancaLabel = new Label(container, SWT.NONE);
-		bancaLabel.setText("Banca");
+		bancaLabel.setText(Messages.CatalogTertiPart_Bank);
 		bancaLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		bancaLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(bancaLabel);
@@ -275,7 +275,7 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(banca);
 		
 		final Label contLabel = new Label(container, SWT.NONE);
-		contLabel.setText("Cont");
+		contLabel.setText(Messages.CatalogTertiPart_BankAcct);
 		contLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		contLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(contLabel);
@@ -286,7 +286,7 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(cont);
 		
 		final Label delegatLabel = new Label(container, SWT.NONE);
-		delegatLabel.setText("Delegat");
+		delegatLabel.setText(Messages.CatalogTertiPart_Delegate);
 		delegatLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		delegatLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(delegatLabel);
@@ -297,7 +297,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatName);
 		
 		final Label cnpLabel = new Label(container, SWT.NONE);
-		cnpLabel.setText("CNP");
+		cnpLabel.setText(Messages.CatalogTertiPart_SSN);
 		cnpLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		cnpLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(cnpLabel);
@@ -308,7 +308,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatCNP);
 		
 		final Label seriaLabel = new Label(container, SWT.NONE);
-		seriaLabel.setText("CI seria/Nr");
+		seriaLabel.setText(Messages.CatalogTertiPart_IdSerie);
 		seriaLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		seriaLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(seriaLabel);
@@ -319,7 +319,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatCI);
 		
 		final Label elibLabel = new Label(container, SWT.NONE);
-		elibLabel.setText("Elib de");
+		elibLabel.setText(Messages.CatalogTertiPart_ReleasedBy);
 		elibLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		elibLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(elibLabel);
@@ -330,7 +330,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatElib);
 		
 		final Label autoLabel = new Label(container, SWT.NONE);
-		autoLabel.setText("Auto");
+		autoLabel.setText(Messages.CatalogTertiPart_Auto);
 		autoLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		autoLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(autoLabel);
@@ -341,7 +341,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(delegatAuto);
 		
 		final Label fidelityNrLabel = new Label(container, SWT.NONE);
-		fidelityNrLabel.setText("Card fidelitate");
+		fidelityNrLabel.setText(Messages.CatalogTertiPart_FidelityCard);
 		fidelityNrLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		fidelityNrLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(fidelityNrLabel);
@@ -352,12 +352,12 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().applyTo(fidelityNumber);
 		
 		autoNrCard = new Button(container, SWT.PUSH);
-		autoNrCard.setText("A");
+		autoNrCard.setText("A"); //$NON-NLS-1$
 		autoNrCard.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
 		GridDataFactory.swtDefaults().applyTo(autoNrCard);
 		
 		final Label fidelityDiscLabel = new Label(container, SWT.NONE);
-		fidelityDiscLabel.setText("%Discount");
+		fidelityDiscLabel.setText(Messages.CatalogTertiPart_AllowancePerc);
 		fidelityDiscLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		fidelityDiscLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(fidelityDiscLabel);
@@ -368,7 +368,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH/2, SWT.DEFAULT).applyTo(fidelityDiscountPercentage);
 		
 		final Label termenPlataLabel = new Label(container, SWT.NONE);
-		termenPlataLabel.setText("Termen plata");
+		termenPlataLabel.setText(Messages.CatalogTertiPart_PaymentTerm);
 		termenPlataLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		termenPlataLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(termenPlataLabel);
@@ -379,7 +379,7 @@ public class CatalogTertiPart
 		GridDataFactory.swtDefaults().span(2, 1).hint(TEXT_WIDTH, SWT.DEFAULT).applyTo(termenPlata);
 		
 		final Label grupaLabel = new Label(container, SWT.NONE);
-		grupaLabel.setText("Grupe interes");
+		grupaLabel.setText(Messages.CatalogTertiPart_InterestGroups);
 		grupaLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		grupaLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(grupaLabel);
@@ -390,14 +390,14 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 100).span(2, 1).applyTo(grupa);
 
 		final Label notifyAppointmentLabel = new Label(container, SWT.NONE);
-		notifyAppointmentLabel.setText("Email/SMS");
+		notifyAppointmentLabel.setText(Messages.CatalogTertiPart_NotifyLabel);
 		notifyAppointmentLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		notifyAppointmentLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(notifyAppointmentLabel);
 		GridDataFactory.swtDefaults().applyTo(notifyAppointmentLabel);
 
 		notifyAppointment = new Button(container, SWT.CHECK);
-		notifyAppointment.setText("Notifica Programarile");
+		notifyAppointment.setText(Messages.CatalogTertiPart_Notify);
 		notifyAppointment.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		notifyAppointment.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(notifyAppointment);
@@ -413,7 +413,7 @@ public class CatalogTertiPart
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
 		
 		quickSearch = new Text(container, SWT.BORDER);
-		quickSearch.setMessage("Nume/Card/Telefon");
+		quickSearch.setMessage(Messages.CatalogTertiPart_QuickSearch);
 		UIUtils.setFont(quickSearch);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(quickSearch);
 		
@@ -439,7 +439,7 @@ public class CatalogTertiPart
 			fillPartnerIncarcat();
 
 			if (isEmpty(partnerIncarcat.getName()))
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "Trebuie specificat un nume pentru partener!");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, Messages.CatalogTertiPart_NameMandatory);
 			else
 			{
 				final InvocationResult result = BusinessDelegate.mergePartner(partnerIncarcat);
@@ -520,7 +520,7 @@ public class CatalogTertiPart
 			{
 				if (partnerIncarcat != null && partnerIncarcat.getId() != null)
 				{
-					if (!MessageDialog.openQuestion(sterge.getShell(), "Stergeti partenerul?", "Sunteti sigur ca doriti sa stergeti partenerul selectat?"))
+					if (!MessageDialog.openQuestion(sterge.getShell(), Messages.CatalogTertiPart_DeletePartner, Messages.CatalogTertiPart_DeletePartnerMessage))
 						return;
 					
 					final InvocationResult result = BusinessDelegate.deletePartner(partnerIncarcat.getId());
@@ -621,7 +621,7 @@ public class CatalogTertiPart
 			@Override
 			public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea partenerilor", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.CatalogTertiPart_ErrorLoading, details);
 			}
 		}, sync);
 	}
@@ -634,12 +634,12 @@ public class CatalogTertiPart
 	
 	private void updatePartner(final Partner partner)
 	{
-		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Salveaza", "Salvati modificarile facute?"))
+		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.Save, Messages.SaveMessage))
 			onSave();
 		part.setDirty(false);
 		
 		if (partner != null && partner.isInactivNullCheck())
-			MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "ATENTIE", "In urma verificarii la ANAF, partenerul figureaza ca INACTIV!!!");
+			MessageDialog.openWarning(Display.getCurrent().getActiveShell(), Messages.Warning, Messages.CatalogTertiPart_InactivePartner);
 		
 		modelUpdatesUI = true;
 		this.partnerIncarcat = partner;

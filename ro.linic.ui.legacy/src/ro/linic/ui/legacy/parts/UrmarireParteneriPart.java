@@ -44,6 +44,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -103,19 +104,19 @@ import ro.linic.ui.legacy.wizards.EFacturaFileWizard;
 
 public class UrmarireParteneriPart implements IMouseAction
 {
-	public static final String PART_ID = "linic_gest_client.part.urmarire_parteneri";
+	public static final String PART_ID = "linic_gest_client.part.urmarire_parteneri"; //$NON-NLS-1$
 	
-	private static final String DOCUMENTS_TABLE_STATE_PREFIX = "urmarire_parteneri.documents_nt";
-	private static final String INDIFERENT = "Indiferent";
+	private static final String DOCUMENTS_TABLE_STATE_PREFIX = "urmarire_parteneri.documents_nt"; //$NON-NLS-1$
+	private static final String INDIFERENT = Messages.UrmarireParteneriPart_Indifferent;
 	
-	private static final String RAP_FISA_PARTENERI = "Fisa pe Parteneri";
-	private static final String RAP_REG_INCASARI_PLATI = "Registrul Incasari si Plati";
-	private static final String RAP_REG_CASA = "Registrul de Casa";
-	private static final String RAP_JURNAL_GENERAL = "Jurnal GENERAL";
-	private static final String RAP_RPZ = "Raport zilnic de gestiune";
-	private static final String RAP_PRINT_FILTRU = "Printare filtru";
-	private static final String RAP_REG_BANCA = "Registrul de Banca";
-	private static final String RAP_REG_ANAF = "Registrul ANAF";
+	private static final String RAP_FISA_PARTENERI = Messages.UrmarireParteneriPart_PartnersTabRep;
+	private static final String RAP_REG_INCASARI_PLATI = Messages.UrmarireParteneriPart_ReceiptsPaymentsRegRep;
+	private static final String RAP_REG_CASA = Messages.UrmarireParteneriPart_ECRRep;
+	private static final String RAP_JURNAL_GENERAL = Messages.UrmarireParteneriPart_GeneralRep;
+	private static final String RAP_RPZ = Messages.UrmarireParteneriPart_DailyInventoryRep;
+	private static final String RAP_PRINT_FILTRU = Messages.UrmarireParteneriPart_PrintFilter;
+	private static final String RAP_REG_BANCA = Messages.UrmarireParteneriPart_BankReg;
+	private static final String RAP_REG_ANAF = Messages.UrmarireParteneriPart_AnafReg;
 	private static final ImmutableList<String> ALL_RAPOARTE = ImmutableList.of(RAP_FISA_PARTENERI, RAP_REG_INCASARI_PLATI, RAP_REG_CASA,
 			RAP_JURNAL_GENERAL, RAP_RPZ, RAP_PRINT_FILTRU, RAP_REG_BANCA, RAP_REG_ANAF);
 	
@@ -267,24 +268,24 @@ public class UrmarireParteneriPart implements IMouseAction
 		ClientSession.instance().addHideStateControl(container);
 		
 		goleste = new Button(container, SWT.PUSH | SWT.WRAP);
-		goleste.setText("g o l e s t e");
+		goleste.setText(Messages.UrmarireParteneriPart_Empty);
 		goleste.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		goleste.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(goleste);
 		GridDataFactory.fillDefaults().hint(25, SWT.DEFAULT).span(1, 3).applyTo(goleste);
 		
 		final Label gestiuniLabel = new Label(container, SWT.NONE);
-		gestiuniLabel.setText("Gestiuni");
+		gestiuniLabel.setText(Messages.UrmarireParteneriPart_Inventories);
 		gestiuniLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(gestiuniLabel);
 		
 		final Label parteneriLabel = new Label(container, SWT.NONE);
-		parteneriLabel.setText("Parteneri");
+		parteneriLabel.setText(Messages.UrmarireParteneriPart_Partners);
 		parteneriLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(parteneriLabel);
 		
 		final Label operatiiLabel = new Label(container, SWT.NONE);
-		operatiiLabel.setText("Operatiuni");
+		operatiiLabel.setText(Messages.UrmarireParteneriPart_Ops);
 		operatiiLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(operatiiLabel);
 		
@@ -315,14 +316,14 @@ public class UrmarireParteneriPart implements IMouseAction
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.TOP).span(1, 2).applyTo(operatii);
 		
 		executaFiltrarea = new Button(container, SWT.PUSH);
-		executaFiltrarea.setText("executa filtrarea");
+		executaFiltrarea.setText(Messages.Execute);
 		executaFiltrarea.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
 		executaFiltrarea.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(executaFiltrarea);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(executaFiltrarea);
 		
 		printareRaport = new Button(container, SWT.PUSH);
-		printareRaport.setText("printare raport");
+		printareRaport.setText(Messages.UrmarireParteneriPart_PrintRep);
 		printareRaport.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
 		printareRaport.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(printareRaport);
@@ -341,25 +342,25 @@ public class UrmarireParteneriPart implements IMouseAction
 		GridDataFactory.fillDefaults().grab(true, false).span(1, 2).applyTo(container);
 		
 		maxim = new Button(container, SWT.PUSH);
-		maxim.setText("Maxim");
+		maxim.setText(Messages.Max);
 		maxim.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(maxim);
 		GridDataFactory.swtDefaults().applyTo(maxim);
 		
 		ziCurenta = new Button(container, SWT.PUSH);
-		ziCurenta.setText("ZiCrt");
+		ziCurenta.setText(Messages.Today);
 		ziCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(ziCurenta);
 		GridDataFactory.swtDefaults().applyTo(ziCurenta);
 		
 		lunaCurenta = new Button(container, SWT.PUSH);
-		lunaCurenta.setText("LunaCrt");
+		lunaCurenta.setText(Messages.ThisMonth);
 		lunaCurenta.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(lunaCurenta);
 		GridDataFactory.swtDefaults().applyTo(lunaCurenta);
 		
 		anCurent = new Button(container, SWT.PUSH);
-		anCurent.setText("AnCrt");
+		anCurent.setText(Messages.ThisYear);
 		anCurent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
 		UIUtils.setBoldFont(anCurent);
 		GridDataFactory.swtDefaults().applyTo(anCurent);
@@ -380,17 +381,17 @@ public class UrmarireParteneriPart implements IMouseAction
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(rpzGroup);
 		
 		doarRpz = new Button(rpzGroup, SWT.RADIO);
-		doarRpz.setText("doar RPZ");
+		doarRpz.setText(Messages.UrmarireParteneriPart_RPZOnly);
 		doarRpz.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doarRpz);
 		
 		faraRpz = new Button(rpzGroup, SWT.RADIO);
-		faraRpz.setText("fara RPZ");
+		faraRpz.setText(Messages.UrmarireParteneriPart_NoRPZ);
 		faraRpz.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().applyTo(faraRpz);
 
 		indiferentRpz = new Button(rpzGroup, SWT.RADIO);
-		indiferentRpz.setText("indiferent");
+		indiferentRpz.setText(Messages.UrmarireParteneriPart_Indifferent);
 		indiferentRpz.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().applyTo(indiferentRpz);
 
@@ -400,17 +401,17 @@ public class UrmarireParteneriPart implements IMouseAction
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(casaGroup);
 		
 		doarCasa = new Button(casaGroup, SWT.RADIO);
-		doarCasa.setText("doar CASA");
+		doarCasa.setText(Messages.UrmarireParteneriPart_ECROnly);
 		doarCasa.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doarCasa);
 		
 		faraCasa = new Button(casaGroup, SWT.RADIO);
-		faraCasa.setText("fara CASA");
+		faraCasa.setText(Messages.UrmarireParteneriPart_NoECR);
 		faraCasa.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().applyTo(faraCasa);
 		
 		indiferentCasa = new Button(casaGroup, SWT.RADIO);
-		indiferentCasa.setText("indiferent");
+		indiferentCasa.setText(Messages.UrmarireParteneriPart_Indifferent);
 		indiferentCasa.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().applyTo(indiferentCasa);
 		
@@ -420,17 +421,17 @@ public class UrmarireParteneriPart implements IMouseAction
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(discounturiGroup);
 		
 		doarDiscounturi = new Button(discounturiGroup, SWT.RADIO);
-		doarDiscounturi.setText("doar DISCOUNTURI");
+		doarDiscounturi.setText(Messages.UrmarireParteneriPart_DiscOnly);
 		doarDiscounturi.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doarDiscounturi);
 		
 		faraDiscounturi = new Button(discounturiGroup, SWT.RADIO);
-		faraDiscounturi.setText("fara DISCOUNTURI");
+		faraDiscounturi.setText(Messages.UrmarireParteneriPart_NoDisc);
 		faraDiscounturi.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(faraDiscounturi);
 		
 		indiferentDiscounturi = new Button(discounturiGroup, SWT.RADIO);
-		indiferentDiscounturi.setText("indiferent");
+		indiferentDiscounturi.setText(Messages.UrmarireParteneriPart_Indifferent);
 		indiferentDiscounturi.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(indiferentDiscounturi);
 		
@@ -440,17 +441,17 @@ public class UrmarireParteneriPart implements IMouseAction
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(coveredGroup);
 		
 		doarCovered = new Button(coveredGroup, SWT.RADIO);
-		doarCovered.setText("doar DOC ACOPERITE");
+		doarCovered.setText(Messages.UrmarireParteneriPart_OnlyCovered);
 		doarCovered.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doarCovered);
 		
 		faraCovered = new Button(coveredGroup, SWT.RADIO);
-		faraCovered.setText("fara DOC ACOPERITE");
+		faraCovered.setText(Messages.UrmarireParteneriPart_NoCovered);
 		faraCovered.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(faraCovered);
 		
 		indiferentCovered = new Button(coveredGroup, SWT.RADIO);
-		indiferentCovered.setText("indiferent");
+		indiferentCovered.setText(Messages.UrmarireParteneriPart_Indifferent);
 		indiferentCovered.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(indiferentCovered);
 		
@@ -471,48 +472,48 @@ public class UrmarireParteneriPart implements IMouseAction
 		GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 50).applyTo(container);
 		
 		adauga = new Button(container, SWT.PUSH);
-		adauga.setText("Adauga");
+		adauga.setText(Messages.Add);
 		adauga.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		adauga.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(adauga);
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(adauga);
 		
 		salveaza = new Button(container, SWT.PUSH);
-		salveaza.setText("Salveaza");
+		salveaza.setText(Messages.Save);
 		salveaza.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		salveaza.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(salveaza);
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(salveaza);
 		
 		conexiuni = new Button(container, SWT.PUSH);
-		conexiuni.setText("Conexiuni");
+		conexiuni.setText(Messages.UrmarireParteneriPart_Connections);
 		conexiuni.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		conexiuni.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(conexiuni);
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(conexiuni);
 		
 		sterge = new Button(container, SWT.PUSH);
-		sterge.setText("Sterge");
+		sterge.setText(Messages.Delete);
 		sterge.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		sterge.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(sterge);
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(sterge);
 		
 		gdpr = new Button(container, SWT.PUSH);
-		gdpr.setText("GDPR");
+		gdpr.setText(Messages.GDPR);
 		gdpr.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		gdpr.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(gdpr);
 		GridDataFactory.swtDefaults().grab(true, true).align(SWT.RIGHT, SWT.FILL).applyTo(gdpr);
 		
 		printareDocsComasat = new Button(container, SWT.PUSH);
-		printareDocsComasat.setText("Printare Comasata");
+		printareDocsComasat.setText(Messages.UrmarireParteneriPart_MergePrint);
 		printareDocsComasat.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		printareDocsComasat.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(printareDocsComasat);
 		GridDataFactory.swtDefaults().grab(false, true).align(SWT.RIGHT, SWT.FILL).applyTo(printareDocsComasat);
 		
-		printareDocs = new ExportButton(container, SWT.RIGHT, ImmutableList.of("Printare", "Email", "XML(UBL 2.1)", "eFactura"), "down_0_inv");
+		printareDocs = new ExportButton(container, SWT.RIGHT, ImmutableList.of(Messages.Print, Messages.Email, "XML(UBL 2.1)", Messages.EInvoice), "down_0_inv"); //$NON-NLS-3$ //$NON-NLS-5$
 		printareDocs.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		printareDocs.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(printareDocs);
@@ -644,7 +645,7 @@ public class UrmarireParteneriPart implements IMouseAction
 					else if (TipDoc.INCASARE.equals(selAccDoc.get().getTipDoc()))
 						tipDoc = TipDoc.VANZARE;
 					else
-						throw new UnsupportedOperationException("TipDoc "+selAccDoc.get().getTipDoc()+" not supported!");
+						throw new UnsupportedOperationException(NLS.bind(Messages.DocTypeNotImpl, selAccDoc.get().getTipDoc()));
 					
 					final LocalDate migrationDate = LocalDate.parse(BusinessDelegate.persistedProp(PersistedProp.MIGRATION_DATE_KEY)
 							.getValueOr(PersistedProp.MIGRATION_DATE_DEFAULT));
@@ -663,7 +664,7 @@ public class UrmarireParteneriPart implements IMouseAction
 						@Override public void error(final String details)
 						{
 							conexiuni.setEnabled(true);
-							MessageDialog.openError(conexiuni.getShell(), "Eroare", details);
+							MessageDialog.openError(conexiuni.getShell(), Messages.Error, details);
 						}
 					}, sync, null, selAccDoc.get().getPartner().getId(), tipDoc, migrationDate, POSTGRES_MAX.toLocalDate(), RPZLoad.INDIFERENT,
 					CasaLoad.INDIFERENT, BancaLoad.INDIFERENT, null, DocumentTypesLoad.FARA_DISCOUNTURI, CoveredDocsLoad.FARA_COVERED,
@@ -677,14 +678,15 @@ public class UrmarireParteneriPart implements IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				askSave();
-				if (!MessageDialog.openQuestion(sterge.getShell(), "Stergeti documentele?", "Sunteti sigur ca doriti sa stergeti documentele selectate?"))
+				if (!MessageDialog.openQuestion(sterge.getShell(), Messages.UrmarireParteneriPart_DeleteDocs, Messages.UrmarireParteneriPart_DeleteDocsMessage))
 					return;
 				
 				showResult(InvocationResult.flatMap(table.selection().stream()
 						.filter(Document.class::isInstance)
 						.map(doc -> 
 						{
-							InvocationResult result = InvocationResult.canceled(Problem.code("UPPart435").description("Doc class not permitted: "+doc.getClass().getSimpleName()));
+							InvocationResult result = InvocationResult.canceled(Problem.code("UPPart435") //$NON-NLS-1$
+									.description(NLS.bind(Messages.UrmarireParteneriPart_DocClassError, doc.getClass().getSimpleName())));
 							if (doc instanceof AccountingDocument)
 								result = BusinessDelegate.deleteAccDoc(((AccountingDocument) doc).getId());
 							else if (doc instanceof DocumentWithDiscount)
@@ -745,7 +747,7 @@ public class UrmarireParteneriPart implements IMouseAction
 				try
 				{
 					JasperReportManager.instance(bundle, log)
-					.printGDPR(bundle, selectedPartner().map(Partner::getName).orElse("...................................."));
+					.printGDPR(bundle, selectedPartner().map(Partner::getName).orElse("....................................")); //$NON-NLS-1$
 				}
 				catch (IOException | JRException ex)
 				{
@@ -774,7 +776,7 @@ public class UrmarireParteneriPart implements IMouseAction
 			@Override public void error(final String details)
 			{
 				executaFiltrarea.setEnabled(true);
-				MessageDialog.openError(executaFiltrarea.getShell(), "Eroare la filtrare", details);
+				MessageDialog.openError(executaFiltrarea.getShell(), Messages.ErrorFiltering, details);
 			}
 		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selectedPartner().map(Partner::getId).orElse(null),
 		selectedTipDoc().orElse(null), extractLocalDate(from), extractLocalDate(to), selectedRpzLoad(), selectedCasaLoad(),
@@ -838,7 +840,7 @@ public class UrmarireParteneriPart implements IMouseAction
 				@Override public void error(final String details)
 				{
 					printareRaport.setEnabled(true);
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea raportului", details);
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_ErrorLoadingRep, details);
 				}
 			}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selectedPartner().map(Partner::getId).orElse(null), fromDate, toDate, log);
 //		}
@@ -850,8 +852,8 @@ public class UrmarireParteneriPart implements IMouseAction
 	
 	private void printareRegIncasariPlati()
 	{
-		final int rapType = MessageDialog.open(MessageDialog.QUESTION, Display.getCurrent().getActiveShell(), RAP_REG_INCASARI_PLATI, "Selectati tipul de raport",
-				SWT.NONE, "Inlantuit", "Pe zile");
+		final int rapType = MessageDialog.open(MessageDialog.QUESTION, Display.getCurrent().getActiveShell(), RAP_REG_INCASARI_PLATI, Messages.UrmarireParteneriPart_SelectType,
+				SWT.NONE, Messages.UrmarireParteneriPart_AllPeriod, Messages.UrmarireParteneriPart_Daily);
 		
 		if (rapType == 0 || rapType == 1) // 0 - Inlantuit; 1 - Pe zile
 		{
@@ -883,7 +885,7 @@ public class UrmarireParteneriPart implements IMouseAction
 				@Override public void error(final String details)
 				{
 					printareRaport.setEnabled(true);
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea raportului", details);
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_ErrorLoadingRep, details);
 				}
 			}, sync, selGest.map(Gestiune::getId).orElse(null), extractLocalDate(from), extractLocalDate(to), log);
 		}
@@ -891,8 +893,8 @@ public class UrmarireParteneriPart implements IMouseAction
 	
 	private void printareRegCasa()
 	{
-		final int rapType = MessageDialog.open(MessageDialog.QUESTION, Display.getCurrent().getActiveShell(), RAP_REG_CASA, "Selectati tipul de raport",
-				SWT.NONE, "Inlantuit", "Pe zile");
+		final int rapType = MessageDialog.open(MessageDialog.QUESTION, Display.getCurrent().getActiveShell(), RAP_REG_CASA, Messages.UrmarireParteneriPart_SelectType,
+				SWT.NONE, Messages.UrmarireParteneriPart_AllPeriod, Messages.UrmarireParteneriPart_Daily);
 		
 		if (rapType == 0 || rapType == 1) // 0 - Inlantuit; 1 - Pe zile
 		{
@@ -924,7 +926,7 @@ public class UrmarireParteneriPart implements IMouseAction
 				@Override public void error(final String details)
 				{
 					printareRaport.setEnabled(true);
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea raportului", details);
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_ErrorLoadingRep, details);
 				}
 			}, sync, selGest.map(Gestiune::getId).orElse(null), extractLocalDate(from), extractLocalDate(to), log);
 		}
@@ -956,7 +958,7 @@ public class UrmarireParteneriPart implements IMouseAction
 			@Override public void error(final String details)
 			{
 				printareRaport.setEnabled(true);
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea raportului", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_ErrorLoadingRep, details);
 			}
 		}, sync, selGest.map(Gestiune::getId).orElse(null), selectedPartner().map(Partner::getId).orElse(null), null, fromDate, toDate,
 		selectedRpzLoad(), selectedCasaLoad(), BancaLoad.INDIFERENT, null, DocumentTypesLoad.FARA_DISCOUNTURI, CoveredDocsLoad.INDIFERENT,
@@ -965,8 +967,8 @@ public class UrmarireParteneriPart implements IMouseAction
 	
 	private void printareRapRPZ()
 	{
-		final int rapType = MessageDialog.open(MessageDialog.QUESTION, Display.getCurrent().getActiveShell(), RAP_RPZ, "Selectati tipul de raport",
-				SWT.NONE, "Inlantuit", "Pe zile");
+		final int rapType = MessageDialog.open(MessageDialog.QUESTION, Display.getCurrent().getActiveShell(), RAP_RPZ, Messages.UrmarireParteneriPart_SelectType,
+				SWT.NONE, Messages.UrmarireParteneriPart_AllPeriod, Messages.UrmarireParteneriPart_Daily);
 		
 		if (rapType == 0 || rapType == 1) // 0 - Inlantuit; 1 - Pe zile
 		{
@@ -998,7 +1000,7 @@ public class UrmarireParteneriPart implements IMouseAction
 				@Override public void error(final String details)
 				{
 					printareRaport.setEnabled(true);
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea raportului", details);
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_ErrorLoadingRep, details);
 				}
 			}, sync, selGest.map(Gestiune::getId).orElse(null), extractLocalDate(from), extractLocalDate(to), log);
 		}
@@ -1026,7 +1028,7 @@ public class UrmarireParteneriPart implements IMouseAction
 	private void printareRegBanca()
 	{
 		final SelectEntityDialog<ContBancar> regBancaDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-				RAP_REG_BANCA, "Selectati tipul de raport", "Cont bancar", BusinessDelegate.allConturiBancare(), "Inlantuit", "Pe zile");
+				RAP_REG_BANCA, Messages.UrmarireParteneriPart_SelectType, Messages.UrmarireParteneriPart_BankAcc, BusinessDelegate.allConturiBancare(), Messages.UrmarireParteneriPart_AllPeriod, Messages.UrmarireParteneriPart_Daily);
 		final int rapType = regBancaDialog.open();
 		final Integer contBancarId = regBancaDialog.selectedEntity().map(ContBancar::getId).orElse(null);
 		final ContBancar contBancar = regBancaDialog.selectedEntity().orElse(null);
@@ -1061,7 +1063,7 @@ public class UrmarireParteneriPart implements IMouseAction
 				@Override public void error(final String details)
 				{
 					printareRaport.setEnabled(true);
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea raportului", details);
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_ErrorLoadingRep, details);
 				}
 			}, sync, selGest.map(Gestiune::getId).orElse(null), contBancarId, extractLocalDate(from), extractLocalDate(to), log);
 		}
@@ -1111,7 +1113,7 @@ public class UrmarireParteneriPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docSelectat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru partenerul curent in Catalog Terti!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_MissingDelegate, Messages.UrmarireParteneriPart_MissingDelegateMessage);
 					return;
 				}
 
@@ -1119,14 +1121,14 @@ public class UrmarireParteneriPart implements IMouseAction
 						.getValueOr(PersistedProp.HAS_MAIL_SMTP_DEFAULT));
 				if (!hasMailConfigured)
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare", "MAIL_SMTP nu este configurat! Adresati-va administratorului de sistem pentru configurare!");
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, Messages.UrmarireParteneriPart_MailSMTPError);
 					return;
 				}
 
 				JasperReportManager.instance(bundle, log).printFactura_ClientDuplicate(bundle, docSelectat, null);
 			}
 			else
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Doc gresit", "Momentan doar facturile de iesire se pot trimite prin email!");
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_WrongDoc, Messages.UrmarireParteneriPart_WrongDocMessage);
 		}
 		catch (final IOException | JRException ex)
 		{
@@ -1143,12 +1145,13 @@ public class UrmarireParteneriPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docSelectat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru "+docSelectat.getDoc()+" nr: "+docSelectat.getNrDoc());
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_MissingDelegate,
+							NLS.bind(Messages.UrmarireParteneriPart_MissingDelegateMessageNls, docSelectat.getDoc(), docSelectat.getNrDoc()));
 					return;
 				}
 
 				final FileDialog chooser = new FileDialog(printareDocs.getShell(), SWT.SAVE);
-				chooser.setFileName("Factura_"+docSelectat.getNrDoc()+".xml");
+				chooser.setFileName(Messages.Invoice_+docSelectat.getNrDoc()+".xml"); //$NON-NLS-2$
 				final String filepath = chooser.open();
 
 				if (isEmpty(filepath))
@@ -1162,8 +1165,8 @@ public class UrmarireParteneriPart implements IMouseAction
 	
 	private void sendSelectedDocsTo_eFactura()
 	{
-		if (!MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Raporteaza", 
-				MessageFormat.format("Doriti sa raportati {0} facturi la ANAF?",
+		if (!MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_Report, 
+				MessageFormat.format(Messages.UrmarireParteneriPart_ReportMessage,
 						table.selectedAccDocs_Stream()
 						.filter(accDoc -> TipDoc.VANZARE.equals(accDoc.getTipDoc()) && AccountingDocument.FACTURA_NAME.equalsIgnoreCase(accDoc.getDoc()))
 						.count())))
@@ -1176,7 +1179,8 @@ public class UrmarireParteneriPart implements IMouseAction
 			{
 				if (isEmpty(safeString(docSelectat.getPartner(), Partner::getDelegat, Delegat::getName)))
 				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), "Delegat lipsa", "Introduceti un delegat pentru "+docSelectat.getDoc()+" nr: "+docSelectat.getNrDoc());
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_MissingDelegate,
+							NLS.bind(Messages.UrmarireParteneriPart_MissingDelegateMessageNls, docSelectat.getDoc(), docSelectat.getNrDoc()));
 					return;
 				}
 				
@@ -1327,7 +1331,7 @@ public class UrmarireParteneriPart implements IMouseAction
 	
 	private void askSave()
 	{
-		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Salveaza", "Salvati modificarile facute?"))
+		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.Save, Messages.UrmarireParteneriPart_SaveMessage))
 			onSave();
 	}
 }

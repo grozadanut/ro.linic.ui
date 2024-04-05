@@ -41,9 +41,9 @@ import ro.linic.ui.legacy.tables.AllProductsNatTable.SourceLoc;
 
 public class SupplierOrderPart
 {
-	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori";
+	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori"; //$NON-NLS-1$
 	
-	private static final String TABLE_STATE_PREFIX = "supplier_order.products_nt";
+	private static final String TABLE_STATE_PREFIX = "supplier_order.products_nt"; //$NON-NLS-1$
 	
 	private Combo searchMode;
 	private Text searchFilter;
@@ -74,12 +74,12 @@ public class SupplierOrderPart
 		GridDataFactory.swtDefaults().applyTo(searchMode);
 		
 		searchFilter = new Text(container, SWT.BORDER);
-		searchFilter.setMessage("COD sau Denumire");
+		searchFilter.setMessage(Messages.BarcodeName);
 		UIUtils.setFont(searchFilter);
 		GridDataFactory.swtDefaults().hint(300, SWT.DEFAULT).applyTo(searchFilter);
 		
 		furnizorFilter = new Text(container, SWT.BORDER);
-		furnizorFilter.setMessage("Furnizor");
+		furnizorFilter.setMessage(Messages.SupplierOrderPart_Supplier);
 		UIUtils.setFont(furnizorFilter);
 		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(furnizorFilter);
 		
@@ -102,14 +102,14 @@ public class SupplierOrderPart
 		footerContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		eliminateButton = new Button(footerContainer, SWT.PUSH);
-		eliminateButton.setText("Elimina");
+		eliminateButton.setText(Messages.SupplierOrderPart_Eliminate);
 		eliminateButton.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		eliminateButton.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBannerFont(eliminateButton);
 		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.CENTER).grab(true, false).applyTo(eliminateButton);
 		
 		refreshButton = new Button(footerContainer, SWT.PUSH);
-		refreshButton.setText("Refresh");
+		refreshButton.setText(Messages.Refresh);
 		UIUtils.setBannerFont(refreshButton);
 	}
 	
@@ -130,7 +130,7 @@ public class SupplierOrderPart
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				if (!allProductsTable.selection().isEmpty() && !MessageDialog.openQuestion(allProductsTable.getTable().getShell(),
-						"Eliminati produsele", "Sunteti sigur ca doriti sa eliminati produsele selectate din procesul de comanda?"))
+						Messages.SupplierOrderPart_EliminateProd, Messages.SupplierOrderPart_EliminateProdMessage))
 					return;
 				
 				allProductsTable.selection().forEach(p ->
@@ -161,13 +161,13 @@ public class SupplierOrderPart
 				allProductsTable.loadData(data, ImmutableList.of(), ImmutableList.of(), ImmutableList.of(), ImmutableList.of());
 
 				if (showConfirmation)
-					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Succes",
-							"Produsele au fost incarcate cu succes!");
+					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.Success,
+							Messages.SupplierOrderPart_SuccessMessage);
 			}
 
 			@Override public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea produselor",
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.SupplierOrderPart_ErrorLoading,
 						details);
 			}
 		}, sync, bundle, log);

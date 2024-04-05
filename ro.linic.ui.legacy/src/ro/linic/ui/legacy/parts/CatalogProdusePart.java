@@ -67,9 +67,9 @@ import ro.linic.ui.legacy.tables.AllProductsNatTable.SourceLoc;
 
 public class CatalogProdusePart
 {
-	public static final String PART_ID = "linic_gest_client.part.produse";
+	public static final String PART_ID = "linic_gest_client.part.produse"; //$NON-NLS-1$
 	
-	private static final String PRODUCTS_TABLE_STATE_PREFIX = "produse.all_products_nt";
+	private static final String PRODUCTS_TABLE_STATE_PREFIX = "produse.all_products_nt"; //$NON-NLS-1$
 	
 	private Button adauga;
 	private Button salvare;
@@ -121,84 +121,84 @@ public class CatalogProdusePart
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(container);
 		
 		adauga = new Button(container, SWT.PUSH);
-		adauga.setText("Adauga");
+		adauga.setText(Messages.Add);
 		adauga.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		adauga.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(adauga);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(adauga);
 		
 		salvare = new Button(container, SWT.PUSH);
-		salvare.setText("Salvare");
+		salvare.setText(Messages.Save);
 		salvare.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		salvare.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(salvare);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(salvare);
 		
 		refresh = new Button(container, SWT.PUSH);
-		refresh.setText("Refresh");
+		refresh.setText(Messages.Refresh);
 		refresh.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		refresh.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(refresh);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(refresh);
 		
 		categoriiUI = new Button(container, SWT.PUSH);
-		categoriiUI.setText("Categorii Vizuale");
+		categoriiUI.setText(Messages.CatalogProdusePart_VisualCat);
 		categoriiUI.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		categoriiUI.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(categoriiUI);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(categoriiUI);
 		
 		departamente = new Button(container, SWT.PUSH);
-		departamente.setText("Departamente Casa");
+		departamente.setText(Messages.CatalogProdusePart_ECRDept);
 		departamente.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		departamente.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(departamente);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(departamente);
 		
 		raioane = new Button(container, SWT.PUSH);
-		raioane.setText("Raioane");
+		raioane.setText(Messages.CatalogProdusePart_Sections);
 		raioane.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		raioane.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(raioane);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(raioane);
 		
 		reduceri = new Button(container, SWT.PUSH);
-		reduceri.setText("Reduceri");
+		reduceri.setText(Messages.CatalogProdusePart_Allowances);
 		reduceri.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
 		reduceri.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(reduceri);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(reduceri);
 		
 		retetar = new Button(container, SWT.PUSH);
-		retetar.setText("Retetar");
+		retetar.setText(Messages.CatalogProdusePart_Recipes);
 		retetar.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		retetar.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(retetar);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(retetar);
 		
 		etichete = new Button(container, SWT.PUSH);
-		etichete.setText("Printare Etichete");
+		etichete.setText(Messages.PrintLabels);
 		etichete.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		etichete.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(etichete);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(etichete);
 		
 		sterge = new Button(container, SWT.PUSH);
-		sterge.setText("Sterge");
+		sterge.setText(Messages.Delete);
 		sterge.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		sterge.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(sterge);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(sterge);
 		
 		printareOferta = new Button(container, SWT.PUSH);
-		printareOferta.setText("Oferta");
+		printareOferta.setText(Messages.CatalogProdusePart_Offer);
 		printareOferta.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		printareOferta.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBannerFont(printareOferta);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, true).applyTo(printareOferta);
 		
 		printareCatalog = new Button(container, SWT.PUSH);
-		printareCatalog.setText("Printare Catalog");
+		printareCatalog.setText(Messages.CatalogProdusePart_PrintCatalogue);
 		printareCatalog.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		printareCatalog.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBannerFont(printareCatalog);
@@ -227,7 +227,7 @@ public class CatalogProdusePart
 		GridDataFactory.swtDefaults().applyTo(searchMode);
 		
 		searchFilter = new Text(container, SWT.BORDER);
-		searchFilter.setMessage("COD sau Denumire");
+		searchFilter.setMessage(Messages.BarcodeName);
 		UIUtils.setFont(searchFilter);
 		GridDataFactory.swtDefaults().hint(500, SWT.DEFAULT).applyTo(searchFilter);
 		
@@ -375,7 +375,7 @@ public class CatalogProdusePart
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				if (!MessageDialog.openQuestion(sterge.getShell(), "Stergeti produsele?", "Sunteti sigur ca doriti sa stergeti produsele selectate?"))
+				if (!MessageDialog.openQuestion(sterge.getShell(), Messages.CatalogProdusePart_DeleteProducts, Messages.CatalogProdusePart_DeleteProductsMessage))
 					return;
 				
 				askSave();
@@ -441,21 +441,21 @@ public class CatalogProdusePart
 				part.setDirty(false);
 
 				if (showConfirmation)
-					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Succes",
-							"Produsele au fost incarcate cu succes!");
+					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.Success,
+							Messages.CatalogProdusePart_SuccessMessage);
 			}
 
 			@Override
 			public void error(final String details)
 			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea produselor", details);
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.CatalogProdusePart_ErrorLoading, details);
 			}
 		}, sync, bundle, log);
 	}
 	
 	private void askSave()
 	{
-		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), "Salveaza", "Salvati modificarile facute?"))
+		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.Save, Messages.SaveMessage))
 			onSave();
 	}
 	

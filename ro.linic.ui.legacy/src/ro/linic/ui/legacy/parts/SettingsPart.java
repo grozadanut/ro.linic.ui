@@ -64,7 +64,7 @@ import ro.linic.ui.legacy.session.UIUtils;
 
 public class SettingsPart
 {
-	public static final String PART_ID = "linic_gest_client.part.settings";
+	public static final String PART_ID = "linic_gest_client.part.settings"; //$NON-NLS-1$
 	
 	private List users;
 	private Button addUser;
@@ -160,36 +160,36 @@ public class SettingsPart
 		GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.TOP).applyTo(container);
 		
 		final Label usersLabel = new Label(container, SWT.NONE);
-		usersLabel.setText("Utilizatori");
+		usersLabel.setText(Messages.SettingsPart_Users);
 		UIUtils.setFont(usersLabel);
 		
 		users = new List(container, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);
-		users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new));
+		users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new)); //$NON-NLS-1$
 		UIUtils.setFont(users);
 		GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 200).span(3, 1).applyTo(users);
 		
 		new Label(container, SWT.NONE);//layout
 		
 		addUser = new Button(container, SWT.PUSH);
-		addUser.setText("Adauga Utilizator");
+		addUser.setText(Messages.SettingsPart_AddUser);
 		addUser.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		addUser.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(addUser);
 		
 		editUser = new Button(container, SWT.PUSH);
-		editUser.setText("Editeaza Utilizator");
+		editUser.setText(Messages.SettingsPart_EditUser);
 		editUser.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		editUser.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(editUser);
 		
 		deleteUser = new Button(container, SWT.PUSH);
-		deleteUser.setText("Sterge Utilizator");
+		deleteUser.setText(Messages.SettingsPart_DeleteUser);
 		deleteUser.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		deleteUser.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(deleteUser);
 		
 		final Label rolesLabel = new Label(container, SWT.NONE);
-		rolesLabel.setText("Roluri");
+		rolesLabel.setText(Messages.SettingsPart_Roles);
 		UIUtils.setFont(rolesLabel);
 		
 		roles = new List(container, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);
@@ -200,49 +200,49 @@ public class SettingsPart
 		new Label(container, SWT.NONE);//layout
 		
 		addRole = new Button(container, SWT.PUSH);
-		addRole.setText("Adauga Rol");
+		addRole.setText(Messages.SettingsPart_AddRole);
 		addRole.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		addRole.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(addRole);
 		
 		editRole = new Button(container, SWT.PUSH);
-		editRole.setText("Editeaza Rol");
+		editRole.setText(Messages.SettingsPart_EditRole);
 		editRole.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		editRole.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(editRole);
 		
 		deleteRole = new Button(container, SWT.PUSH);
-		deleteRole.setText("Sterge Rol");
+		deleteRole.setText(Messages.SettingsPart_DeleteRole);
 		deleteRole.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		deleteRole.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(deleteRole);
 		
 		final Label gestiuneLabel = new Label(container, SWT.NONE);
-		gestiuneLabel.setText("Gestiuni");
+		gestiuneLabel.setText(Messages.SettingsPart_Inventories);
 		UIUtils.setFont(gestiuneLabel);
 		
 		gestiuni = new List(container, SWT.SINGLE | SWT.BORDER);
-		gestiuni.setItems(allGestiuni.stream().map(g -> g.getId()+": "+g.getName()).toArray(String[]::new));
+		gestiuni.setItems(allGestiuni.stream().map(g -> g.getId()+": "+g.getName()).toArray(String[]::new)); //$NON-NLS-1$
 		UIUtils.setFont(gestiuni);
 		GridDataFactory.fillDefaults().span(3, 1).applyTo(gestiuni);
 		
 		new Label(container, SWT.NONE);//layout
 		
 		addGestiune = new Button(container, SWT.PUSH);
-		addGestiune.setText("Adauga Gestiune");
+		addGestiune.setText(Messages.SettingsPart_AddInventory);
 		addGestiune.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		addGestiune.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(addGestiune);
 		
 		editGestiune = new Button(container, SWT.PUSH);
-		editGestiune.setText("Editeaza Gestiune");
+		editGestiune.setText(Messages.SettingsPart_EditInventory);
 		editGestiune.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		editGestiune.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(editGestiune);
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(editGestiune);
 		
 		final Label masiniLabel = new Label(container, SWT.NONE);
-		masiniLabel.setText("Masini");
+		masiniLabel.setText(Messages.SettingsPart_Cars);
 		UIUtils.setFont(masiniLabel);
 		
 		masini = new List(container, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
@@ -253,25 +253,25 @@ public class SettingsPart
 		new Label(container, SWT.NONE);//layout
 		
 		addMasina = new Button(container, SWT.PUSH);
-		addMasina.setText("Adauga Masina");
+		addMasina.setText(Messages.SettingsPart_AddCar);
 		addMasina.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		addMasina.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(addMasina);
 		
 		editMasina = new Button(container, SWT.PUSH);
-		editMasina.setText("Editeaza Masina");
+		editMasina.setText(Messages.SettingsPart_EditCar);
 		editMasina.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		editMasina.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(editMasina);
 		
 		deleteMasina = new Button(container, SWT.PUSH);
-		deleteMasina.setText("Sterge Masina");
+		deleteMasina.setText(Messages.SettingsPart_DeleteCar);
 		deleteMasina.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		deleteMasina.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(deleteMasina);
 		
 		final Label conturiLabel = new Label(container, SWT.NONE);
-		conturiLabel.setText("Conturi bancare");
+		conturiLabel.setText(Messages.SettingsPart_BankAccts);
 		UIUtils.setFont(conturiLabel);
 
 		conturiBancare = new List(container, SWT.SINGLE | SWT.BORDER);
@@ -282,13 +282,13 @@ public class SettingsPart
 		new Label(container, SWT.NONE);//layout
 
 		addContBancar = new Button(container, SWT.PUSH);
-		addContBancar.setText("Adauga Cont Bancar");
+		addContBancar.setText(Messages.SettingsPart_AddBankAcc);
 		addContBancar.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		addContBancar.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(addContBancar);
 
 		editContBancar = new Button(container, SWT.PUSH);
-		editContBancar.setText("Editeaza Cont Bancar");
+		editContBancar.setText(Messages.SettingsPart_EditBankAcc);
 		editContBancar.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		editContBancar.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(editContBancar);
@@ -302,7 +302,7 @@ public class SettingsPart
 		GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.TOP).applyTo(container);
 		
 		final Label firmaNameLabel = new Label(container, SWT.NONE);
-		firmaNameLabel.setText("Firma");
+		firmaNameLabel.setText(Messages.SettingsPart_Company);
 		UIUtils.setFont(firmaNameLabel);
 		
 		firmaName = new Text(container, SWT.BORDER);
@@ -311,7 +311,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaName);
 		
 		final Label firmaCuiLabel = new Label(container, SWT.NONE);
-		firmaCuiLabel.setText("CUI");
+		firmaCuiLabel.setText(Messages.SettingsPart_TaxCode);
 		UIUtils.setFont(firmaCuiLabel);
 		
 		firmaCui = new Text(container, SWT.BORDER);
@@ -320,7 +320,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaCui);
 		
 		final Label firmaRegComLabel = new Label(container, SWT.NONE);
-		firmaRegComLabel.setText("RegCom");
+		firmaRegComLabel.setText(Messages.SettingsPart_RegCom);
 		UIUtils.setFont(firmaRegComLabel);
 		
 		firmaRegCom = new Text(container, SWT.BORDER);
@@ -329,7 +329,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaRegCom);
 		
 		final Label firmaCapSocialLabel = new Label(container, SWT.NONE);
-		firmaCapSocialLabel.setText("Cap Social");
+		firmaCapSocialLabel.setText(Messages.SettingsPart_SocialCap);
 		UIUtils.setFont(firmaCapSocialLabel);
 		
 		firmaCapSocial = new Text(container, SWT.BORDER);
@@ -338,7 +338,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaCapSocial);
 		
 		final Label firmaMainBankLabel = new Label(container, SWT.NONE);
-		firmaMainBankLabel.setText("Banca principala");
+		firmaMainBankLabel.setText(Messages.SettingsPart_MainBank);
 		UIUtils.setFont(firmaMainBankLabel);
 		
 		firmaMainBank = new Text(container, SWT.BORDER);
@@ -347,7 +347,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaMainBank);
 		
 		final Label firmaMainBankAccLabel = new Label(container, SWT.NONE);
-		firmaMainBankAccLabel.setText("IBAN principal");
+		firmaMainBankAccLabel.setText(Messages.SettingsPart_MainIBAN);
 		UIUtils.setFont(firmaMainBankAccLabel);
 		
 		firmaMainBankAcc = new Text(container, SWT.BORDER);
@@ -356,7 +356,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaMainBankAcc);
 		
 		final Label firmaSecondaryBankLabel = new Label(container, SWT.NONE);
-		firmaSecondaryBankLabel.setText("Banca secundara");
+		firmaSecondaryBankLabel.setText(Messages.SettingsPart_SecondaryBank);
 		UIUtils.setFont(firmaSecondaryBankLabel);
 		
 		firmaSecondaryBank = new Text(container, SWT.BORDER);
@@ -365,7 +365,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaSecondaryBank);
 		
 		final Label firmaSecondaryBankAccLabel = new Label(container, SWT.NONE);
-		firmaSecondaryBankAccLabel.setText("IBAN secundar");
+		firmaSecondaryBankAccLabel.setText(Messages.SettingsPart_SecondaryIBAN);
 		UIUtils.setFont(firmaSecondaryBankAccLabel);
 		
 		firmaSecondaryBankAcc = new Text(container, SWT.BORDER);
@@ -374,7 +374,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaSecondaryBankAcc);
 		
 		final Label firmaAddressLabel = new Label(container, SWT.NONE);
-		firmaAddressLabel.setText("Adresa");
+		firmaAddressLabel.setText(Messages.SettingsPart_Address);
 		UIUtils.setFont(firmaAddressLabel);
 		
 		firmaAddress = new Text(container, SWT.BORDER);
@@ -383,7 +383,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaAddress);
 		
 		final Label firmaBillingAddressLabel = new Label(container, SWT.NONE);
-		firmaBillingAddressLabel.setText("Adresa sediu");
+		firmaBillingAddressLabel.setText(Messages.SettingsPart_MainAddress);
 		UIUtils.setFont(firmaBillingAddressLabel);
 		
 		firmaBillingAddress = new Text(container, SWT.BORDER);
@@ -392,7 +392,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaBillingAddress);
 		
 		final Label firmaPhoneLabel = new Label(container, SWT.NONE);
-		firmaPhoneLabel.setText("Telefon");
+		firmaPhoneLabel.setText(Messages.SettingsPart_Phone);
 		UIUtils.setFont(firmaPhoneLabel);
 		
 		firmaPhone = new Text(container, SWT.BORDER);
@@ -401,7 +401,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaPhone);
 		
 		final Label firmaEmailLabel = new Label(container, SWT.NONE);
-		firmaEmailLabel.setText("Email");
+		firmaEmailLabel.setText(Messages.Email);
 		UIUtils.setFont(firmaEmailLabel);
 		
 		firmaEmail = new Text(container, SWT.BORDER);
@@ -410,7 +410,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaEmail);
 		
 		final Label firmaWebsiteLabel = new Label(container, SWT.NONE);
-		firmaWebsiteLabel.setText("Website");
+		firmaWebsiteLabel.setText(Messages.SettingsPart_Website);
 		UIUtils.setFont(firmaWebsiteLabel);
 		
 		firmaWebsite = new Text(container, SWT.BORDER);
@@ -419,7 +419,7 @@ public class SettingsPart
 		GridDataFactory.fillDefaults().applyTo(firmaWebsite);
 		
 		final Label tvaLabel = new Label(container, SWT.NONE);
-		tvaLabel.setText("%TVA");
+		tvaLabel.setText(Messages.SettingsPart_VATPerc);
 		UIUtils.setFont(tvaLabel);
 		
 		tvaReadable = new Text(container, SWT.BORDER);
@@ -427,7 +427,7 @@ public class SettingsPart
 		UIUtils.setFont(tvaReadable);
 		
 		final Label migrationDateLabel = new Label(container, SWT.NONE);
-		migrationDateLabel.setText("Data migrarii");
+		migrationDateLabel.setText(Messages.SettingsPart_MigrationDate);
 		UIUtils.setFont(migrationDateLabel);
 		
 		migrationDate = new DateTime(container, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
@@ -435,7 +435,7 @@ public class SettingsPart
 		UIUtils.setFont(migrationDate);
 		
 		final Label promoLabel = new Label(container, SWT.NONE);
-		promoLabel.setText("Nr Bon Promo");
+		promoLabel.setText(Messages.SettingsPart_PromoReceiptNo);
 		UIUtils.setFont(promoLabel);
 		
 		nrBonPromo = new Text(container, SWT.BORDER);
@@ -443,7 +443,7 @@ public class SettingsPart
 		UIUtils.setFont(nrBonPromo);
 		
 		final Label textAromaLabel = new Label(container, SWT.NONE);
-		textAromaLabel.setText("Prefix Aroma");
+		textAromaLabel.setText(Messages.SettingsPart_AromaPrefix);
 		UIUtils.setFont(textAromaLabel);
 		
 		prefixAroma = new Text(container, SWT.BORDER);
@@ -454,7 +454,7 @@ public class SettingsPart
 		new Label(container, SWT.NONE);//layout
 		
 		save = new Button(container, SWT.PUSH);
-		save.setText("Salveaza");
+		save.setText(Messages.Save);
 		save.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		save.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(save);
@@ -491,14 +491,14 @@ public class SettingsPart
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				final Optional<User> selectedUser = selectedUser();
-				if (selectedUser.isPresent() && MessageDialog.openQuestion(deleteUser.getShell(), "Stergeti utilizatorul", "Sunteti sigur ca doriti sa stergeti utilizatorul selectat?"))
+				if (selectedUser.isPresent() && MessageDialog.openQuestion(deleteUser.getShell(), Messages.SettingsPart_DeleteUser, Messages.SettingsPart_DeleteUserTitle))
 				{
 					final InvocationResult result = BusinessDelegate.removeUser(selectedUser.get().getId());
 					showResult(result);
 					if (result.statusOk())
 					{
 						allUsers = removeFromImmutableList(allUsers, selectedUser.get());
-						users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new));
+						users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new)); //$NON-NLS-1$
 					}
 				}
 			}
@@ -532,7 +532,7 @@ public class SettingsPart
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				final Optional<Role> selectedRole = selectedRole();
-				if (selectedRole.isPresent() && MessageDialog.openQuestion(deleteRole.getShell(), "Stergeti rolul", "Sunteti sigur ca doriti sa stergeti rolul selectat?"))
+				if (selectedRole.isPresent() && MessageDialog.openQuestion(deleteRole.getShell(), Messages.SettingsPart_DeleteRole, Messages.SettingsPart_DeleteRoleMessage))
 				{
 					final InvocationResult result = BusinessDelegate.deleteRole(selectedRole.get().getId());
 					showResult(result);
@@ -596,7 +596,7 @@ public class SettingsPart
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				final Optional<Masina> selectedMasina = selectedMasina();
-				if (selectedMasina.isPresent() && MessageDialog.openQuestion(deleteMasina.getShell(), "Stergeti masina", "Sunteti sigur ca doriti sa stergeti masina selectata?"))
+				if (selectedMasina.isPresent() && MessageDialog.openQuestion(deleteMasina.getShell(), Messages.SettingsPart_DeleteCar, Messages.SettingsPart_DeleteCarMessage))
 				{
 					final InvocationResult result = BusinessDelegate.deleteMasina(selectedMasina.get().getId());
 					showResult(result);
@@ -775,13 +775,13 @@ public class SettingsPart
 
 		if (isEmpty(userToCreate.getPassword()) && !userDialog.faraLogin())
 		{
-			userDialog.setErrorMessage("Setati o parola!");
+			userDialog.setErrorMessage(Messages.SettingsPart_SetPass);
 			return false;
 		}
 		
 		if (userToCreate.getPassword().length() < 8 && !userDialog.faraLogin())
 		{
-			userDialog.setErrorMessage("Parola trebuie sa aiba cel putin 8 caractere!");
+			userDialog.setErrorMessage(Messages.SettingsPart_Pass8Chars);
 			return false;
 		}
 
@@ -792,7 +792,7 @@ public class SettingsPart
 		{
 			final User createdUser = result.extra(InvocationResult.USER_KEY);
 			allUsers = addToImmutableList(allUsers, createdUser);
-			users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new));
+			users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new)); //$NON-NLS-1$
 			updateImages(createdUser, userDialog);
 			ClientSession.instance().reloadBillImages();
 			return true;
@@ -810,7 +810,7 @@ public class SettingsPart
 
 		if (!isEmpty(user.getPassword()) && user.getPassword().length() < 8 && !userDialog.faraLogin())
 		{
-			userDialog.setErrorMessage("Parola trebuie sa aiba cel putin 8 caractere!");
+			userDialog.setErrorMessage(Messages.SettingsPart_Pass8Chars);
 			return false;
 		}
 		
@@ -827,7 +827,7 @@ public class SettingsPart
 			ClientSession.instance().reloadBillImages();
 		
 		allUsers = BusinessDelegate.dbUsers();
-		users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new));
+		users.setItems(allUsers.stream().map(u -> u.getId()+": "+u.displayName()).toArray(String[]::new)); //$NON-NLS-1$
 		return true;
 	}
 	
@@ -894,7 +894,7 @@ public class SettingsPart
 		if (result.statusOk())
 		{
 			allGestiuni = addToImmutableList(allGestiuni, result.extra(InvocationResult.GESTIUNE_KEY));
-			gestiuni.setItems(allGestiuni.stream().map(g -> g.getId()+": "+g.getName()).toArray(String[]::new));
+			gestiuni.setItems(allGestiuni.stream().map(g -> g.getId()+": "+g.getName()).toArray(String[]::new)); //$NON-NLS-1$
 			return true;
 		}
 		else
@@ -912,7 +912,7 @@ public class SettingsPart
 		if (result.statusOk())
 		{
 			allGestiuni = BusinessDelegate.allGestiuni();
-			gestiuni.setItems(allGestiuni.stream().map(g -> g.getId()+": "+g.getName()).toArray(String[]::new));
+			gestiuni.setItems(allGestiuni.stream().map(g -> g.getId()+": "+g.getName()).toArray(String[]::new)); //$NON-NLS-1$
 			return true;
 		}
 		else
