@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="ro.linic.ui.anaf.connector.feature"
-      label="Connector"
+      label="ANAF Connector"
       version="0.0.4"
       provider-name="LINIC">
 
