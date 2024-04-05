@@ -48,9 +48,15 @@ public class LanguageHandler {
 		if (languageToolItem == null)
 			return;
 		
-		if (locale != null && "ro".equalsIgnoreCase(locale.getLanguage()))
-			languageToolItem.setIconURI("platform:/plugin/ro.linic.ui.base/icons/ro_flag_32x32.png");
-		else
+		if (locale == null) {
 			languageToolItem.setIconURI("platform:/plugin/ro.linic.ui.base/icons/usa_flag_32x32.png");
+			return;
+		}
+		
+		switch (locale.getLanguage()) {
+		case "ro" -> languageToolItem.setIconURI("platform:/plugin/ro.linic.ui.base/icons/ro_flag_32x32.png");
+		case "hu" -> languageToolItem.setIconURI("platform:/plugin/ro.linic.ui.base/icons/hu_flag_32x32.png");
+		default -> languageToolItem.setIconURI("platform:/plugin/ro.linic.ui.base/icons/usa_flag_32x32.png");
+		}
 	}
 }

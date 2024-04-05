@@ -30,6 +30,9 @@
             <children xsi:type="menu:HandledMenuItem" xmi:id="_VFpa0Ow6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handledmenuitem.english" label="" iconURI="platform:/plugin/ro.linic.ui.base/icons/usa_flag_32x32.png" command="_30G98Ow6Ee6ppJt5Ysxyww">
               <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_nep_8PHAEe6Y8NVamZwaxA" coreExpressionId="ro.linic.ui.base.locale.not.default"/>
             </children>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_P2OJAPMTEe6BJoNFOEhjig" elementId="ro.linic.ui.base.handledmenuitem.hungarian" iconURI="platform:/plugin/ro.linic.ui.base/icons/hu_flag_32x32.png" command="_6RBiMPMSEe6BJoNFOEhjig">
+              <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_Ugv-cPMTEe6BJoNFOEhjig" coreExpressionId="ro.linic.ui.base.locale.not.hu"/>
+            </children>
           </menu>
         </children>
       </children>
@@ -50,6 +53,7 @@
   <handlers xmi:id="_K5zccOw7Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handler.english" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.EnLanguageHandler" command="_30G98Ow6Ee6ppJt5Ysxyww"/>
   <handlers xmi:id="_sxDt8Ow_Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.handler.language" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.LanguageHandler" command="_pfEYwOw_Ee6ppJt5Ysxyww"/>
   <handlers xmi:id="_qjnMsOxEEe6ppJt5Ysxyww" elementId="com.opcoach.e4.preferences.mainmenu.preferenceshandler" contributionURI="bundleclass://com.opcoach.e4.preferences/com.opcoach.e4.preferences.handlers.E4PreferencesHandler" command="_dHp94OxEEe6ppJt5Ysxyww"/>
+  <handlers xmi:id="_H0BNIPMTEe6BJoNFOEhjig" elementId="ro.linic.ui.base.handler.hungarian" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.HuLanguageHandler" command="_6RBiMPMSEe6BJoNFOEhjig"/>
   <bindingTables xmi:id="_DD1OIMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.bindingtable.root" bindingContext="_2nYUgMZ8Ee6UtK1nDebMVw">
     <bindings xmi:id="_LjDdMMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1q" keySequence="M1+Q" command="_ufS_II0NEe6qNdK_29XQrA">
       <tags>type:user</tags>
@@ -77,6 +81,7 @@
   <commands xmi:id="_30G98Ow6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.english" commandName="%command.commandname.english"/>
   <commands xmi:id="_pfEYwOw_Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.language" commandName="%command.commandname.language"/>
   <commands xmi:id="_dHp94OxEEe6ppJt5Ysxyww" elementId="org.eclipse.ui.window.preferences" commandName="%command.commandname.preferences"/>
+  <commands xmi:id="_6RBiMPMSEe6BJoNFOEhjig" elementId="ro.linic.ui.base.command.hungarian" commandName="%command.commandname.hungarian"/>
   <addons xmi:id="_cGVhQY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_cGVhQo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_cGVhQ40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

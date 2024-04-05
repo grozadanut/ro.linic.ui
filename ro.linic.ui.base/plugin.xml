@@ -62,6 +62,15 @@
             </test>
          </not>
       </definition>
+      <definition
+            id="ro.linic.ui.base.locale.not.hu">
+         <not>
+            <test
+                  property="ro.linic.ui.base.locale"
+                  value="hu">
+            </test>
+         </not>
+      </definition>
    </extension>
 
 </plugin>

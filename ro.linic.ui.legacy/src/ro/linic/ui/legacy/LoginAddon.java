@@ -19,6 +19,7 @@ import static ro.linic.ui.legacy.session.UIUtils.isWindows;
 import java.awt.SystemTray;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -95,6 +96,7 @@ public class LoginAddon
 	public void beforeStartup(final IEclipseContext workbenchContext, final UISynchronize sync,
 			@OSGiBundle final Bundle bundle, @Preference final IEclipsePreferences prefs)
 	{
+		Locale.setDefault(Locale.Category.FORMAT, Locale.ENGLISH);
 		final Logger log = (Logger) workbenchContext.get(Logger.class.getName());
 		try
 		{
