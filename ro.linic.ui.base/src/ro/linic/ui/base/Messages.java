@@ -16,4 +16,6 @@ public class Messages extends NLS {
 	public static String ApplicationInRestartDialog;
 	public static String PlatformRestartMessage;
 	public static String OptionalPlatformRestartMessage;
+	public static String ClearPersistedState;
+	public static String ClearPersistedStateMessage;
 }

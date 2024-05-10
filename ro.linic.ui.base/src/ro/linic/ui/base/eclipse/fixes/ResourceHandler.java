@@ -14,7 +14,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.internal.runtime.PlatformURLPluginConnection;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.URIUtil;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -44,11 +47,13 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * This class is responsible to load and save the model
  */
 public class ResourceHandler implements IModelResourceHandler {
+	private static final ILog log = ILog.of(ResourceHandler.class);
 
 	private ResourceSet resourceSet;
 	private Resource resource;
@@ -73,9 +78,6 @@ public class ResourceHandler implements IModelResourceHandler {
 	@Named(IWorkbench.PERSIST_STATE)
 	private boolean saveAndRestore;
 
-	@Inject
-	@Optional
-	@Named(IWorkbench.CLEAR_PERSISTED_STATE)
 	private boolean clearPersistedState;
 
 	/**
@@ -87,8 +89,11 @@ public class ResourceHandler implements IModelResourceHandler {
 	@Inject
 	public ResourceHandler(@Named(IWorkbench.PERSIST_STATE) final boolean saveAndRestore,
 			@Named(IWorkbench.CLEAR_PERSISTED_STATE) final boolean clearPersistedState) {
+		final IEclipsePreferences node = InstanceScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final boolean clearPersistedStatePref = node.getBoolean(IWorkbench.CLEAR_PERSISTED_STATE, false);
+		
 		this.saveAndRestore = saveAndRestore;
-		this.clearPersistedState = clearPersistedState;
+		this.clearPersistedState = clearPersistedState || clearPersistedStatePref;
 	}
 
 	@PostConstruct
@@ -139,6 +144,14 @@ public class ResourceHandler implements IModelResourceHandler {
 		}
 
 		if (clearPersistedState && workbenchData != null && workbenchData.exists()) {
+			try {
+				final IEclipsePreferences node = InstanceScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+				node.putBoolean(IWorkbench.CLEAR_PERSISTED_STATE, false);
+				node.flush();
+			} catch (final Exception e) {
+				log.error(e.getMessage(), e);
+			}
+			
 			workbenchData.delete();
 		}
 
