@@ -18,4 +18,5 @@ public class Messages extends NLS {
 	public static String OptionalPlatformRestartMessage;
 	public static String ClearPersistedState;
 	public static String ClearPersistedStateMessage;
+	public static String About;
 }

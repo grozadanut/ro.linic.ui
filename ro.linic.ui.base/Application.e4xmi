@@ -17,6 +17,8 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_ovxQ4A68Ee-EIqyD6TadCw" elementId="ro.linic.ui.base.menuseparator.2"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GDUKoKC4Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.handledmenuitem.update" label="%handledmenuitem.label.update" iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_update_obj.png" command="_YZa0sKC3Ee6rhYQcX-gzIg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_itTisMphEe652r2Ev0tOtA" elementId="ro.linic.ui.base.handledmenuitem.install" label="%handledmenuitem.label.install" iconURI="platform:/plugin/ro.linic.ui.p2/icons/obj/iu_obj.png" mnemonics="" command="_gnjzoMpgEe652r2Ev0tOtA"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_DjPyEA7LEe-Kn5YpFw5Kww" elementId="ro.linic.ui.base.menuseparator.3"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_X7ONQA7KEe-Kn5YpFw5Kww" elementId="ro.linic.ui.base.handledmenuitem.about" label="%handledmenuitem.label.about" iconURI="platform:/plugin/ro.linic.ui.base/icons/logo_16x16.png" command="_8rV7kA7JEe-Kn5YpFw5Kww"/>
       </children>
     </mainMenu>
     <trimBars xmi:id="_nuIUsI0KEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimbar.top">
@@ -59,6 +61,7 @@
   <handlers xmi:id="_qjnMsOxEEe6ppJt5Ysxyww" elementId="com.opcoach.e4.preferences.mainmenu.preferenceshandler" contributionURI="bundleclass://com.opcoach.e4.preferences/com.opcoach.e4.preferences.handlers.E4PreferencesHandler" command="_dHp94OxEEe6ppJt5Ysxyww"/>
   <handlers xmi:id="_H0BNIPMTEe6BJoNFOEhjig" elementId="ro.linic.ui.base.handler.hungarian" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.HuLanguageHandler" command="_6RBiMPMSEe6BJoNFOEhjig"/>
   <handlers xmi:id="_TP0hAA69Ee-EIqyD6TadCw" elementId="ro.linic.ui.base.handler.clearpersistedstate" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.ClearPersistedStateHandler" command="_FehUUA69Ee-EIqyD6TadCw"/>
+  <handlers xmi:id="_TJs_AA7KEe-Kn5YpFw5Kww" elementId="ro.linic.ui.base.handler.about" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.AboutHandler" command="_8rV7kA7JEe-Kn5YpFw5Kww"/>
   <bindingTables xmi:id="_DD1OIMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.bindingtable.root" bindingContext="_2nYUgMZ8Ee6UtK1nDebMVw">
     <bindings xmi:id="_LjDdMMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1q" keySequence="M1+Q" command="_ufS_II0NEe6qNdK_29XQrA">
       <tags>type:user</tags>
@@ -88,7 +91,8 @@
   <commands xmi:id="_pfEYwOw_Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.language" commandName="%command.commandname.language"/>
   <commands xmi:id="_dHp94OxEEe6ppJt5Ysxyww" elementId="org.eclipse.ui.window.preferences" commandName="%command.commandname.preferences"/>
   <commands xmi:id="_6RBiMPMSEe6BJoNFOEhjig" elementId="ro.linic.ui.base.command.hungarian" commandName="%command.commandname.hungarian"/>
-  <commands xmi:id="_FehUUA69Ee-EIqyD6TadCw" elementId="ro.linic.ui.base.command.commandcommandnameclearpersistedstate" commandName="%command.commandname.clearPersistedState"/>
+  <commands xmi:id="_FehUUA69Ee-EIqyD6TadCw" elementId="ro.linic.ui.base.command.clearpersistedstate" commandName="%command.commandname.clearPersistedState"/>
+  <commands xmi:id="_8rV7kA7JEe-Kn5YpFw5Kww" elementId="ro.linic.ui.base.command.about" commandName="%command.commandname.about"/>
   <addons xmi:id="_cGVhQY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_cGVhQo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_cGVhQ40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
