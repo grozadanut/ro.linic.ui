@@ -70,7 +70,6 @@
 		<plugin id="org.apache.batik.i18n.source" version="1.16.0.v20221027-0840"/>
 		<plugin id="org.apache.batik.util" version="1.16.0.v20221027-0840"/>
 		<plugin id="org.apache.batik.util.source" version="1.16.0.v20221027-0840"/>
-		<plugin id="org.apache.commons.codec" version="1.14.0.v20200818-1422"/>
 		<plugin id="org.apache.commons.codec" version="1.14.0.v20221112-0806"/>
 		<plugin id="org.apache.commons.codec.source" version="1.14.0.v20221112-0806"/>
 		<plugin id="org.apache.commons.collections4"/>
