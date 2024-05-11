@@ -1,5 +1,9 @@
 package ro.linic.ui.base.eclipse.fixes;
 
+import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
+import static ro.linic.util.commons.StringUtils.isEmpty;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -7,7 +11,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -48,12 +55,17 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 
 /**
  * This class is responsible to load and save the model
  */
 public class ResourceHandler implements IModelResourceHandler {
 	private static final ILog log = ILog.of(ResourceHandler.class);
+	private static final String INSTALLATION_STATE_KEY = "installationState"; //$NON-NLS-1$
+	private static final Set<String> NON_UI_PLUGINS = Set.of("ro.linic.ui.jface.localization", //$NON-NLS-1$
+			"ro.linic.ui.pos.base", "ro.linic.ui.http", "ro.linic.ui.security", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"ro.linic.ui.workbench", "ro.linic.ui.p2"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private ResourceSet resourceSet;
 	private Resource resource;
@@ -143,7 +155,7 @@ public class ResourceHandler implements IModelResourceHandler {
 			restoreLocation = URI.createFileURI(workbenchData.getAbsolutePath());
 		}
 
-		if (clearPersistedState && workbenchData != null && workbenchData.exists()) {
+		if ((clearPersistedState || installationChanged()) && workbenchData != null && workbenchData.exists()) {
 			try {
 				final IEclipsePreferences node = InstanceScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 				node.putBoolean(IWorkbench.CLEAR_PERSISTED_STATE, false);
@@ -211,6 +223,53 @@ public class ResourceHandler implements IModelResourceHandler {
 		processor.process();
 
 		return resource;
+	}
+
+	/**
+	 * If the version of any UI plugin changes, or the list of UI plugins changes, 
+	 * then the installation state changed and we need to clear the UI for the modifications to be visible.
+	 */
+	private boolean installationChanged() {
+		try {
+			final Bundle bundle = FrameworkUtil.getBundle(getClass());
+			final IEclipsePreferences node = InstanceScope.INSTANCE.getNode(bundle.getSymbolicName());
+			final String savedState = node.get(INSTALLATION_STATE_KEY, EMPTY_STRING);
+			final String currentState = currentInstallationState(bundle, node);
+			node.put(INSTALLATION_STATE_KEY, currentState);
+			node.flush();
+			
+			if (isEmpty(savedState))
+				// initial app startup or after cleanup, we don't need to clear
+				return false;
+			
+			return !savedState.equalsIgnoreCase(currentState);
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+			return false;
+		}
+	}
+
+	/**
+	 * Returns the current installation state. Basically a list of all Linic UI plugin symbolic names and version.
+	 * We only return plugins that contain UI elements, so pure code plugins, such as wrapped.ro.linic.util.commons 
+	 * or ro.linic.ui.http are ignored.
+	 */
+	private String currentInstallationState(final Bundle bundle, final IEclipsePreferences node) {
+		final Set<String> installedBundles = new HashSet<>();
+		for (final Bundle b : bundle.getBundleContext().getBundles()) {
+			if (!b.getSymbolicName().startsWith("ro.linic"))
+				continue;
+			if (NON_UI_PLUGINS.contains(b.getSymbolicName()))
+				continue;
+			
+			final Version v = b.getVersion();
+			installedBundles.add(String.format("%s %d.%d.%d", b.getSymbolicName(),
+					v.getMajor(), v.getMinor(), v.getMicro()));
+		}
+		
+		return installedBundles.stream()
+				.sorted()
+				.collect(Collectors.joining(LIST_SEPARATOR));
 	}
 
 	@Override
