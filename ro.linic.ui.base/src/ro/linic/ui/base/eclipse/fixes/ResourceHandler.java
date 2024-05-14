@@ -16,10 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.eclipse.core.internal.runtime.PlatformURLPluginConnection;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.URIUtil;
@@ -55,7 +51,10 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * This class is responsible to load and save the model
@@ -63,9 +62,11 @@ import org.osgi.framework.Version;
 public class ResourceHandler implements IModelResourceHandler {
 	private static final ILog log = ILog.of(ResourceHandler.class);
 	private static final String INSTALLATION_STATE_KEY = "installationState"; //$NON-NLS-1$
+	
+	// plugins that don't contribute to workbench.xmi, thus the app doesn't need clearing after an update
 	private static final Set<String> NON_UI_PLUGINS = Set.of("ro.linic.ui.jface.localization", //$NON-NLS-1$
 			"ro.linic.ui.pos.base", "ro.linic.ui.http", "ro.linic.ui.security", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			"ro.linic.ui.workbench", "ro.linic.ui.p2"); //$NON-NLS-1$ //$NON-NLS-2$
+			"ro.linic.ui.workbench", "ro.linic.ui.p2", "ro.linic.ui.e4.help"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	private ResourceSet resourceSet;
 	private Resource resource;
@@ -257,14 +258,12 @@ public class ResourceHandler implements IModelResourceHandler {
 	private String currentInstallationState(final Bundle bundle, final IEclipsePreferences node) {
 		final Set<String> installedBundles = new HashSet<>();
 		for (final Bundle b : bundle.getBundleContext().getBundles()) {
-			if (!b.getSymbolicName().startsWith("ro.linic"))
+			if (!b.getSymbolicName().startsWith("ro.linic.ui"))
 				continue;
 			if (NON_UI_PLUGINS.contains(b.getSymbolicName()))
 				continue;
 			
-			final Version v = b.getVersion();
-			installedBundles.add(String.format("%s %d.%d.%d", b.getSymbolicName(),
-					v.getMajor(), v.getMinor(), v.getMicro()));
+			installedBundles.add(b.getSymbolicName() + '_' + b.getVersion());
 		}
 		
 		return installedBundles.stream()

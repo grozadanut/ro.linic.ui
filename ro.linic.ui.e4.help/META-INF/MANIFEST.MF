@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: E4 Help UI
+Bundle-SymbolicName: ro.linic.ui.e4.help;singleton:=true
+Bundle-Version: 0.0.1
+Export-Package: ro.linic.ui.e4.help.handlers
+Import-Package: org.eclipse.swt,
+ org.eclipse.swt.browser,
+ org.eclipse.swt.events,
+ org.eclipse.swt.graphics,
+ org.eclipse.swt.layout,
+ org.eclipse.swt.widgets
+Require-Bundle: org.eclipse.help.base;bundle-version="4.4.300",
+ org.eclipse.e4.core.di;bundle-version="1.9.300",
+ org.eclipse.jface;bundle-version="3.33.0",
+ org.eclipse.core.runtime;bundle-version="3.31.0"
+Bundle-Vendor: LINIC
+Automatic-Module-Name: ro.linic.ui.e4.help
+Bundle-RequiredExecutionEnvironment: JavaSE-17

@@ -21,6 +21,10 @@ Printre funcționalități se numără:
       [Enter License Description here.]
    </license>
 
+   <includes
+         id="org.eclipse.help"
+         version="0.0.0"/>
+
    <requires>
       <import feature="org.eclipse.equinox.p2.core.feature" version="1.6.1900.v20230814-2013"/>
    </requires>
@@ -39,6 +43,10 @@ Printre funcționalități se numără:
 
    <plugin
          id="ro.linic.ui.jface.localization"
+         version="0.0.0"/>
+
+   <plugin
+         id="ro.linic.ui.help"
          version="0.0.0"/>
 
 </feature>

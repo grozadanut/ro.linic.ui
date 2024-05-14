@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.help.base.browser">
+      <browser
+            factoryclass="ro.linic.ui.e4.help.browser.EmbeddedBrowserFactory"
+            id="org.eclipse.help.ui.embeddedbrowser"
+            name="%embedded_browser">
+      </browser>
+   </extension>
+   <extension
+         point="org.eclipse.help.base.browser">
+      <browser
+            factoryclass="org.eclipse.help.ui.internal.browser.SystemBrowserFactory"
+            id="org.eclipse.help.ui.systembrowser"
+            name="%system_browser">
+      </browser>
+   </extension>
+
+</plugin>
