@@ -10,8 +10,8 @@ Require-Bundle: org.eclipse.osgi.services;bundle-version="3.11.100",
  org.eclipse.equinox.security;bundle-version="1.4.0",
  org.eclipse.osgi;bundle-version="3.18.500",
  org.eclipse.core.runtime;bundle-version="3.29.0"
-Service-Component: OSGI-INF/ro.linic.ui.security.services.impl.AuthenticationSessionImpl.xml
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.security
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Service-Component: OSGI-INF/ro.linic.ui.security.services.impl.AuthenticationSessionImpl.xml

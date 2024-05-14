@@ -11,8 +11,8 @@ import static ro.linic.ui.legacy.session.UIUtils.saveState;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;

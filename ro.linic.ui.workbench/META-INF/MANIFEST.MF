@@ -10,8 +10,8 @@ Require-Bundle: org.eclipse.osgi.services;bundle-version="3.11.100",
  org.eclipse.e4.core.services;bundle-version="2.4.100",
  ro.linic.ui.security;bundle-version="0.0.1",
  org.eclipse.e4.ui.workbench;bundle-version="1.15.100"
-Service-Component: OSGI-INF/ro.linic.ui.workbench.services.impl.LinicWorkbenchImpl.xml
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.workbench
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Service-Component: OSGI-INF/ro.linic.ui.workbench.services.impl.LinicWorkbenchImpl.xml

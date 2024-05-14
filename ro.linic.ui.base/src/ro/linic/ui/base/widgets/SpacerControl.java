@@ -1,6 +1,6 @@
 package ro.linic.ui.base.widgets;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;

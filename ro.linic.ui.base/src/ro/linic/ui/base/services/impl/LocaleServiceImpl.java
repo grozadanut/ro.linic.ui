@@ -2,7 +2,7 @@ package ro.linic.ui.base.services.impl;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.nls.ILocaleChangeService;

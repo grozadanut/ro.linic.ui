@@ -3,9 +3,6 @@ package ro.linic.ui.base.handlers;
 
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.nls.ILocaleChangeService;
@@ -16,6 +13,9 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ToolItem;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 public class LanguageHandler {
 	private MHandledToolItem languageToolItem;
