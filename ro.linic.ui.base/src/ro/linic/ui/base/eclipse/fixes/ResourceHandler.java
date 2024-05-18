@@ -66,7 +66,8 @@ public class ResourceHandler implements IModelResourceHandler {
 	// plugins that don't contribute to workbench.xmi, thus the app doesn't need clearing after an update
 	private static final Set<String> NON_UI_PLUGINS = Set.of("ro.linic.ui.jface.localization", //$NON-NLS-1$
 			"ro.linic.ui.pos.base", "ro.linic.ui.http", "ro.linic.ui.security", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			"ro.linic.ui.workbench", "ro.linic.ui.p2", "ro.linic.ui.e4.help"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"ro.linic.ui.workbench", "ro.linic.ui.p2", "ro.linic.ui.e4.help", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"ro.linic.ui.base.services"); //$NON-NLS-1$
 
 	private ResourceSet resourceSet;
 	private Resource resource;

@@ -9,6 +9,9 @@
    <feature id="ro.linic.ui.anaf.connector.feature">
       <category name="ro.linic.ui.update"/>
    </feature>
+   <feature id="ro.linic.ui.pos.feature">
+      <category name="ro.linic.ui.update"/>
+   </feature>
    <category-def name="ro.linic.ui.update" label="Linic Desktop">
       <description>
          Interfata utilizatorilor care interactioneaza cu serverul Linic Cloud.

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="linic" uid="ro.linic.ui.product" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.2.0" type="mixed" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="linic-pos" uid="ro.linic.ui.product.pos" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0" type="mixed" includeLaunchers="true" includeJRE="true" autoIncludeRequirements="true">
 
    <configIni use="default">
    </configIni>
@@ -13,7 +13,7 @@
 
    <windowImages i16="/ro.linic.ui.base/icons/logo_16x16.png" i32="/ro.linic.ui.base/icons/logo_32x32.png" i48="/ro.linic.ui.base/icons/logo_48x48.png" i64="/ro.linic.ui.base/icons/logo_64x64.png" i128="/ro.linic.ui.base/icons/logo_128x128.png" i256="/ro.linic.ui.base/icons/logo_256x256.png"/>
 
-   <launcher name="linic">
+   <launcher name="linic-pos">
       <win useIco="true">
          <ico path="/ro.linic.ui.base/icons/logo.ico"/>
          <bmp/>
@@ -21,17 +21,18 @@
    </launcher>
 
    <vm>
+      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17</windows>
    </vm>
 
    <plugins>
    </plugins>
 
    <features>
-      <feature id="ro.linic.ui.base.feature" installMode="root"/>
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
-      <feature id="ro.linic.ui.legacy.feature" installMode="root"/>
+      <feature id="ro.linic.ui.base.feature" installMode="root"/>
+      <feature id="ro.linic.ui.pos.feature" installMode="root"/>
    </features>
 
    <configurations>
@@ -40,15 +41,8 @@
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <property name="eclipse.p2.metadataRepository" value="https://colibriserver.go.ro/repository/" />
       <property name="eclipse.p2.artifactRepository" value="https://colibriserver.go.ro/repository/" />
+      <property name="eclipse.p2.metadataRepository" value="https://colibriserver.go.ro/repository/" />
    </configurations>
-
-   <preferencesInfo>
-      <targetfile overwrite="false"/>
-   </preferencesInfo>
-
-   <cssInfo>
-   </cssInfo>
 
 </product>

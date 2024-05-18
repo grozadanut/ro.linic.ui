@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Base Services
+Bundle-SymbolicName: ro.linic.ui.base.services
+Bundle-Version: 0.0.1
+Bundle-Vendor: LINIC
+Automatic-Module-Name: ro.linic.ui.base.services
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-17
