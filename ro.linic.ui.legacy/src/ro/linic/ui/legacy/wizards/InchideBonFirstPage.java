@@ -309,7 +309,7 @@ public class InchideBonFirstPage extends WizardPage
 			if (casaActive)
 				ecrService.printReceipt(AccDocMapper.toReceipt(List.of(bonCasa)),
 						incasarePrinCard ? PaymentType.CARD : PaymentType.CASH, Optional.ofNullable(cuiBonText.getText()))
-				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(Set.of(bonCasa.getId()), false));
+				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(bonCasa.getId() == null ? Set.of() : Set.of(bonCasa.getId()), false));
 		}
 		catch (final Exception e)
 		{
