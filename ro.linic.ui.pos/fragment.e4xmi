@@ -1,2 +1,32 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_P8i4QBTlEe-pyIKZkvN2eA"/>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:basic_1="http://www.eclipse.org/ui/2010/UIModel/application/descriptor/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_P8i4QBTlEe-pyIKZkvN2eA">
+  <imports xsi:type="menu:ToolBar" xmi:id="_mCq1UBT6Ee-pyIKZkvN2eA" elementId="org.eclipse.ui.main.toolbar"/>
+  <imports xsi:type="basic:TrimmedWindow" xmi:id="_VY1jABT_Ee-pyIKZkvN2eA" elementId="ro.linic.ui.base.trimmedwindow.linic"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pg_9YBT6Ee-pyIKZkvN2eA" featurename="children" parentElementId="org.eclipse.ui.main.toolbar">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_ytjMgBT6Ee-pyIKZkvN2eA" elementId="ro.linic.ui.pos.handledtoolitem.new_receipt" label="%label.new_receipt" iconURI="platform:/plugin/ro.linic.ui.pos/icons/cart_32x32.png" command="_bAB8YBT8Ee-pyIKZkvN2eA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ZD5m4BT8Ee-pyIKZkvN2eA" featurename="commands" parentElementId="xpath:/">
+    <elements xsi:type="commands:Command" xmi:id="_bAB8YBT8Ee-pyIKZkvN2eA" elementId="ro.linic.ui.pos.command.new_receipt" commandName="%label.new_receipt"/>
+    <elements xsi:type="commands:Command" xmi:id="_K__toBUEEe-pyIKZkvN2eA" elementId="ro.linic.ui.pos.command.close_receipt" commandName="%label.close_receipt"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_sDT3MBT8Ee-pyIKZkvN2eA" featurename="handlers" parentElementId="xpath:/">
+    <elements xsi:type="commands:Handler" xmi:id="_5a3uMBT8Ee-pyIKZkvN2eA" elementId="ro.linic.ui.pos.handler.new_receipt" contributionURI="bundleclass://ro.linic.ui.pos/ro.linic.ui.pos.handlers.NewReceiptHandler" command="_bAB8YBT8Ee-pyIKZkvN2eA"/>
+    <elements xsi:type="commands:Handler" xmi:id="_tU124BUEEe-pyIKZkvN2eA" elementId="ro.linic.ui.pos.handler.close_receipt" contributionURI="bundleclass://ro.linic.ui.pos/ro.linic.ui.pos.handlers.CloseReceiptHandler" command="_K__toBUEEe-pyIKZkvN2eA"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_YYTk0BT_Ee-pyIKZkvN2eA" featurename="children" parentElementId="ro.linic.ui.base.trimmedwindow.linic">
+    <elements xsi:type="basic:PartStack" xmi:id="_pz88UBT_Ee-pyIKZkvN2eA" elementId="ro.linic.ui.pos.partstack.0" selectedElement="_tt1X8BT_Ee-pyIKZkvN2eA">
+      <children xsi:type="basic:Part" xmi:id="_tt1X8BT_Ee-pyIKZkvN2eA" elementId="ro.linic.ui.pos.part.receipt" contributionURI="bundleclass://ro.linic.ui.pos/ro.linic.ui.pos.parts.ReceiptPart" label="%label.receipt" iconURI="platform:/plugin/ro.linic.ui.pos/icons/cart_16x16.png" bindingContexts="_hidVUBUBEe-pyIKZkvN2eA"/>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_XvJBIBUBEe-pyIKZkvN2eA" featurename="children" parentElementId="org.eclipse.ui.contexts.window">
+    <elements xsi:type="commands:BindingContext" xmi:id="_hidVUBUBEe-pyIKZkvN2eA" elementId="ro.linic.ui.pos.bindingcontext.receipt" name="In Receipt Part"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GdZXEBUCEe-pyIKZkvN2eA" featurename="descriptors" parentElementId="xpath:/">
+    <elements xsi:type="basic_1:PartDescriptor" xmi:id="_gfyh8BUCEe-pyIKZkvN2eA" elementId="ro.linic.ui.pos.partdescriptor.receipt" label="%label.receipt" iconURI="platform:/plugin/ro.linic.ui.pos/icons/cart_16x16.png" bindingContexts="_hidVUBUBEe-pyIKZkvN2eA" allowMultiple="true" closeable="true" contributionURI="bundleclass://ro.linic.ui.pos/ro.linic.ui.pos.parts.ReceiptPart"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8Q8fQBUDEe-pyIKZkvN2eA" featurename="bindingTables" parentElementId="xpath:/">
+    <elements xsi:type="commands:BindingTable" xmi:id="_AVc2gBUEEe-pyIKZkvN2eA" elementId="ro.linic.ui.pos.bindingtable.receipt" bindingContext="_hidVUBUBEe-pyIKZkvN2eA">
+      <bindings xmi:id="_EIg4cBUEEe-pyIKZkvN2eA" elementId="ro.linic.ui.pos.keybinding.f3" keySequence="F3" command="_K__toBUEEe-pyIKZkvN2eA"/>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

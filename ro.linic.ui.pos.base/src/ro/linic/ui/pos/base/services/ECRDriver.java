@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
 
 public interface ECRDriver {
@@ -26,10 +27,6 @@ public interface ECRDriver {
 	 */
 	public CompletableFuture<Result> reportMF(LocalDateTime reportStart, LocalDateTime reportEnd, final String chosenDirectory);
 	public void cancelReceipt();
-	
-	public enum PaymentType {
-		CASH, CARD, CREDIT, MEAL_TICKET, VALUE_TICKET, VOUCHER, MODERN_PAYMENT, OTHER;
-	}
 	
 	public static class Result {
 		private final String error;

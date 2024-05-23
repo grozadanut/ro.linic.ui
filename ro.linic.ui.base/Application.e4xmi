@@ -86,11 +86,11 @@
   <commands xmi:id="_ufS_II0NEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.exit" commandName="%command.commandname.exit"/>
   <commands xmi:id="_YZa0sKC3Ee6rhYQcX-gzIg" elementId="ro.linic.ui.base.command.update" commandName="%command.commandname.update"/>
   <commands xmi:id="_gnjzoMpgEe652r2Ev0tOtA" elementId="ro.linic.ui.base.command.install" commandName="%command.commandname.install"/>
-  <commands xmi:id="_imphsOw6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.romana" commandName="%command.commandname.romana"/>
-  <commands xmi:id="_30G98Ow6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.english" commandName="%command.commandname.english"/>
+  <commands xmi:id="_imphsOw6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.romana" commandName="Rom&#x103;n&#x103;"/>
+  <commands xmi:id="_30G98Ow6Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.english" commandName="English"/>
   <commands xmi:id="_pfEYwOw_Ee6ppJt5Ysxyww" elementId="ro.linic.ui.base.command.language" commandName="%command.commandname.language"/>
   <commands xmi:id="_dHp94OxEEe6ppJt5Ysxyww" elementId="org.eclipse.ui.window.preferences" commandName="%command.commandname.preferences"/>
-  <commands xmi:id="_6RBiMPMSEe6BJoNFOEhjig" elementId="ro.linic.ui.base.command.hungarian" commandName="%command.commandname.hungarian"/>
+  <commands xmi:id="_6RBiMPMSEe6BJoNFOEhjig" elementId="ro.linic.ui.base.command.hungarian" commandName="Magyar"/>
   <commands xmi:id="_FehUUA69Ee-EIqyD6TadCw" elementId="ro.linic.ui.base.command.clearpersistedstate" commandName="%command.commandname.clearPersistedState"/>
   <commands xmi:id="_8rV7kA7JEe-Kn5YpFw5Kww" elementId="ro.linic.ui.base.command.about" commandName="%command.commandname.about"/>
   <addons xmi:id="_cGVhQY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

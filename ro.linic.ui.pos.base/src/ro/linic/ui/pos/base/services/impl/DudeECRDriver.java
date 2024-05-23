@@ -37,6 +37,7 @@ import org.osgi.service.component.annotations.Component;
 
 import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
+import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;

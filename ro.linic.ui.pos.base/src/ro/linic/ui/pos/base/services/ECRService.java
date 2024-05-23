@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
-import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
 import ro.linic.ui.pos.base.services.ECRDriver.Result;
 
 public interface ECRService {

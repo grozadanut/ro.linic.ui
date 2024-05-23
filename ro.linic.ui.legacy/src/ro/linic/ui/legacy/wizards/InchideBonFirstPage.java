@@ -42,7 +42,7 @@ import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
-import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
+import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.services.ECRService;
 
 public class InchideBonFirstPage extends WizardPage

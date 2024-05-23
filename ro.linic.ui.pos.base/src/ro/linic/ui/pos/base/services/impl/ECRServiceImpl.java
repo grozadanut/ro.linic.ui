@@ -17,10 +17,10 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 import ro.linic.ui.pos.base.Messages;
+import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ECRDriver;
-import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
 import ro.linic.ui.pos.base.services.ECRDriver.Result;
 import ro.linic.ui.pos.base.services.ECRService;
 

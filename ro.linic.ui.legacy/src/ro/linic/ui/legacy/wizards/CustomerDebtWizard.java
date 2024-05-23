@@ -39,7 +39,7 @@ import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
-import ro.linic.ui.pos.base.services.ECRDriver.PaymentType;
+import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.services.ECRService;
 
 public class CustomerDebtWizard extends Wizard
