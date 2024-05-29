@@ -26,7 +26,8 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.29.0",
  wrapped.ro.linic.util.commons;bundle-version="0.0.5",
  ro.linic.ui.workbench;bundle-version="0.0.1",
  ro.linic.ui.security;bundle-version="0.0.1",
- org.eclipse.core.expressions;bundle-version="3.9.100"
+ org.eclipse.core.expressions;bundle-version="3.9.100",
+ ro.linic.ui.base.services;bundle-version="0.0.1"
 Service-Component: OSGI-INF/ro.linic.ui.base.eclipse.fixes.ModelAssembler.xml,
  OSGI-INF/ro.linic.ui.base.services.impl.LocaleServiceContextFunction.xml
 Bundle-RequiredExecutionEnvironment: JavaSE-17

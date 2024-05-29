@@ -32,6 +32,16 @@
 			 </dependency>
 		 </dependencies>
 	 </location>
+	 <location includeDependencyDepth="direct" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		 <dependencies>
+			 <dependency>
+				 <groupId>com.fasterxml.jackson.core</groupId>
+				 <artifactId>jackson-databind</artifactId>
+				 <version>2.17.1</version>
+				 <type>jar</type>
+			 </dependency>
+		 </dependencies>
+	 </location>
  </locations>
 	<includeBundles>
 		<plugin id="bcpg"/>
@@ -423,8 +433,8 @@
 		<plugin id="bcprov.source"/>
 		<plugin id="com.sun.jna.platform.source"/>
 		<plugin id="com.sun.jna.source"/>
-		<plugin id="jakarta.annotation-api.source" version="2.1.1"/>
 		<plugin id="jakarta.annotation-api.source" version="1.3.5"/>
+		<plugin id="jakarta.annotation-api.source" version="2.1.1"/>
 		<plugin id="jakarta.inject.jakarta.inject-api.source" version="2.0.1"/>
 		<plugin id="jakarta.inject.jakarta.inject-api.source" version="1.0.5"/>
 		<plugin id="org.apache.aries.spifly.dynamic.bundle.source" version="1.3.7"/>
@@ -454,5 +464,16 @@
 		<plugin id="org.eclipse.equinox.jsp.jasper"/>
 		<plugin id="org.eclipse.orbit.xml-apis-ext" version="1.0.0.v20230923-0644"/>
 		<plugin id="com.opcoach.e4.preferences"/>
+		<plugin id="org.junit"/>
+		<plugin id="junit-jupiter-api"/>
+		<plugin id="junit-jupiter-engine"/>
+		<plugin id="junit-jupiter-params"/>
+		<plugin id="junit-jupiter-migrationsupport"/>
+		<plugin id="org.eclipse.jdt.junit5.runtime"/>
+		<plugin id="org.hamcrest"/>
+		<plugin id="org.hamcrest.core"/>
+		<plugin id="com.fasterxml.jackson.core.jackson-databind"/>
+		<plugin id="com.fasterxml.jackson.core.jackson-core"/>
+		<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 	</includeBundles>
 </target>

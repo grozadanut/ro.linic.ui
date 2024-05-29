@@ -7,10 +7,11 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
+ * @param id unique id of this receipt
  * @param lines that compose this Receipt
  * @param allowanceCharge that applies to the receipt as a whole, after subtotal
  */
-public record Receipt(Collection<ReceiptLine> lines, AllowanceCharge allowanceCharge) {
+public record Receipt(Long id, Collection<ReceiptLine> lines, AllowanceCharge allowanceCharge) {
 	
 	/**
 	 * @return total including allowance or charge amount

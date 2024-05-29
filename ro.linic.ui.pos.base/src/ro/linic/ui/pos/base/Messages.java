@@ -4,6 +4,14 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
 	private static final String BUNDLE_NAME = Messages.class.getPackageName() + ".messages"; //$NON-NLS-1$
+	static {
+		// initialize resource bundle
+		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
+	}
+
+	private Messages() {
+	}
+	
 	public static String DudeECRDriver_ConfigError;
 	public static String DudeECRDriver_Error;
 	public static String DudeECRDriver_ErrorWrittingFile;
@@ -31,11 +39,7 @@ public class Messages extends NLS {
 	public static String FiscalNetECRDriverPage_Department;
 	public static String FiscalNetECRDriverPage_ResponseFolder;
 	public static String FiscalNetECRDriverPage_VATRate;
-	static {
-		// initialize resource bundle
-		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
-	}
-
-	private Messages() {
-	}
+	public static String NameMandatory;
+	public static String PriceMandatory;
+	
 }

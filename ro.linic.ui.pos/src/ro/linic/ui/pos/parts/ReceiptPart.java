@@ -3,7 +3,6 @@ package ro.linic.ui.pos.parts;
 import static ro.linic.util.commons.NumberUtils.parseToInt;
 import static ro.linic.util.commons.StringUtils.notEmpty;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -11,6 +10,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.framework.Bundle;
 
@@ -30,12 +31,12 @@ public class ReceiptPart {
 	private ReceiptUIComponent ui;
 	
 	@PostConstruct
-	public void postConstruct(final Composite parent) {
-		ui = createUI();
+	public void postConstruct(final Composite parent, final IEclipseContext ctx) {
+		ui = createUI(ctx);
 		ui.postConstruct(parent);
 	}
 	
-	private ReceiptUIComponent createUI() {
+	private ReceiptUIComponent createUI(final IEclipseContext ctx) {
 		final IExtensionRegistry registry = Platform.getExtensionRegistry();
 		return Arrays.stream(registry.getConfigurationElementsFor(UI_EXTENSION_POINT_ID))
 				.filter(elmt -> notEmpty(elmt.getAttribute(ATTR_CLASS)))
@@ -46,13 +47,13 @@ public class ReceiptPart {
 						final String bundleId = elmt.getNamespaceIdentifier();
 						final String uiClass = elmt.getAttribute(ATTR_CLASS);
 						final Bundle b = Platform.getBundle(bundleId);
-						return (ReceiptUIComponent) b.loadClass(uiClass).getDeclaredConstructor().newInstance();
-					} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+						return (ReceiptUIComponent) ContextInjectionFactory.make(b.loadClass(uiClass), ctx);
+					} catch (final ClassNotFoundException | IllegalArgumentException | SecurityException e) {
 						log.error(e.getMessage(), e);
 						return null;
 					}
 				})
-				.orElseGet(() -> new DefaultReceiptUIComponent());
+				.orElseGet(() -> ContextInjectionFactory.make(DefaultReceiptUIComponent.class, ctx));
 	}
 
 	public boolean canCloseReceipt() {

@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
+ * @param id unique id of this line
+ * @param sku code of the sold item
  * @param name A name for a sold item.
  * @param uom unit of measure
  * @param quantity The quantity of items (goods or services) that is charged, rounded to 3 decimal places.
@@ -15,7 +17,7 @@ import java.util.Optional;
  * @param taxCode tax code as specified in the ecr. eg: 1
  * @param departmentCode department code as specified in the ecr. eg: 1
  */
-public record ReceiptLine(String name, String uom, BigDecimal quantity, BigDecimal price, AllowanceCharge allowanceCharge,
+public record ReceiptLine(Long id, String sku, String name, String uom, BigDecimal quantity, BigDecimal price, AllowanceCharge allowanceCharge,
 		String taxCode, String departmentCode) {
 	
 	/**

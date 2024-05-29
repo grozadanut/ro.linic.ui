@@ -87,12 +87,14 @@
    <module>ro.linic.ui.p2</module>
    <module>ro.linic.ui.pos.feature</module>
    <module>ro.linic.ui.pos.base</module>
+   <module>ro.linic.ui.pos.base.tests</module>
    <module>ro.linic.ui.pos</module>
    <module>ro.linic.ui.workbench</module>
    <module>ro.linic.ui.security</module>
    <module>ro.linic.ui.jface.localization</module>
    <module>ro.linic.ui.help</module>
    <module>ro.linic.ui.e4.help</module>
+   <module>ro.linic.ui.sqlite</module>
  </modules>
  
  <profiles>

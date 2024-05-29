@@ -33,7 +33,7 @@ public class AccDocMapper {
 				.reduce(BigDecimal::add)
 				.map(total -> new AllowanceCharge(false, total));
 		
-		return new Receipt(lines, allowanceCharge.orElse(null));
+		return new Receipt(accDoc.getId(), lines, allowanceCharge.orElse(null));
 	}
 	
 	private static AccountingDocument comasareBonuri(final Collection<AccountingDocument> docs)

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" name="ro.linic.ui.sqlite.services.impl.SQLiteDatabase">
+   <service>
+      <provide interface="ro.linic.ui.base.services.LocalDatabase"/>
+   </service>
+   <implementation class="ro.linic.ui.sqlite.services.impl.SQLiteDatabase"/>
+</scr:component>

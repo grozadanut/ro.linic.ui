@@ -35,4 +35,7 @@ public interface PreferenceKey {
 	public static final String FISCAL_NET_TAX_CODE_DEF = "1";
 	public static final String FISCAL_NET_DEPT = "fiscal_net_departament";
 	public static final String FISCAL_NET_DEPT_DEF = "1";
+	
+	public static final String LOCAL_DB_NAME = "local_db_name";
+	public static final String LOCAL_DB_NAME_DEF = "database.db";
 }

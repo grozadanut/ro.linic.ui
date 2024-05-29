@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: POS Base Tests
+Bundle-SymbolicName: ro.linic.ui.pos.base.tests
+Bundle-Version: 0.0.1
+Bundle-Vendor: LINIC
+Fragment-Host: ro.linic.ui.pos.base;bundle-version="0.0.4"
+Automatic-Module-Name: ro.linic.ui.pos.base.tests
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Bundle: org.junit,
+ junit-jupiter-api,
+ org.apache.felix.scr;bundle-version="2.2.10",
+ org.eclipse.jdt.junit5.runtime;bundle-version="1.1.300"

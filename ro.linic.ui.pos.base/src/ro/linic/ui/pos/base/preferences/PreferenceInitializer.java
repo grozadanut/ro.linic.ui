@@ -34,6 +34,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			node.put(PreferenceKey.FISCAL_NET_TAX_CODE, PreferenceKey.FISCAL_NET_TAX_CODE_DEF);
 			node.put(PreferenceKey.FISCAL_NET_DEPT, PreferenceKey.FISCAL_NET_DEPT_DEF);
 			
+			node.put(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
+			
 			try {
 				node.flush();
 			} catch (final BackingStoreException e) {
