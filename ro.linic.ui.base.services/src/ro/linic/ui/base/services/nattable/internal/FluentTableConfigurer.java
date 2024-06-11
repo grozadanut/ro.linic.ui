@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
@@ -26,11 +27,19 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	final private EventList<T> sourceData;
 	final private Map<String, List<Function<Object, IConfiguration>>> dynamicConfigs = new HashMap<>();
 	private AbstractRegistryConfiguration summaryConfig;
+	private ESelectionService selectionService;
 	
 	public FluentTableConfigurer(final Class<T> entityClass, final List<Column> columns, final EventList<T> sourceData) {
 		this.entityClass = Objects.requireNonNull(entityClass);
 		this.columns = Objects.requireNonNull(columns);
 		this.sourceData = Objects.requireNonNull(sourceData);
+	}
+	
+	@Override
+	public FullFeaturedNatTable<T> build(final Composite parent) {
+		final FullFeaturedNatTable<T> table = new FullFeaturedNatTable<T>(this);
+		table.postConstruct(parent);
+		return table;
 	}
 
 	@Override
@@ -52,13 +61,6 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	}
 
 	@Override
-	public FullFeaturedNatTable<T> build(final Composite parent) {
-		final FullFeaturedNatTable<T> table = new FullFeaturedNatTable<T>(this);
-		table.postConstruct(parent);
-		return table;
-	}
-	
-	@Override
 	public TableConfigurer<T> withSummaryRow() {
 		return withSummaryRow(new DefaultSummaryRowConfiguration());
 	}
@@ -66,6 +68,12 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	@Override
 	public TableConfigurer<T> withSummaryRow(final AbstractRegistryConfiguration config) {
 		this.summaryConfig = config;
+		return this;
+	}
+	
+	@Override
+	public TableConfigurer<T> provideSelection(final ESelectionService service) {
+		this.selectionService = service;
 		return this;
 	}
 
@@ -87,5 +95,9 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	
 	public AbstractRegistryConfiguration getSummaryConfig() {
 		return summaryConfig;
+	}
+	
+	public ESelectionService getSelectionService() {
+		return selectionService;
 	}
 }

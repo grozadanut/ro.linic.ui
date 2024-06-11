@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -230,21 +231,26 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
 	}
 
 	@Override
-	public IStatus delete(final Product p) {
-		if (p == null || p.getId() == null)
+	public IStatus delete(final List<Long> ids) {
+		if (ids == null || ids.isEmpty())
 			return ValidationStatus.OK_STATUS;
 		
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
 		
-		final String sql = "DELETE FROM "+Product.class.getSimpleName()+" WHERE "+Product.ID_FIELD+" = ?";
+		final String sql = "DELETE FROM "+Product.class.getSimpleName()+" WHERE "+Product.ID_FIELD+" == ?";
 
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sql)) {
-            pstmt.setLong(1, p.getId());
-            pstmt.executeUpdate();
-            dataHolder.remove(p);
+        	for (final Long id : ids) {
+        		pstmt.setLong(1, id);
+        		if (pstmt.executeUpdate() == 1)
+        			dataHolder.getData().stream()
+        			.filter(p -> p.getId() == id)
+        			.findFirst()
+        			.ifPresent(dataHolder.getData()::remove);
+			}
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {
         	throw new RuntimeException(e);

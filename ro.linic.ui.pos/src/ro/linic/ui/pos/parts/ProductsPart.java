@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -41,13 +42,15 @@ public class ProductsPart {
 	private FullFeaturedNatTable<Product> table;
 	
 	@PostConstruct
-	public void createComposite(final Composite parent, final ProductDataHolder productDataHolder, final MPart part) {
+	public void createComposite(final Composite parent, final ProductDataHolder productDataHolder, final MPart part,
+			final ESelectionService selectionService) {
 		final GridLayout parentLayout = new GridLayout();
 		parentLayout.horizontalSpacing = 0;
 		parentLayout.verticalSpacing = 0;
 		parent.setLayout(parentLayout);
 		
 		table = TableBuilder.with(Product.class, allProductsColumns, productDataHolder.getData())
+				.provideSelection(selectionService)
 				.build(parent);
 		table.natTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(table.natTable());

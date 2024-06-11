@@ -14,7 +14,9 @@ Import-Package: org.eclipse.core.databinding.conversion,
  org.eclipse.core.runtime;version="[3.7.0,4.0.0]",
  org.eclipse.e4.ui.di,
  org.eclipse.e4.ui.model.application,
+ org.eclipse.e4.ui.model.application.ui,
  org.eclipse.e4.ui.model.application.ui.basic,
+ org.eclipse.e4.ui.workbench.modeling,
  org.eclipse.jface.dialogs,
  org.eclipse.jface.layout,
  org.eclipse.jface.resource,
@@ -30,7 +32,8 @@ Require-Bundle: wrapped.ro.linic.util.commons;bundle-version="0.0.5",
  org.eclipse.nebula.widgets.nattable.extension.glazedlists;bundle-version="2.3.0",
  org.eclipse.nebula.widgets.nattable.extension.nebula;bundle-version="2.3.0",
  org.eclipse.nebula.widgets.nattable.extension.poi;bundle-version="2.3.0",
- ca.odell.glazedlists;bundle-version="1.11.0"
+ ca.odell.glazedlists;bundle-version="1.11.0",
+ org.eclipse.nebula.widgets.nattable.extension.e4;bundle-version="2.4.0"
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.base.services
 Bundle-ActivationPolicy: lazy

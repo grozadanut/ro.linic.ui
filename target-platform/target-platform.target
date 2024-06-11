@@ -3,14 +3,6 @@
 <target name="target-platform">
  <locations>
 	 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		 <repository location="https://download.eclipse.org/nattable/releases/2.3.0/repository"/>
-		 <unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="2.3.0.202402191815"/>
-		 <unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="2.3.0.202402191815"/>
-		 <unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="2.3.0.202402191815"/>
-		 <unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="2.3.0.202402191815"/>
-		 <unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="2.3.0.202402191815"/>
-	 </location>
-	 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		 <repository location="https://download.eclipse.org/releases/2024-03"/>
 		 <unit id="org.eclipse.equinox.core.feature.feature.group" version="1.15.0.v20240214-0846"/>
 		 <unit id="org.eclipse.equinox.p2.core.feature.feature.group" version="1.7.100.v20240220-1431"/>
@@ -21,6 +13,14 @@
 		 <repository location="https://www.opcoach.com/repository/2024-03/"/>
 		 <unit id="com.opcoach.e4.preferences.feature.feature.group" version="1.3.2"/>
 		 <unit id="com.opcoach.e4.preferences.feature.source.feature.group" version="1.3.2"/>
+	 </location>
+	 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		 <repository location="https://download.eclipse.org/nattable/releases/2.4.0/repository"/>
+		 <unit id="org.eclipse.nebula.widgets.nattable.core.feature.feature.group" version="2.4.0.202405230453"/>
+		 <unit id="org.eclipse.nebula.widgets.nattable.extension.e4.feature.feature.group" version="2.4.0.202405230453"/>
+		 <unit id="org.eclipse.nebula.widgets.nattable.extension.glazedlists.feature.feature.group" version="2.4.0.202405230453"/>
+		 <unit id="org.eclipse.nebula.widgets.nattable.extension.nebula.feature.feature.group" version="2.4.0.202405230453"/>
+		 <unit id="org.eclipse.nebula.widgets.nattable.extension.poi.feature.feature.group" version="2.4.0.202405230453"/>
 	 </location>
 	 <location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 		 <dependencies>
@@ -435,8 +435,8 @@
 		<plugin id="com.sun.jna.source"/>
 		<plugin id="jakarta.annotation-api.source" version="1.3.5"/>
 		<plugin id="jakarta.annotation-api.source" version="2.1.1"/>
-		<plugin id="jakarta.inject.jakarta.inject-api.source" version="1.0.5"/>
 		<plugin id="jakarta.inject.jakarta.inject-api.source" version="2.0.1"/>
+		<plugin id="jakarta.inject.jakarta.inject-api.source" version="1.0.5"/>
 		<plugin id="org.apache.aries.spifly.dynamic.bundle.source" version="1.3.7"/>
 		<plugin id="org.apache.commons.commons-io.source" version="2.15.1"/>
 		<plugin id="org.apache.lucene.analysis-common.source"/>
@@ -474,5 +474,6 @@
 		<plugin id="com.fasterxml.jackson.core.jackson-databind"/>
 		<plugin id="com.fasterxml.jackson.core.jackson-core"/>
 		<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
+		<plugin id="org.eclipse.nebula.widgets.nattable.extension.e4"/>
 	</includeBundles>
 </target>

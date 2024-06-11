@@ -11,7 +11,7 @@ import ro.linic.ui.pos.base.services.ProductDataHolder;
 
 @Component
 public class ProductDataHolderImpl implements ProductDataHolder {
-	private EventList<Product> data = GlazedLists.eventListOf();
+	private EventList<Product> data = GlazedLists.threadSafeList(GlazedLists.eventListOf());
 	
 	@Override
 	public EventList<Product> getData() {
@@ -41,10 +41,10 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 	}
 
 	@Override
-	public void remove(final Product toRemove) {
+	public void remove(final List<Product> toRemove) {
 		try {
 			data.getReadWriteLock().writeLock().lock();
-			data.remove(toRemove);
+			data.removeAll(toRemove);
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
 		}

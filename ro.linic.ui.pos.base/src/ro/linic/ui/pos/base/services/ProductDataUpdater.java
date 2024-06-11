@@ -1,6 +1,7 @@
 package ro.linic.ui.pos.base.services;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -13,5 +14,5 @@ public interface ProductDataUpdater {
 	 */
 	IStatus update(Product p);
 	IStatus updateStock(long id, BigDecimal stock);
-	IStatus delete(Product p);
+	IStatus delete(List<Long> ids);
 }

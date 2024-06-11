@@ -22,8 +22,10 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -36,7 +38,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
+import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.ui.PercentagePopup;
 
 public class UIUtils {
@@ -76,6 +80,12 @@ public class UIUtils {
 
 	public static void setBoldCustomFont(final Control control, final String key) {
 		control.setFont(JFaceResources.getFontRegistry().getBold(key));
+	}
+	
+	public static void showResult(final IStatus status)
+	{
+		if (!status.isOK())
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), status.getPlugin(), status.getMessage());
 	}
 
 	public static void showException(final Exception ex) {
@@ -276,5 +286,11 @@ public class UIUtils {
 			showException(e);
 			return Optional.empty();
 		}
+	}
+	
+	public static void askSave(final Shell activeShell, final EPartService partService) {
+		final MPart activePart = partService.getActivePart();
+		if (activePart != null && activePart.isDirty() && MessageDialog.openQuestion(activeShell, Messages.Save, Messages.SaveConfirm))
+			partService.savePart(activePart, false);
 	}
 }

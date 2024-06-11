@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
@@ -33,6 +34,7 @@ public interface TableBuilder {
 		 * @param config defaults to DefaultSummaryRowConfiguration
 		 */
 		TableConfigurer<T> withSummaryRow();
+		TableConfigurer<T> provideSelection(ESelectionService service);
 		FullFeaturedNatTable<T> build(Composite parent);
 	}
 	

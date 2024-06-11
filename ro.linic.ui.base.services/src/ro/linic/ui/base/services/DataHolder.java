@@ -8,6 +8,6 @@ public interface DataHolder<T> {
 	EventList<T> getData();
 	void setData(List<T> data);
 	void replace(T source, T target);
-	void remove(T toRemove);
+	void remove(List<T> toRemove);
 	void add(T toAdd);
 }

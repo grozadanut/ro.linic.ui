@@ -21,6 +21,7 @@ import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfigurat
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
+import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultRowHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultSummaryRowHeaderDataProvider;
@@ -120,6 +121,16 @@ public class FullFeaturedNatTable<T> {
 
 		this.bodyDataProvider = bodyLayer.getBodyDataProvider();
 		this.propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
+		
+		if (configurer.getSelectionService() != null) {
+			// create a E4SelectionListener and configure it for providing selection
+			// on cell selection
+			final E4SelectionListener<T> esl = new E4SelectionListener<>(configurer.getSelectionService(), bodyLayer.getSelectionLayer(),
+					bodyDataProvider);
+			esl.setFullySelectedRowsOnly(false);
+			esl.setHandleSameRowSelection(false);
+			bodyLayer.getSelectionLayer().addLayerListener(esl);
+		}
 
 		// blinking
 		registerBlinkingConfigCells(configRegistry);

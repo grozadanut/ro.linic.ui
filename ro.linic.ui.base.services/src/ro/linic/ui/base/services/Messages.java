@@ -9,4 +9,8 @@ public class Messages extends NLS {
 	}
 	
 	public static String Summary;
+	public static String Delete;
+	public static String DeleteConfirm;
+	public static String Save;
+	public static String SaveConfirm;
 }
