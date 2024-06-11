@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
+import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
 import org.eclipse.swt.widgets.Composite;
 
 import ca.odell.glazedlists.EventList;
@@ -23,6 +25,7 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	final private List<Column> columns;
 	final private EventList<T> sourceData;
 	final private Map<String, List<Function<Object, IConfiguration>>> dynamicConfigs = new HashMap<>();
+	private AbstractRegistryConfiguration summaryConfig;
 	
 	public FluentTableConfigurer(final Class<T> entityClass, final List<Column> columns, final EventList<T> sourceData) {
 		this.entityClass = Objects.requireNonNull(entityClass);
@@ -54,6 +57,17 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 		table.postConstruct(parent);
 		return table;
 	}
+	
+	@Override
+	public TableConfigurer<T> withSummaryRow() {
+		return withSummaryRow(new DefaultSummaryRowConfiguration());
+	}
+	
+	@Override
+	public TableConfigurer<T> withSummaryRow(final AbstractRegistryConfiguration config) {
+		this.summaryConfig = config;
+		return this;
+	}
 
 	public Class<T> getEntityClass() {
 		return entityClass;
@@ -69,5 +83,9 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	
 	public Map<String, List<Function<Object, IConfiguration>>> getDynamicConfigs() {
 		return dynamicConfigs;
+	}
+	
+	public AbstractRegistryConfiguration getSummaryConfig() {
+		return summaryConfig;
 	}
 }

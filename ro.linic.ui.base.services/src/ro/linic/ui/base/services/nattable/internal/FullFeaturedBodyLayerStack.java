@@ -2,6 +2,7 @@ package ro.linic.ui.base.services.nattable.internal;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.blink.BlinkLayer;
@@ -22,7 +23,6 @@ import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.config.ColumnStyleChooserConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
-import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.util.IClientAreaProvider;
 import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 
@@ -30,7 +30,8 @@ import ca.odell.glazedlists.EventList;
 import ro.linic.ui.base.services.nattable.Column;
 
 public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
-
+	private static Logger log = Logger.getLogger(FullFeaturedBodyLayerStack.class.getName());
+	
     private ColumnReorderLayer columnReorderLayer;
     private ColumnGroupReorderLayer columnGroupReorderLayer;
     private ColumnHideShowLayer columnHideShowLayer;
@@ -61,6 +62,7 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
         this.bodyDataProvider = new ListDataProvider<>(eventList,
                 columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
+        this.bodyDataLayer.setDefaultRowHeight(30);
         for (int i = 0; i < columns.size(); i++)
         	this.bodyDataLayer.setDefaultColumnWidthByPosition(i, columns.get(i).size());
         this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer,
@@ -68,10 +70,7 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
         this.blinkingLayer = new BlinkLayer<>(this.glazedListsEventLayer,
                 this.bodyDataProvider, rowIdAccessor, columnPropertyAccessor,
                 configRegistry);
-        final SummaryRowLayer summaryRowLayer = new SummaryRowLayer(this.blinkingLayer,
-                configRegistry);
-
-        this.columnReorderLayer = new ColumnReorderLayer(summaryRowLayer);
+        this.columnReorderLayer = new ColumnReorderLayer(this.blinkingLayer);
         this.columnGroupReorderLayer = new ColumnGroupReorderLayer(
                 this.columnReorderLayer, columnGroupModel);
         this.columnHideShowLayer = new ColumnHideShowLayer(this.columnGroupReorderLayer);

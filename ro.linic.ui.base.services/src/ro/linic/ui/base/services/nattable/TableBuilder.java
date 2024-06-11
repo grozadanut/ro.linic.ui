@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.swt.widgets.Composite;
@@ -27,6 +28,11 @@ public interface TableBuilder {
 		 * For invalid keys or empty keys null is passed to the function.
 		 */
 		TableConfigurer<T> addConfiguration(String key, Function<Object, IConfiguration> configSupplier);
+		TableConfigurer<T> withSummaryRow(AbstractRegistryConfiguration config);
+		/**
+		 * @param config defaults to DefaultSummaryRowConfiguration
+		 */
+		TableConfigurer<T> withSummaryRow();
 		FullFeaturedNatTable<T> build(Composite parent);
 	}
 	

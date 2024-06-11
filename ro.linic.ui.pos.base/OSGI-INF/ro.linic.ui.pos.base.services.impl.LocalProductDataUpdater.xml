@@ -3,6 +3,7 @@
    <service>
       <provide interface="ro.linic.ui.pos.base.services.ProductDataUpdater"/>
    </service>
+   <reference cardinality="1..1" field="dataHolder" interface="ro.linic.ui.pos.base.services.ProductDataHolder" name="dataHolder"/>
    <reference cardinality="1..1" field="localDatabase" interface="ro.linic.ui.base.services.LocalDatabase" name="localDatabase"/>
    <implementation class="ro.linic.ui.pos.base.services.impl.LocalProductDataUpdater"/>
 </scr:component>

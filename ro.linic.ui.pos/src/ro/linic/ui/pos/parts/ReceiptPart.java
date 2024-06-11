@@ -12,6 +12,8 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.framework.Bundle;
 
@@ -62,5 +64,15 @@ public class ReceiptPart {
 
 	public void closeReceipt(final PaymentType paymentType) {
 		ui.closeReceipt(paymentType);
+	}
+	
+	@PersistState
+	public void persistState() {
+		ui.persistState();
+	}
+	
+	@Focus
+	public void setFocus() {
+		ui.setFocus();
 	}
 }

@@ -11,4 +11,6 @@ public interface ReceiptUIComponent {
 	void postConstruct(Composite parent);
 	boolean canCloseReceipt();
 	void closeReceipt(PaymentType paymentType);
+	void setFocus();
+	void persistState();
 }

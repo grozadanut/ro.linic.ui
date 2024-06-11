@@ -14,10 +14,13 @@ import jakarta.annotation.PostConstruct;
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
+import ro.linic.ui.pos.base.services.ProductDataHolder;
+import ro.linic.ui.pos.base.services.ProductDataLoader;
 
-public class DBInitAddon {
+public class InitAddon {
 	@PostConstruct
-	public void postConstruct(final LocalDatabase localDatabase, final ILog log) {
+	public void postConstruct(final LocalDatabase localDatabase, final ILog log, final ProductDataHolder productHolder,
+			final ProductDataLoader productLoader) {
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
@@ -26,6 +29,8 @@ public class DBInitAddon {
 		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		}
+		
+		productHolder.setData(productLoader.findAll());
 	}
 
 	private void createProductsTable(final Statement stmt) throws SQLException {
@@ -33,9 +38,11 @@ public class DBInitAddon {
 		productsSb.append("CREATE TABLE IF NOT EXISTS "+Product.class.getSimpleName()).append(NEWLINE)
 		.append("(").append(NEWLINE)
 		.append(Product.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
-		.append(Product.CATEGORY_FIELD+" text,").append(NEWLINE)
-		.append(Product.SKU_FIELD+" text,").append(NEWLINE)
-		.append(Product.BARCODES_FIELD+" text,").append(NEWLINE)
+		.append(Product.TYPE_FIELD+" text,").append(NEWLINE)
+		.append(Product.TAX_CODE_FIELD+" text,").append(NEWLINE)
+		.append(Product.DEPARTMENT_CODE_FIELD+" text,").append(NEWLINE)
+		.append(Product.SKU_FIELD+" text UNIQUE,").append(NEWLINE)
+		.append(Product.BARCODES_FIELD+" text UNIQUE,").append(NEWLINE)
 		.append(Product.NAME_FIELD+" text,").append(NEWLINE)
 		.append(Product.UOM_FIELD+" text,").append(NEWLINE)
 		.append(Product.IS_STOCKABLE_FIELD+" integer,").append(NEWLINE)

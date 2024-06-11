@@ -7,6 +7,7 @@ import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
+import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowHeaderComposite;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultColumnHeaderDataProvider;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
@@ -52,11 +53,13 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends AbstractLayerTransfor
         this.columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
                 this.sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
 
-        final FilterRowHeaderComposite<T> composite = new FilterRowHeaderComposite<>(
+        final FilterRowDataLayer<T> filterRowDataLayer = new FilterRowDataLayer<>(
                 new DefaultGlazedListsFilterStrategy<>(filterList,
                         columnPropertyAccessor, configRegistry),
                 this.columnGroupHeaderLayer, this.columnHeaderDataProvider,
                 configRegistry);
+        filterRowDataLayer.setDefaultRowHeight(30);
+        final FilterRowHeaderComposite<T> composite = new FilterRowHeaderComposite<>(this.columnGroupHeaderLayer, filterRowDataLayer);
 
         setUnderlyingLayer(composite);
     }

@@ -10,6 +10,6 @@ import ro.linic.ui.pos.parts.ReceiptPart;
 public class NewReceiptHandler {
 	@Execute
 	public void execute(final EPartService partService) {
-		partService.showPart(partService.createPart(ReceiptPart.PART_DESCRIPTOR_ID), PartState.VISIBLE);
+		partService.showPart(partService.createPart(ReceiptPart.PART_DESCRIPTOR_ID), PartState.ACTIVATE);
 	}
 }

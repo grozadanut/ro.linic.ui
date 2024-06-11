@@ -4,16 +4,21 @@ Bundle-Name: Base Services
 Bundle-SymbolicName: ro.linic.ui.base.services
 Bundle-Version: 0.0.1
 Export-Package: ro.linic.ui.base.services,
+ ro.linic.ui.base.services.binding,
  ro.linic.ui.base.services.model,
  ro.linic.ui.base.services.nattable,
  ro.linic.ui.base.services.ui,
  ro.linic.ui.base.services.util
-Import-Package: org.eclipse.e4.ui.di,
+Import-Package: org.eclipse.core.databinding.conversion,
+ org.eclipse.core.databinding.validation,
+ org.eclipse.core.runtime;version="[3.7.0,4.0.0]",
+ org.eclipse.e4.ui.di,
  org.eclipse.e4.ui.model.application,
  org.eclipse.e4.ui.model.application.ui.basic,
  org.eclipse.jface.dialogs,
  org.eclipse.jface.layout,
  org.eclipse.jface.resource,
+ org.eclipse.osgi.util;version="[1.1.0,2.0.0]",
  org.eclipse.swt,
  org.eclipse.swt.custom,
  org.eclipse.swt.events,

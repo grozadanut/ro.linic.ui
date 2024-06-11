@@ -2,12 +2,14 @@ package ro.linic.ui.base.services.nattable;
 
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.blink.BlinkingCellResolver;
@@ -27,6 +29,7 @@ import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultRowHeaderDataLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.GridLayer;
 import org.eclipse.nebula.widgets.nattable.grid.layer.RowHeaderLayer;
 import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
+import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
@@ -34,6 +37,8 @@ import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfigurat
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.summaryrow.FixedSummaryRowLayer;
+import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.tooltip.NatTableContentTooltip;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
@@ -45,16 +50,20 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.ObservableElementList;
 import ca.odell.glazedlists.SortedList;
+import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.nattable.internal.BodyMenuConfiguration;
 import ro.linic.ui.base.services.nattable.internal.FluentTableConfigurer;
+import ro.linic.ui.base.services.nattable.internal.FontStylingThemeConfiguration;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedBodyLayerStack;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedColumnHeaderLayerStack;
 
 public class FullFeaturedNatTable<T> {
-	public static final String BODY_DATA_PROVIDER_CONFIG_KEY = "bodyDataProvider"; //$NON-NLS-1$
-	public static final String CONFIG_REGISTRY_CONFIG_KEY = "configRegistry"; //$NON-NLS-1$
+	private static ILog log = ILog.of(FullFeaturedNatTable.class);
 	
 	private static final String BLINK_CONFIG_LABEL = "blinkConfigLabel";
+	
+	public static final String BODY_DATA_PROVIDER_CONFIG_KEY = "bodyDataProvider"; //$NON-NLS-1$
+	public static final String CONFIG_REGISTRY_CONFIG_KEY = "configRegistry"; //$NON-NLS-1$
 
 	final private Class<T> entityClass;
 	final private List<Column> columns;
@@ -73,8 +82,10 @@ public class FullFeaturedNatTable<T> {
 	 * For invalid keys or empty keys null is passed to the function.
 	 */
 	final private Map<String, List<Function<Object, IConfiguration>>> dynamicConfigs;
+	final private FluentTableConfigurer<T> configurer;
 	
 	public FullFeaturedNatTable(final FluentTableConfigurer<T> configurer) {
+		this.configurer = configurer;
 		this.entityClass = configurer.getEntityClass();
 		this.columns = configurer.getColumns();
 		this.baseEventList = configurer.getSourceData();
@@ -133,8 +144,9 @@ public class FullFeaturedNatTable<T> {
 
 		// Grid
 		final GridLayer gridLayer = new GridLayer(bodyLayer, columnHeaderLayer, rowHeaderLayer, cornerLayer);
+		final ILayer underlyingLayer = createUnderlyingLayer(bodyLayer, gridLayer, configRegistry);
 
-		this.natTable = new NatTable(parent, gridLayer, false);
+		this.natTable = new NatTable(parent, underlyingLayer, false);
 		this.natTable.setConfigRegistry(configRegistry);
 		this.natTable.addConfiguration(new DefaultNatTableStyleConfiguration());
 		// Popup menu
@@ -175,6 +187,30 @@ public class FullFeaturedNatTable<T> {
 		}
 		
 		this.natTable.configure();
+		this.natTable.setTheme(new FontStylingThemeConfiguration());
+	}
+
+	private ILayer createUnderlyingLayer(final FullFeaturedBodyLayerStack<T> bodyLayer, final GridLayer gridLayer,
+			final ConfigRegistry configRegistry) {
+		if (configurer.getSummaryConfig() == null)
+			return gridLayer;
+		
+		// Summary
+		final FixedSummaryRowLayer summaryRowLayer = new FixedSummaryRowLayer(bodyLayer.getBodyDataLayer(), gridLayer, configRegistry, false);
+		summaryRowLayer.addConfiguration(configurer.getSummaryConfig());
+		summaryRowLayer.setSummaryRowLabel(Messages.Summary);
+		try {
+			final Field field = SummaryRowLayer.class.getDeclaredField("summaryRowHeight");
+			field.setAccessible(true);
+			field.set(summaryRowLayer, 30);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			log.error(e.getMessage(), e);
+		}
+
+		final CompositeLayer composite = new CompositeLayer(1, 2);
+		composite.setChildLayer("GRID", gridLayer, 0, 0);
+		composite.setChildLayer("SUMMARY", summaryRowLayer, 0, 1);
+		return composite;
 	}
 
 	private void registerBlinkingConfigCells(final ConfigRegistry configRegistry) {

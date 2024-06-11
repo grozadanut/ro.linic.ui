@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: POS Base
 Bundle-SymbolicName: ro.linic.ui.pos.base;singleton:=true
 Bundle-Version: 0.0.4
-Export-Package: ro.linic.ui.pos.base.addons,
+Export-Package: ro.linic.ui.pos.base;x-friends:="ro.linic.ui.pos",
+ ro.linic.ui.pos.base.addons,
  ro.linic.ui.pos.base.model,
  ro.linic.ui.pos.base.services
 Import-Package: jakarta.annotation;version="[2.1.0,3.0.0]",
@@ -19,7 +20,8 @@ Require-Bundle: org.eclipse.osgi.services;bundle-version="3.11.100",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="2.17.1",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.17.1",
  com.fasterxml.jackson.core.jackson-annotations;bundle-version="2.17.1",
- org.eclipse.core.runtime;bundle-version="3.31.0"
+ org.eclipse.core.runtime;bundle-version="3.31.0",
+ org.eclipse.core.databinding;bundle-version="1.13.200"
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.pos.base
 Bundle-ActivationPolicy: lazy

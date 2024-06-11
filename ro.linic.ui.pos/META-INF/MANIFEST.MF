@@ -17,7 +17,13 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.200.v20240
  org.eclipse.jface;bundle-version="3.33.0",
  ro.linic.ui.base.services;bundle-version="0.0.1",
  ca.odell.glazedlists;bundle-version="1.11.0",
- org.eclipse.nebula.widgets.nattable.core
+ org.eclipse.nebula.widgets.nattable.core,
+ org.eclipse.e4.ui.di;bundle-version="1.5.300",
+ org.eclipse.jface.databinding;bundle-version="1.15.200",
+ org.eclipse.core.databinding;bundle-version="1.13.200",
+ org.eclipse.core.databinding.property;bundle-version="1.10.200",
+ org.eclipse.core.databinding.beans;bundle-version="1.10.200",
+ org.eclipse.e4.ui.services;bundle-version="1.6.300"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: ro.linic.ui.pos
 Model-Fragment: fragment.e4xmi

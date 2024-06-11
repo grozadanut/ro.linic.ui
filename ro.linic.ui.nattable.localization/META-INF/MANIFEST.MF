@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NatTable Localization
+Bundle-SymbolicName: ro.linic.ui.nattable.localization
+Bundle-Version: 1.0.0
+Bundle-Vendor: LINIC
+Fragment-Host: org.eclipse.nebula.widgets.nattable.core;bundle-version="2.3.0"
+Automatic-Module-Name: ro.linic.ui.nattable.localization
+Bundle-RequiredExecutionEnvironment: JavaSE-17

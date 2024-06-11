@@ -39,7 +39,9 @@ public class Messages extends NLS {
 	public static String FiscalNetECRDriverPage_Department;
 	public static String FiscalNetECRDriverPage_ResponseFolder;
 	public static String FiscalNetECRDriverPage_VATRate;
+	public static String ProductTypeMandatory;
 	public static String NameMandatory;
+	public static String UOMMandatory;
 	public static String PriceMandatory;
-	
+	public static String CodeExists;
 }
