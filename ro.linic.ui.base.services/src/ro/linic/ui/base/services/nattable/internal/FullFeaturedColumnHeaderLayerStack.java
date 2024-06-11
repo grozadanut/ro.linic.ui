@@ -40,6 +40,7 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends AbstractLayerTransfor
 
         this.columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(
                 this.columnHeaderDataProvider);
+        this.columnHeaderDataLayer.setDefaultRowHeight(30);
 
         this.columnHeaderLayer = new ColumnHeaderLayer(this.columnHeaderDataLayer,
                 bodyLayer, selectionLayer);
@@ -52,6 +53,7 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends AbstractLayerTransfor
 
         this.columnGroupHeaderLayer = new ColumnGroupHeaderLayer(
                 this.sortableColumnHeaderLayer, selectionLayer, columnGroupModel);
+        this.columnGroupHeaderLayer.setRowHeight(30);
 
         final FilterRowDataLayer<T> filterRowDataLayer = new FilterRowDataLayer<>(
                 new DefaultGlazedListsFilterStrategy<>(filterList,

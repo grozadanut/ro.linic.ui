@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.config.ColumnStyleChooserConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -63,6 +64,7 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
                 columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.bodyDataLayer.setDefaultRowHeight(30);
+        this.bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));
         for (int i = 0; i < columns.size(); i++)
         	this.bodyDataLayer.setDefaultColumnWidthByPosition(i, columns.get(i).size());
         this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer,

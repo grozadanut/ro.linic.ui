@@ -33,7 +33,6 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnOverrideLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -170,11 +169,6 @@ public class FullFeaturedNatTable<T> {
 		this.natTable.addConfiguration(new BodyMenuConfiguration(this.natTable));
 		this.natTable.addConfiguration(new SingleClickSortConfiguration());
 		new NatTableContentTooltip(this.natTable);
-
-		// Editing
-		final ColumnOverrideLabelAccumulator columnLabelAccumulator = new ColumnOverrideLabelAccumulator(
-				bodyLayer.getBodyDataLayer());
-		bodyLayer.getBodyDataLayer().setConfigLabelAccumulator(columnLabelAccumulator);
 
 		// Column chooser
 		final DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(

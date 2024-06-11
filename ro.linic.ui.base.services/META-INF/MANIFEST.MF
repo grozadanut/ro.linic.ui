@@ -7,6 +7,7 @@ Export-Package: ro.linic.ui.base.services,
  ro.linic.ui.base.services.binding,
  ro.linic.ui.base.services.model,
  ro.linic.ui.base.services.nattable,
+ ro.linic.ui.base.services.nattable.components,
  ro.linic.ui.base.services.ui,
  ro.linic.ui.base.services.util
 Import-Package: org.eclipse.core.databinding.conversion,

@@ -7,6 +7,11 @@ import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -16,6 +21,7 @@ import jakarta.annotation.PostConstruct;
 import ro.linic.ui.base.services.nattable.Column;
 import ro.linic.ui.base.services.nattable.FullFeaturedNatTable;
 import ro.linic.ui.base.services.nattable.TableBuilder;
+import ro.linic.ui.base.services.nattable.components.StringSetDisplayConverter;
 import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.pos.Messages;
 import ro.linic.ui.pos.base.model.Product;
@@ -50,6 +56,7 @@ public class ProductsPart {
 		parent.setLayout(parentLayout);
 		
 		table = TableBuilder.with(Product.class, allProductsColumns, productDataHolder.getData())
+				.addConfiguration(new ProductsTableConfiguration())
 				.provideSelection(selectionService)
 				.build(parent);
 		table.natTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -89,6 +96,15 @@ public class ProductsPart {
 //			.ifPresent(t -> t.getTable().refresh());
 //			
 //			part.setDirty(false);
+		}
+	}
+	
+	private class ProductsTableConfiguration extends AbstractRegistryConfiguration {
+		@Override
+		public void configureRegistry(final IConfigRegistry configRegistry) {
+			// Display converters
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new StringSetDisplayConverter(), DisplayMode.NORMAL, 
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + allProductsColumns.indexOf(barcodesColumn));
 		}
 	}
 }
