@@ -11,7 +11,6 @@ import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
-import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBigDecimalDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.data.convert.IDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
@@ -28,6 +27,7 @@ import ro.linic.ui.base.services.di.DiscardChanges;
 import ro.linic.ui.base.services.nattable.Column;
 import ro.linic.ui.base.services.nattable.FullFeaturedNatTable;
 import ro.linic.ui.base.services.nattable.TableBuilder;
+import ro.linic.ui.base.services.nattable.components.CalculatorBigDecimalDisplayConverter;
 import ro.linic.ui.base.services.nattable.components.StringSetDisplayConverter;
 import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.pos.Messages;
@@ -117,7 +117,7 @@ public class ProductsPart {
 		@Override
 		public void configureRegistry(final IConfigRegistry configRegistry) {
 			// Display converters
-			final IDisplayConverter bigDecimalConverter = new DefaultBigDecimalDisplayConverter();
+			final IDisplayConverter bigDecimalConverter = new CalculatorBigDecimalDisplayConverter();
 			
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new StringSetDisplayConverter(), DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + allProductsColumns.indexOf(barcodesColumn));

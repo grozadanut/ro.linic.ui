@@ -29,7 +29,8 @@ Import-Package: org.eclipse.core.databinding.conversion,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
- org.eclipse.swt.widgets
+ org.eclipse.swt.widgets,
+ org.osgi.framework;version="[1.10.0,2.0.0]"
 Require-Bundle: wrapped.ro.linic.util.commons;bundle-version="0.0.5",
  org.eclipse.nebula.widgets.nattable.core;bundle-version="2.3.0",
  org.eclipse.nebula.widgets.nattable.extension.glazedlists;bundle-version="2.3.0",

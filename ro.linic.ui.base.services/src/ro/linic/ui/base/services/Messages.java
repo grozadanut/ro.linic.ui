@@ -13,4 +13,5 @@ public class Messages extends NLS {
 	public static String DeleteConfirm;
 	public static String Save;
 	public static String SaveConfirm;
+	public static String ExportExcel;
 }

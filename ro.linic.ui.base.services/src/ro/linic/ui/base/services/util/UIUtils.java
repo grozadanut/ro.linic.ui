@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -22,7 +23,10 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -39,11 +43,14 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.framework.Bundle;
 
 import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.ui.PercentagePopup;
 
 public class UIUtils {
+	private static final ILog log = ILog.of(UIUtils.class);
+	
 	public static String OS = System.getProperty("os.name").toLowerCase();
 
 	public static final String FONT_SIZE_KEY = "font_size";
@@ -292,5 +299,14 @@ public class UIUtils {
 		final MPart activePart = partService.getActivePart();
 		if (activePart != null && activePart.isDirty() && MessageDialog.openQuestion(activeShell, Messages.Save, Messages.SaveConfirm))
 			partService.savePart(activePart, false);
+	}
+	
+	public static Optional<URL> find(final Bundle bundle, final String url) {
+		try {
+			return Optional.ofNullable(FileLocator.toFileURL(FileLocator.find(bundle, new Path(url))));
+		} catch (final IOException e) {
+			log.error(e.getMessage(), e);
+			return Optional.empty();
+		}
 	}
 }
