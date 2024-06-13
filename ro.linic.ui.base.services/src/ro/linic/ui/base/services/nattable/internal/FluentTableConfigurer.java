@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
@@ -20,17 +21,20 @@ import ca.odell.glazedlists.EventList;
 import ro.linic.ui.base.services.nattable.Column;
 import ro.linic.ui.base.services.nattable.FullFeaturedNatTable;
 import ro.linic.ui.base.services.nattable.TableBuilder.TableConfigurer;
+import ro.linic.ui.base.services.nattable.UpdateCommand;
 
 public class FluentTableConfigurer<T> implements TableConfigurer<T> {
-	final private Class<T> entityClass;
+	final private Class<T> modelClass;
 	final private List<Column> columns;
 	final private EventList<T> sourceData;
 	final private Map<String, List<Function<Object, IConfiguration>>> dynamicConfigs = new HashMap<>();
 	private AbstractRegistryConfiguration summaryConfig;
 	private ESelectionService selectionService;
+	private MDirtyable dirtyable;
+	private Function<List<UpdateCommand>, Boolean> saveToDbHandler;
 	
-	public FluentTableConfigurer(final Class<T> entityClass, final List<Column> columns, final EventList<T> sourceData) {
-		this.entityClass = Objects.requireNonNull(entityClass);
+	public FluentTableConfigurer(final Class<T> modelClass, final List<Column> columns, final EventList<T> sourceData) {
+		this.modelClass = Objects.requireNonNull(modelClass);
 		this.columns = Objects.requireNonNull(columns);
 		this.sourceData = Objects.requireNonNull(sourceData);
 	}
@@ -76,9 +80,21 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 		this.selectionService = service;
 		return this;
 	}
+	
+	@Override
+	public TableConfigurer<T> connectDirtyProperty(final MDirtyable dirtyable) {
+		this.dirtyable = dirtyable;
+		return this;
+	}
+	
+	@Override
+	public TableConfigurer<T> saveToDbHandler(final Function<List<UpdateCommand>, Boolean> saveToDbHandler) {
+		this.saveToDbHandler = Objects.requireNonNull(saveToDbHandler);
+		return this;
+	}
 
-	public Class<T> getEntityClass() {
-		return entityClass;
+	public Class<T> getModelClass() {
+		return modelClass;
 	}
 
 	public List<Column> getColumns() {
@@ -99,5 +115,13 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	
 	public ESelectionService getSelectionService() {
 		return selectionService;
+	}
+	
+	public MDirtyable getDirtyable() {
+		return dirtyable;
+	}
+	
+	public Function<List<UpdateCommand>, Boolean> getSaveToDbHandler() {
+		return saveToDbHandler;
 	}
 }

@@ -5,6 +5,8 @@ Bundle-SymbolicName: ro.linic.ui.base.services
 Bundle-Version: 0.0.1
 Export-Package: ro.linic.ui.base.services,
  ro.linic.ui.base.services.binding,
+ ro.linic.ui.base.services.di,
+ ro.linic.ui.base.services.mapper,
  ro.linic.ui.base.services.model,
  ro.linic.ui.base.services.nattable,
  ro.linic.ui.base.services.nattable.components,
@@ -34,7 +36,8 @@ Require-Bundle: wrapped.ro.linic.util.commons;bundle-version="0.0.5",
  org.eclipse.nebula.widgets.nattable.extension.nebula;bundle-version="2.3.0",
  org.eclipse.nebula.widgets.nattable.extension.poi;bundle-version="2.3.0",
  ca.odell.glazedlists;bundle-version="1.11.0",
- org.eclipse.nebula.widgets.nattable.extension.e4;bundle-version="2.4.0"
+ org.eclipse.nebula.widgets.nattable.extension.e4;bundle-version="2.4.0",
+ org.mapstruct;bundle-version="1.5.5"
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.base.services
 Bundle-ActivationPolicy: lazy

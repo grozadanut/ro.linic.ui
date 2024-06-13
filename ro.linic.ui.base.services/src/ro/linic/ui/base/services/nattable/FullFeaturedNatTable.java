@@ -1,7 +1,6 @@
 package ro.linic.ui.base.services.nattable;
 
 import java.beans.PropertyChangeListener;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.ConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.DefaultNatTableStyleConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
-import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.extension.e4.selection.E4SelectionListener;
 import org.eclipse.nebula.widgets.nattable.grid.data.DefaultCornerDataProvider;
@@ -52,10 +50,14 @@ import ca.odell.glazedlists.ObservableElementList;
 import ca.odell.glazedlists.SortedList;
 import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.nattable.internal.BodyMenuConfiguration;
+import ro.linic.ui.base.services.nattable.internal.DiscardDataChangesDelegateCommandHandler;
 import ro.linic.ui.base.services.nattable.internal.FluentTableConfigurer;
-import ro.linic.ui.base.services.nattable.internal.FontStylingThemeConfiguration;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedBodyLayerStack;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedColumnHeaderLayerStack;
+import ro.linic.ui.base.services.nattable.internal.HashCodeRowIdAccessor;
+import ro.linic.ui.base.services.nattable.internal.LinicThemeConfiguration;
+import ro.linic.ui.base.services.nattable.internal.MDirtyableUpdateDataChangeHandler;
+import ro.linic.ui.base.services.nattable.internal.SaveDataChangesDelegateCommandHandler;
 
 public class FullFeaturedNatTable<T> {
 	private static ILog log = ILog.of(FullFeaturedNatTable.class);
@@ -65,7 +67,7 @@ public class FullFeaturedNatTable<T> {
 	public static final String BODY_DATA_PROVIDER_CONFIG_KEY = "bodyDataProvider"; //$NON-NLS-1$
 	public static final String CONFIG_REGISTRY_CONFIG_KEY = "configRegistry"; //$NON-NLS-1$
 
-	final private Class<T> entityClass;
+	final private Class<T> modelClass;
 	final private List<Column> columns;
 	final private EventList<T> baseEventList;
 	private PropertyChangeListener propertyChangeListener;
@@ -86,7 +88,7 @@ public class FullFeaturedNatTable<T> {
 	
 	public FullFeaturedNatTable(final FluentTableConfigurer<T> configurer) {
 		this.configurer = configurer;
-		this.entityClass = configurer.getEntityClass();
+		this.modelClass = configurer.getModelClass();
 		this.columns = configurer.getColumns();
 		this.baseEventList = configurer.getSourceData();
 		this.dynamicConfigs = configurer.getDynamicConfigs();
@@ -103,20 +105,15 @@ public class FullFeaturedNatTable<T> {
 		this.baseEventList.getReadWriteLock().readLock().lock();
 		try {
 			observableElementList = new ObservableElementList<>(
-					this.baseEventList, GlazedLists.beanConnector(entityClass));
+					this.baseEventList, GlazedLists.beanConnector(modelClass));
 			filterList = new FilterList<>(observableElementList);
 			sortedList = new SortedList<>(filterList, null);
 		} finally {
 			this.baseEventList.getReadWriteLock().readLock().unlock();
 		}
 
-		final FullFeaturedBodyLayerStack<T> bodyLayer = new FullFeaturedBodyLayerStack<>(
-				sortedList, new IRowIdAccessor<T>() {
-					@Override
-					public Serializable getRowId(final T rowObject) {
-						return rowObject.hashCode();
-					}
-				}, columns, configRegistry, columnGroupModel);
+		final FullFeaturedBodyLayerStack<T> bodyLayer = new FullFeaturedBodyLayerStack<>(modelClass,
+				sortedList, new HashCodeRowIdAccessor<>(), columns, configRegistry, columnGroupModel);
 
 		this.bodyDataProvider = bodyLayer.getBodyDataProvider();
 		this.propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
@@ -130,6 +127,20 @@ public class FullFeaturedNatTable<T> {
 			esl.setHandleSameRowSelection(false);
 			bodyLayer.getSelectionLayer().addLayerListener(esl);
 		}
+		
+		// update MDirtyable dirty property
+		if (configurer.getDirtyable() != null) {
+			// update dirty state on cell value change
+			bodyLayer.getDataChangeLayer().addLayerListener(new MDirtyableUpdateDataChangeHandler(
+					bodyLayer.getDataChangeLayer(), configurer.getDirtyable()));
+			// update dirty state on discard data changes command
+			bodyLayer.getDataChangeLayer().registerCommandHandler(new DiscardDataChangesDelegateCommandHandler(
+					bodyLayer.getDataChangeLayer(), configurer.getDirtyable()));
+		}
+		// 1. save changes to database
+		// 2. update dirty state on save data changes command
+		bodyLayer.getDataChangeLayer().registerCommandHandler(new SaveDataChangesDelegateCommandHandler<>(
+				bodyLayer.getColumnPropertyAccessor(), bodyLayer.getDataChangeLayer(), configurer));
 
 		// blinking
 		registerBlinkingConfigCells(configRegistry);
@@ -192,7 +203,7 @@ public class FullFeaturedNatTable<T> {
 		}
 		
 		this.natTable.configure();
-		this.natTable.setTheme(new FontStylingThemeConfiguration());
+		this.natTable.setTheme(new LinicThemeConfiguration());
 	}
 
 	private ILayer createUnderlyingLayer(final FullFeaturedBodyLayerStack<T> bodyLayer, final GridLayer gridLayer,

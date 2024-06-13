@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
@@ -35,11 +36,26 @@ public interface TableBuilder {
 		 */
 		TableConfigurer<T> withSummaryRow();
 		TableConfigurer<T> provideSelection(ESelectionService service);
+		/**
+		 * Connects the dirty state of this table with the dirty property of the 
+		 * dirtyable param. MDirtyable dirty is set to true when this table is dirty, 
+		 * but it is also set to false when this table becomes undirty.
+		 * 
+		 * @param dirtyable MDirtyable object such as MPart
+		 */
+		TableConfigurer<T> connectDirtyProperty(MDirtyable dirtyable);
+		/**
+		 * Register a handler that will be called when changes should be 
+		 * saved to the database.
+		 * 
+		 * @param handler should return true if the save has succeeded, false otherwise
+		 */
+		TableConfigurer<T> saveToDbHandler(Function<List<UpdateCommand>, Boolean> handler);
 		FullFeaturedNatTable<T> build(Composite parent);
 	}
 	
-	public static <T> TableConfigurer<T> with(final Class<T> entityClass, final List<Column> columns, final EventList<T> sourceData) {
-        return new FluentTableConfigurer<>(entityClass, columns, sourceData);
+	public static <T> TableConfigurer<T> with(final Class<T> modelClass, final List<Column> columns, final EventList<T> sourceData) {
+        return new FluentTableConfigurer<>(modelClass, columns, sourceData);
     }
 	
 	public static <T> TableConfigurer<T> with(final Class<T> entityClass, final List<Column> columns) {

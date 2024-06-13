@@ -11,6 +11,8 @@ import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
+import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
+import org.eclipse.nebula.widgets.nattable.datachange.IdIndexKeyHandler;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.CompositeFreezeLayer;
 import org.eclipse.nebula.widgets.nattable.freeze.FreezeLayer;
@@ -33,6 +35,7 @@ import ro.linic.ui.base.services.nattable.Column;
 public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
 	private static Logger log = Logger.getLogger(FullFeaturedBodyLayerStack.class.getName());
 	
+	private final IColumnPropertyAccessor<T> columnPropertyAccessor;
     private ColumnReorderLayer columnReorderLayer;
     private ColumnGroupReorderLayer columnGroupReorderLayer;
     private ColumnHideShowLayer columnHideShowLayer;
@@ -45,20 +48,21 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
     private CompositeFreezeLayer compositeFreezeLayer;
     private ListDataProvider<T> bodyDataProvider;
     private GlazedListsEventLayer<T> glazedListsEventLayer;
-
-    public FullFeaturedBodyLayerStack(final EventList<T> eventList,
+    private final DataChangeLayer dataChangeLayer;
+    
+    public FullFeaturedBodyLayerStack(final Class<T> modelClass, final EventList<T> eventList,
             final IRowIdAccessor<T> rowIdAccessor, final List<Column> columns,
             final IConfigRegistry configRegistry, final ColumnGroupModel columnGroupModel) {
-        this(eventList, rowIdAccessor, columns, configRegistry,
+        this(modelClass, eventList, rowIdAccessor, columns, configRegistry,
                 columnGroupModel, true);
     }
 
-    public FullFeaturedBodyLayerStack(final EventList<T> eventList,
+    public FullFeaturedBodyLayerStack(final Class<T> modelClass, final EventList<T> eventList,
             final IRowIdAccessor<T> rowIdAccessor, final List<Column> columns,
             final IConfigRegistry configRegistry, final ColumnGroupModel columnGroupModel,
             final boolean useDefaultConfiguration) {
     	final List<String> propertyNames = columns.stream().map(Column::property).collect(Collectors.toList());
-        final IColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
+        columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
                 propertyNames);
         this.bodyDataProvider = new ListDataProvider<>(eventList,
                 columnPropertyAccessor);
@@ -67,7 +71,14 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
         this.bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));
         for (int i = 0; i < columns.size(); i++)
         	this.bodyDataLayer.setDefaultColumnWidthByPosition(i, columns.get(i).size());
-        this.glazedListsEventLayer = new GlazedListsEventLayer<>(this.bodyDataLayer,
+        // add a DataChangeLayer that temporarily tracks data changes without
+        // updating the underlying data model
+        // Note: we don't need the default configuration because the style is handled 
+        // by our theme LinicThemeConfiguration and the CTRL+S and CTRL+D key bindings 
+        // are global bindings in the file menu.
+        this.dataChangeLayer = new DataChangeLayer(bodyDataLayer, new IdIndexKeyHandler<>(bodyDataProvider, rowIdAccessor, modelClass),
+        		true, false, false);
+        this.glazedListsEventLayer = new GlazedListsEventLayer<>(dataChangeLayer,
                 eventList);
         this.blinkingLayer = new BlinkLayer<>(this.glazedListsEventLayer,
                 this.bodyDataProvider, rowIdAccessor, columnPropertyAccessor,
@@ -133,4 +144,12 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
     public PropertyChangeListener getGlazedListEventsLayer() {
         return this.glazedListsEventLayer;
     }
+    
+    public DataChangeLayer getDataChangeLayer() {
+		return dataChangeLayer;
+	}
+    
+    public IColumnPropertyAccessor<T> getColumnPropertyAccessor() {
+		return columnPropertyAccessor;
+	}
 }

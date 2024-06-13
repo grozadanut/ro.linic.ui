@@ -3,8 +3,9 @@
   <children xsi:type="basic:TrimmedWindow" xmi:id="_tbP-oI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimmedwindow.linic" label="Linic Desktop" iconURI="platform:/plugin/ro.linic.ui.base/icons/logo_256x256.png" x="0" y="0" width="800" height="1024">
     <mainMenu xmi:id="_cvKv8I0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.menu">
       <children xsi:type="menu:Menu" xmi:id="_rWkeMI0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.menu" label="%menu.label.file" mnemonics="">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Cjyw8MfiEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handledmenuitem.save" label="%handledmenuitem.label.save" command="_mPIBcMfhEe6wm9FSKxJZow"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_1s9DMI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.saveall" label="%handledmenuitem.label.saveall" command="_qpX2cI0NEe6qNdK_29XQrA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Cjyw8MfiEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handledmenuitem.save" label="%handledmenuitem.label.save" iconURI="platform:/plugin/ro.linic.ui.base/icons/save_16x16.png" command="_mPIBcMfhEe6wm9FSKxJZow"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_1s9DMI0OEe6qNdK_29XQrA" elementId="ro.linic.ui.base.handledmenuitem.saveall" label="%handledmenuitem.label.saveall" iconURI="platform:/plugin/ro.linic.ui.base/icons/save_all_16x16.png" command="_qpX2cI0NEe6qNdK_29XQrA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_ZBrmECiUEe-5mP0XvVRlaw" elementId="ro.linic.ui.base.handledmenuitem.discard" label="%handledmenuitem.label.discard" iconURI="platform:/plugin/ro.linic.ui.base/icons/delete_16x16.png" command="_7Nj2ACiTEe-5mP0XvVRlaw"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_CgjRgI0PEe6qNdK_29XQrA" elementId="ro.linic.ui.base.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FOPcQOxFEe6ppJt5Ysxyww" elementId="ro.linic.ui.base.handledmenuitem.preferences" label="%handledmenuitem.label.preferences" command="_dHp94OxEEe6ppJt5Ysxyww"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_Z19DUPF4Ee6Y8NVamZwaxA" elementId="ro.linic.ui.base.menuseparator.1"/>
@@ -62,7 +63,8 @@
   <handlers xmi:id="_H0BNIPMTEe6BJoNFOEhjig" elementId="ro.linic.ui.base.handler.hungarian" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.HuLanguageHandler" command="_6RBiMPMSEe6BJoNFOEhjig"/>
   <handlers xmi:id="_TP0hAA69Ee-EIqyD6TadCw" elementId="ro.linic.ui.base.handler.clearpersistedstate" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.ClearPersistedStateHandler" command="_FehUUA69Ee-EIqyD6TadCw"/>
   <handlers xmi:id="_TJs_AA7KEe-Kn5YpFw5Kww" elementId="ro.linic.ui.base.handler.about" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.AboutHandler" command="_8rV7kA7JEe-Kn5YpFw5Kww"/>
-  <bindingTables xmi:id="_DD1OIMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.bindingtable.root" bindingContext="_2nYUgMZ8Ee6UtK1nDebMVw">
+  <handlers xmi:id="_LmX3gCiUEe-5mP0XvVRlaw" elementId="ro.linic.ui.base.handler.discard" contributionURI="bundleclass://ro.linic.ui.base/ro.linic.ui.base.handlers.DiscardHandler" command="_7Nj2ACiTEe-5mP0XvVRlaw"/>
+  <bindingTables xmi:id="_DD1OIMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.bindingtable.root" bindingContext="_5OvYUMZ8Ee6UtK1nDebMVw">
     <bindings xmi:id="_LjDdMMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1q" keySequence="M1+Q" command="_ufS_II0NEe6qNdK_29XQrA">
       <tags>type:user</tags>
     </bindings>
@@ -73,6 +75,9 @@
       <tags>type:user</tags>
     </bindings>
     <bindings xmi:id="_eCS_sMZ9Ee6UtK1nDebMVw" elementId="ro.linic.ui.base.keybinding.m1u" keySequence="M1+U" command="_YZa0sKC3Ee6rhYQcX-gzIg">
+      <tags>type:user</tags>
+    </bindings>
+    <bindings xmi:id="_6DkSoCiUEe-5mP0XvVRlaw" elementId="ro.linic.ui.base.keybinding.m1d" keySequence="M1+D" command="_7Nj2ACiTEe-5mP0XvVRlaw">
       <tags>type:user</tags>
     </bindings>
   </bindingTables>
@@ -93,6 +98,7 @@
   <commands xmi:id="_6RBiMPMSEe6BJoNFOEhjig" elementId="ro.linic.ui.base.command.hungarian" commandName="Magyar"/>
   <commands xmi:id="_FehUUA69Ee-EIqyD6TadCw" elementId="ro.linic.ui.base.command.clearpersistedstate" commandName="%command.commandname.clearPersistedState"/>
   <commands xmi:id="_8rV7kA7JEe-Kn5YpFw5Kww" elementId="ro.linic.ui.base.command.about" commandName="%command.commandname.about"/>
+  <commands xmi:id="_7Nj2ACiTEe-5mP0XvVRlaw" elementId="ro.linic.ui.base.command.discard" commandName="%command.commandname.discard"/>
   <addons xmi:id="_cGVhQY0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_cGVhQo0BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_cGVhQ40BEe6qNdK_29XQrA" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
