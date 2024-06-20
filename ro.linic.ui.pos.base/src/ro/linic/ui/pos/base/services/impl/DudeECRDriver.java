@@ -21,11 +21,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -46,7 +45,7 @@ import ro.linic.util.commons.StringUtils;
 
 @Component
 public class DudeECRDriver implements ECRDriver {
-	private static final Logger log = Logger.getLogger(DudeECRDriver.class.getName());
+	private final static ILog log = ILog.of(DudeECRDriver.class);
 	private static final String RESULT_SUFFIX = "_result"; //$NON-NLS-1$
 	private static final String ECR_REPORT_DATE_PATTERN = "dd-MM-yy HH:mm:ss"; //DD-MM-YY hh:mm:ss DST //$NON-NLS-1$
 	private static final int ECR_MAX_ITEM_NAME_LENGTH = 72;
@@ -59,7 +58,7 @@ public class DudeECRDriver implements ECRDriver {
 	
 	@Override
 	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
-		if (receipt == null || receipt.lines().isEmpty())
+		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
 		if (smallerThan(receipt.total(), BigDecimal.ZERO))
@@ -187,7 +186,7 @@ public class DudeECRDriver implements ECRDriver {
 		}
 		catch (final IOException e)
 		{
-			log.log(Level.SEVERE, "Error writting ecr commands", e);
+			log.error("Error writting ecr commands", e);
 			Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.DudeECRDriver_Error,
 					NLS.bind(Messages.DudeECRDriver_ErrorWrittingFileNLS, e.getMessage())));
 			return Optional.empty();
@@ -211,15 +210,15 @@ public class DudeECRDriver implements ECRDriver {
 		.append(NEWLINE);
 		
 		// sales
-		ecrCommands.append(receipt.lines().stream()
+		ecrCommands.append(receipt.getLines().stream()
 				.map(line -> toEcrSale(line, prefs))
 				.collect(Collectors.joining(NEWLINE, EMPTY_STRING, NEWLINE)));
 
 		// Subtotal
 		// {Print}<SEP>{Display}<SEP>{DiscountType}<SEP>{DiscountValue}<SEP>
 		ecrCommands.append(MessageFormat.format("51,1[\\t]1[\\t]{0}[\\t]{1}[\\t]", //$NON-NLS-1$
-				Optional.ofNullable(receipt.allowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING), //$NON-NLS-1$ //$NON-NLS-2$
-				safeString(receipt.allowanceCharge(), AllowanceCharge::amountAbs, amt -> truncate(amt, 2), BigDecimal::toString)))
+				Optional.ofNullable(receipt.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING), //$NON-NLS-1$ //$NON-NLS-2$
+				safeString(receipt.getAllowanceCharge(), AllowanceCharge::amountAbs, amt -> truncate(amt, 2), BigDecimal::toString)))
 		.append(NEWLINE);
 
 		return ecrCommands;
@@ -231,14 +230,14 @@ public class DudeECRDriver implements ECRDriver {
 		// {PluName}<SEP>{TaxCd}<SEP>{Price}<SEP>{Quantity}<SEP>{DiscountType}<SEP
 		// >{DiscountValue}<SEP>{Department}<SEP>{Unit}<SEP>
 		return MessageFormat.format("49,{0}[\\t]{1}[\\t]{2}[\\t]{3}[\\t]{4}[\\t]{5}[\\t]{6}[\\t]{7}[\\t]",  //$NON-NLS-1$
-				truncate(line.name(), ECR_MAX_ITEM_NAME_LENGTH),
-				safeString(line.taxCode(), prefs.get(PreferenceKey.DUDE_ECR_TAX_CODE, PreferenceKey.DUDE_ECR_TAX_CODE_DEF)),
-				safeString(truncate(line.price(), 2), BigDecimal::toString),
-				safeString(truncate(line.quantity(), 2), BigDecimal::toString),
-				Optional.ofNullable(line.allowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING), //$NON-NLS-1$ //$NON-NLS-2$
-				safeString(line.allowanceCharge(), AllowanceCharge::amountAbs, amt -> truncate(amt, 2), BigDecimal::toString),
-				safeString(line.departmentCode(), prefs.get(PreferenceKey.DUDE_ECR_DEPT, PreferenceKey.DUDE_ECR_DEPT_DEF)),
-				truncate(line.uom(), ECR_MAX_ITEM_UOM_LENGTH));
+				truncate(line.getName(), ECR_MAX_ITEM_NAME_LENGTH),
+				safeString(line.getTaxCode(), prefs.get(PreferenceKey.DUDE_ECR_TAX_CODE, PreferenceKey.DUDE_ECR_TAX_CODE_DEF)),
+				safeString(truncate(line.getPrice(), 2), BigDecimal::toString),
+				safeString(truncate(line.getQuantity(), 2), BigDecimal::toString),
+				Optional.ofNullable(line.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).map(i -> i?"3":"4").orElse(EMPTY_STRING), //$NON-NLS-1$ //$NON-NLS-2$
+				safeString(line.getAllowanceCharge(), AllowanceCharge::amountAbs, amt -> truncate(amt, 2), BigDecimal::toString),
+				safeString(line.getDepartmentCode(), prefs.get(PreferenceKey.DUDE_ECR_DEPT, PreferenceKey.DUDE_ECR_DEPT_DEF)),
+				truncate(line.getUom(), ECR_MAX_ITEM_UOM_LENGTH));
 	}
 	
 	private static class ReadResult implements Supplier<Result> {

@@ -13,11 +13,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -39,7 +38,7 @@ import ro.linic.ui.pos.base.services.ProductDataUpdater;
 
 @Component
 public class LocalProductDataUpdater implements ProductDataUpdater {
-	private final static Logger log = Logger.getLogger(LocalProductDataUpdater.class.getName());
+	private final static ILog log = ILog.of(LocalProductDataUpdater.class);
 	
 	@Reference private LocalDatabase localDatabase;
 	@Reference private ProductDataHolder dataHolder;
@@ -100,7 +99,7 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
 		}
 	}
 	
-	private long nextId(final String dbName) {
+	private long nextId(final String dbName) throws SQLException {
         final String sql = "SELECT MAX("+Product.ID_FIELD+") FROM "+Product.class.getSimpleName();
         long nextId = 1;
         
@@ -108,8 +107,6 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
              ResultSet rs    = stmt.executeQuery(sql)) {
             if (rs.next())
             	nextId = rs.getLong(1)+1;
-        } catch (final SQLException e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
         }
         
         return nextId;

@@ -9,6 +9,9 @@ import java.math.BigDecimal;
  * @param amount The amount of an allowance or a charge. Must be rounded to maximum 2 decimals. Example value: 200
  */
 public record AllowanceCharge(boolean chargeIndicator, BigDecimal amount) {
+	public static final String CHARGE_INDICATOR_FIELD = "chargeIndicator";
+	public static final String AMOUNT_FIELD = "amount";
+	
 	/**
 	 * Returns a properly signed amount that can be used by simply adding it to the total.
 	 * 

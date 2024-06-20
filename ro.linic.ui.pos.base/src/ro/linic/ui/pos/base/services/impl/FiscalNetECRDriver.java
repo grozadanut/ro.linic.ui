@@ -17,11 +17,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -42,7 +41,7 @@ import ro.linic.util.commons.StringUtils;
 
 @Component
 public class FiscalNetECRDriver implements ECRDriver {
-	private static final Logger log = Logger.getLogger(FiscalNetECRDriver.class.getName());
+	private final static ILog log = ILog.of(FiscalNetECRDriver.class);
 	private static final String ECR_REPORT_DATE_PATTERN = "dd/MM/yyyy HH:mm:ss"; //$NON-NLS-1$
 
 	private static String formatPrice(final BigDecimal price) {
@@ -62,7 +61,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 
 	@Override
 	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
-		if (receipt == null || receipt.lines().isEmpty())
+		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
 		if (smallerThan(receipt.total(), BigDecimal.ZERO))
@@ -106,7 +105,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 		final StringBuilder ecrCommands = new StringBuilder();
 		
 		// sales
-		ecrCommands.append(receipt.lines().stream()
+		ecrCommands.append(receipt.getLines().stream()
 				.map(line -> toEcrSale(line, prefs))
 				.collect(Collectors.joining(NEWLINE, EMPTY_STRING, NEWLINE)));
 
@@ -117,10 +116,10 @@ public class FiscalNetECRDriver implements ECRDriver {
 		 * MV^VALOARE
 		 */
 		ecrCommands.append("ST^").append(NEWLINE); //$NON-NLS-1$
-		if (receipt.allowanceCharge() != null)
+		if (receipt.getAllowanceCharge() != null)
 			ecrCommands.append(MessageFormat.format("{0}^{1}", //$NON-NLS-1$
-					safeString(receipt.allowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"), //$NON-NLS-1$ //$NON-NLS-2$
-					safeString(receipt.allowanceCharge(), AllowanceCharge::amountAbs, FiscalNetECRDriver::formatPrice)))
+					safeString(receipt.getAllowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"), //$NON-NLS-1$ //$NON-NLS-2$
+					safeString(receipt.getAllowanceCharge(), AllowanceCharge::amountAbs, FiscalNetECRDriver::formatPrice)))
 			.append(NEWLINE);
 
 		return ecrCommands.toString();
@@ -137,22 +136,22 @@ public class FiscalNetECRDriver implements ECRDriver {
 		 */
 		final StringBuilder ecrCommands = new StringBuilder();
 		ecrCommands.append(MessageFormat.format("S^{0}^{1}^{2}^{3}^{4}^{5}",  //$NON-NLS-1$
-				line.name(),
-				formatPrice(line.price()),
-				formatQuantity(line.quantity()),
-				line.uom(),
-				safeString(line.taxCode(), prefs.get(PreferenceKey.FISCAL_NET_TAX_CODE, PreferenceKey.FISCAL_NET_TAX_CODE_DEF)),
-				safeString(line.departmentCode(), prefs.get(PreferenceKey.FISCAL_NET_DEPT, PreferenceKey.FISCAL_NET_DEPT_DEF))));
+				line.getName(),
+				formatPrice(line.getPrice()),
+				formatQuantity(line.getQuantity()),
+				line.getUom(),
+				safeString(line.getTaxCode(), prefs.get(PreferenceKey.FISCAL_NET_TAX_CODE, PreferenceKey.FISCAL_NET_TAX_CODE_DEF)),
+				safeString(line.getDepartmentCode(), prefs.get(PreferenceKey.FISCAL_NET_DEPT, PreferenceKey.FISCAL_NET_DEPT_DEF))));
 		
 		/* Comanda Discount valoric
 		 * DV^VALOARE
 		 * Comanda Majorare valorica
 		 * MV^VALOARE
 		 */
-		if (line.allowanceCharge() != null)
+		if (line.getAllowanceCharge() != null)
 			ecrCommands.append(NEWLINE).append(MessageFormat.format("{0}^{1}", //$NON-NLS-1$
-					safeString(line.allowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"), //$NON-NLS-1$ //$NON-NLS-2$
-					safeString(line.allowanceCharge(), AllowanceCharge::amountAbs, FiscalNetECRDriver::formatPrice)));
+					safeString(line.getAllowanceCharge(), AllowanceCharge::chargeIndicator, i -> i ? "MV" : "DV"), //$NON-NLS-1$ //$NON-NLS-2$
+					safeString(line.getAllowanceCharge(), AllowanceCharge::amountAbs, FiscalNetECRDriver::formatPrice)));
 		return ecrCommands.toString();
 	}
 
@@ -215,7 +214,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 		}
 		catch (final IOException e)
 		{
-			log.log(Level.SEVERE, "Error writting ecr commands", e); //$NON-NLS-1$
+			log.error("Error writting ecr commands", e); //$NON-NLS-1$
 			Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.FiscalNetECRDriver_Error,
 					NLS.bind(Messages.FiscalNetECRDriver_ErrorWrittingFileNLS, e.getMessage())));
 			return Optional.empty();

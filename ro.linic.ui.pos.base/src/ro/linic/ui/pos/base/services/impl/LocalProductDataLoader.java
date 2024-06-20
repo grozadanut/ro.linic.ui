@@ -15,9 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.FrameworkUtil;
@@ -35,7 +34,7 @@ import ro.linic.ui.pos.base.services.ProductDataLoader;
 
 @Component
 public class LocalProductDataLoader implements ProductDataLoader {
-	private final static Logger log = Logger.getLogger(LocalProductDataLoader.class.getName());
+	private final static ILog log = ILog.of(LocalProductDataLoader.class);
 	
 	@Reference private LocalDatabase localDatabase;
 	
@@ -83,7 +82,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 				result.add(p);
 			}
 		} catch (final SQLException | JsonProcessingException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+			log.error(e.getMessage(), e);
 		} finally {
 			dbLock.readLock().unlock();
 		}
@@ -138,7 +137,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 				result.add(p);
 			}
 		} catch (final SQLException | JsonProcessingException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+			log.error(e.getMessage(), e);
 		} finally {
 			dbLock.readLock().unlock();
 		}
@@ -161,7 +160,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
             if (rs.next())
             	nextId = rs.getLong(1)+1;
         } catch (final SQLException e) {
-            log.log(Level.SEVERE, e.getMessage(), e);
+            log.error(e.getMessage(), e);
         } finally {
 			dbLock.readLock().unlock();
 		}
@@ -222,7 +221,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 				result.add(p);
 			}
 		} catch (final SQLException | JsonProcessingException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+			log.error(e.getMessage(), e);
 		} finally {
 			dbLock.readLock().unlock();
 		}

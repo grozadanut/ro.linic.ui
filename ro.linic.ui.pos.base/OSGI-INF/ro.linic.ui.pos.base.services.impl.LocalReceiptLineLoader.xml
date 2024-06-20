@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="ro.linic.ui.pos.base.services.impl.LocalReceiptLineLoader">
+   <service>
+      <provide interface="ro.linic.ui.pos.base.services.ReceiptLineLoader"/>
+   </service>
+   <reference cardinality="1..1" field="localDatabase" interface="ro.linic.ui.base.services.LocalDatabase" name="localDatabase"/>
+   <implementation class="ro.linic.ui.pos.base.services.impl.LocalReceiptLineLoader"/>
+</scr:component>

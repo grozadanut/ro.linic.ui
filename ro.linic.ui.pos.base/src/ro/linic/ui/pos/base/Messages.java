@@ -43,5 +43,6 @@ public class Messages extends NLS {
 	public static String NameMandatory;
 	public static String UOMMandatory;
 	public static String PriceMandatory;
+	public static String QuantityMandatory;
 	public static String CodeExists;
 }

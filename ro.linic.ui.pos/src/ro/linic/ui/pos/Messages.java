@@ -28,6 +28,7 @@ public class Messages extends NLS {
 	public static String TotalNoTax;
 	public static String Tax;
 	public static String TotalWithTax;
+	public static String Total;
 	public static String LoadReceipt;
 	public static String Refresh;
 	public static String ECRManager;

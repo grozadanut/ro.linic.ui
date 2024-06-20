@@ -12,7 +12,10 @@ import org.osgi.framework.FrameworkUtil;
 
 import jakarta.annotation.PostConstruct;
 import ro.linic.ui.base.services.LocalDatabase;
+import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Product;
+import ro.linic.ui.pos.base.model.Receipt;
+import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
 import ro.linic.ui.pos.base.services.ProductDataLoader;
@@ -26,6 +29,8 @@ public class InitAddon {
 		
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement()) {
 			createProductsTable(stmt);
+			createReceiptTable(stmt);
+			createReceiptLineTable(stmt);
 		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -48,6 +53,38 @@ public class InitAddon {
 		.append(Product.IS_STOCKABLE_FIELD+" integer,").append(NEWLINE)
 		.append(Product.PRICE_FIELD+" numeric(12,2),").append(NEWLINE)
 		.append(Product.STOCK_FIELD+" numeric(16,4)").append(NEWLINE)
+		.append(");");
+		stmt.execute(productsSb.toString());
+	}
+	
+	private void createReceiptTable(final Statement stmt) throws SQLException {
+		final StringBuilder productsSb = new StringBuilder();
+		productsSb.append("CREATE TABLE IF NOT EXISTS "+Receipt.class.getSimpleName()).append(NEWLINE)
+		.append("(").append(NEWLINE)
+		.append(Receipt.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
+		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
+		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(Receipt.CREATION_TIME_FIELD+" text").append(NEWLINE)
+		.append(");");
+		stmt.execute(productsSb.toString());
+	}
+	
+	private void createReceiptLineTable(final Statement stmt) throws SQLException {
+		final StringBuilder productsSb = new StringBuilder();
+		productsSb.append("CREATE TABLE IF NOT EXISTS "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
+		.append("(").append(NEWLINE)
+		.append(ReceiptLine.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
+		.append(ReceiptLine.PRODUCT_ID_FIELD+" integer,").append(NEWLINE)
+		.append(ReceiptLine.RECEIPT_ID_FIELD+" integer,").append(NEWLINE)
+		.append(ReceiptLine.NAME_FIELD+" text,").append(NEWLINE)
+		.append(ReceiptLine.UOM_FIELD+" text,").append(NEWLINE)
+		.append(ReceiptLine.QUANTITY_FIELD+" numeric(16,3),").append(NEWLINE)
+		.append(ReceiptLine.PRICE_FIELD+" numeric(12,2),").append(NEWLINE)
+		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
+		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(ReceiptLine.TAX_CODE_FIELD+" text,").append(NEWLINE)
+		.append(ReceiptLine.DEPARTMENT_CODE_FIELD+" text,").append(NEWLINE)
+		.append(ReceiptLine.CREATION_TIME_FIELD+" text").append(NEWLINE)
 		.append(");");
 		stmt.execute(productsSb.toString());
 	}
