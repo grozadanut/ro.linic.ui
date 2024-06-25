@@ -41,8 +41,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -393,26 +391,16 @@ public class UIUtils
 		UIUtils.setBoldBannerFont(gestiuneLabel);
 		ClientSession.instance().addHideStateControl(gestiuneLabel);
 		
-		final Color workingModeBgColor = ClientSession.instance().isOfflineMode() ?
-				Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED) :
-				Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN);
-				
-		final CLabel workingModeLabel = new CLabel(topBarContainer, SWT.NONE);
-		workingModeLabel.setText(ClientSession.instance().isOfflineMode() ? "Offline" : "Online");
-		workingModeLabel.setBackground(workingModeBgColor);
-		workingModeLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		final CLabel syncStateLabel = new CLabel(topBarContainer, SWT.NONE);
+		syncStateLabel.setText("OK");
+		syncStateLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+		syncStateLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData workingModeGD = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
+		workingModeGD.widthHint = 200;
 		workingModeGD.heightHint = TOP_BAR_HEIGHT;
-		workingModeLabel.setLayoutData(workingModeGD);
-		UIUtils.setBoldBannerFont(workingModeLabel);
-		ClientSession.instance().addWorkingModeControl(workingModeLabel);
-		workingModeLabel.addMouseListener(new MouseAdapter()
-		{
-			@Override public void mouseUp(final MouseEvent e)
-			{
-				ClientSession.instance().setOfflineMode(!ClientSession.instance().isOfflineMode(), partService, bundle, log);
-			}
-		});
+		syncStateLabel.setLayoutData(workingModeGD);
+		UIUtils.setBoldBannerFont(syncStateLabel);
+		ClientSession.instance().addSyncStateControl(syncStateLabel);
 	}
 	
 	public static void saveState(final String prefix, final NatTable table, final MPart part)

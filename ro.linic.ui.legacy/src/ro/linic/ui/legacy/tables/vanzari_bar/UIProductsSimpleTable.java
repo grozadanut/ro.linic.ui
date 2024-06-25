@@ -47,16 +47,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.osgi.framework.Bundle;
 
-import com.google.common.collect.ImmutableList;
-
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.TextFilterator;
-import ca.odell.glazedlists.TransformedList;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
-import ro.colibri.entities.comercial.Product;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.Icons;
@@ -64,6 +59,7 @@ import ro.linic.ui.legacy.tables.components.ImageDisplayConverter;
 import ro.linic.ui.legacy.tables.components.LinicNatTableStyleConfiguration;
 import ro.linic.ui.legacy.tables.components.LinicSelectionStyleConfiguration;
 import ro.linic.ui.legacy.tables.components.UuidImagePainter;
+import ro.linic.ui.pos.base.model.Product;
 
 public class UIProductsSimpleTable
 {
@@ -80,26 +76,31 @@ public class UIProductsSimpleTable
 	private Bundle bundle;
 	private Logger log;
 	
-	public UIProductsSimpleTable(final Bundle bundle, final Logger log)
+	public UIProductsSimpleTable(final Bundle bundle, final Logger log, final EventList<Product> sourceData)
 	{
 		this.bundle = bundle;
 		this.log = log;
+		this.sourceData = sourceData;
 	}
-
+	
 	public void postConstruct(final Composite parent)
 	{
 		final IColumnAccessor<Product> columnAccessor = new ColumnAccessor();
 		
-		sourceData = GlazedLists.eventListOf();
-        final TransformedList<Product, Product> rowObjectsGlazedList = GlazedLists.threadSafeList(sourceData);
-        final FilterList<Product> filteredData = new FilterList<>(rowObjectsGlazedList);
-        sortedData = new SortedList<>(filteredData, null);
-
+		FilterList<Product> filteredData;
+		this.sourceData.getReadWriteLock().readLock().lock();
+		try {
+	        filteredData = new FilterList<>(sourceData);
+	        sortedData = new SortedList<>(filteredData, null);
+		} finally {
+			this.sourceData.getReadWriteLock().readLock().unlock();
+		}
+		
 		// create the body layer stack
 		final IRowDataProvider<Product> bodyDataProvider = new ListDataProvider<>(sortedData, columnAccessor);
 		final DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
 		bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));
-		bodyDataLayer.setDefaultColumnWidthByPosition(0, 250);
+		bodyDataLayer.setDefaultColumnWidthByPosition(0, 350);
 		final GlazedListsEventLayer<Product> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, sortedData);
 		selectionLayer = new SelectionLayer(glazedListsEventLayer);
 		viewportLayer = new ViewportLayer(selectionLayer);
@@ -131,7 +132,7 @@ public class UIProductsSimpleTable
 		{
 			@Override public void getFilterStrings(final List<String> baseList, final Product element)
 			{
-				baseList.add(element.getBarcode());
+				baseList.add(element.getSku());
 				baseList.add(element.getName());
 			}
 		});
@@ -140,59 +141,28 @@ public class UIProductsSimpleTable
 		filteredData.setMatcherEditor(quickSearchFilter);
 	}
 	
-	public UIProductsSimpleTable loadData(final ImmutableList<Product> data)
-	{
-		try
-		{
-			this.sourceData.getReadWriteLock().writeLock().lock();
-			this.sourceData.clear();
-			this.sourceData.addAll(data);
-			table.refresh();
-		}
-		finally
-		{
-			this.sourceData.getReadWriteLock().writeLock().unlock();
-		}
-		return this;
-	}
-	
-	public UIProductsSimpleTable remove(final Product product)
-	{
-		try
-		{
-			this.sourceData.getReadWriteLock().writeLock().lock();
-			sourceData.remove(product);
-			table.refresh();
-		}
-		finally
-		{
-			this.sourceData.getReadWriteLock().writeLock().unlock();
-		}
-		return this;
-	}
-	
-	public UIProductsSimpleTable replace(final Product oldProduct, final Product newProduct)
-	{
-		final boolean restoreSelection = selection().stream()
-				.anyMatch(p -> p.equals(oldProduct));
-		try
-		{
-			this.sourceData.getReadWriteLock().writeLock().lock();
-			final int productIndex = sourceData.indexOf(oldProduct);
-			if (productIndex != -1)
-			{
-				sourceData.set(productIndex, newProduct);
-				table.refresh();
-			}
-		}
-		finally
-		{
-			this.sourceData.getReadWriteLock().writeLock().unlock();
-		}
-		if (restoreSelection)
-			selectionProvider.setSelection(new StructuredSelection(new Product[] {newProduct}));
-		return this;
-	}
+//	public UIProductsSimpleTable replace(final Product oldProduct, final Product newProduct)
+//	{
+//		final boolean restoreSelection = selection().stream()
+//				.anyMatch(p -> p.equals(oldProduct));
+//		try
+//		{
+//			this.sourceData.getReadWriteLock().writeLock().lock();
+//			final int productIndex = sourceData.indexOf(oldProduct);
+//			if (productIndex != -1)
+//			{
+//				sourceData.set(productIndex, newProduct);
+//				table.refresh();
+//			}
+//		}
+//		finally
+//		{
+//			this.sourceData.getReadWriteLock().writeLock().unlock();
+//		}
+//		if (restoreSelection)
+//			selectionProvider.setSelection(new StructuredSelection(new Product[] {newProduct}));
+//		return this;
+//	}
 	
 	public void addSelectionListener(final ISelectionChangedListener listener)
 	{
@@ -299,9 +269,9 @@ public class UIProductsSimpleTable
 				final Product p = ((Product) rowObject);
 				return MessageFormat.format("{0}{2}{1} {3}", 
 						p.getName(),
-						displayBigDecimal(p.getPricePerUom()),
+						displayBigDecimal(p.getPrice()),
 						NEWLINE,
-						globalIsMatch(p.getCategorie(), Product.DISCOUNT_CATEGORY, TextFilterMethod.EQUALS) ? p.getUom() : "RON");
+						globalIsMatch(p.getType(), Product.DISCOUNT_CATEGORY, TextFilterMethod.EQUALS) ? p.getUom() : "RON");
 			}
 			return super.convertDataType(cell, configRegistry);
 		}
@@ -318,7 +288,7 @@ public class UIProductsSimpleTable
 				final Product p = (Product) rowObject;
 				try
 				{
-					return Icons.imageFromBytes(BusinessDelegate.imageFromUuid(bundle, log, p.getImageUUID(), false),
+					return Icons.imageFromBytes(BusinessDelegate.imageFromUuid(bundle, log, p.getImageId(), false),
 							UuidImagePainter.DEFAULT_HEIGHT);
 				}
 				catch (final IOException e)

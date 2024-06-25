@@ -37,9 +37,7 @@ import ro.colibri.util.InvocationResult;
 import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
-import ro.linic.ui.legacy.service.SQLiteJDBC;
 import ro.linic.ui.legacy.session.BusinessDelegate;
-import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 import ro.linic.ui.pos.base.model.PaymentType;
@@ -268,11 +266,7 @@ public class InchideBonFirstPage extends WizardPage
 	private void inchideBon(final boolean incasarePrinCard)
 	{
 		// close bon in db
-		InvocationResult result;
-		if (ClientSession.instance().isOfflineMode())
-			result = SQLiteJDBC.instance(bundle, log).closeBonCasa(bonCasa, casaActive);
-		else
-			result = BusinessDelegate.closeBonCasa(bonCasa.getId(), casaActive);
+		final InvocationResult result = BusinessDelegate.closeBonCasa(bonCasa.getId(), casaActive);
 		
 		try
 		{
@@ -287,14 +281,11 @@ public class InchideBonFirstPage extends WizardPage
 				setPageComplete(true);
 				setErrorMessage(null);
 				// print bon
-				if (!ClientSession.instance().isOfflineMode())
-				{
-					final AccountingDocument reloadedBon = result.extra(InvocationResult.ACCT_DOC_KEY);
-					final ImmutableList<Operatiune> operatiuni = AccountingDocument.extractOperations(reloadedBon);
-					reloadedBon.setOperatiuni(new HashSet<Operatiune>(operatiuni));
-					if (reloadedBon.isShouldTransport())
-						JasperReportManager.instance(bundle, log).printNonOfficialDoc(bundle, reloadedBon, false);
-				}
+				final AccountingDocument reloadedBon = result.extra(InvocationResult.ACCT_DOC_KEY);
+				final ImmutableList<Operatiune> operatiuni = AccountingDocument.extractOperations(reloadedBon);
+				reloadedBon.setOperatiuni(new HashSet<Operatiune>(operatiuni));
+				if (reloadedBon.isShouldTransport())
+					JasperReportManager.instance(bundle, log).printNonOfficialDoc(bundle, reloadedBon, false);
 			}
 		}
 		catch (final Exception e)
@@ -315,9 +306,7 @@ public class InchideBonFirstPage extends WizardPage
 		{
 			log.error(e);
 			showException(e, "Eroare la scoaterea bonului la casa de marcat.");
-			
-			if (!ClientSession.instance().isOfflineMode())
-				BusinessDelegate.closeBonCasa_Failed(ImmutableSet.of(bonCasa.getId()));
+			BusinessDelegate.closeBonCasa_Failed(ImmutableSet.of(bonCasa.getId()));
 		}
 		
 		// close dialog

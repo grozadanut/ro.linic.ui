@@ -23,7 +23,7 @@ public class InchideBonHandler
 		final MPart activePart = partService.getActivePart();
 		
 		if (activePart != null && activePart.getObject() instanceof VanzareInterface)
-			return ((VanzareInterface) activePart.getObject()).getBonCasa() != null;
+			return ((VanzareInterface) activePart.getObject()).canCloseReceipt();
 		
 		return false;
 	}

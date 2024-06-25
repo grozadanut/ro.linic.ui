@@ -5,29 +5,19 @@ import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.NumberUtils.isNumeric;
 import static ro.colibri.util.NumberUtils.parse;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
-import static ro.colibri.util.PresentationUtils.NEWLINE;
-import static ro.colibri.util.PresentationUtils.displayBigDecimal;
-import static ro.colibri.util.PresentationUtils.safeString;
-import static ro.colibri.util.StringUtils.globalIsMatch;
-import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
 import static ro.linic.ui.legacy.session.UIUtils.setFont;
-import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -39,8 +29,6 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -67,88 +55,96 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import ro.colibri.embeddable.FidelityCard;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Operatiune;
-import ro.colibri.entities.comercial.Operatiune.TransferType;
-import ro.colibri.entities.comercial.Partner;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
 import ro.colibri.security.Permissions;
-import ro.colibri.util.InvocationResult;
+import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
-import ro.colibri.util.StringUtils.TextFilterMethod;
-import ro.colibri.wrappers.RulajPartener;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.VanzariIncarcaDocDialog;
+import ro.linic.ui.legacy.mapper.OperatiuneMapper;
+import ro.linic.ui.legacy.mapper.ProductMapper;
 import ro.linic.ui.legacy.parts.components.VanzareInterface;
-import ro.linic.ui.legacy.service.PeripheralService;
-import ro.linic.ui.legacy.service.SQLiteJDBC;
-import ro.linic.ui.legacy.service.components.BarcodePrintable;
+import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.vanzari_bar.UIBonDeschisNatTable;
-import ro.linic.ui.legacy.tables.vanzari_bar.UICategoriesSimpleTable;
 import ro.linic.ui.legacy.tables.vanzari_bar.UIProductsSimpleTable;
 import ro.linic.ui.legacy.wizards.InchideBonWizard;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 import ro.linic.ui.legacy.wizards.InchideBonWizardDialog;
+import ro.linic.ui.pos.base.model.Receipt;
+import ro.linic.ui.pos.base.model.ReceiptLine;
+import ro.linic.ui.pos.base.services.ProductDataHolder;
+import ro.linic.ui.pos.base.services.ProductDataLoader;
+import ro.linic.ui.pos.base.services.ProductDataUpdater;
+import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
+import ro.linic.ui.pos.base.services.ReceiptLoader;
+import ro.linic.ui.pos.base.services.ReceiptUpdater;
 
-public class VanzareBarPart implements VanzareInterface, IMouseAction
-{
+public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	public static final String PART_ID = "linic_gest_client.part.vanzari_bar"; //$NON-NLS-1$
 	public static final String PART_DESCRIPTOR_ID = "linic_gest_client.partdescriptor.vanzari_bar"; //$NON-NLS-1$
-	
+
 	public static final String PRINT_AROMA_KEY = "print_aroma"; //$NON-NLS-1$
 	public static final String PRINT_AROMA_DEFAULT = "false"; //$NON-NLS-1$
-	
+
 	private static final String PRODUCTS_TABLE_STATE_PREFIX = "vanzari_bar.all_products_nt"; //$NON-NLS-1$
 	private static final String BON_DESCHIS_TABLE_STATE_PREFIX = "vanzari_bar.bon_deschis_nt"; //$NON-NLS-1$
 	private static final String INITIAL_PART_LOAD_PROP = "initial_part_load"; //$NON-NLS-1$
 	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari_bar.horizontal_sash"; //$NON-NLS-1$
 
 	// MODEL
-	private AccountingDocument bonCasa;
-	private ImmutableList<RulajPartener> partnersWithFidelityCard;
+	private Receipt bonCasa;
+	// loaded from VanzariIncarcaDocDialog
+	private AccountingDocument loadedBonCasa;
 
 	private BigDecimal tvaPercentDb;
-	
+
 	// UI
 	private SashForm horizontalSash;
-	
+
 	private Text cantitateText;
 	private Button minusOne;
 	private Button plusOne;
 	private Button plusFive;
 	private Button deleteCant;
 	private Button enter;
-	
+
 	private Text search;
-	private UICategoriesSimpleTable uiCategoriesTable;
 	private UIProductsSimpleTable allProductsTable;
-	
+
 	private Button inchideCasaButton;
 	private Button inchideFacturaBCButton;
 	private Button inchideCardButton;
 
-	private Text cardOrPhone;
-	private Label selectedClientLabel;
 	private Button casaActivaButton;
 	private UIBonDeschisNatTable bonDeschisTable;
 
 	private Label totalFaraTVALabel;
 	private Label tvaLabel;
 	private Label totalCuTVALabel;
-	private Button retetaButton;
+//	private Button retetaButton;
 	private Button incarcaBonuriButton;
 	private Button refreshButton;
 	private Button managerCasaButton;
 	private Button cancelBonButton;
 	private Button stergeRandButton;
-	
+
+	@Inject private ProductDataHolder productDataHolder;
+	@Inject private ProductDataUpdater productDataUpdater;
+	@Inject private ProductDataLoader productDataLoader;
+	@Inject private ReceiptLoader receiptLoader;
+	@Inject private ReceiptUpdater receiptUpdater;
+	@Inject private ReceiptLineUpdater receiptLineUpdater;
+
 	@Inject private MPart part;
 	@Inject private UISynchronize sync;
 	@Inject private EPartService partService;
@@ -156,8 +152,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	@Inject private Logger log;
 	@Inject IEclipseContext ctx;
 
-	public static VanzareBarPart newPartForBon(final EPartService partService, final AccountingDocument bon)
-	{
+	public static VanzareBarPart newPartForBon(final EPartService partService, final Receipt bon) {
 		final MPart createdPart = partService.showPart(partService.createPart(VanzareBarPart.PART_DESCRIPTOR_ID),
 				PartState.VISIBLE);
 
@@ -169,62 +164,20 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		if (vanzarePart == null)
 			return null;
 
-		vanzarePart.updateBonCasa(bon, true);
+		vanzarePart.loadReceipt(bon, true);
 		return vanzarePart;
-	}
-	
-	/**
-	 * Ask the user if he wants to delete the connected operations as well.
-	 * Always starts from the top owner operation and asks if we want to delete the children as well.
-	 * If not, only delete the owner.
-	 */
-	private static ImmutableList<Operatiune> collectDeletableOperations(final ImmutableList<Operatiune> operations)
-	{
-		return operations.stream().flatMap(operation ->
-		{
-			Operatiune lastOwner = operation;
-			while (lastOwner.getOwnerOp() != null)
-				lastOwner = lastOwner.getOwnerOp();
-
-			Operatiune lastChild = lastOwner.getChildOp();
-			final List<Operatiune> deletableOps = new ArrayList<Operatiune>();
-
-			// 1. verify child and owner operations
-			while (lastChild != null)
-			{
-				deletableOps.add(lastChild);
-				lastChild = lastChild.getChildOp();
-			}
-
-			// 2. delete operations
-			if (!deletableOps.isEmpty() && !MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
-					Messages.VanzareBarPart_DeleteConn,
-					MessageFormat.format(
-							Messages.VanzareBarPart_DeleteConnMessage,
-							lastOwner.displayName(), 
-							deletableOps.size(),
-							deletableOps.stream().map(Operatiune::displayName).collect(Collectors.joining(NEWLINE)),
-							NEWLINE)))
-			{
-				deletableOps.clear();
-			}
-			deletableOps.add(lastOwner);
-			return deletableOps.stream();
-		}).collect(toImmutableList());
 	}
 
 	@PostConstruct
-	public void createComposite(final Composite parent)
-	{
-		refreshPartners();
+	public void createComposite(final Composite parent) {
 		tvaPercentDb = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
 				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
-		
+
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
-				Boolean.TRUE.toString())))
-		{
+				Boolean.TRUE.toString()))) {
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
 			BusinessDelegate.unfinishedBonuriCasa().forEach(unfinishedBon -> newPartForBon(partService, unfinishedBon));
+			loadData();
 		}
 
 		parent.setLayout(new GridLayout());
@@ -236,133 +189,109 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		search.setFocus();
 		UIUtils.setBannerFont(search);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(search);
-		
+
 		horizontalSash = new SashForm(parent, SWT.HORIZONTAL | SWT.SMOOTH | SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(horizontalSash);
-		
-		uiCategoriesTable = new UICategoriesSimpleTable();
-		uiCategoriesTable.postConstruct(horizontalSash);
-		uiCategoriesTable.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		GridDataFactory.fillDefaults().grab(true, true).applyTo(uiCategoriesTable.getTable());
-		
-		allProductsTable = new UIProductsSimpleTable(bundle, log);
+
+		allProductsTable = new UIProductsSimpleTable(bundle, log, productDataHolder.getData());
 		allProductsTable.doubleClickAction(this);
 		allProductsTable.postConstruct(horizontalSash);
 		allProductsTable.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(allProductsTable.getTable());
-		
+
 		createRightArea(horizontalSash);
 
 		createTotalsBar(parent);
 		createBottomBar(parent);
-		parent.setTabList(new Control[] {search, horizontalSash});
-		
+		parent.setTabList(new Control[] { search, horizontalSash });
+
 		loadVisualState();
 		addListeners();
-		loadData();
 	}
-	
-	private void createRightArea(final Composite parent)
-	{
+
+	private void createRightArea(final Composite parent) {
 		final Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new GridLayout(4, false));
 		GridDataFactory.fillDefaults().applyTo(container);
-		
+
 		cantitateText = new Text(container, SWT.BORDER);
 		cantitateText.setMessage(Messages.VanzareBarPart_Quant);
 		cantitateText.setText("1"); //$NON-NLS-1$
 		cantitateText.setTextLimit(10);
 		UIUtils.setBannerFont(cantitateText);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(cantitateText);
-		
+
 		minusOne = new Button(container, SWT.PUSH);
 		minusOne.setText("-1"); //$NON-NLS-1$
 		UIUtils.setBannerFont(minusOne);
 		GridDataFactory.swtDefaults().hint(60, 60).applyTo(minusOne);
-		
+
 		plusOne = new Button(container, SWT.PUSH);
 		plusOne.setText("+1"); //$NON-NLS-1$
 		UIUtils.setBannerFont(plusOne);
 		GridDataFactory.swtDefaults().hint(60, 60).applyTo(plusOne);
-		
+
 		plusFive = new Button(container, SWT.PUSH);
 		plusFive.setText("+5"); //$NON-NLS-1$
 		UIUtils.setBannerFont(plusFive);
 		GridDataFactory.swtDefaults().hint(60, 60).applyTo(plusFive);
-		
+
 		deleteCant = new Button(container, SWT.PUSH);
 		deleteCant.setText(Messages.VanzareBarPart_DEL);
 		UIUtils.setBannerFont(deleteCant);
 		GridDataFactory.swtDefaults().hint(60, 60).applyTo(deleteCant);
-		
+
 		enter = new Button(container, SWT.PUSH);
 		enter.setText(Messages.VanzareBarPart_ENTER);
 		UIUtils.setBannerFont(enter);
 		GridDataFactory.swtDefaults().span(3, 1).hint(100, 60).applyTo(enter);
-		
-		final Composite clientContainer = new Composite(container, SWT.NONE);
-		clientContainer.setLayout(new GridLayout(2, false));
-		GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(clientContainer);
-		
-		cardOrPhone = new Text(clientContainer, SWT.SINGLE | SWT.BORDER);
-		cardOrPhone.setMessage(Messages.VanzareBarPart_ClientCard);
-		UIUtils.setBoldFont(cardOrPhone);
-		GridDataFactory.fillDefaults().hint(200, SWT.DEFAULT).applyTo(cardOrPhone);
-		
-		selectedClientLabel = new Label(clientContainer, SWT.WRAP);
-		UIUtils.setFont(selectedClientLabel);
-		GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 60).applyTo(selectedClientLabel);
-		
+
 		bonDeschisTable = new UIBonDeschisNatTable();
 		bonDeschisTable.postConstruct(container);
 		bonDeschisTable.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, true).span(4, 1).applyTo(bonDeschisTable.getTable());
-		
+
 		casaActivaButton = new Button(container, SWT.CHECK);
 		casaActivaButton.setText(Messages.VanzareBarPart_ECRActive);
 		casaActivaButton.setSelection(true);
 		casaActivaButton.setEnabled(ClientSession.instance().hasPermission(Permissions.CLOSE_WITHOUT_CASA));
 		setFont(casaActivaButton);
 		GridDataFactory.swtDefaults().span(4, 1).applyTo(casaActivaButton);
-		
+
 		final Composite buttonsContainer = new Composite(container, SWT.NONE);
 		buttonsContainer.setLayout(new GridLayout(3, false));
 		GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(buttonsContainer);
-		
+
 		inchideCasaButton = new Button(buttonsContainer, SWT.PUSH | SWT.WRAP);
 		inchideCasaButton.setText(Messages.VanzareBarPart_CloseCash);
 		inchideCasaButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		inchideCasaButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(inchideCasaButton);
-		GridDataFactory.swtDefaults().hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT/2).applyTo(inchideCasaButton);
-		
+		GridDataFactory.swtDefaults().hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT / 2)
+				.applyTo(inchideCasaButton);
+
 		inchideFacturaBCButton = new Button(buttonsContainer, SWT.PUSH | SWT.WRAP);
 		inchideFacturaBCButton.setText(Messages.VanzareBarPart_CloseInvoice);
 		inchideFacturaBCButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		inchideFacturaBCButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(inchideFacturaBCButton);
-		GridDataFactory.fillDefaults()
-			.grab(true, false)
-			.align(SWT.RIGHT, SWT.CENTER)
-			.hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT/2)
-			.applyTo(inchideFacturaBCButton);
-		
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.RIGHT, SWT.CENTER)
+				.hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT / 2)
+				.applyTo(inchideFacturaBCButton);
+
 		inchideCardButton = new Button(buttonsContainer, SWT.PUSH | SWT.WRAP);
 		inchideCardButton.setText(Messages.VanzareBarPart_CloseCard);
 		inchideCardButton.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		inchideCardButton.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(inchideCardButton);
-		GridDataFactory.swtDefaults()
-			.align(SWT.RIGHT, SWT.CENTER)
-			.hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT/2)
-			.applyTo(inchideCardButton);
-		
-		container.setTabList(new Control[] {cantitateText});
-		parent.setTabList(new Control[] {container});
+		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.CENTER)
+				.hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT / 2).applyTo(inchideCardButton);
+
+		container.setTabList(new Control[] { cantitateText });
+		parent.setTabList(new Control[] { container });
 	}
-	
-	private void createTotalsBar(final Composite parent)
-	{
+
+	private void createTotalsBar(final Composite parent) {
 		final Composite totalsContainer = new Composite(parent, SWT.NONE);
 		totalsContainer.setLayout(new GridLayout(6, false));
 		totalsContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -404,17 +333,16 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		totalCuTVALabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		UIUtils.setBoldCustomFont(totalCuTVALabel, XXX_BANNER_FONT);
 	}
-	
-	private void createBottomBar(final Composite parent)
-	{
+
+	private void createBottomBar(final Composite parent) {
 		final Composite footerContainer = new Composite(parent, SWT.NONE);
-		footerContainer.setLayout(new GridLayout(6, false));
+		footerContainer.setLayout(new GridLayout(5, false));
 		footerContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		retetaButton = new Button(footerContainer, SWT.PUSH);
-		retetaButton.setText(Messages.VanzareBarPart_Recipe);
-		UIUtils.setBannerFont(retetaButton);
-		
+//		retetaButton = new Button(footerContainer, SWT.PUSH);
+//		retetaButton.setText(Messages.VanzareBarPart_Recipe);
+//		UIUtils.setBannerFont(retetaButton);
+
 		incarcaBonuriButton = new Button(footerContainer, SWT.PUSH);
 		incarcaBonuriButton.setText(Messages.VanzareBarPart_LoadDoc);
 		UIUtils.setBannerFont(incarcaBonuriButton);
@@ -426,7 +354,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		managerCasaButton = new Button(footerContainer, SWT.PUSH);
 		managerCasaButton.setText(Messages.VanzareBarPart_ECRManager);
 		UIUtils.setBannerFont(managerCasaButton);
-		
+
 		cancelBonButton = new Button(footerContainer, SWT.PUSH);
 		cancelBonButton.setText(Messages.VanzareBarPart_CancelReceipt);
 		cancelBonButton.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
@@ -445,375 +373,309 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 		stergeRandButton.setLayoutData(stergeGD);
 		UIUtils.setBoldBannerFont(stergeRandButton);
 	}
-	
+
 	@PersistState
-	public void persistVisualState()
-	{
+	public void persistVisualState() {
 		saveState(PRODUCTS_TABLE_STATE_PREFIX, allProductsTable.getTable(), part);
 		saveState(BON_DESCHIS_TABLE_STATE_PREFIX, bonDeschisTable.getTable(), part);
-		
+
 		final int[] horizontalWeights = horizontalSash.getWeights();
-		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".0", String.valueOf(horizontalWeights[0])); //$NON-NLS-1$
-		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".1", String.valueOf(horizontalWeights[1])); //$NON-NLS-1$
-		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX+".2", String.valueOf(horizontalWeights[2])); //$NON-NLS-1$
+		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX + ".0", String.valueOf(horizontalWeights[0])); //$NON-NLS-1$
+		part.getPersistedState().put(HORIZONTAL_SASH_STATE_PREFIX + ".1", String.valueOf(horizontalWeights[1])); //$NON-NLS-1$
 	}
-	
-	private void loadVisualState()
-	{
+
+	private void loadVisualState() {
 		loadState(BON_DESCHIS_TABLE_STATE_PREFIX, bonDeschisTable.getTable(), part);
 		loadState(PRODUCTS_TABLE_STATE_PREFIX, allProductsTable.getTable(), part);
-		
-		final int[] horizontalWeights = new int[3];
-		horizontalWeights[0] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".0", "100")); //$NON-NLS-1$ //$NON-NLS-2$
-		horizontalWeights[1] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".1", "150")); //$NON-NLS-1$ //$NON-NLS-2$
-		horizontalWeights[2] = Integer.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX+".2", "150")); //$NON-NLS-1$ //$NON-NLS-2$
+
+		final int[] horizontalWeights = new int[2];
+		horizontalWeights[0] = Integer
+				.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX + ".0", "200")); //$NON-NLS-1$ //$NON-NLS-2$
+		horizontalWeights[1] = Integer
+				.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX + ".1", "100")); //$NON-NLS-1$ //$NON-NLS-2$
 		horizontalSash.setWeights(horizontalWeights);
 	}
-	
+
 	@Focus
-	public void setFocus()
-	{
+	public void setFocus() {
 		search.setFocus();
 	}
 
-	private void addListeners()
-	{
+	private void addListeners() {
 		search.addModifyListener(e -> allProductsTable.filter(search.getText()));
-		search.addKeyListener(new KeyAdapter()
-		{
-			@Override public void keyPressed(final KeyEvent e)
-			{
+		search.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(final KeyEvent e) {
 				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR))
 					if (selectedProduct().isPresent())
 						addNewOperationToBon(selectedProduct());
 					else
 						cantitateText.setFocus();
-				
-				if (e.keyCode == SWT.ARROW_DOWN)
-				{
+
+				if (e.keyCode == SWT.ARROW_DOWN) {
 					e.doit = false;
 					allProductsTable.moveSelection(MoveDirectionEnum.DOWN);
 				}
-				if (e.keyCode == SWT.ARROW_UP)
-				{
+				if (e.keyCode == SWT.ARROW_UP) {
 					e.doit = false;
 					allProductsTable.moveSelection(MoveDirectionEnum.UP);
 				}
 			}
 		});
-		
-		cantitateText.addKeyListener(new KeyAdapter()
-		{
-			@Override public void keyPressed(final KeyEvent e)
-			{
+
+		cantitateText.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(final KeyEvent e) {
 				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) && isNumeric(cantitateText.getText()))
 					addNewOperationToBon(selectedProduct());
 
-				if (e.keyCode == SWT.ARROW_DOWN)
-				{
+				if (e.keyCode == SWT.ARROW_DOWN) {
 					e.doit = false;
 					allProductsTable.moveSelection(MoveDirectionEnum.DOWN);
 				}
-				if (e.keyCode == SWT.ARROW_UP)
-				{
+				if (e.keyCode == SWT.ARROW_UP) {
 					e.doit = false;
 					allProductsTable.moveSelection(MoveDirectionEnum.UP);
 				}
 			}
 		});
-		
-		minusOne.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		minusOne.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				cantitateText.setText(parse(cantitateText.getText()).subtract(BigDecimal.ONE).toString());
 				search.setFocus();
 			}
 		});
-		
-		plusOne.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		plusOne.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				cantitateText.setText(parse(cantitateText.getText()).add(BigDecimal.ONE).toString());
 				search.setFocus();
 			}
 		});
-		
-		plusFive.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		plusFive.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				cantitateText.setText(parse(cantitateText.getText()).add(new BigDecimal("5")).toString()); //$NON-NLS-1$
 				search.setFocus();
 			}
 		});
-		
-		deleteCant.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		deleteCant.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				cantitateText.setText("1"); //$NON-NLS-1$
 				search.setFocus();
 			}
 		});
-		
-		enter.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		enter.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				if (isNumeric(cantitateText.getText()))
 					addNewOperationToBon(selectedProduct());
-				changeClient();
-			}
-		});
-		
-		uiCategoriesTable.addSelectionListener(new ISelectionChangedListener()
-		{
-			@Override public void selectionChanged(final SelectionChangedEvent event)
-			{
-				uiCategoriesTable.selection().stream()
-				.findFirst()
-				.ifPresent(uiCat -> allProductsTable.loadData(uiCat.getProducts().stream()
-						.sorted(Comparator.comparing(Product::getName))
-						.collect(toImmutableList())));
-			}
-		});
-		
-		cardOrPhone.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetDefaultSelected(final SelectionEvent e)
-			{
-				if (bonCasa == null)
-				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_MissingDoc,
-							Messages.VanzareBarPart_MissingDocMessage);
-					return;
-				}
-				
-				if (ClientSession.instance().isOfflineMode())
-				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_NotAcc,
-							Messages.VanzareBarPart_NotAccMessage);
-					return;
-				}
-				
-				changeClient();
 			}
 		});
 
-		inchideCasaButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+		inchideCasaButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				closeBon(TipInchidere.PRIN_CASA);
 			}
 		});
-		
-		inchideFacturaBCButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		inchideFacturaBCButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				closeBon(TipInchidere.FACTURA_BC);
 			}
 		});
-		
-		inchideCardButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		inchideCardButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				closeBon(TipInchidere.PRIN_CARD);
 			}
 		});
 
-		cantitateText.addFocusListener(new FocusAdapter()
-		{
-			@Override public void focusGained(final FocusEvent e)
-			{
+		cantitateText.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(final FocusEvent e) {
 				cantitateText.selectAll();
 			}
 		});
-		
-		search.addFocusListener(new FocusAdapter()
-		{
-			@Override public void focusGained(final FocusEvent e)
-			{
+
+		search.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(final FocusEvent e) {
 				search.selectAll();
 			}
 		});
-		
-		managerCasaButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
+
+		managerCasaButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				new ManagerCasaDialog(Display.getCurrent().getActiveShell(), log, ctx).open();
 			}
 		});
-		
-		retetaButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
-				allProductsTable.selection().stream()
-				.findFirst()
-				.map(p -> BusinessDelegate.productById(p.getId(), bundle, log))
-				.ifPresent(p ->
-				{
-					final String reteta = p.getIngredients().stream()
-							.filter(prm -> prm.getProductFinit().equals(p))
-							.map(prm -> MessageFormat.format("{0} {1} {2}", //$NON-NLS-1$
-									prm.getProductMatPrima().getName(),
-									displayBigDecimal(prm.getQuantity()),
-									prm.getProductMatPrima().getUom()))
-							.collect(Collectors.joining(NEWLINE));
-					MessageDialog.openInformation(retetaButton.getShell(), Messages.VanzareBarPart_Recipe, reteta);
-				});
-			}
-		});
-		
-		incarcaBonuriButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
-				if (ClientSession.instance().isOfflineMode())
-				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_Offline, Messages.VanzareBarPart_OfflineMessage);
-					return;
-				}
-				
-				final AccountingDocument currentBon = BusinessDelegate.reloadDoc(bonCasa);
+
+//		retetaButton.addSelectionListener(new SelectionAdapter()
+//		{
+//			@Override public void widgetSelected(final SelectionEvent e)
+//			{
+//				allProductsTable.selection().stream()
+//				.findFirst()
+//				.map(p -> BusinessDelegate.productById(p.getId(), bundle, log))
+//				.ifPresent(p ->
+//				{
+//					final String reteta = p.getIngredients().stream()
+//							.filter(prm -> prm.getProductFinit().equals(p))
+//							.map(prm -> MessageFormat.format("{0} {1} {2}", //$NON-NLS-1$
+//									prm.getProductMatPrima().getName(),
+//									displayBigDecimal(prm.getQuantity()),
+//									prm.getProductMatPrima().getUom()))
+//							.collect(Collectors.joining(NEWLINE));
+//					MessageDialog.openInformation(retetaButton.getShell(), Messages.VanzareBarPart_Recipe, reteta);
+//				});
+//			}
+//		});
+
+		incarcaBonuriButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				final Receipt originalReceipt = bonCasa;
 				new VanzariIncarcaDocDialog(Display.getCurrent().getActiveShell(), VanzareBarPart.this, ctx).open();
-				updateBonCasa(currentBon, true);
+				loadReceipt(originalReceipt, true);
 			}
 		});
 
-		stergeRandButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
-				deleteOperations(bonDeschisTable.selection().stream()
-						.collect(toImmutableList()));
+		stergeRandButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				deleteOperations(bonDeschisTable.selection().stream().collect(toImmutableList()));
 			}
 		});
 
-		cancelBonButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
-				if (bonCasa != null && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_CancelDoc, Messages.VanzareBarPart_CancelDocMessage))
-					deleteOperations(ImmutableList.copyOf(bonCasa.getOperatiuni()));
+		cancelBonButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				if (bonCasa != null && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+						Messages.VanzareBarPart_CancelDoc, Messages.VanzareBarPart_CancelDocMessage))
+					deleteOperations(ImmutableList.copyOf(bonCasa.getLines()));
 			}
 		});
 
-		refreshButton.addSelectionListener(new SelectionAdapter()
-		{
-			@Override public void widgetSelected(final SelectionEvent e)
-			{
-				if (ClientSession.instance().isOfflineMode())
-				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_Offline, Messages.VanzareBarPart_OfflineRefreshMessage);
-					return;
-				}
-				
-				refreshPartners();
+		refreshButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
 				reloadProduct(null, true);
-				updateBonCasa(BusinessDelegate.reloadDoc(bonCasa), true);
 			}
 		});
 	}
-	
+
 	@Override
-	public void run(final NatTable table, final MouseEvent event)
-	{
+	public void run(final NatTable table, final MouseEvent event) {
 		// double click
 		if (isNumeric(cantitateText.getText()))
 			addNewOperationToBon(allProductsTable.selection().stream().findFirst());
 	}
-	
-	private void loadData()
-	{
+
+	private void loadData() {
 		reloadProduct(null, false);
-		updateBonCasa(bonCasa, true);
+		loadReceipt(bonCasa, true);
 	}
-	
+
 	/**
-	 * 
-	 * @param bonCasa @nullable
+	 * Legacy method, used in VanzariIncarcaDocDialog, use {@link loadReceipt()}
 	 */
+	@Deprecated
 	@Override
-	public void updateBonCasa(final AccountingDocument bonCasa, final boolean updateTotalLabels)
-	{
-		this.bonCasa = bonCasa;
-		if (this.bonCasa != null)
-			bonDeschisTable.loadData(this.bonCasa.getOperatiuni().stream()
-					.sorted(Comparator.comparing(Operatiune::getId))
-					.collect(toImmutableList()));
+	public void updateBonCasa(final AccountingDocument bonCasa, final boolean updateTotalLabels) {
+		this.loadedBonCasa = bonCasa;
+		if (this.loadedBonCasa != null)
+			bonDeschisTable.loadData(
+					this.loadedBonCasa.getOperatiuni().stream().sorted(Comparator.comparing(Operatiune::getId))
+							.map(OperatiuneMapper::toLine).collect(toImmutableList()));
 		else
 			bonDeschisTable.loadData(ImmutableList.of());
-		
-		final Optional<RulajPartener> rulaj = findRulaj(Optional.ofNullable(bonCasa)
-				.map(AccountingDocument::getPartner)
-				.map(Partner::getId)
-				.orElse(null));
-		selectedClientLabel.setText(safeString(bonCasa, AccountingDocument::getPartner,
-				p -> MessageFormat.format("{1} {2}{0}{3}{0}{4}", NEWLINE, //$NON-NLS-1$
-						safeString(p.getFidelityCard(), FidelityCard::getNumber), p.getName(),
-						rulaj.map(rp -> rp.getDeIncasat()+" RON").orElse(EMPTY_STRING), //$NON-NLS-1$
-						rulaj.map(rp -> rp.getDiscDisponibil()+" G").orElse(EMPTY_STRING)))); //$NON-NLS-1$
-		
-		if (updateTotalLabels)
-		{
-			totalFaraTVALabel.setText(Optional.ofNullable(this.bonCasa).map(accDoc -> accDoc.getTotal().subtract(accDoc.getTotalTva()))
+
+		if (updateTotalLabels) {
+			totalFaraTVALabel.setText(Optional.ofNullable(this.loadedBonCasa)
+					.map(accDoc -> accDoc.getTotal().subtract(accDoc.getTotalTva()))
 					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
-			tvaLabel.setText(Optional.ofNullable(this.bonCasa).map(AccountingDocument::getTotalTva)
+			tvaLabel.setText(Optional.ofNullable(this.loadedBonCasa).map(AccountingDocument::getTotalTva)
 					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
-			totalCuTVALabel.setText(Optional.ofNullable(this.bonCasa).map(AccountingDocument::getTotal)
+			totalCuTVALabel.setText(Optional.ofNullable(this.loadedBonCasa).map(AccountingDocument::getTotal)
 					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
 		}
 	}
 
-	private Optional<Product> selectedProduct()
-	{
-		return uiCategoriesTable.getSourceData().stream()
-				.flatMap(uiCat -> uiCat.getProducts().stream())
-				.filter(p -> p.getBarcode().equalsIgnoreCase(search.getText().strip()))
-				.findFirst()
-				.or(() -> allProductsTable.selection().stream().findFirst())
-				.or(() -> allProductsTable.getFilteredSortedData().size() == 1 ?
-						allProductsTable.getFilteredSortedData().stream().findFirst() : Optional.empty());
+	public void loadReceipt(final Receipt bonCasa, final boolean updateTotalLabels) {
+		this.loadedBonCasa = null;
+		this.bonCasa = bonCasa;
+		if (this.bonCasa != null)
+			bonDeschisTable.loadData(this.bonCasa.getLines().stream().sorted(Comparator.comparing(ReceiptLine::getId))
+					.collect(toImmutableList()));
+		else
+			bonDeschisTable.loadData(ImmutableList.of());
+
+		if (updateTotalLabels) {
+			totalFaraTVALabel.setText(
+					Optional.ofNullable(this.bonCasa).map(receipt -> receipt.total().subtract(receipt.taxTotal()))
+							.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
+			tvaLabel.setText(Optional.ofNullable(this.bonCasa).map(Receipt::taxTotal)
+					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
+			totalCuTVALabel.setText(Optional.ofNullable(this.bonCasa).map(Receipt::total)
+					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
+		}
 	}
-	
-	private void addNewOperationToBon(final Optional<Product> product)
-	{
+
+	private Optional<ro.linic.ui.pos.base.model.Product> selectedProduct() {
+		return allProductsTable.getSourceData().stream()
+				.filter(p -> search.getText().strip().equalsIgnoreCase(p.getSku())).findFirst()
+				.or(() -> allProductsTable.selection().stream().findFirst())
+				.or(() -> allProductsTable.getFilteredSortedData().size() == 1
+						? allProductsTable.getFilteredSortedData().stream().findFirst()
+						: Optional.empty());
+	}
+
+	private void addNewOperationToBon(final Optional<ro.linic.ui.pos.base.model.Product> product) {
 		if (!product.isPresent())
 			return;
 
 		final BigDecimal cantitate = parse(cantitateText.getText());
-		final Long accDocId = Optional.ofNullable(bonCasa).map(AccountingDocument::getId).orElse(null);
-		InvocationResult result;
-		if (ClientSession.instance().isOfflineMode())
-			result = SQLiteJDBC.instance(bundle, log).addToBonCasa(bonCasa, product.get(), cantitate, null,
-					ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
-					ClientSession.instance().getLoggedUser().getId(), tvaPercentDb);
-		else
-			result = BusinessDelegate.addToBonCasa(product.get().getBarcode(), cantitate, 
-					null, accDocId, true, TransferType.FARA_TRANSFER, null, bundle, log);
+		if (bonCasa == null) {
+			bonCasa = new Receipt();
+			receiptUpdater.create(bonCasa);
+		}
 
+		final BigDecimal taxPercent = product.map(ro.linic.ui.pos.base.model.Product::getTaxPercentage)
+				.orElse(tvaPercentDb);
+		final BigDecimal price = NumberUtils.adjustPrice(product.get().getPrice(), cantitate);
+		final BigDecimal taxTotal = price.multiply(cantitate).setScale(2, RoundingMode.HALF_EVEN).multiply(taxPercent)
+				.setScale(2, RoundingMode.HALF_EVEN);
 
-		if (!result.statusOk())
-		{
+		final LegacyReceiptLine newReceiptLine = new LegacyReceiptLine(null, product.get().getId(), bonCasa.getId(),
+				product.get().getName(), product.get().getUom(), cantitate, price, null, product.get().getTaxCode(),
+				product.get().getDepartmentCode(), taxTotal,
+				ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
+				ClientSession.instance().getLoggedUser().getId(), casaActivaButton.getSelection());
+		final IStatus result = receiptLineUpdater.create(newReceiptLine);
+
+		if (!result.isOK()) {
 			// in case we have any error we just show the error and cancel the
 			// operation
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), result.toTextCodes(),
-					result.toTextDescription());
-		} else
-		{
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, result.getMessage());
+		} else {
 			// everything was okay;
-			// - reload product and bonCasa
+			// - reload bonCasa
 			// - clear denumire and cantitate input
 			// - set focus on denumire widget
-			allProductsTable.replace(product.get(), result.extra(InvocationResult.PRODUCT_KEY));
-			updateBonCasa(result.extra(InvocationResult.ACCT_DOC_KEY), true);
+			bonCasa.getLines().add(newReceiptLine);
+			loadReceipt(bonCasa, true);
 			search.setText(EMPTY_STRING);
 			cantitateText.setText("1"); //$NON-NLS-1$
 			search.setFocus();
@@ -823,192 +685,100 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction
 	/**
 	 * @param product if null is passed we reload all products
 	 */
-	private void reloadProduct(final Product product, final boolean showConfirmation)
-	{
-		if (product == null)
-		{
-			BusinessDelegate.uiCategories(new AsyncLoadData<ProductUiCategory>()
-			{
-				@Override public void success(final ImmutableList<ProductUiCategory> data)
-				{
-					uiCategoriesTable.loadData(data);
-					uiCategoriesTable.unselectAll();
-					allProductsTable.loadData(ImmutableList.of());
-					
+	private void reloadProduct(final Product product, final boolean showConfirmation) {
+		if (product == null) {
+			BusinessDelegate.uiCategories(new AsyncLoadData<ProductUiCategory>() {
+				@Override
+				public void success(final ImmutableList<ProductUiCategory> data) {
+					final ImmutableList<ro.linic.ui.pos.base.model.Product> serverProducts = data.stream()
+							.flatMap(uiCat -> uiCat.getProducts().stream())
+							.sorted(Comparator.comparing(Product::getName)).map(ProductMapper.INSTANCE::from)
+							.collect(toImmutableList());
+
+					productDataUpdater.synchronize(serverProducts);
+
 					if (showConfirmation)
 						MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.Success,
 								Messages.VanzareBarPart_SuccessMessage);
 				}
 
-				@Override public void error(final String details)
-				{
-					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_ErrorLoading, details);
+				@Override
+				public void error(final String details) {
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_ErrorLoading,
+							details);
 				}
 			}, sync, true, false, bundle, log);
-		} else
-		{
+		} else {
 			final Product updatedProduct = BusinessDelegate.productById(product.getId(), bundle, log);
 			if (updatedProduct == null)
-				allProductsTable.remove(product);
+				productDataUpdater.delete(List.of(product.getId().longValue()));
 			else
-				allProductsTable.replace(product, updatedProduct);
+				productDataUpdater.updateStock(updatedProduct.getId(),
+						updatedProduct.stoc(ClientSession.instance().getLoggedUser().getSelectedGestiune()));
 		}
 	}
-	
-	private void refreshPartners()
-	{
-		partnersWithFidelityCard = BusinessDelegate.puncteFidelitate_Sync();
-	}
 
-	private void deleteOperations(final ImmutableList<Operatiune> operations)
-	{
-		final ImmutableList<Operatiune> deletableOps = collectDeletableOperations(operations);
-		final ImmutableSet<Long> deletableOpIds = deletableOps.stream()
-				.map(Operatiune::getId)
-				.collect(toImmutableSet());
-		final ImmutableSet<String> operationBarcodes = deletableOps.stream().map(Operatiune::getBarcode)
-				.collect(toImmutableSet());
-		final ImmutableList<Product> productsToReload = allProductsTable.getSourceData().parallelStream()
-				.filter(p -> operationBarcodes.contains(p.getBarcode())).collect(toImmutableList());
+	private void deleteOperations(final ImmutableList<ReceiptLine> lines) {
+		final ImmutableSet<Long> lineIds = lines.stream().map(ReceiptLine::getId).collect(toImmutableSet());
 
-		InvocationResult result;
-		if (ClientSession.instance().isOfflineMode())
-			result = SQLiteJDBC.instance(bundle, log).deleteOperations(bonCasa, deletableOpIds);
-		else
-			result = BusinessDelegate.deleteOperations(deletableOpIds);
-		
-		if (!result.statusOk())
-		{
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), result.toTextCodes(),
-					result.toTextDescription());
+		final IStatus result = receiptLineUpdater.delete(lineIds);
+
+		if (!result.isOK()) {
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, result.getMessage());
 			return;
 		}
 
-		// 3. update bonCasa(may be deleted) and reload affected products
-		if (ClientSession.instance().isOfflineMode())
-			updateBonCasa(bonCasa != null && !bonCasa.getOperatiuni().isEmpty() ? bonCasa : null,
-					true);
-		else
-		{
-			updateBonCasa(BusinessDelegate.reloadDoc(bonCasa), true);
-			if (productsToReload.size() > 1)
-				reloadProduct(null, false);
-			else
-				productsToReload.forEach(p -> reloadProduct(p, false));
-		}
-	}
-	
-	private void changeClient()
-	{
-		if (bonCasa == null)
-			return;
-		
-		if (ClientSession.instance().isOfflineMode())
-			return;
-		
-		final InvocationResult result = BusinessDelegate.changeDocPartner(bonCasa.getId(), selectedPartnerId(), true);
-		showResult(result);
-		if (result.statusOk())
-			updateBonCasa(result.extra(InvocationResult.ACCT_DOC_KEY), true);
-		search.setFocus();
+		// update bonCasa(may be deleted) and reload affected products
+		loadReceipt(receiptLoader.findById(bonCasa.getId()).orElse(null), true);
 	}
 
 	/**
 	 * Open {@link #InchideBonWizardDialog}
 	 */
 	@Override
-	public void closeBon(final TipInchidere tipInchidere)
-	{
-		if (bonCasa != null)
-		{
-			if (ClientSession.instance().isOfflineMode() &&
-					!tipInchidere.equals(TipInchidere.PRIN_CASA) && !tipInchidere.equals(TipInchidere.PRIN_CARD))
-			{
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.VanzareBarPart_NotAcc,
-						Messages.VanzareBarPart_NotAccCloseMessage);
-				return;
+	public void closeBon(final TipInchidere tipInchidere) {
+		if (bonCasa != null) {
+			if (tipInchidere.equals(TipInchidere.PRIN_CASA) || tipInchidere.equals(TipInchidere.PRIN_CARD)) {
+				// open new close dialog
+			} else {
+				final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
+						Display.getCurrent().getActiveShell(),
+						new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), ctx, bundle, log, tipInchidere));
+
+				if (wizardDialog.open() == Window.OK)
+					loadReceipt(null, false);
 			}
-			
-			final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
-					Display.getCurrent().getActiveShell(),
-					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), ctx, bundle, log, tipInchidere));
-			if (wizardDialog.open() == Window.OK)
-			{
-				if (!ClientSession.instance().isOfflineMode())
-					printEtichetaAroma();
-				updateBonCasa(null, false);
-				cardOrPhone.setText(EMPTY_STRING);
-			}
+
 			search.setFocus();
 		}
 	}
-	
-	private void printEtichetaAroma()
-	{
-		if (Boolean.parseBoolean(System.getProperty(PRINT_AROMA_KEY, PRINT_AROMA_DEFAULT)))
-		{
-			final String prefix = BusinessDelegate.persistedProp(PersistedProp.PREFIX_AROMA_KEY)
-					.getValueOr(PersistedProp.PREFIX_AROMA_DEFAULT);
-			
-			final ImmutableList<Operatiune> ops = bonCasa.getOperatiuni_Stream()
-			.filter(op -> globalIsMatch(op.getUiCategory(), ProductUiCategory.AROME_UI_CAT, TextFilterMethod.EQUALS))
-			.collect(toImmutableList());
-			
-			PeripheralService.printPrintables(BarcodePrintable.fromOperations_toAromaLabel(ops, prefix),
-					System.getProperty(PeripheralService.BARCODE_PRINTER_KEY, PeripheralService.BARCODE_PRINTER_DEFAULT),
-					log, bundle, true, Optional.empty());
-		}
-	}
-	
+
 	@Override
-	public Logger log()
-	{
+	public Logger log() {
 		return log;
 	}
 
 	@Override
-	public AccountingDocument getBonCasa()
-	{
-		return bonCasa;
+	public AccountingDocument getBonCasa() {
+		return loadedBonCasa;
 	}
-	
+
 	@Override
-	public Bundle getBundle()
-	{
+	public Bundle getBundle() {
 		return bundle;
 	}
-	
+
 	@Override
-	public List<Product> selection()
-	{
-		return allProductsTable.selection();
+	public List<Product> selection() {
+		return List.of();
 	}
-	
-	public boolean bonTableNotEmpty()
-	{
+
+	@Override
+	public boolean canCloseReceipt() {
+		return bonCasa != null;
+	}
+
+	public boolean bonTableNotEmpty() {
 		return !bonDeschisTable.getSourceData().isEmpty();
-	}
-	
-	private Optional<Long> selectedPartnerId()
-	{
-		final String cardOrPhone = this.cardOrPhone.getText();
-		if (isEmpty(cardOrPhone))
-			return Optional.empty();
-		
-		return partnersWithFidelityCard.stream()
-				.filter(rp -> cardOrPhone.equalsIgnoreCase(rp.getCardNumber()) ||
-						cardOrPhone.equalsIgnoreCase(rp.getPhoneNumber()))
-				.map(RulajPartener::getId)
-				.findFirst();
-	}
-	
-	private Optional<RulajPartener> findRulaj(final Long partnerId)
-	{
-		if (partnerId == null)
-			return Optional.empty();
-		
-		return partnersWithFidelityCard.stream()
-				.filter(rp -> partnerId.equals(rp.getId()))
-				.findFirst();
 	}
 }

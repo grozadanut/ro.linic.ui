@@ -20,6 +20,8 @@ public class Product extends JavaBean {
 	public static final String IS_STOCKABLE_FIELD = "isStockable";
 	public static final String PRICE_FIELD = "price";
 	public static final String STOCK_FIELD = "stock";
+	public static final String IMAGE_ID_FIELD = "imageId";
+	public static final String TAX_PERCENTAGE_FIELD = "taxPercentage";
 	
 	public static final String MARFA_CATEGORY = "MARFA";
 	public static final String AMBALAJE_CATEGORY = "AMBALAJE";
@@ -42,6 +44,8 @@ public class Product extends JavaBean {
 	private String type;
 	// tax code as specified in the ecr. default: 1
 	private String taxCode;
+	// product level tax percentage. eg.: 0.19 for 19%
+	private BigDecimal taxPercentage;
 	// department code as specified in the ecr. default: 1
 	// TODO should also be specified at product type level, as a cascade, if not present here
 	private String departmentCode;
@@ -49,16 +53,18 @@ public class Product extends JavaBean {
 	private Set<String> barcodes;
 	private String name;
 	private String uom;
-	private boolean isStockable;
+	private boolean stockable;
 	private BigDecimal price;
 	private BigDecimal stock;
+	private String imageId;
 	
 	public Product() {
 		barcodes = new HashSet<String>();
 	}
 	
-	public Product(final Long id, final String type, final String taxCode, final String departmentCode, final String sku, final Set<String> barcodes,
-			final String name, final String uom, final boolean isStockable, final BigDecimal price, final BigDecimal stock) {
+	public Product(final Long id, final String type, final String taxCode, final String departmentCode, final String sku,
+			final Set<String> barcodes, final String name, final String uom, final boolean stockable, final BigDecimal price,
+			final BigDecimal stock, final String imageId, final BigDecimal taxPercentage) {
 		super();
 		this.id = id;
 		this.type = type;
@@ -68,9 +74,11 @@ public class Product extends JavaBean {
 		this.barcodes = barcodes;
 		this.name = name;
 		this.uom = uom;
-		this.isStockable = isStockable;
+		this.stockable = stockable;
 		this.price = price;
 		this.stock = stock;
+		this.imageId = imageId;
+		this.taxPercentage = taxPercentage;
 	}
 
 	public Long getId() {
@@ -138,11 +146,11 @@ public class Product extends JavaBean {
 	}
 	
 	public boolean isStockable() {
-		return isStockable;
+		return stockable;
 	}
 	
-	public void setStockable(final boolean isStockable) {
-		firePropertyChange("isStockable", this.isStockable, this.isStockable = isStockable);
+	public void setStockable(final boolean stockable) {
+		firePropertyChange("stockable", this.stockable, this.stockable = stockable);
 	}
 	
 	public BigDecimal getPrice() {
@@ -160,17 +168,35 @@ public class Product extends JavaBean {
 	public void setStock(final BigDecimal stock) {
 		firePropertyChange("stock", this.stock, this.stock = stock);
 	}
+	
+	public String getImageId() {
+		return imageId;
+	}
+	
+	public void setImageId(final String imageId) {
+		firePropertyChange("imageId", this.imageId, this.imageId = imageId);
+	}
+	
+	public BigDecimal getTaxPercentage() {
+		return taxPercentage;
+	}
+	
+	public void setTaxPercentage(final BigDecimal taxPercentage) {
+		firePropertyChange("taxPercentage", this.taxPercentage, this.taxPercentage = taxPercentage);
+	}
 
 	@Override
 	public String toString() {
-		return "Product [id=" + id + ", type=" + type + ", taxCode=" + taxCode + ", departmentCode=" + departmentCode
-				+ ", sku=" + sku + ", barcodes=" + barcodes + ", name=" + name + ", uom=" + uom + ", isStockable="
-				+ isStockable + ", price=" + price + ", stock=" + stock + "]";
+		return "Product [id=" + id + ", type=" + type + ", taxCode=" + taxCode + ", taxPercentage=" + taxPercentage
+				+ ", departmentCode=" + departmentCode + ", sku=" + sku + ", barcodes=" + barcodes + ", name=" + name
+				+ ", uom=" + uom + ", stockable=" + stockable + ", price=" + price + ", stock=" + stock + ", imageId="
+				+ imageId + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(barcodes, departmentCode, id, isStockable, name, price, sku, stock, taxCode, type, uom);
+		return Objects.hash(barcodes, departmentCode, id, imageId, name, price, sku, stock, stockable, taxCode,
+				taxPercentage, type, uom);
 	}
 
 	@Override
@@ -183,9 +209,10 @@ public class Product extends JavaBean {
 			return false;
 		final Product other = (Product) obj;
 		return Objects.equals(barcodes, other.barcodes) && Objects.equals(departmentCode, other.departmentCode)
-				&& Objects.equals(id, other.id) && isStockable == other.isStockable && Objects.equals(name, other.name)
-				&& Objects.equals(price, other.price) && Objects.equals(sku, other.sku)
-				&& Objects.equals(stock, other.stock) && Objects.equals(taxCode, other.taxCode)
+				&& Objects.equals(id, other.id) && Objects.equals(imageId, other.imageId)
+				&& Objects.equals(name, other.name) && Objects.equals(price, other.price)
+				&& Objects.equals(sku, other.sku) && Objects.equals(stock, other.stock) && stockable == other.stockable
+				&& Objects.equals(taxCode, other.taxCode) && Objects.equals(taxPercentage, other.taxPercentage)
 				&& Objects.equals(type, other.type) && Objects.equals(uom, other.uom);
 	}
 }

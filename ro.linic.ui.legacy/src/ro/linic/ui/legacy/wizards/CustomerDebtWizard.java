@@ -38,7 +38,6 @@ import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
-import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.services.ECRService;
 
@@ -133,10 +132,8 @@ public class CustomerDebtWizard extends Wizard
 		{
 			log.error(ex);
 			showException(ex, "Eroare in printarea bonului de casa. Scoateti bonul de casa manual!");
-			
-			if (!ClientSession.instance().isOfflineMode())
-				BusinessDelegate.closeBonCasa_Failed(bonuriCasa.stream()
-						.map(AccountingDocument::getId).collect(ListUtils.toImmutableSet()));
+			BusinessDelegate.closeBonCasa_Failed(bonuriCasa.stream()
+					.map(AccountingDocument::getId).collect(ListUtils.toImmutableSet()));
 		}
 
 		try

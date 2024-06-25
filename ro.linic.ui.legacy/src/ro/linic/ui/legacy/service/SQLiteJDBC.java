@@ -43,20 +43,11 @@ import ro.linic.ui.legacy.session.ClientSession;
 
 public class SQLiteJDBC
 {
-	public static final String LOCAL_DB_NAME = "colibri_local.db";
-	
+	private static final String LOCAL_DB_NAME = "colibri_local.db";
 	private static final String PRIN_CASA_FIELD = "prinCasa";
 	
 	private static SQLiteJDBC instance;
 	private Logger log;
-	
-	public static SQLiteJDBC instance(final Bundle bundle, final Logger log)
-	{
-		if (instance == null)
-			instance = new SQLiteJDBC(bundle, log);
-		
-		return instance;
-	}
 	
 	private SQLiteJDBC(final Bundle bundle, final Logger log)
 	{

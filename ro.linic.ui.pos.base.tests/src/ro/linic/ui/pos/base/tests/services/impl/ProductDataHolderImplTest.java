@@ -20,7 +20,8 @@ class ProductDataHolderImplTest {
 		final EventList<Product> dataList = service.getData();
         assertNotNull(dataList);
         
-        service.setData(List.of(new Product(1L, "MERCHANDISE", "1", "1", "sku", Set.of(), "name", "uom", false, BigDecimal.ONE, BigDecimal.ZERO)));
+        service.setData(List.of(new Product(1L, "MERCHANDISE", "1", "1", "sku", Set.of(), "name", "uom", false, BigDecimal.ONE,
+        		BigDecimal.ZERO, null, new BigDecimal("0.19"))));
         
         assertTrue(dataList == service.getData());
     }

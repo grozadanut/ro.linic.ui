@@ -22,12 +22,14 @@ import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ReceiptLoader;
+import ro.linic.ui.pos.base.services.SQLiteHelper;
 
 @Component
 public class LocalReceiptLoader implements ReceiptLoader {
 	private final static ILog log = ILog.of(LocalReceiptLoader.class);
 	
 	@Reference private LocalDatabase localDatabase;
+	@Reference private SQLiteHelper sqliteHelper;
 	
 	@Override
 	public List<Receipt> findAll() {
@@ -38,13 +40,13 @@ public class LocalReceiptLoader implements ReceiptLoader {
 		List<Receipt> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(SQLiteHelper.receiptColumns())
+		.append(sqliteHelper.receiptColumns())
 		.append("FROM "+Receipt.class.getSimpleName());
 		
 		dbLock.readLock().lock();
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement();
 				ResultSet rs = stmt.executeQuery(querySb.toString())) {
-			result = SQLiteHelper.readReceipts(rs);
+			result = sqliteHelper.readReceipts(rs);
 			for (final Receipt receipt : result)
 				receipt.setLines(loadLines(receipt.getId(), dbName));
 		} catch (final SQLException e) {
@@ -65,7 +67,7 @@ public class LocalReceiptLoader implements ReceiptLoader {
 		List<Receipt> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(SQLiteHelper.receiptColumns())
+		.append(sqliteHelper.receiptColumns())
 		.append("FROM "+Receipt.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
 		.append(Receipt.ID_FIELD).append(" IN (?)");
@@ -74,7 +76,7 @@ public class LocalReceiptLoader implements ReceiptLoader {
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
 			stmt.setObject(1, ids);
 			final ResultSet rs = stmt.executeQuery();
-			result = SQLiteHelper.readReceipts(rs);
+			result = sqliteHelper.readReceipts(rs);
 			for (final Receipt receipt : result)
 				receipt.setLines(loadLines(receipt.getId(), dbName));
 		} catch (final SQLException e) {
@@ -90,7 +92,7 @@ public class LocalReceiptLoader implements ReceiptLoader {
 		List<ReceiptLine> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(SQLiteHelper.receiptLineColumns())
+		.append(sqliteHelper.receiptLineColumns())
 		.append("FROM "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
 		.append(ReceiptLine.RECEIPT_ID_FIELD).append(" = ?");
@@ -98,7 +100,7 @@ public class LocalReceiptLoader implements ReceiptLoader {
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
 			stmt.setLong(1, receiptId);
 			final ResultSet rs = stmt.executeQuery();
-			result = SQLiteHelper.readReceiptLines(rs);
+			result = sqliteHelper.readReceiptLines(rs);
 		}
 		
 		return result;

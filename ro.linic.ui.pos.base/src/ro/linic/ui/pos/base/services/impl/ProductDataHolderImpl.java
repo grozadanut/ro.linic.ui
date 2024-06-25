@@ -20,8 +20,8 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 
 	@Override
 	public void setData(final List<Product> data) {
+		this.data.getReadWriteLock().writeLock().lock();
 		try {
-			this.data.getReadWriteLock().writeLock().lock();
 			this.data.clear();
 			this.data.addAll(data);
 		} finally {
@@ -31,8 +31,8 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 
 	@Override
 	public void replace(final Product source, final Product target) {
+		data.getReadWriteLock().writeLock().lock();
 		try {
-			data.getReadWriteLock().writeLock().lock();
 			if (data.contains(source))
 				data.set(data.indexOf(source), target);
 		} finally {
@@ -42,8 +42,8 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 
 	@Override
 	public void remove(final List<Product> toRemove) {
+		data.getReadWriteLock().writeLock().lock();
 		try {
-			data.getReadWriteLock().writeLock().lock();
 			data.removeAll(toRemove);
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
@@ -52,8 +52,8 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 
 	@Override
 	public void add(final Product toAdd) {
+		data.getReadWriteLock().writeLock().lock();
 		try {
-			data.getReadWriteLock().writeLock().lock();
 			data.add(toAdd);
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();

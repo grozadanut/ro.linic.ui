@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -65,6 +62,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Gestiune;
@@ -954,6 +953,11 @@ public class VanzarePart implements VanzareInterface
 	public List<Product> selection()
 	{
 		return allProductsTable.selection();
+	}
+	
+	@Override
+	public boolean canCloseReceipt() {
+		return bonCasa != null;
 	}
 	
 	private void filterModeChange(final ModifyEvent e)

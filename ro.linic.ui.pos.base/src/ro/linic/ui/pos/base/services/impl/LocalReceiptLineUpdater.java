@@ -32,11 +32,13 @@ import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
 import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
+import ro.linic.ui.pos.base.services.SQLiteHelper;
 
 @Component
 public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	@Reference private LocalDatabase localDatabase;
 	@Reference private ProductDataHolder productDataHolder;
+	@Reference private SQLiteHelper sqliteHelper;
 	
 	@Override
 	public IStatus create(final ReceiptLine model) {
@@ -53,13 +55,13 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO "+ReceiptLine.class.getSimpleName())
 		.append("(")
-		.append(SQLiteHelper.receiptLineColumns())
-		.append(")").append(" VALUES("+SQLiteHelper.receiptLineColumnsPlaceholder()+")");
+		.append(sqliteHelper.receiptLineColumns())
+		.append(")").append(" VALUES("+sqliteHelper.receiptLineColumnsPlaceholder()+")");
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
         	model.setId(nextId(dbName));
-        	SQLiteHelper.insertReceiptLineInStatement(model, pstmt);
+        	sqliteHelper.insertReceiptLineInStatement(model, pstmt);
         	if (pstmt.executeUpdate() == 1)
         		// update stock
         		if (model.getProductId() != null && model.getProductId() > 0)
@@ -116,7 +118,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
-        	final ReceiptLine receiptLine = findReceiptLinesByIdIn(List.of(id))
+        	final ReceiptLine receiptLine = findReceiptLinesByIdIn(Set.of(id))
         			.stream().findFirst().get();
         	final BigDecimal oldQuantity = receiptLine.getQuantity();
         	
@@ -139,7 +141,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	}
 	
 	@Override
-	public IStatus delete(final List<Long> ids) {
+	public IStatus delete(final Set<Long> ids) {
 		if (ids == null || ids.isEmpty())
 			return ValidationStatus.OK_STATUS;
 		
@@ -179,14 +181,14 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 		}
 	}
 	
-	private List<ReceiptLine> findReceiptLinesByIdIn(final List<Long> ids) throws SQLException {
+	private List<ReceiptLine> findReceiptLinesByIdIn(final Set<Long> ids) throws SQLException {
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		List<ReceiptLine> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(SQLiteHelper.receiptLineColumns())
+		.append(sqliteHelper.receiptLineColumns())
 		.append("FROM "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
 		.append(ReceiptLine.ID_FIELD).append(" IN (?)");
@@ -194,7 +196,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
 			stmt.setObject(1, ids);
 			final ResultSet rs = stmt.executeQuery();
-			result = SQLiteHelper.readReceiptLines(rs);
+			result = sqliteHelper.readReceiptLines(rs);
 		}
 		
 		return result;

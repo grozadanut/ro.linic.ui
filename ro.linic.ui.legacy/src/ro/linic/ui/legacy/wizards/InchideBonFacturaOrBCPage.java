@@ -111,8 +111,7 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 		this.bundle = bundle;
 		this.log = log;
 		this.casaActive = casaActive;
-		if (!ClientSession.instance().isOfflineMode())
-			allConturiBancare = BusinessDelegate.allConturiBancare();
+		allConturiBancare = BusinessDelegate.allConturiBancare();
 	}
 
 	@Override
@@ -423,10 +422,8 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 		{
 			log.error(ex);
 			showException(ex, "Eroare in printarea bonului de casa. Scoateti bonul de casa manual!");
-			
-			if (!ClientSession.instance().isOfflineMode())
-				BusinessDelegate.closeBonCasa_Failed(bonuriCasa.stream()
-						.map(AccountingDocument::getId).collect(ListUtils.toImmutableSet()));
+			BusinessDelegate.closeBonCasa_Failed(bonuriCasa.stream()
+					.map(AccountingDocument::getId).collect(ListUtils.toImmutableSet()));
 		}
 		
 		// print doc and chitanta

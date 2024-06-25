@@ -39,15 +39,22 @@ public class Receipt extends JavaBean {
 	}
 
 	/**
-	 * @return total including allowance or charge amount
+	 * @return total including taxes and allowance or charge amount
 	 */
 	public BigDecimal total() {
 		return lines.stream()
-				.map(ReceiptLine::total)
+				.map(ReceiptLine::getTotal)
 				.reduce(BigDecimal::add)
 				.map(subtotal -> add(subtotal, Optional.ofNullable(allowanceCharge)
 						.map(AllowanceCharge::amountWithSign)
 						.orElse(null)))
+				.orElse(BigDecimal.ZERO);
+	}
+	
+	public BigDecimal taxTotal() {
+		return lines.stream()
+				.map(ReceiptLine::getTaxTotal)
+				.reduce(BigDecimal::add)
 				.orElse(BigDecimal.ZERO);
 	}
 

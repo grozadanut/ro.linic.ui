@@ -28,9 +28,9 @@ public class InitAddon {
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement()) {
-			createProductsTable(stmt);
-			createReceiptTable(stmt);
-			createReceiptLineTable(stmt);
+			stmt.execute(createProductsTableSql());
+			stmt.execute(createReceiptTableSql());
+			stmt.execute(createReceiptLineTableSql());
 		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -38,7 +38,7 @@ public class InitAddon {
 		productHolder.setData(productLoader.findAll());
 	}
 
-	private void createProductsTable(final Statement stmt) throws SQLException {
+	public static String createProductsTableSql() throws SQLException {
 		final StringBuilder productsSb = new StringBuilder();
 		productsSb.append("CREATE TABLE IF NOT EXISTS "+Product.class.getSimpleName()).append(NEWLINE)
 		.append("(").append(NEWLINE)
@@ -52,12 +52,14 @@ public class InitAddon {
 		.append(Product.UOM_FIELD+" text,").append(NEWLINE)
 		.append(Product.IS_STOCKABLE_FIELD+" integer,").append(NEWLINE)
 		.append(Product.PRICE_FIELD+" numeric(12,2),").append(NEWLINE)
-		.append(Product.STOCK_FIELD+" numeric(16,4)").append(NEWLINE)
+		.append(Product.STOCK_FIELD+" numeric(16,4),").append(NEWLINE)
+		.append(Product.IMAGE_ID_FIELD+" text,").append(NEWLINE)
+		.append(Product.TAX_PERCENTAGE_FIELD+" numeric(6,4)").append(NEWLINE)
 		.append(");");
-		stmt.execute(productsSb.toString());
+		return productsSb.toString();
 	}
 	
-	private void createReceiptTable(final Statement stmt) throws SQLException {
+	public static String createReceiptTableSql() throws SQLException {
 		final StringBuilder productsSb = new StringBuilder();
 		productsSb.append("CREATE TABLE IF NOT EXISTS "+Receipt.class.getSimpleName()).append(NEWLINE)
 		.append("(").append(NEWLINE)
@@ -66,10 +68,10 @@ public class InitAddon {
 		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
 		.append(Receipt.CREATION_TIME_FIELD+" text").append(NEWLINE)
 		.append(");");
-		stmt.execute(productsSb.toString());
+		return productsSb.toString();
 	}
 	
-	private void createReceiptLineTable(final Statement stmt) throws SQLException {
+	public static String createReceiptLineTableSql() throws SQLException {
 		final StringBuilder productsSb = new StringBuilder();
 		productsSb.append("CREATE TABLE IF NOT EXISTS "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
 		.append("(").append(NEWLINE)
@@ -80,12 +82,14 @@ public class InitAddon {
 		.append(ReceiptLine.UOM_FIELD+" text,").append(NEWLINE)
 		.append(ReceiptLine.QUANTITY_FIELD+" numeric(16,3),").append(NEWLINE)
 		.append(ReceiptLine.PRICE_FIELD+" numeric(12,2),").append(NEWLINE)
+		.append(ReceiptLine.TAX_TOTAL_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(ReceiptLine.TOTAL_FIELD+" numeric(16,2),").append(NEWLINE)
 		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
 		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
 		.append(ReceiptLine.TAX_CODE_FIELD+" text,").append(NEWLINE)
 		.append(ReceiptLine.DEPARTMENT_CODE_FIELD+" text,").append(NEWLINE)
 		.append(ReceiptLine.CREATION_TIME_FIELD+" text").append(NEWLINE)
 		.append(");");
-		stmt.execute(productsSb.toString());
+		return productsSb.toString();
 	}
 }

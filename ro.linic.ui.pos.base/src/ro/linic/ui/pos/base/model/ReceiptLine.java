@@ -18,6 +18,8 @@ public class ReceiptLine extends JavaBean {
 	public static final String UOM_FIELD = "uom";
 	public static final String QUANTITY_FIELD = "quantity";
 	public static final String PRICE_FIELD = "price";
+	public static final String TAX_TOTAL_FIELD = "taxTotal";
+	public static final String TOTAL_FIELD = "total";
 	public static final String ALLOWANCE_CHARGE_FIELD = "allowanceCharge";
 	public static final String TAX_CODE_FIELD = "taxCode";
 	public static final String DEPARTMENT_CODE_FIELD = "departmentCode";
@@ -30,6 +32,8 @@ public class ReceiptLine extends JavaBean {
 	private String uom;
 	private BigDecimal quantity;
 	private BigDecimal price;
+	private BigDecimal taxTotal;
+	private BigDecimal total;
 	private AllowanceCharge allowanceCharge;
 	private String taxCode;
 	private String departmentCode;
@@ -47,7 +51,7 @@ public class ReceiptLine extends JavaBean {
 	 * @param departmentCode department code as specified in the ecr. eg: 1
 	 */
 	public ReceiptLine(final Long id, final Long productId, final Long receiptId, final String name, final String uom, final BigDecimal quantity,
-			final BigDecimal price, final AllowanceCharge allowanceCharge, final String taxCode, final String departmentCode) {
+			final BigDecimal price, final AllowanceCharge allowanceCharge, final String taxCode, final String departmentCode, final BigDecimal taxTotal) {
 		this.id = id;
 		this.productId = productId;
 		this.receiptId = receiptId;
@@ -58,19 +62,33 @@ public class ReceiptLine extends JavaBean {
 		this.allowanceCharge = allowanceCharge;
 		this.taxCode = taxCode;
 		this.departmentCode = departmentCode;
+		this.taxTotal = taxTotal;
+		this.total = add(multiply(quantity, price),
+				Optional.ofNullable(allowanceCharge)
+				.map(AllowanceCharge::amountWithSign)
+				.orElse(null));
 	}
 	
 	public ReceiptLine() {
 	}
 	
 	/**
-	 * @return total including allowance or charge amount
+	 * total including taxes and allowance/charges
 	 */
-	public BigDecimal total() {
-		return add(multiply(quantity, price),
-				Optional.ofNullable(allowanceCharge)
-				.map(AllowanceCharge::amountWithSign)
-				.orElse(null));
+	public BigDecimal getTotal() {
+		return total;
+	}
+	
+	public void setTotal(final BigDecimal total) {
+		firePropertyChange("total", this.total, this.total = total);
+	}
+	
+	public BigDecimal getTaxTotal() {
+		return taxTotal;
+	}
+	
+	public void setTaxTotal(final BigDecimal taxTotal) {
+		firePropertyChange("taxTotal", this.taxTotal, this.taxTotal = taxTotal);
 	}
 
 	public Long getId() {
@@ -164,15 +182,15 @@ public class ReceiptLine extends JavaBean {
 	@Override
 	public String toString() {
 		return "ReceiptLine [id=" + id + ", productId=" + productId + ", receiptId=" + receiptId + ", name=" + name
-				+ ", uom=" + uom + ", quantity=" + quantity + ", price=" + price + ", allowanceCharge="
-				+ allowanceCharge + ", taxCode=" + taxCode + ", departmentCode=" + departmentCode + ", creationTime="
-				+ creationTime + "]";
+				+ ", uom=" + uom + ", quantity=" + quantity + ", price=" + price + ", taxTotal=" + taxTotal + ", total="
+				+ total + ", allowanceCharge=" + allowanceCharge + ", taxCode=" + taxCode + ", departmentCode="
+				+ departmentCode + ", creationTime=" + creationTime + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(allowanceCharge, creationTime, departmentCode, id, name, price, productId, quantity,
-				receiptId, taxCode, uom);
+				receiptId, taxCode, taxTotal, total, uom);
 	}
 
 	@Override
@@ -190,6 +208,7 @@ public class ReceiptLine extends JavaBean {
 				&& Objects.equals(name, other.name) && Objects.equals(price, other.price)
 				&& Objects.equals(productId, other.productId) && Objects.equals(quantity, other.quantity)
 				&& Objects.equals(receiptId, other.receiptId) && Objects.equals(taxCode, other.taxCode)
+				&& Objects.equals(taxTotal, other.taxTotal) && Objects.equals(total, other.total)
 				&& Objects.equals(uom, other.uom);
 	}
 }

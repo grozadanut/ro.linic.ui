@@ -4,5 +4,6 @@
       <provide interface="ro.linic.ui.pos.base.services.ReceiptLoader"/>
    </service>
    <reference cardinality="1..1" field="localDatabase" interface="ro.linic.ui.base.services.LocalDatabase" name="localDatabase"/>
+   <reference cardinality="1..1" field="sqliteHelper" interface="ro.linic.ui.pos.base.services.SQLiteHelper" name="sqliteHelper"/>
    <implementation class="ro.linic.ui.pos.base.services.impl.LocalReceiptLoader"/>
 </scr:component>

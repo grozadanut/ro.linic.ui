@@ -25,12 +25,14 @@ import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ReceiptUpdater;
+import ro.linic.ui.pos.base.services.SQLiteHelper;
 
 @Component
 public class LocalReceiptUpdater implements ReceiptUpdater {
 	private final static ILog log = ILog.of(LocalReceiptUpdater.class);
 	
 	@Reference private LocalDatabase localDatabase;
+	@Reference private SQLiteHelper sqliteHelper;
 	
 	@Override
 	public IStatus create(final Receipt model) {
@@ -44,13 +46,13 @@ public class LocalReceiptUpdater implements ReceiptUpdater {
 		final StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO "+Receipt.class.getSimpleName())
 		.append("(")
-		.append(SQLiteHelper.receiptColumns())
-		.append(")").append(" VALUES("+SQLiteHelper.receiptColumnsPlaceholder()+")");
+		.append(sqliteHelper.receiptColumns())
+		.append(")").append(" VALUES("+sqliteHelper.receiptColumnsPlaceholder()+")");
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
         	model.setId(nextId(dbName));
-        	SQLiteHelper.insertReceiptInStatement(model, pstmt);
+        	sqliteHelper.insertReceiptInStatement(model, pstmt);
             pstmt.executeUpdate();
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {

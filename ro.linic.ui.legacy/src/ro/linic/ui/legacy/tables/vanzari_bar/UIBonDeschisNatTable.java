@@ -1,7 +1,6 @@
 package ro.linic.ui.legacy.tables.vanzari_bar;
 
 import static ro.colibri.util.ListUtils.toImmutableList;
-import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
 
 import java.io.Serializable;
 import java.util.List;
@@ -56,16 +55,17 @@ import ro.linic.ui.legacy.tables.components.Column;
 import ro.linic.ui.legacy.tables.components.LinicColumnHeaderStyleConfiguration;
 import ro.linic.ui.legacy.tables.components.LinicNatTableStyleConfiguration;
 import ro.linic.ui.legacy.tables.components.LinicSelectionStyleConfiguration;
+import ro.linic.ui.pos.base.model.ReceiptLine;
 
 public class UIBonDeschisNatTable
 {
 	private static final int totalID = 4;
 	
-	private static final Column nameColumn = new Column(0, Operatiune.NAME_FIELD, "DENUMIRE", 150);
-	private static final Column uomColumn = new Column(1, Operatiune.UM_FIELD, "UM", 50);
-	private static final Column pretColumn = new Column(2, Operatiune.PRET_UNITAR_FIELD, "PU", 50);
-	private static final Column cantColumn = new Column(3, Operatiune.CANTITATE_FIELD, "Cant", 40);
-	private static final Column totalColumn = new Column(totalID, EMPTY_STRING, "Total", 60);
+	private static final Column nameColumn = new Column(0, ReceiptLine.NAME_FIELD, "DENUMIRE", 300);
+	private static final Column uomColumn = new Column(1, ReceiptLine.UOM_FIELD, "UM", 50);
+	private static final Column pretColumn = new Column(2, ReceiptLine.PRICE_FIELD, "PU", 50);
+	private static final Column cantColumn = new Column(3, ReceiptLine.QUANTITY_FIELD, "Cant", 60);
+	private static final Column totalColumn = new Column(totalID, ReceiptLine.TOTAL_FIELD, "Total", 90);
 	
 	private static ImmutableList<Column> ALL_COLS = ImmutableList.<Column>builder()
 			.add(nameColumn)
@@ -75,10 +75,10 @@ public class UIBonDeschisNatTable
 			.add(totalColumn)
 			.build();
 	
-	private EventList<Operatiune> sourceData;
+	private EventList<ReceiptLine> sourceData;
 	
 	private NatTable table;
-	private IRowDataProvider<Operatiune> bodyDataProvider;
+	private IRowDataProvider<ReceiptLine> bodyDataProvider;
 	private SelectionLayer selectionLayer;
 	
 	public UIBonDeschisNatTable()
@@ -101,9 +101,9 @@ public class UIBonDeschisNatTable
 
 		// Custom selection configuration
 		selectionLayer.setSelectionModel(
-				new RowSelectionModel<Operatiune>(selectionLayer, bodyDataProvider, new IRowIdAccessor<Operatiune>()
+				new RowSelectionModel<ReceiptLine>(selectionLayer, bodyDataProvider, new IRowIdAccessor<ReceiptLine>()
 				{
-					@Override public Serializable getRowId(final Operatiune rowObject)
+					@Override public Serializable getRowId(final ReceiptLine rowObject)
 					{
 						return rowObject.hashCode();
 					}
@@ -114,7 +114,7 @@ public class UIBonDeschisNatTable
 		table.configure();
 	}
 	
-	public UIBonDeschisNatTable loadData(final ImmutableList<Operatiune> data)
+	public UIBonDeschisNatTable loadData(final ImmutableList<ReceiptLine> data)
 	{
 		try
 		{
@@ -135,14 +135,14 @@ public class UIBonDeschisNatTable
 		return table;
 	}
 	
-	public EventList<Operatiune> getSourceData()
+	public EventList<ReceiptLine> getSourceData()
 	{
 		return sourceData;
 	}
 	
-	public List<Operatiune> selection()
+	public List<ReceiptLine> selection()
 	{
-		return ((RowSelectionModel<Operatiune>) selectionLayer.getSelectionModel()).getSelectedRowObjects();
+		return ((RowSelectionModel<ReceiptLine>) selectionLayer.getSelectionModel()).getSelectedRowObjects();
 	}
 	
 	/**
@@ -156,10 +156,11 @@ public class UIBonDeschisNatTable
     {
         public BodyLayerStack(final ConfigRegistry configRegistry)
         {
-			final IColumnPropertyAccessor<Operatiune> columnAccessor = new ColumnAccessor(ALL_COLS.stream().map(Column::getProperty).collect(toImmutableList()));
+			final IColumnPropertyAccessor<ReceiptLine> columnAccessor = new ReflectiveColumnPropertyAccessor<ReceiptLine>(
+					ALL_COLS.stream().map(Column::getProperty).collect(toImmutableList()));
 			
 			sourceData = GlazedLists.eventListOf();
-	        final TransformedList<Operatiune, Operatiune> rowObjectsGlazedList = GlazedLists.threadSafeList(sourceData);
+	        final TransformedList<ReceiptLine, ReceiptLine> rowObjectsGlazedList = GlazedLists.threadSafeList(sourceData);
 
 	        final FilterList filteredData = new FilterList<>(rowObjectsGlazedList);
 	        final SortedList filteredSortedData = new SortedList<>(filteredData, null);
@@ -185,8 +186,8 @@ public class UIBonDeschisNatTable
 			// add the SortHeaderLayer to the column header layer stack
 	        // as we use GlazedLists, we use the GlazedListsSortModel which
 	        // delegates the sorting to the SortedList
-			final SortHeaderLayer<Operatiune> sortHeaderLayer = new SortHeaderLayer<Operatiune>(columnHeaderLayer,
-					new GlazedListsSortModel<Operatiune>(filteredSortedData, columnAccessor, configRegistry, columnHeaderDataLayer));
+			final SortHeaderLayer<ReceiptLine> sortHeaderLayer = new SortHeaderLayer<ReceiptLine>(columnHeaderLayer,
+					new GlazedListsSortModel<ReceiptLine>(filteredSortedData, columnAccessor, configRegistry, columnHeaderDataLayer));
 			
 			final CompositeLayer compositeLayer = new CompositeLayer(1, 2);
 	        compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, sortHeaderLayer, 0, 0);
@@ -235,27 +236,6 @@ public class UIBonDeschisNatTable
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + ALL_COLS.indexOf(cantColumn));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConv, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + ALL_COLS.indexOf(totalColumn));
-		}
-	}
-	
-	private class ColumnAccessor extends ReflectiveColumnPropertyAccessor<Operatiune>
-	{
-		public ColumnAccessor(final List<String> propertyNames)
-		{
-			super(propertyNames);
-	    }
-		
-		@Override
-		public Object getDataValue(final Operatiune rowObject, final int columnIndex)
-		{
-			switch (ALL_COLS.get(columnIndex).getIndex())
-			{
-			case totalID:
-				return rowObject.getTotal();
-
-			default:
-				return super.getDataValue(rowObject, columnIndex);
-			}
 		}
 	}
 }

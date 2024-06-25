@@ -35,6 +35,7 @@ import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
 import ro.linic.ui.pos.base.services.ProductDataUpdater;
+import ro.linic.ui.pos.base.services.SQLiteHelper;
 
 @Component
 public class LocalProductDataUpdater implements ProductDataUpdater {
@@ -42,6 +43,7 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
 	
 	@Reference private LocalDatabase localDatabase;
 	@Reference private ProductDataHolder dataHolder;
+	@Reference private SQLiteHelper sqliteHelper;
 	
 	@Override
 	public IStatus create(final Product p) {
@@ -57,40 +59,19 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
-		final ObjectMapper objectMapper = new ObjectMapper();
 		
 		final StringBuilder sb = new StringBuilder();
 		sb.append("INSERT INTO "+Product.class.getSimpleName())
 		.append("(")
-		.append(Product.ID_FIELD).append(",")
-		.append(Product.TYPE_FIELD).append(",")
-		.append(Product.TAX_CODE_FIELD).append(",")
-		.append(Product.DEPARTMENT_CODE_FIELD).append(",")
-		.append(Product.SKU_FIELD).append(",")
-		.append(Product.BARCODES_FIELD).append(",")
-		.append(Product.NAME_FIELD).append(",")
-		.append(Product.UOM_FIELD).append(",")
-		.append(Product.IS_STOCKABLE_FIELD).append(",")
-		.append(Product.PRICE_FIELD).append(",")
-		.append(Product.STOCK_FIELD)
-		.append(")").append(" VALUES(?,?,?,?,?,?,?,?,?,?,?)");
+		.append(sqliteHelper.productColumns())
+		.append(")").append(" VALUES("+sqliteHelper.productColumnsPlaceholder()+")");
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
         	p.setId(nextId(dbName));
-        	pstmt.setLong(1, p.getId());
-        	pstmt.setString(2, p.getType());
-        	pstmt.setString(3, p.getTaxCode());
-        	pstmt.setString(4, p.getDepartmentCode());
-        	pstmt.setString(5, p.getSku());
-        	pstmt.setString(6, p.getBarcodes().isEmpty() ? null : objectMapper.writeValueAsString(p.getBarcodes()));
-            pstmt.setString(7, p.getName());
-            pstmt.setString(8, p.getUom());
-            pstmt.setBoolean(9, p.isStockable());
-            pstmt.setBigDecimal(10, p.getPrice());
-            pstmt.setBigDecimal(11, p.getStock());
-            pstmt.executeUpdate();
-            dataHolder.add(p);
+        	sqliteHelper.insertProductInStatement(p, pstmt);
+            if (pstmt.executeUpdate() == 1)
+            	dataHolder.add(p);
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException | JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -136,7 +117,9 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
 		.append(Product.NAME_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(Product.UOM_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(Product.IS_STOCKABLE_FIELD+" = ?").append(LIST_SEPARATOR)
-		.append(Product.PRICE_FIELD+" = ?").append(NEWLINE)
+		.append(Product.PRICE_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(Product.IMAGE_ID_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(Product.TAX_PERCENTAGE_FIELD+" = ?").append(NEWLINE)
 		.append("WHERE").append(NEWLINE)
 		.append(Product.ID_FIELD+" = ?");
 		
@@ -151,8 +134,10 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
             pstmt.setString(7, p.getUom());
             pstmt.setBoolean(8, p.isStockable());
             pstmt.setBigDecimal(9, p.getPrice());
+            pstmt.setString(10, p.getImageId());
+            pstmt.setBigDecimal(11, p.getTaxPercentage());
             // WHERE
-            pstmt.setLong(10, p.getId());
+            pstmt.setLong(12, p.getId());
             pstmt.executeUpdate();
             
             dataHolder.getData().stream()
@@ -251,6 +236,40 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {
         	throw new RuntimeException(e);
+        } finally {
+			dbLock.writeLock().unlock();
+		}
+	}
+	
+	@Override
+	public IStatus synchronize(final List<Product> products) {
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
+		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
+		
+		final String deleteSql = "DELETE FROM "+Product.class.getSimpleName(); // delete all
+		
+		final StringBuilder sb = new StringBuilder();
+		sb.append("INSERT INTO "+Product.class.getSimpleName())
+		.append("(")
+		.append(sqliteHelper.productColumns())
+		.append(")").append(" VALUES("+sqliteHelper.productColumnsPlaceholder()+")");
+		
+		dbLock.writeLock().lock();
+        try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString());
+        		Statement stmt  = localDatabase.getConnection(dbName).createStatement();) {
+        	stmt.execute(deleteSql);
+        	dataHolder.setData(List.of());
+        	
+        	for (final Product product : products) {
+        		sqliteHelper.insertProductInStatement(product, pstmt);
+        		if (pstmt.executeUpdate() == 1)
+        			dataHolder.add(product);
+			}
+        	
+            return ValidationStatus.OK_STATUS;
+        } catch (final SQLException | JsonProcessingException e) {
+            throw new RuntimeException(e);
         } finally {
 			dbLock.writeLock().unlock();
 		}

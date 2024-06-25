@@ -21,12 +21,14 @@ import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ReceiptLineLoader;
+import ro.linic.ui.pos.base.services.SQLiteHelper;
 
 @Component
 public class LocalReceiptLineLoader implements ReceiptLineLoader {
 	private final static ILog log = ILog.of(LocalReceiptLineLoader.class);
 	
 	@Reference private LocalDatabase localDatabase;
+	@Reference private SQLiteHelper sqliteHelper;
 	
 	@Override
 	public List<ReceiptLine> findAll() {
@@ -37,13 +39,13 @@ public class LocalReceiptLineLoader implements ReceiptLineLoader {
 		List<ReceiptLine> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(SQLiteHelper.receiptLineColumns())
+		.append(sqliteHelper.receiptLineColumns())
 		.append("FROM "+ReceiptLine.class.getSimpleName());
 		
 		dbLock.readLock().lock();
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement();
 				ResultSet rs = stmt.executeQuery(querySb.toString())) {
-			result = SQLiteHelper.readReceiptLines(rs);
+			result = sqliteHelper.readReceiptLines(rs);
 		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		} finally {
@@ -62,7 +64,7 @@ public class LocalReceiptLineLoader implements ReceiptLineLoader {
 		List<ReceiptLine> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(SQLiteHelper.receiptLineColumns())
+		.append(sqliteHelper.receiptLineColumns())
 		.append("FROM "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
 		.append(ReceiptLine.ID_FIELD).append(" IN (?)");
@@ -71,7 +73,7 @@ public class LocalReceiptLineLoader implements ReceiptLineLoader {
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
 			stmt.setObject(1, ids);
 			final ResultSet rs = stmt.executeQuery();
-			result = SQLiteHelper.readReceiptLines(rs);
+			result = sqliteHelper.readReceiptLines(rs);
 		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		} finally {

@@ -17,4 +17,5 @@ public interface VanzareInterface
 	Bundle getBundle();
 	Collection<Product> selection();
 	void closeBon(final TipInchidere tipInchidere);
+	boolean canCloseReceipt();
 }

@@ -1,7 +1,7 @@
 package ro.linic.ui.pos.base.services;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -24,5 +24,5 @@ public interface ReceiptLineUpdater {
 	 * Note that if all lines are deleted for a receipt, 
 	 * this method will also delete the receipt.
 	 */
-	IStatus delete(List<Long> ids);
+	IStatus delete(Set<Long> ids);
 }

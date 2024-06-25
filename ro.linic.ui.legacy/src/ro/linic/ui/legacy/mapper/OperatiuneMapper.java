@@ -10,6 +10,6 @@ public class OperatiuneMapper {
 			return null;
 		
 		return new ReceiptLine(op.getId(), null, null, op.getName(), op.getUom(), op.getCantitate(), op.getPretVanzareUnitarCuTVA(), null,
-				op.getCotaTva(), op.getDepartment());
+				op.getCotaTva(), op.getDepartment(), op.getValoareVanzareTVA());
 	}
 }

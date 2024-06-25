@@ -1,19 +1,15 @@
 package ro.linic.ui.pos.base.services.impl;
 
 import static ro.linic.util.commons.NumberUtils.parseToLong;
-import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
 import static ro.linic.util.commons.PresentationUtils.NEWLINE;
-import static ro.linic.util.commons.StringUtils.isEmpty;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 
 import org.eclipse.core.runtime.ILog;
@@ -24,63 +20,36 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ProductDataLoader;
+import ro.linic.ui.pos.base.services.SQLiteHelper;
 
 @Component
 public class LocalProductDataLoader implements ProductDataLoader {
 	private final static ILog log = ILog.of(LocalProductDataLoader.class);
 	
 	@Reference private LocalDatabase localDatabase;
+	@Reference private SQLiteHelper sqliteHelper;
 	
 	@Override
 	public List<Product> findAll() {
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
-		final ObjectMapper objectMapper = new ObjectMapper();
 		
-		final List<Product> result = new ArrayList<>();
+		List<Product> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(Product.ID_FIELD).append(LIST_SEPARATOR)
-		.append(Product.TYPE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.TAX_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.DEPARTMENT_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.SKU_FIELD).append(LIST_SEPARATOR)
-		.append(Product.BARCODES_FIELD).append(LIST_SEPARATOR)
-		.append(Product.NAME_FIELD).append(LIST_SEPARATOR)
-		.append(Product.UOM_FIELD).append(LIST_SEPARATOR)
-		.append(Product.IS_STOCKABLE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.PRICE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.STOCK_FIELD).append(NEWLINE)
+		.append(sqliteHelper.productColumns())
 		.append("FROM "+Product.class.getSimpleName());
 		
 		dbLock.readLock().lock();
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement();
 				ResultSet rs = stmt.executeQuery(querySb.toString())) {
-			while (rs.next()) {
-				final Product p = new Product();
-				p.setId(rs.getLong(Product.ID_FIELD));
-				p.setType(rs.getString(Product.TYPE_FIELD));
-				p.setTaxCode(rs.getString(Product.TAX_CODE_FIELD));
-				p.setDepartmentCode(rs.getString(Product.DEPARTMENT_CODE_FIELD));
-				p.setSku(rs.getString(Product.SKU_FIELD));
-				final String dbBarcodes = rs.getString(Product.BARCODES_FIELD);
-				p.setBarcodes(isEmpty(dbBarcodes) ? new HashSet<String>() : 
-					objectMapper.readValue(dbBarcodes, new TypeReference<Set<String>>(){}));
-				p.setName(rs.getString(Product.NAME_FIELD));
-				p.setUom(rs.getString(Product.UOM_FIELD));
-				p.setStockable(rs.getBoolean(Product.IS_STOCKABLE_FIELD));
-				p.setPrice(rs.getBigDecimal(Product.PRICE_FIELD));
-				p.setStock(rs.getBigDecimal(Product.STOCK_FIELD));
-				result.add(p);
-			}
+			result = sqliteHelper.readProducts(rs);
 		} catch (final SQLException | JsonProcessingException e) {
 			log.error(e.getMessage(), e);
 		} finally {
@@ -95,22 +64,11 @@ public class LocalProductDataLoader implements ProductDataLoader {
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
-		final ObjectMapper objectMapper = new ObjectMapper();
 		
-		final List<Product> result = new ArrayList<>();
+		List<Product> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(Product.ID_FIELD).append(LIST_SEPARATOR)
-		.append(Product.TYPE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.TAX_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.DEPARTMENT_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.SKU_FIELD).append(LIST_SEPARATOR)
-		.append(Product.BARCODES_FIELD).append(LIST_SEPARATOR)
-		.append(Product.NAME_FIELD).append(LIST_SEPARATOR)
-		.append(Product.UOM_FIELD).append(LIST_SEPARATOR)
-		.append(Product.IS_STOCKABLE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.PRICE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.STOCK_FIELD).append(NEWLINE)
+		.append(sqliteHelper.productColumns())
 		.append("FROM "+Product.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
 		.append(Product.ID_FIELD).append(" IN (?)");
@@ -119,23 +77,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
 			stmt.setObject(1, ids);
 			final ResultSet rs = stmt.executeQuery();
-			while (rs.next()) {
-				final Product p = new Product();
-				p.setId(rs.getLong(Product.ID_FIELD));
-				p.setType(rs.getString(Product.TYPE_FIELD));
-				p.setTaxCode(rs.getString(Product.TAX_CODE_FIELD));
-				p.setDepartmentCode(rs.getString(Product.DEPARTMENT_CODE_FIELD));
-				p.setSku(rs.getString(Product.SKU_FIELD));
-				final String dbBarcodes = rs.getString(Product.BARCODES_FIELD);
-				p.setBarcodes(isEmpty(dbBarcodes) ? new HashSet<String>() : 
-					objectMapper.readValue(dbBarcodes, new TypeReference<Set<String>>(){}));
-				p.setName(rs.getString(Product.NAME_FIELD));
-				p.setUom(rs.getString(Product.UOM_FIELD));
-				p.setStockable(rs.getBoolean(Product.IS_STOCKABLE_FIELD));
-				p.setPrice(rs.getBigDecimal(Product.PRICE_FIELD));
-				p.setStock(rs.getBigDecimal(Product.STOCK_FIELD));
-				result.add(p);
-			}
+			result = sqliteHelper.readProducts(rs);
 		} catch (final SQLException | JsonProcessingException e) {
 			log.error(e.getMessage(), e);
 		} finally {
@@ -178,22 +120,11 @@ public class LocalProductDataLoader implements ProductDataLoader {
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
-		final ObjectMapper objectMapper = new ObjectMapper();
 		
-		final List<Product> result = new ArrayList<>();
+		List<Product> result = new ArrayList<>();
 		final StringBuilder querySb = new StringBuilder();
 		querySb.append("SELECT ").append(NEWLINE)
-		.append(Product.ID_FIELD).append(LIST_SEPARATOR)
-		.append(Product.TYPE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.TAX_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.DEPARTMENT_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.SKU_FIELD).append(LIST_SEPARATOR)
-		.append(Product.BARCODES_FIELD).append(LIST_SEPARATOR)
-		.append(Product.NAME_FIELD).append(LIST_SEPARATOR)
-		.append(Product.UOM_FIELD).append(LIST_SEPARATOR)
-		.append(Product.IS_STOCKABLE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.PRICE_FIELD).append(LIST_SEPARATOR)
-		.append(Product.STOCK_FIELD).append(NEWLINE)
+		.append(sqliteHelper.productColumns())
 		.append("FROM "+Product.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
 		.append(Product.SKU_FIELD).append(" == ? OR ").append(Product.BARCODES_FIELD).append(" LIKE %?%");
@@ -203,23 +134,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 			stmt.setObject(1, code);
 			stmt.setObject(2, "\""+code+"\"");
 			final ResultSet rs = stmt.executeQuery();
-			while (rs.next()) {
-				final Product p = new Product();
-				p.setId(rs.getLong(Product.ID_FIELD));
-				p.setType(rs.getString(Product.TYPE_FIELD));
-				p.setTaxCode(rs.getString(Product.TAX_CODE_FIELD));
-				p.setDepartmentCode(rs.getString(Product.DEPARTMENT_CODE_FIELD));
-				p.setSku(rs.getString(Product.SKU_FIELD));
-				final String dbBarcodes = rs.getString(Product.BARCODES_FIELD);
-				p.setBarcodes(isEmpty(dbBarcodes) ? new HashSet<String>() : 
-					objectMapper.readValue(dbBarcodes, new TypeReference<Set<String>>(){}));
-				p.setName(rs.getString(Product.NAME_FIELD));
-				p.setUom(rs.getString(Product.UOM_FIELD));
-				p.setStockable(rs.getBoolean(Product.IS_STOCKABLE_FIELD));
-				p.setPrice(rs.getBigDecimal(Product.PRICE_FIELD));
-				p.setStock(rs.getBigDecimal(Product.STOCK_FIELD));
-				result.add(p);
-			}
+			result = sqliteHelper.readProducts(rs);
 		} catch (final SQLException | JsonProcessingException e) {
 			log.error(e.getMessage(), e);
 		} finally {
