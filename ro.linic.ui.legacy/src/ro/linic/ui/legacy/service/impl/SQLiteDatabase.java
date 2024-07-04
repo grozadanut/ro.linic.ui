@@ -35,9 +35,10 @@ public class SQLiteDatabase implements LocalDatabase {
 		Connection conn = connections.get(tenantDbName);
 		if (conn == null) {
 			try {
+				Class.forName("org.sqlite.JDBC");
 				conn = DriverManager.getConnection("jdbc:sqlite:"+tenantDbName);
 				connections.put(tenantDbName, conn);
-			} catch (final SQLException e) {
+			} catch (final SQLException | ClassNotFoundException e) {
 				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}

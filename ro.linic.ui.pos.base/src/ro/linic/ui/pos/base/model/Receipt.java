@@ -15,10 +15,12 @@ public class Receipt extends JavaBean {
 	public static final String ID_FIELD = "id";
 	public static final String LINES_FIELD = "lines";
 	public static final String ALLOWANCE_CHARGE_FIELD = "allowanceCharge";
+	public static final String CLOSED_FIELD = "closed";
 	public static final String CREATION_TIME_FIELD = "creationTime";
 	
 	private Long id;
 	private AllowanceCharge allowanceCharge;
+	private Boolean closed;
 	private Instant creationTime = Instant.now();
 
 	transient private List<ReceiptLine> lines = new ArrayList<>();
@@ -33,6 +35,7 @@ public class Receipt extends JavaBean {
 		this.id = id;
 		this.lines = lines;
 		this.allowanceCharge = allowanceCharge;
+		this.closed = false;
 	}
 	
 	public Receipt() {
@@ -89,16 +92,23 @@ public class Receipt extends JavaBean {
 	public void setCreationTime(final Instant creationTime) {
 		firePropertyChange("creationTime", this.creationTime, this.creationTime = creationTime);
 	}
+	public Boolean getClosed() {
+		return closed;
+	}
+	
+	public void setClosed(final Boolean closed) {
+		firePropertyChange("closed", this.closed, this.closed = closed);
+	}
 
 	@Override
 	public String toString() {
-		return "Receipt [id=" + id + ", lines=" + lines + ", allowanceCharge=" + allowanceCharge + ", creationTime="
-				+ creationTime + "]";
+		return "Receipt [id=" + id + ", allowanceCharge=" + allowanceCharge + ", closed=" + closed + ", creationTime="
+				+ creationTime + ", lines=" + lines + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(allowanceCharge, creationTime, id, lines);
+		return Objects.hash(allowanceCharge, closed, creationTime, id, lines);
 	}
 
 	@Override
@@ -110,7 +120,7 @@ public class Receipt extends JavaBean {
 		if (getClass() != obj.getClass())
 			return false;
 		final Receipt other = (Receipt) obj;
-		return Objects.equals(allowanceCharge, other.allowanceCharge)
+		return Objects.equals(allowanceCharge, other.allowanceCharge) && Objects.equals(closed, other.closed)
 				&& Objects.equals(creationTime, other.creationTime) && Objects.equals(id, other.id)
 				&& Objects.equals(lines, other.lines);
 	}

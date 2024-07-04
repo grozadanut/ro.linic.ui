@@ -1,5 +1,6 @@
 package ro.linic.ui.pos.base.services.impl;
 
+import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
 import static ro.linic.util.commons.PresentationUtils.NEWLINE;
 
 import java.sql.PreparedStatement;
@@ -9,6 +10,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -70,11 +72,10 @@ public class LocalReceiptLoader implements ReceiptLoader {
 		.append(sqliteHelper.receiptColumns())
 		.append("FROM "+Receipt.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
-		.append(Receipt.ID_FIELD).append(" IN (?)");
+		.append(Receipt.ID_FIELD).append(" IN ("+ids.stream().map(String::valueOf).collect(Collectors.joining(LIST_SEPARATOR))+")");
 		
 		dbLock.readLock().lock();
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
-			stmt.setObject(1, ids);
 			final ResultSet rs = stmt.executeQuery();
 			result = sqliteHelper.readReceipts(rs);
 			for (final Receipt receipt : result)
@@ -101,6 +102,35 @@ public class LocalReceiptLoader implements ReceiptLoader {
 			stmt.setLong(1, receiptId);
 			final ResultSet rs = stmt.executeQuery();
 			result = sqliteHelper.readReceiptLines(rs);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public List<Receipt> findUnclosed() {
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
+		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
+		
+		List<Receipt> result = new ArrayList<>();
+		final StringBuilder querySb = new StringBuilder();
+		querySb.append("SELECT ").append(NEWLINE)
+		.append(sqliteHelper.receiptColumns())
+		.append("FROM "+Receipt.class.getSimpleName()).append(NEWLINE)
+		.append("WHERE ").append(NEWLINE)
+		.append(Receipt.CLOSED_FIELD).append(" IS NULL OR ").append(Receipt.CLOSED_FIELD).append(" = FALSE");
+		
+		dbLock.readLock().lock();
+		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
+			final ResultSet rs = stmt.executeQuery();
+			result = sqliteHelper.readReceipts(rs);
+			for (final Receipt receipt : result)
+				receipt.setLines(loadLines(receipt.getId(), dbName));
+		} catch (final SQLException e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			dbLock.readLock().unlock();
 		}
 		
 		return result;

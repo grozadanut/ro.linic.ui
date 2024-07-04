@@ -12,6 +12,8 @@ public class Messages extends NLS {
 	private Messages() {
 	}
 	
+	public static String ECRDriver_PaymentSmallerThanTotalErr;
+	public static String ECRDriver_PaymentTypeError;
 	public static String DudeECRDriver_ConfigError;
 	public static String DudeECRDriver_Error;
 	public static String DudeECRDriver_ErrorWrittingFile;
@@ -34,7 +36,6 @@ public class Messages extends NLS {
 	public static String FiscalNetECRDriver_ErrorWrittingFile;
 	public static String FiscalNetECRDriver_ErrorWrittingFileNLS;
 	public static String FiscalNetECRDriver_OperationNotPermitted;
-	public static String FiscalNetECRDriver_PaymentTypeError;
 	public static String FiscalNetECRDriverPage_CommandFolder;
 	public static String FiscalNetECRDriverPage_Department;
 	public static String FiscalNetECRDriverPage_ResponseFolder;
@@ -45,4 +46,12 @@ public class Messages extends NLS {
 	public static String PriceMandatory;
 	public static String QuantityMandatory;
 	public static String CodeExists;
+	public static String CloseReceipt;
+	public static String CloseReceiptDialog_TaxCode;
+	public static String CloseReceiptDialog_ReceiptTotal;
+	public static String CloseReceiptDialog_OutstandingTotal;
+	public static String CloseReceiptDialog_CloseButton;
+	public static String CloseReceiptDialog_OutstandingTotalNotZero;
+	public static String CloseReceiptDialog_NegativeNotAllowed;
+	public static String Cancel;
 }

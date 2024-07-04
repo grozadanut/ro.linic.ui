@@ -14,6 +14,7 @@ public interface ReceiptLoader {
 	 * Returns Receipts loaded with the lines as well.
 	 */
 	List<Receipt> findByIdIn(List<Long> ids);
+	List<Receipt> findUnclosed();
 	
 	/**
 	 * Returns a Receipt loaded with the lines as well.

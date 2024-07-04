@@ -38,13 +38,14 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		sb.append(Receipt.ID_FIELD).append(LIST_SEPARATOR)
 		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD).append(LIST_SEPARATOR)
 		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD).append(LIST_SEPARATOR)
+		.append(Receipt.CLOSED_FIELD).append(LIST_SEPARATOR)
 		.append(Receipt.CREATION_TIME_FIELD).append(NEWLINE);
 		return sb.toString();
 	}
 	
 	@Override
 	public String receiptColumnsPlaceholder() {
-		return "?,?,?,?";
+		return "?,?,?,?,?";
 	}
 	
 	@Override
@@ -57,6 +58,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 			if (allowanceAmount != null)
 				model.setAllowanceCharge(new AllowanceCharge(
 						rs.getBoolean(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD), allowanceAmount));
+			model.setClosed(rs.getBoolean(Receipt.CLOSED_FIELD));
 			model.setCreationTime(Instant.parse(rs.getString(Receipt.CREATION_TIME_FIELD)));
 			result.add(model);
 		}
@@ -69,7 +71,8 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		stmt.setLong(1, model.getId());
     	stmt.setBoolean(2, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
     	stmt.setBigDecimal(3, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
-    	stmt.setString(4, model.getCreationTime().toString());
+    	stmt.setObject(4, model.getClosed(), Types.BOOLEAN);
+    	stmt.setString(5, model.getCreationTime().toString());
 	}
 	
 	@Override
@@ -90,14 +93,13 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		.append(ReceiptLine.TAX_TOTAL_FIELD).append(LIST_SEPARATOR)
 		.append(ReceiptLine.TOTAL_FIELD).append(LIST_SEPARATOR)
 		.append(LegacyReceiptLine.WAREHOUSE_ID_FIELD).append(LIST_SEPARATOR)
-		.append(LegacyReceiptLine.USER_ID_FIELD).append(LIST_SEPARATOR)
-		.append(LegacyReceiptLine.ECR_ACTIVE_FIELD).append(NEWLINE);
+		.append(LegacyReceiptLine.USER_ID_FIELD).append(NEWLINE);
 		return sb.toString();
 	}
 	
 	@Override
 	public String receiptLineColumnsPlaceholder() {
-		return "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+		return "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 	}
 	
 	@Override
@@ -121,9 +123,8 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 			model.setCreationTime(Instant.parse(rs.getString(ReceiptLine.CREATION_TIME_FIELD)));
 			model.setTaxTotal(rs.getBigDecimal(ReceiptLine.TAX_TOTAL_FIELD));
 			model.setTotal(rs.getBigDecimal(ReceiptLine.TOTAL_FIELD));
-			model.setWarehouseId(rs.getObject(LegacyReceiptLine.WAREHOUSE_ID_FIELD, Integer.class));
-			model.setUserId(rs.getObject(LegacyReceiptLine.USER_ID_FIELD, Integer.class));
-			model.setEcrActive(rs.getObject(LegacyReceiptLine.ECR_ACTIVE_FIELD, Boolean.class));
+			model.setWarehouseId(rs.getInt(LegacyReceiptLine.WAREHOUSE_ID_FIELD) == 0 ? null : rs.getInt(LegacyReceiptLine.WAREHOUSE_ID_FIELD));
+			model.setUserId(rs.getInt(LegacyReceiptLine.USER_ID_FIELD) == 0 ? null : rs.getInt(LegacyReceiptLine.USER_ID_FIELD));
 			result.add(model);
 		}
 		rs.close();
@@ -149,7 +150,6 @@ public class SQLiteHelperImpl implements SQLiteHelper {
     	stmt.setBigDecimal(14, model.getTotal());
     	stmt.setObject(15, model.getWarehouseId(), Types.INTEGER);
     	stmt.setObject(16, model.getUserId(), Types.INTEGER);
-    	stmt.setObject(17, model.getEcrActive(), Types.BOOLEAN);
 	}
 	
 	@Override

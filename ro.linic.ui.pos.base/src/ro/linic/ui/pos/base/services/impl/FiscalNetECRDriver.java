@@ -14,8 +14,12 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +34,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
+import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.PaymentType;
@@ -41,8 +46,11 @@ import ro.linic.util.commons.StringUtils;
 
 @Component
 public class FiscalNetECRDriver implements ECRDriver {
-	private final static ILog log = ILog.of(FiscalNetECRDriver.class);
+	private final static ILog log = UIUtils.logger(FiscalNetECRDriver.class);
 	private static final String ECR_REPORT_DATE_PATTERN = "dd/MM/yyyy HH:mm:ss"; //$NON-NLS-1$
+	
+	private Function<StringBuilder, Optional<Path>> commandSender;
+	private IEclipsePreferences prefs;
 
 	private static String formatPrice(final BigDecimal price) {
 		// cu 2 zecimale fara delimitator (ex. 1000 – pentru 10 RON)
@@ -67,7 +75,6 @@ public class FiscalNetECRDriver implements ECRDriver {
 		if (smallerThan(receipt.total(), BigDecimal.ZERO))
 			return CompletableFuture.completedFuture(Result.ok());
 		
-		
 		final StringBuilder ecrCommands = new StringBuilder();
 		taxId.filter(StringUtils::notEmpty).ifPresent(tid -> ecrCommands.append("CF^"+tid).append(NEWLINE)); //$NON-NLS-1$
 		ecrCommands.append(saleLines(receipt));
@@ -77,6 +84,36 @@ public class FiscalNetECRDriver implements ECRDriver {
 		 */
 		ecrCommands.append(MessageFormat.format("P^{0}^{1}", mapPaymentType(paymentType), //$NON-NLS-1$
 				formatPrice(receipt.total())));
+		
+		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
+	}
+	
+	@Override
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments,
+			final Optional<String> taxId) {
+		if (receipt == null || receipt.getLines().isEmpty())
+			return CompletableFuture.completedFuture(Result.ok());
+		
+		if (smallerThan(receipt.total(), BigDecimal.ZERO))
+			return CompletableFuture.completedFuture(Result.ok());
+		
+		if (smallerThan(payments.values().stream().reduce(BigDecimal::add).orElse(BigDecimal.ZERO), receipt.total()))
+			return CompletableFuture.failedFuture(new IllegalArgumentException(Messages.ECRDriver_PaymentSmallerThanTotalErr));
+		
+		final StringBuilder ecrCommands = new StringBuilder();
+		taxId.filter(StringUtils::notEmpty).ifPresent(tid -> ecrCommands.append("CF^"+tid).append(NEWLINE)); //$NON-NLS-1$
+		ecrCommands.append(saleLines(receipt));
+		
+		/* close receipt
+		 * P^TipPlata(1,2,3,4,5,…)^VALOARE 
+		 */
+		payments.entrySet().stream()
+		.sorted(Comparator.comparing(Entry::getKey))
+		.forEach(paymentEntry -> {
+			ecrCommands.append(MessageFormat.format("P^{0}^{1}", mapPaymentType(paymentEntry.getKey()), //$NON-NLS-1$
+					formatPrice(paymentEntry.getValue())))
+			.append(NEWLINE);
+		});
 		
 		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
 	}
@@ -94,14 +131,14 @@ public class FiscalNetECRDriver implements ECRDriver {
 		case MODERN_PAYMENT: return "7"; //$NON-NLS-1$
 		case OTHER: return "8"; //$NON-NLS-1$
 		default:
-			throw new IllegalArgumentException(NLS.bind(Messages.FiscalNetECRDriver_PaymentTypeError, paymentType));
+			throw new IllegalArgumentException(NLS.bind(Messages.ECRDriver_PaymentTypeError, paymentType));
 		}
 	}
 
 	private String saleLines(final Receipt receipt)
 	{
 		final Bundle bundle = FrameworkUtil.getBundle(getClass());
-		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		final IEclipsePreferences prefs = prefsOr(() -> ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName()));
 		final StringBuilder ecrCommands = new StringBuilder();
 		
 		// sales
@@ -198,6 +235,9 @@ public class FiscalNetECRDriver implements ECRDriver {
 	{
 		try
 		{
+			if (commandSender != null)
+				return commandSender.apply(ecrCommands);
+			
 			final Bundle bundle = FrameworkUtil.getBundle(getClass());
 			final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 			
@@ -221,6 +261,20 @@ public class FiscalNetECRDriver implements ECRDriver {
 		}
 	}
 	
+	// ------ Testing purposes 
+	public void setCommandSender(final Function<StringBuilder, Optional<Path>> commandSender) {
+		this.commandSender = commandSender;
+	}
+
+	public void setPrefs(final IEclipsePreferences prefs) {
+		this.prefs = prefs;
+	}
+
+	private IEclipsePreferences prefsOr(final Supplier<IEclipsePreferences> supplier) {
+		return prefs != null ? prefs : supplier.get();
+	}
+	// ------- Testing purposes END
+
 	private static class ReadResult implements Supplier<Result> {
 		private Optional<Path> resultPath;
 

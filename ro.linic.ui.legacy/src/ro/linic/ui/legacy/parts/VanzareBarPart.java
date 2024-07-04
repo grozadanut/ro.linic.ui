@@ -9,15 +9,16 @@ import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
-import static ro.linic.ui.legacy.session.UIUtils.setFont;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -62,7 +63,6 @@ import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
-import ro.colibri.security.Permissions;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.linic.ui.legacy.components.AsyncLoadData;
@@ -80,10 +80,12 @@ import ro.linic.ui.legacy.tables.vanzari_bar.UIProductsSimpleTable;
 import ro.linic.ui.legacy.wizards.InchideBonWizard;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 import ro.linic.ui.legacy.wizards.InchideBonWizardDialog;
+import ro.linic.ui.pos.base.dialogs.CloseReceiptDialog;
+import ro.linic.ui.pos.base.dialogs.CloseReceiptDialog.Builder;
+import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
-import ro.linic.ui.pos.base.services.ProductDataLoader;
 import ro.linic.ui.pos.base.services.ProductDataUpdater;
 import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
 import ro.linic.ui.pos.base.services.ReceiptLoader;
@@ -98,7 +100,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	private static final String PRODUCTS_TABLE_STATE_PREFIX = "vanzari_bar.all_products_nt"; //$NON-NLS-1$
 	private static final String BON_DESCHIS_TABLE_STATE_PREFIX = "vanzari_bar.bon_deschis_nt"; //$NON-NLS-1$
-	private static final String INITIAL_PART_LOAD_PROP = "initial_part_load"; //$NON-NLS-1$
+	private static final String INITIAL_PART_LOAD_PROP = "vanzari_bar.initial_part_load"; //$NON-NLS-1$
 	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari_bar.horizontal_sash"; //$NON-NLS-1$
 
 	// MODEL
@@ -125,7 +127,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private Button inchideFacturaBCButton;
 	private Button inchideCardButton;
 
-	private Button casaActivaButton;
+//	private Button casaActivaButton;
 	private UIBonDeschisNatTable bonDeschisTable;
 
 	private Label totalFaraTVALabel;
@@ -140,7 +142,6 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	@Inject private ProductDataHolder productDataHolder;
 	@Inject private ProductDataUpdater productDataUpdater;
-	@Inject private ProductDataLoader productDataLoader;
 	@Inject private ReceiptLoader receiptLoader;
 	@Inject private ReceiptUpdater receiptUpdater;
 	@Inject private ReceiptLineUpdater receiptLineUpdater;
@@ -176,8 +177,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
 				Boolean.TRUE.toString()))) {
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
-			BusinessDelegate.unfinishedBonuriCasa().forEach(unfinishedBon -> newPartForBon(partService, unfinishedBon));
-			loadData();
+			receiptLoader.findUnclosed().forEach(unclosedReceipt -> newPartForBon(partService, unclosedReceipt));
+			reloadProduct(null, false);
 		}
 
 		parent.setLayout(new GridLayout());
@@ -251,12 +252,12 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		bonDeschisTable.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().grab(true, true).span(4, 1).applyTo(bonDeschisTable.getTable());
 
-		casaActivaButton = new Button(container, SWT.CHECK);
-		casaActivaButton.setText(Messages.VanzareBarPart_ECRActive);
-		casaActivaButton.setSelection(true);
-		casaActivaButton.setEnabled(ClientSession.instance().hasPermission(Permissions.CLOSE_WITHOUT_CASA));
-		setFont(casaActivaButton);
-		GridDataFactory.swtDefaults().span(4, 1).applyTo(casaActivaButton);
+//		casaActivaButton = new Button(container, SWT.CHECK);
+//		casaActivaButton.setText(Messages.VanzareBarPart_ECRActive);
+//		casaActivaButton.setSelection(true);
+//		casaActivaButton.setEnabled(ClientSession.instance().hasPermission(Permissions.CLOSE_WITHOUT_CASA));
+//		setFont(casaActivaButton);
+//		GridDataFactory.swtDefaults().span(4, 1).applyTo(casaActivaButton);
 
 		final Composite buttonsContainer = new Composite(container, SWT.NONE);
 		buttonsContainer.setLayout(new GridLayout(3, false));
@@ -583,11 +584,6 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			addNewOperationToBon(allProductsTable.selection().stream().findFirst());
 	}
 
-	private void loadData() {
-		reloadProduct(null, false);
-		loadReceipt(bonCasa, true);
-	}
-
 	/**
 	 * Legacy method, used in VanzariIncarcaDocDialog, use {@link loadReceipt()}
 	 */
@@ -662,7 +658,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				product.get().getName(), product.get().getUom(), cantitate, price, null, product.get().getTaxCode(),
 				product.get().getDepartmentCode(), taxTotal,
 				ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
-				ClientSession.instance().getLoggedUser().getId(), casaActivaButton.getSelection());
+				ClientSession.instance().getLoggedUser().getId());
 		final IStatus result = receiptLineUpdater.create(newReceiptLine);
 
 		if (!result.isOK()) {
@@ -732,18 +728,31 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		loadReceipt(receiptLoader.findById(bonCasa.getId()).orElse(null), true);
 	}
 
-	/**
-	 * Open {@link #InchideBonWizardDialog}
-	 */
 	@Override
 	public void closeBon(final TipInchidere tipInchidere) {
 		if (bonCasa != null) {
 			if (tipInchidere.equals(TipInchidere.PRIN_CASA) || tipInchidere.equals(TipInchidere.PRIN_CARD)) {
-				// open new close dialog
+				final PaymentType paymentType = switch (tipInchidere) {
+				case PRIN_CASA -> PaymentType.CASH;
+				case PRIN_CARD -> PaymentType.CARD;
+				default ->
+				throw new IllegalArgumentException("Unexpected value: " + tipInchidere);
+				};
+
+				final CloseReceiptDialog closeReceiptDialog = Builder.partial(search.getShell(), bonCasa)
+						.initialValues(Map.of(paymentType, bonCasa.total()))
+						.build();
+				ContextInjectionFactory.inject(closeReceiptDialog, ctx);
+				
+				if (closeReceiptDialog.open() == Window.OK)
+					loadReceipt(null, false);
 			} else {
+				// TODO make sure the receipt is synchronized to server
+				
 				final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 						Display.getCurrent().getActiveShell(),
-						new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), ctx, bundle, log, tipInchidere));
+						new InchideBonWizard(BusinessDelegate.reloadDoc(bonCasa.getId()), true, ctx, bundle, log,
+								tipInchidere));
 
 				if (wizardDialog.open() == Window.OK)
 					loadReceipt(null, false);

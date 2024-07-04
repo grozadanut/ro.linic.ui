@@ -296,6 +296,7 @@ public class LoginAddon {
 		.append(Receipt.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
 		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
 		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(Receipt.CLOSED_FIELD+" integer,").append(NEWLINE)
 		.append(Receipt.CREATION_TIME_FIELD+" text").append(NEWLINE)
 		.append(");");
 		return productsSb.toString();
@@ -320,8 +321,7 @@ public class LoginAddon {
 		.append(ReceiptLine.DEPARTMENT_CODE_FIELD+" text,").append(NEWLINE)
 		.append(ReceiptLine.CREATION_TIME_FIELD+" text,").append(NEWLINE)
 		.append(LegacyReceiptLine.WAREHOUSE_ID_FIELD+" integer,").append(NEWLINE)
-		.append(LegacyReceiptLine.USER_ID_FIELD+" integer,").append(NEWLINE)
-		.append(LegacyReceiptLine.ECR_ACTIVE_FIELD+" integer").append(NEWLINE)
+		.append(LegacyReceiptLine.USER_ID_FIELD+" integer").append(NEWLINE)
 		.append(");");
 		return productsSb.toString();
 	}

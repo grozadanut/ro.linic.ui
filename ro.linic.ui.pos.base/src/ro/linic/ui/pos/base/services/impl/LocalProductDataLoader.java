@@ -1,6 +1,7 @@
 package ro.linic.ui.pos.base.services.impl;
 
 import static ro.linic.util.commons.NumberUtils.parseToLong;
+import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
 import static ro.linic.util.commons.PresentationUtils.NEWLINE;
 
 import java.sql.PreparedStatement;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -71,11 +73,10 @@ public class LocalProductDataLoader implements ProductDataLoader {
 		.append(sqliteHelper.productColumns())
 		.append("FROM "+Product.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
-		.append(Product.ID_FIELD).append(" IN (?)");
+		.append(Product.ID_FIELD).append(" IN ("+ids.stream().map(String::valueOf).collect(Collectors.joining(LIST_SEPARATOR))+")");
 		
 		dbLock.readLock().lock();
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
-			stmt.setObject(1, ids);
 			final ResultSet rs = stmt.executeQuery();
 			result = sqliteHelper.readProducts(rs);
 		} catch (final SQLException | JsonProcessingException e) {

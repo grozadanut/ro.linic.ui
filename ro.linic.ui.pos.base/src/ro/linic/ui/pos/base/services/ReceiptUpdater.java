@@ -17,4 +17,5 @@ public interface ReceiptUpdater {
 	 */
 	IStatus update(Receipt r);
 	IStatus delete(List<Long> ids);
+	IStatus closeReceipt(Long id);
 }

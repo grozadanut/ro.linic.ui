@@ -393,6 +393,7 @@ public class UIUtils
 		
 		final CLabel syncStateLabel = new CLabel(topBarContainer, SWT.NONE);
 		syncStateLabel.setText("OK");
+		syncStateLabel.setAlignment(SWT.CENTER);
 		syncStateLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		syncStateLabel.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		final GridData workingModeGD = new GridData(SWT.RIGHT, SWT.CENTER, false, false);

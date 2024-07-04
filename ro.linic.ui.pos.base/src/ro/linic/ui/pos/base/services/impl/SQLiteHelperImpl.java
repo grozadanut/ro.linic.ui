@@ -37,13 +37,14 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		sb.append(Receipt.ID_FIELD).append(LIST_SEPARATOR)
 		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD).append(LIST_SEPARATOR)
 		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD).append(LIST_SEPARATOR)
+		.append(Receipt.CLOSED_FIELD).append(LIST_SEPARATOR)
 		.append(Receipt.CREATION_TIME_FIELD).append(NEWLINE);
 		return sb.toString();
 	}
 	
 	@Override
 	public String receiptColumnsPlaceholder() {
-		return "?,?,?,?";
+		return "?,?,?,?,?";
 	}
 	
 	@Override
@@ -56,6 +57,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 			if (allowanceAmount != null)
 				model.setAllowanceCharge(new AllowanceCharge(
 						rs.getBoolean(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD), allowanceAmount));
+			model.setClosed(rs.getBoolean(Receipt.CLOSED_FIELD));
 			model.setCreationTime(Instant.parse(rs.getString(Receipt.CREATION_TIME_FIELD)));
 			result.add(model);
 		}
@@ -68,7 +70,8 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		stmt.setLong(1, model.getId());
     	stmt.setBoolean(2, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
     	stmt.setBigDecimal(3, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
-    	stmt.setString(4, model.getCreationTime().toString());
+    	stmt.setObject(4, model.getClosed(), Types.BOOLEAN);
+    	stmt.setString(5, model.getCreationTime().toString());
 	}
 	
 	@Override

@@ -18,8 +18,12 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +38,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
+import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.PaymentType;
@@ -45,11 +50,14 @@ import ro.linic.util.commons.StringUtils;
 
 @Component
 public class DudeECRDriver implements ECRDriver {
-	private final static ILog log = ILog.of(DudeECRDriver.class);
+	private static final ILog log = UIUtils.logger(DudeECRDriver.class);
 	private static final String RESULT_SUFFIX = "_result"; //$NON-NLS-1$
 	private static final String ECR_REPORT_DATE_PATTERN = "dd-MM-yy HH:mm:ss"; //DD-MM-YY hh:mm:ss DST //$NON-NLS-1$
 	private static final int ECR_MAX_ITEM_NAME_LENGTH = 72;
 	private static final int ECR_MAX_ITEM_UOM_LENGTH = 6;
+	
+	private Function<StringBuilder, Optional<Path>> commandSender;
+	private IEclipsePreferences prefs;
 
 	@Override
 	public boolean isECRSupported(final String ecrModel) {
@@ -77,6 +85,65 @@ public class DudeECRDriver implements ECRDriver {
 		}
 
 		return CompletableFuture.supplyAsync(new ReadResult(resultPath));
+	}
+	
+	@Override
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments,
+			final Optional<String> taxId) {
+		if (receipt == null || receipt.getLines().isEmpty())
+			return CompletableFuture.completedFuture(Result.ok());
+		
+		if (smallerThan(receipt.total(), BigDecimal.ZERO))
+			return CompletableFuture.completedFuture(Result.ok());
+		
+		if (smallerThan(payments.values().stream().reduce(BigDecimal::add).orElse(BigDecimal.ZERO), receipt.total()))
+			return CompletableFuture.failedFuture(new IllegalArgumentException(Messages.ECRDriver_PaymentSmallerThanTotalErr));
+		
+		final StringBuilder ecrCommands = addSaleLines(receipt, taxId);
+		/* payments
+		 * {PaidMode}<SEP>{Amount}<SEP>
+		 */
+		payments.entrySet().stream()
+		.sorted(Comparator.comparing(Entry::getKey))
+		.forEach(paymentEntry -> {
+			ecrCommands.append(MessageFormat.format("53,{0}[\\t]{1}[\\t]", mapPaymentType(paymentEntry.getKey()), //$NON-NLS-1$
+					safeString(truncate(paymentEntry.getValue(), 2), BigDecimal::toString)))
+			.append(NEWLINE);
+		});
+		
+		// close receipt
+		ecrCommands.append("56").append(NEWLINE); //$NON-NLS-1$
+		// update display
+		ecrCommands.append("47, MULTUMIM ! [\\t]").append(NEWLINE);
+		ecrCommands.append("35, VA MAI ASTEPTAM [\\t]");
+		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
+	}
+	
+	private String mapPaymentType(final PaymentType paymentType) {
+		/* PaidMode - Type of payment;
+			o '0' – NUMERAR (CASH)
+			o '1' – CARD
+			o '2' – CREDIT
+			o '3' – TICHETE MASA (MEAL VOUCHERS)
+			o '4' – TICHETE VALORICE (VALUE TICKETS)
+			o '5' – VOUCHER
+			o '6' – PLATA MODERNA (MODERN PAYMENT)
+			o '7' – CARD + AVANS IN NUMERAR (CASH IN ADVANCE)
+			o '8' – ALTE METODE (OTHER METHODS)
+			o '9' - Foreign currency
+		 */
+		switch (paymentType) {
+		case CASH: return "0"; //$NON-NLS-1$
+		case CARD: return "1"; //$NON-NLS-1$
+		case CREDIT: return "2"; //$NON-NLS-1$
+		case MEAL_TICKET: return "3"; //$NON-NLS-1$
+		case VALUE_TICKET: return "4"; //$NON-NLS-1$
+		case VOUCHER: return "5"; //$NON-NLS-1$
+		case MODERN_PAYMENT: return "6"; //$NON-NLS-1$
+		case OTHER: return "8"; //$NON-NLS-1$
+		default:
+			throw new IllegalArgumentException(NLS.bind(Messages.ECRDriver_PaymentTypeError, paymentType));
+		}
 	}
 	
 	private Optional<Path> printReceiptCash(final Receipt receipt, final Optional<String> taxId)
@@ -157,6 +224,9 @@ public class DudeECRDriver implements ECRDriver {
 	{
 		try
 		{
+			if (commandSender != null)
+				return commandSender.apply(ecrCommands);
+			
 			final Bundle bundle = FrameworkUtil.getBundle(getClass());
 			final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 			
@@ -196,7 +266,7 @@ public class DudeECRDriver implements ECRDriver {
 	private StringBuilder addSaleLines(final Receipt receipt, final Optional<String> taxId)
 	{
 		final Bundle bundle = FrameworkUtil.getBundle(getClass());
-		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		final IEclipsePreferences prefs = prefsOr(() -> ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName()));
 		final StringBuilder ecrCommands = new StringBuilder();
 		
 		// Open fiscal receipt
@@ -239,6 +309,20 @@ public class DudeECRDriver implements ECRDriver {
 				safeString(line.getDepartmentCode(), prefs.get(PreferenceKey.DUDE_ECR_DEPT, PreferenceKey.DUDE_ECR_DEPT_DEF)),
 				truncate(line.getUom(), ECR_MAX_ITEM_UOM_LENGTH));
 	}
+	
+	// ------ Testing purposes 
+	public void setCommandSender(final Function<StringBuilder, Optional<Path>> commandSender) {
+		this.commandSender = commandSender;
+	}
+	
+	public void setPrefs(final IEclipsePreferences prefs) {
+		this.prefs = prefs;
+	}
+	
+	private IEclipsePreferences prefsOr(final Supplier<IEclipsePreferences> supplier) {
+		return prefs != null ? prefs : supplier.get();
+	}
+	// ------- Testing purposes END
 	
 	private static class ReadResult implements Supplier<Result> {
 		private Optional<Path> resultPath;

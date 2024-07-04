@@ -1,8 +1,10 @@
 package ro.linic.ui.pos.base.services.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +51,14 @@ public class ECRServiceImpl implements ECRService {
 	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
 		return findDriver()
 				.map(driver -> driver.printReceipt(receipt, paymentType, taxId))
+				.map(cf -> cf.completeOnTimeout(Result.error(Messages.ECRServiceImpl_Timeout), RESULT_READ_TIMEOUT_S, TimeUnit.SECONDS))
+				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
+	}
+	
+	@Override
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments, final Optional<String> taxId) {
+		return findDriver()
+				.map(driver -> driver.printReceipt(receipt, payments, taxId))
 				.map(cf -> cf.completeOnTimeout(Result.error(Messages.ECRServiceImpl_Timeout), RESULT_READ_TIMEOUT_S, TimeUnit.SECONDS))
 				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
 	}

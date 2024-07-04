@@ -130,4 +130,33 @@ public class LocalReceiptUpdater implements ReceiptUpdater {
 			dbLock.writeLock().unlock();
 		}
 	}
+	
+	@Override
+	public IStatus closeReceipt(final Long id) {
+		if (id == null)
+			return ValidationStatus.OK_STATUS;
+		
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
+		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
+		
+		final StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE "+Receipt.class.getSimpleName()+" SET ")
+		.append(Receipt.CLOSED_FIELD+" = ?").append(NEWLINE)
+		.append("WHERE").append(NEWLINE)
+		.append(Receipt.ID_FIELD+" = ?");
+		
+		dbLock.writeLock().lock();
+        try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
+        	pstmt.setBoolean(1, true);
+            // WHERE
+            pstmt.setLong(2, id);
+            pstmt.executeUpdate();
+            return ValidationStatus.OK_STATUS;
+        } catch (final SQLException e) {
+        	throw new RuntimeException(e);
+        } finally {
+			dbLock.writeLock().unlock();
+		}
+	}
 }

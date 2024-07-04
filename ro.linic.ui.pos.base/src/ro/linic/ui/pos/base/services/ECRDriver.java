@@ -1,6 +1,8 @@
 package ro.linic.ui.pos.base.services;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +16,7 @@ public interface ECRDriver {
 	
 	boolean isECRSupported(String ecrModel);
 	CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId);
+	CompletableFuture<Result> printReceipt(Receipt receipt, Map<PaymentType, BigDecimal> payments, Optional<String> taxId);
 	public void reportZ();
 	public void reportX();
 	public void reportD();

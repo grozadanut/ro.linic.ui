@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -49,7 +50,7 @@ import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.ui.PercentagePopup;
 
 public class UIUtils {
-	private static final ILog log = ILog.of(UIUtils.class);
+	private static final ILog log = logger(UIUtils.class);
 	
 	public static String OS = System.getProperty("os.name").toLowerCase();
 
@@ -69,24 +70,29 @@ public class UIUtils {
 		return control;
 	}
 
-	public static void setBoldFont(final Control control) {
+	public static <T extends Control> T setBoldFont(final T control) {
 		control.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT));
+		return control;
 	}
 
-	public static void setBannerFont(final Control control) {
+	public static <T extends Control> T setBannerFont(final T control) {
 		control.setFont(JFaceResources.getBannerFont());
+		return control;
 	}
 
-	public static void setBoldBannerFont(final Control control) {
+	public static <T extends Control> T setBoldBannerFont(final T control) {
 		control.setFont(JFaceResources.getFontRegistry().getBold(JFaceResources.BANNER_FONT));
+		return control;
 	}
 
-	public static void setCustomFont(final Control control, final String key) {
+	public static <T extends Control> T setCustomFont(final T control, final String key) {
 		control.setFont(JFaceResources.getFontRegistry().get(key));
+		return control;
 	}
 
-	public static void setBoldCustomFont(final Control control, final String key) {
+	public static <T extends Control> T setBoldCustomFont(final T control, final String key) {
 		control.setFont(JFaceResources.getFontRegistry().getBold(key));
+		return control;
 	}
 	
 	public static void showResult(final IStatus status)
@@ -307,6 +313,30 @@ public class UIUtils {
 		} catch (final IOException e) {
 			log.error(e.getMessage(), e);
 			return Optional.empty();
+		}
+	}
+	
+	public static ILog logger(final Class<?> clazz) {
+		try {
+			return ILog.of(clazz);
+		} catch (final Exception e) {
+			// logger not present in unit tests
+			return new ILog() {
+				@Override
+				public void removeLogListener(final ILogListener listener) {
+				}
+				@Override
+				public void log(final IStatus status) {
+					System.out.println(status);
+				}
+				@Override
+				public Bundle getBundle() {
+					return null;
+				}
+				@Override
+				public void addLogListener(final ILogListener listener) {
+				}
+			};
 		}
 	}
 }

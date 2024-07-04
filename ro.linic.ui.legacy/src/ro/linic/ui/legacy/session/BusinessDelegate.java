@@ -569,6 +569,15 @@ public class BusinessDelegate
 		return bean.accountingDocumentById(doc.getId(), false);
 	}
 	
+	public static AccountingDocument reloadDoc(final Long docId)
+	{
+		if (docId == null)
+			return null;
+
+		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);
+		return bean.accountingDocumentById(docId, false);
+	}
+	
 	/**
 	 * @param doc @nullable
 	 * @return can return null if the parameter is null or if the acc doc was deleted from the database

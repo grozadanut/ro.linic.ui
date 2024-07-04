@@ -1,5 +1,6 @@
 package ro.linic.ui.pos.base.services.impl;
 
+import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
 import static ro.linic.util.commons.PresentationUtils.NEWLINE;
 
 import java.sql.PreparedStatement;
@@ -9,6 +10,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -67,11 +69,10 @@ public class LocalReceiptLineLoader implements ReceiptLineLoader {
 		.append(sqliteHelper.receiptLineColumns())
 		.append("FROM "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
 		.append("WHERE ").append(NEWLINE)
-		.append(ReceiptLine.ID_FIELD).append(" IN (?)");
+		.append(ReceiptLine.ID_FIELD).append(" IN ("+ids.stream().map(String::valueOf).collect(Collectors.joining(LIST_SEPARATOR))+")");
 		
 		dbLock.readLock().lock();
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
-			stmt.setObject(1, ids);
 			final ResultSet rs = stmt.executeQuery();
 			result = sqliteHelper.readReceiptLines(rs);
 		} catch (final SQLException e) {
