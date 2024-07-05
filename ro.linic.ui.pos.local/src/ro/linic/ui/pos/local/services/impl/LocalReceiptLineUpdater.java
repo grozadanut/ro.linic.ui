@@ -1,4 +1,4 @@
-package ro.linic.ui.pos.base.services.impl;
+package ro.linic.ui.pos.local.services.impl;
 
 import static ro.linic.util.commons.NumberUtils.add;
 import static ro.linic.util.commons.NumberUtils.subtract;
@@ -35,7 +35,7 @@ import ro.linic.ui.pos.base.services.ProductDataHolder;
 import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
 import ro.linic.ui.pos.base.services.SQLiteHelper;
 
-@Component
+@Component(property = org.osgi.framework.Constants.SERVICE_RANKING + "=0")
 public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	@Reference private LocalDatabase localDatabase;
 	@Reference private ProductDataHolder productDataHolder;
@@ -49,7 +49,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 		if (!validationStatus.isOK())
 			return validationStatus;
 		
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
 		
@@ -107,7 +107,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	
 	@Override
 	public IStatus updateQuantity(final long id, final BigDecimal newQuantity) {
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
 		
@@ -146,7 +146,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 		if (ids == null || ids.isEmpty())
 			return ValidationStatus.OK_STATUS;
 		
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
 		
@@ -183,7 +183,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	}
 	
 	private List<ReceiptLine> findReceiptLinesByIdIn(final Set<Long> ids) throws SQLException {
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		List<ReceiptLine> result = new ArrayList<>();
@@ -203,7 +203,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	}
 	
 	private boolean hasNoLine(final Long receiptId) throws SQLException {
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		final StringBuilder querySb = new StringBuilder();
@@ -224,7 +224,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 		if (receiptId == null)
 			return;
 		
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		final String sql = "DELETE FROM "+Receipt.class.getSimpleName()+" WHERE "+Receipt.ID_FIELD+" == ?";
@@ -236,7 +236,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	}
 	
 	private void increaseStock(final Long productId, final BigDecimal quantityToAdd) throws SQLException {
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		final StringBuilder sb = new StringBuilder();
@@ -258,7 +258,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
 	}
 	
 	private void decreaseStock(final Long productId, final BigDecimal quantityToSubtract) throws SQLException {
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		final StringBuilder sb = new StringBuilder();

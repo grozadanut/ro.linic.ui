@@ -9,7 +9,7 @@ public class OperatiuneMapper {
 		if (op == null)
 			return null;
 		
-		return new ReceiptLine(op.getId(), null, null, op.getName(), op.getUom(), op.getCantitate(), op.getPretVanzareUnitarCuTVA(), null,
-				op.getCotaTva(), op.getDepartment(), op.getValoareVanzareTVA());
+		return new ReceiptLine(op.getId(), null, null, op.getBarcode(), op.getName(), op.getUom(), op.getCantitate(),
+				op.getPretVanzareUnitarCuTVA(), null, op.getCotaTva(), op.getDepartment(), op.getValoareVanzareTVA());
 	}
 }

@@ -655,8 +655,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				.setScale(2, RoundingMode.HALF_EVEN);
 
 		final LegacyReceiptLine newReceiptLine = new LegacyReceiptLine(null, product.get().getId(), bonCasa.getId(),
-				product.get().getName(), product.get().getUom(), cantitate, price, null, product.get().getTaxCode(),
-				product.get().getDepartmentCode(), taxTotal,
+				product.get().getSku(), product.get().getName(), product.get().getUom(), cantitate, price, null,
+				product.get().getTaxCode(), product.get().getDepartmentCode(), taxTotal, false,
 				ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
 				ClientSession.instance().getLoggedUser().getId());
 		final IStatus result = receiptLineUpdater.create(newReceiptLine);

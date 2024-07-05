@@ -29,37 +29,43 @@ import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.services.SQLiteHelper;
+import ro.linic.ui.pos.cloud.model.CloudReceipt;
+import ro.linic.ui.pos.cloud.model.CloudReceiptLine;
 
 @Component(property = org.osgi.framework.Constants.SERVICE_RANKING + "=1")
 public class SQLiteHelperImpl implements SQLiteHelper {
 	@Override
 	public String receiptColumns() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(Receipt.ID_FIELD).append(LIST_SEPARATOR)
-		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD).append(LIST_SEPARATOR)
-		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD).append(LIST_SEPARATOR)
-		.append(Receipt.CLOSED_FIELD).append(LIST_SEPARATOR)
-		.append(Receipt.CREATION_TIME_FIELD).append(NEWLINE);
+		sb.append(CloudReceipt.ID_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceipt.CLOSED_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceipt.SYNCED_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceipt.CREATION_TIME_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceipt.NUMBER_FIELD).append(NEWLINE);
 		return sb.toString();
 	}
 	
 	@Override
 	public String receiptColumnsPlaceholder() {
-		return "?,?,?,?,?";
+		return "?,?,?,?,?,?,?";
 	}
 	
 	@Override
 	public List<Receipt> readReceipts(final ResultSet rs) throws SQLException {
 		final List<Receipt> result = new ArrayList<>();
 		while (rs.next()) {
-			final Receipt model = new Receipt();
-			model.setId(rs.getLong(Receipt.ID_FIELD));
-			final BigDecimal allowanceAmount = rs.getBigDecimal(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD);
+			final CloudReceipt model = new CloudReceipt();
+			model.setId(rs.getLong(CloudReceipt.ID_FIELD));
+			final BigDecimal allowanceAmount = rs.getBigDecimal(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD);
 			if (allowanceAmount != null)
 				model.setAllowanceCharge(new AllowanceCharge(
-						rs.getBoolean(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD), allowanceAmount));
-			model.setClosed(rs.getBoolean(Receipt.CLOSED_FIELD));
-			model.setCreationTime(Instant.parse(rs.getString(Receipt.CREATION_TIME_FIELD)));
+						rs.getBoolean(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD), allowanceAmount));
+			model.setClosed(rs.getBoolean(CloudReceipt.CLOSED_FIELD));
+			model.setSynced(rs.getBoolean(CloudReceipt.SYNCED_FIELD));
+			model.setCreationTime(Instant.parse(rs.getString(CloudReceipt.CREATION_TIME_FIELD)));
+			model.setNumber(rs.getInt(CloudReceipt.NUMBER_FIELD));
 			result.add(model);
 		}
 		rs.close();
@@ -67,31 +73,36 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 	}
 	
 	@Override
-	public void insertReceiptInStatement(final Receipt model, final PreparedStatement stmt) throws SQLException {
+	public void insertReceiptInStatement(final Receipt m, final PreparedStatement stmt) throws SQLException {
+		final CloudReceipt model = (CloudReceipt) m;
 		stmt.setLong(1, model.getId());
     	stmt.setBoolean(2, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
     	stmt.setBigDecimal(3, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
     	stmt.setObject(4, model.getClosed(), Types.BOOLEAN);
-    	stmt.setString(5, model.getCreationTime().toString());
+    	stmt.setObject(5, model.getSynced(), Types.BOOLEAN);
+    	stmt.setString(6, model.getCreationTime().toString());
+    	stmt.setObject(7, model.getNumber(), Types.INTEGER);
 	}
 	
 	@Override
 	public String receiptLineColumns() {
 		final StringBuilder sb = new StringBuilder();
-		sb.append(ReceiptLine.ID_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.PRODUCT_ID_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.RECEIPT_ID_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.NAME_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.UOM_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.QUANTITY_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.PRICE_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.TAX_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.DEPARTMENT_CODE_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.CREATION_TIME_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.TAX_TOTAL_FIELD).append(LIST_SEPARATOR)
-		.append(ReceiptLine.TOTAL_FIELD).append(LIST_SEPARATOR)
+		sb.append(CloudReceiptLine.ID_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.PRODUCT_ID_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.RECEIPT_ID_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.SKU_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.NAME_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.UOM_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.QUANTITY_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.PRICE_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.TAX_CODE_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.DEPARTMENT_CODE_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.CREATION_TIME_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.TAX_TOTAL_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.TOTAL_FIELD).append(LIST_SEPARATOR)
+		.append(CloudReceiptLine.SYNCED_FIELD).append(LIST_SEPARATOR)
 		.append(LegacyReceiptLine.WAREHOUSE_ID_FIELD).append(LIST_SEPARATOR)
 		.append(LegacyReceiptLine.USER_ID_FIELD).append(NEWLINE);
 		return sb.toString();
@@ -99,7 +110,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 	
 	@Override
 	public String receiptLineColumnsPlaceholder() {
-		return "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+		return "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 	}
 	
 	@Override
@@ -107,22 +118,24 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		final List<ReceiptLine> result = new ArrayList<>();
 		while (rs.next()) {
 			final LegacyReceiptLine model = new LegacyReceiptLine();
-			model.setId(rs.getLong(ReceiptLine.ID_FIELD));
-			model.setProductId(rs.getLong(ReceiptLine.PRODUCT_ID_FIELD));
-			model.setReceiptId(rs.getLong(ReceiptLine.RECEIPT_ID_FIELD));
-			model.setName(rs.getString(ReceiptLine.NAME_FIELD));
-			model.setUom(rs.getString(ReceiptLine.UOM_FIELD));
-			model.setQuantity(rs.getBigDecimal(ReceiptLine.QUANTITY_FIELD));
-			model.setPrice(rs.getBigDecimal(ReceiptLine.PRICE_FIELD));
-			final BigDecimal allowanceAmount = rs.getBigDecimal(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD);
+			model.setId(rs.getLong(CloudReceiptLine.ID_FIELD));
+			model.setProductId(rs.getLong(CloudReceiptLine.PRODUCT_ID_FIELD));
+			model.setReceiptId(rs.getLong(CloudReceiptLine.RECEIPT_ID_FIELD));
+			model.setSku(rs.getString(CloudReceiptLine.SKU_FIELD));
+			model.setName(rs.getString(CloudReceiptLine.NAME_FIELD));
+			model.setUom(rs.getString(CloudReceiptLine.UOM_FIELD));
+			model.setQuantity(rs.getBigDecimal(CloudReceiptLine.QUANTITY_FIELD));
+			model.setPrice(rs.getBigDecimal(CloudReceiptLine.PRICE_FIELD));
+			final BigDecimal allowanceAmount = rs.getBigDecimal(CloudReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD);
 			if (allowanceAmount != null)
 				model.setAllowanceCharge(new AllowanceCharge(
-						rs.getBoolean(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD), allowanceAmount));
-			model.setTaxCode(rs.getString(ReceiptLine.TAX_CODE_FIELD));
-			model.setDepartmentCode(rs.getString(ReceiptLine.DEPARTMENT_CODE_FIELD));
-			model.setCreationTime(Instant.parse(rs.getString(ReceiptLine.CREATION_TIME_FIELD)));
-			model.setTaxTotal(rs.getBigDecimal(ReceiptLine.TAX_TOTAL_FIELD));
-			model.setTotal(rs.getBigDecimal(ReceiptLine.TOTAL_FIELD));
+						rs.getBoolean(CloudReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD), allowanceAmount));
+			model.setTaxCode(rs.getString(CloudReceiptLine.TAX_CODE_FIELD));
+			model.setDepartmentCode(rs.getString(CloudReceiptLine.DEPARTMENT_CODE_FIELD));
+			model.setCreationTime(Instant.parse(rs.getString(CloudReceiptLine.CREATION_TIME_FIELD)));
+			model.setTaxTotal(rs.getBigDecimal(CloudReceiptLine.TAX_TOTAL_FIELD));
+			model.setTotal(rs.getBigDecimal(CloudReceiptLine.TOTAL_FIELD));
+			model.setSynced(rs.getBoolean(CloudReceiptLine.SYNCED_FIELD));
 			model.setWarehouseId(rs.getInt(LegacyReceiptLine.WAREHOUSE_ID_FIELD) == 0 ? null : rs.getInt(LegacyReceiptLine.WAREHOUSE_ID_FIELD));
 			model.setUserId(rs.getInt(LegacyReceiptLine.USER_ID_FIELD) == 0 ? null : rs.getInt(LegacyReceiptLine.USER_ID_FIELD));
 			result.add(model);
@@ -137,19 +150,21 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		stmt.setLong(1, model.getId());
 		stmt.setObject(2, model.getProductId(), Types.BIGINT);
 		stmt.setObject(3, model.getReceiptId(), Types.BIGINT);
-		stmt.setString(4, model.getName());
-		stmt.setString(5, model.getUom());
-		stmt.setBigDecimal(6, model.getQuantity());
-		stmt.setBigDecimal(7, model.getPrice());
-    	stmt.setBoolean(8, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
-    	stmt.setBigDecimal(9, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
-    	stmt.setString(10, model.getTaxCode());
-    	stmt.setString(11, model.getDepartmentCode());
-    	stmt.setString(12, model.getCreationTime().toString());
-    	stmt.setBigDecimal(13, model.getTaxTotal());
-    	stmt.setBigDecimal(14, model.getTotal());
-    	stmt.setObject(15, model.getWarehouseId(), Types.INTEGER);
-    	stmt.setObject(16, model.getUserId(), Types.INTEGER);
+		stmt.setString(4, model.getSku());
+		stmt.setString(5, model.getName());
+		stmt.setString(6, model.getUom());
+		stmt.setBigDecimal(7, model.getQuantity());
+		stmt.setBigDecimal(8, model.getPrice());
+    	stmt.setBoolean(9, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
+    	stmt.setBigDecimal(10, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
+    	stmt.setString(11, model.getTaxCode());
+    	stmt.setString(12, model.getDepartmentCode());
+    	stmt.setString(13, model.getCreationTime().toString());
+    	stmt.setBigDecimal(14, model.getTaxTotal());
+    	stmt.setBigDecimal(15, model.getTotal());
+    	stmt.setObject(16, model.getSynced(), Types.BOOLEAN);
+    	stmt.setObject(17, model.getWarehouseId(), Types.INTEGER);
+    	stmt.setObject(18, model.getUserId(), Types.INTEGER);
 	}
 	
 	@Override

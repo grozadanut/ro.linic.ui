@@ -14,6 +14,7 @@ public class ReceiptLine extends JavaBean {
 	public static final String ID_FIELD = "id";
 	public static final String PRODUCT_ID_FIELD = "productId";
 	public static final String RECEIPT_ID_FIELD = "receiptId";
+	public static final String SKU_FIELD = "sku";
 	public static final String NAME_FIELD = "name";
 	public static final String UOM_FIELD = "uom";
 	public static final String QUANTITY_FIELD = "quantity";
@@ -28,6 +29,7 @@ public class ReceiptLine extends JavaBean {
 	private Long id;
 	private Long productId;
 	private Long receiptId;
+	private String sku;
 	private String name;
 	private String uom;
 	private BigDecimal quantity;
@@ -42,6 +44,7 @@ public class ReceiptLine extends JavaBean {
 	/**
 	 * @param id unique id of this line
 	 * @param productId reference to the product this line refers to, can be null
+	 * @param sku unique identifier for the product this line refers to
 	 * @param name A name for a sold item.
 	 * @param uom unit of measure
 	 * @param quantity The quantity of items (goods or services) that is charged, rounded to 3 decimal places.
@@ -50,11 +53,13 @@ public class ReceiptLine extends JavaBean {
 	 * @param taxCode tax code as specified in the ecr. eg: 1
 	 * @param departmentCode department code as specified in the ecr. eg: 1
 	 */
-	public ReceiptLine(final Long id, final Long productId, final Long receiptId, final String name, final String uom, final BigDecimal quantity,
-			final BigDecimal price, final AllowanceCharge allowanceCharge, final String taxCode, final String departmentCode, final BigDecimal taxTotal) {
+	public ReceiptLine(final Long id, final Long productId, final Long receiptId, final String sku, final String name, final String uom,
+			final BigDecimal quantity, final BigDecimal price, final AllowanceCharge allowanceCharge, final String taxCode,
+			final String departmentCode, final BigDecimal taxTotal) {
 		this.id = id;
 		this.productId = productId;
 		this.receiptId = receiptId;
+		this.sku = sku;
 		this.name = name;
 		this.uom = uom;
 		this.quantity = quantity;
@@ -113,6 +118,14 @@ public class ReceiptLine extends JavaBean {
 	
 	public void setReceiptId(final Long receiptId) {
 		firePropertyChange("receiptId", this.receiptId, this.receiptId = receiptId);
+	}
+	
+	public String getSku() {
+		return sku;
+	}
+	
+	public void setSku(final String sku) {
+		firePropertyChange("sku", this.sku, this.sku = sku);
 	}
 
 	public String getName() {
@@ -181,16 +194,16 @@ public class ReceiptLine extends JavaBean {
 
 	@Override
 	public String toString() {
-		return "ReceiptLine [id=" + id + ", productId=" + productId + ", receiptId=" + receiptId + ", name=" + name
-				+ ", uom=" + uom + ", quantity=" + quantity + ", price=" + price + ", taxTotal=" + taxTotal + ", total="
-				+ total + ", allowanceCharge=" + allowanceCharge + ", taxCode=" + taxCode + ", departmentCode="
-				+ departmentCode + ", creationTime=" + creationTime + "]";
+		return "ReceiptLine [id=" + id + ", productId=" + productId + ", receiptId=" + receiptId + ", sku=" + sku
+				+ ", name=" + name + ", uom=" + uom + ", quantity=" + quantity + ", price=" + price + ", taxTotal="
+				+ taxTotal + ", total=" + total + ", allowanceCharge=" + allowanceCharge + ", taxCode=" + taxCode
+				+ ", departmentCode=" + departmentCode + ", creationTime=" + creationTime + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(allowanceCharge, creationTime, departmentCode, id, name, price, productId, quantity,
-				receiptId, taxCode, taxTotal, total, uom);
+				receiptId, sku, taxCode, taxTotal, total, uom);
 	}
 
 	@Override
@@ -207,8 +220,8 @@ public class ReceiptLine extends JavaBean {
 				&& Objects.equals(departmentCode, other.departmentCode) && Objects.equals(id, other.id)
 				&& Objects.equals(name, other.name) && Objects.equals(price, other.price)
 				&& Objects.equals(productId, other.productId) && Objects.equals(quantity, other.quantity)
-				&& Objects.equals(receiptId, other.receiptId) && Objects.equals(taxCode, other.taxCode)
-				&& Objects.equals(taxTotal, other.taxTotal) && Objects.equals(total, other.total)
-				&& Objects.equals(uom, other.uom);
+				&& Objects.equals(receiptId, other.receiptId) && Objects.equals(sku, other.sku)
+				&& Objects.equals(taxCode, other.taxCode) && Objects.equals(taxTotal, other.taxTotal)
+				&& Objects.equals(total, other.total) && Objects.equals(uom, other.uom);
 	}
 }

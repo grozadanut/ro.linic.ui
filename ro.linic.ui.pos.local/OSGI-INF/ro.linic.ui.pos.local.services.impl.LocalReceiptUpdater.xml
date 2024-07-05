@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="ro.linic.ui.pos.local.services.impl.LocalReceiptUpdater">
+   <property name="service.ranking" value="0"/>
+   <service>
+      <provide interface="ro.linic.ui.pos.base.services.ReceiptUpdater"/>
+   </service>
+   <reference cardinality="1..1" field="localDatabase" interface="ro.linic.ui.base.services.LocalDatabase" name="localDatabase"/>
+   <reference cardinality="1..1" field="sqliteHelper" interface="ro.linic.ui.pos.base.services.SQLiteHelper" name="sqliteHelper"/>
+   <implementation class="ro.linic.ui.pos.local.services.impl.LocalReceiptUpdater"/>
+</scr:component>

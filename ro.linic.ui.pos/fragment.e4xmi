@@ -43,6 +43,6 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_AC-Q0B2TEe-VIYjvQysmvA" featurename="addons" parentElementId="xpath:/">
-    <elements xsi:type="application:Addon" xmi:id="_B5Fd4B2TEe-VIYjvQysmvA" elementId="ro.linic.ui.pos.addon.dbinit" contributionURI="bundleclass://ro.linic.ui.pos.base/ro.linic.ui.pos.base.addons.InitAddon"/>
+    <elements xsi:type="application:Addon" xmi:id="_B5Fd4B2TEe-VIYjvQysmvA" elementId="ro.linic.ui.pos.addon.dbinit" contributionURI="bundleclass://ro.linic.ui.pos.local/ro.linic.ui.pos.local.addons.InitAddon"/>
   </fragments>
 </fragment:ModelFragments>

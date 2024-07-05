@@ -77,12 +77,13 @@ import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.MessagingService;
 import ro.linic.ui.legacy.session.NotificationManager;
 import ro.linic.ui.legacy.session.UIUtils;
-import ro.linic.ui.pos.base.addons.InitAddon;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
+import ro.linic.ui.pos.cloud.model.CloudReceipt;
+import ro.linic.ui.pos.cloud.model.CloudReceiptLine;
 import ro.linic.ui.security.services.AuthenticationSession;
 import ro.linic.ui.workbench.services.LinicWorkbench; 
 
@@ -256,7 +257,7 @@ public class LoginAddon {
 	private void initSQLite(final IEclipseContext workbenchContext) {
 		final LocalDatabase localDatabase = workbenchContext.get(LocalDatabase.class);
 		
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(InitAddon.class).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement()) {
@@ -293,11 +294,13 @@ public class LoginAddon {
 		final StringBuilder productsSb = new StringBuilder();
 		productsSb.append("CREATE TABLE IF NOT EXISTS "+Receipt.class.getSimpleName()).append(NEWLINE)
 		.append("(").append(NEWLINE)
-		.append(Receipt.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
-		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
-		.append(Receipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
-		.append(Receipt.CLOSED_FIELD+" integer,").append(NEWLINE)
-		.append(Receipt.CREATION_TIME_FIELD+" text").append(NEWLINE)
+		.append(CloudReceipt.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
+		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
+		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(CloudReceipt.CLOSED_FIELD+" integer,").append(NEWLINE)
+		.append(CloudReceipt.SYNCED_FIELD+" integer,").append(NEWLINE)
+		.append(CloudReceipt.CREATION_TIME_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceipt.NUMBER_FIELD+" integer").append(NEWLINE)
 		.append(");");
 		return productsSb.toString();
 	}
@@ -306,20 +309,22 @@ public class LoginAddon {
 		final StringBuilder productsSb = new StringBuilder();
 		productsSb.append("CREATE TABLE IF NOT EXISTS "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
 		.append("(").append(NEWLINE)
-		.append(ReceiptLine.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
-		.append(ReceiptLine.PRODUCT_ID_FIELD+" integer,").append(NEWLINE)
-		.append(ReceiptLine.RECEIPT_ID_FIELD+" integer,").append(NEWLINE)
-		.append(ReceiptLine.NAME_FIELD+" text,").append(NEWLINE)
-		.append(ReceiptLine.UOM_FIELD+" text,").append(NEWLINE)
-		.append(ReceiptLine.QUANTITY_FIELD+" numeric(16,3),").append(NEWLINE)
-		.append(ReceiptLine.PRICE_FIELD+" numeric(12,2),").append(NEWLINE)
-		.append(ReceiptLine.TAX_TOTAL_FIELD+" numeric(16,2),").append(NEWLINE)
-		.append(ReceiptLine.TOTAL_FIELD+" numeric(16,2),").append(NEWLINE)
-		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
-		.append(ReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
-		.append(ReceiptLine.TAX_CODE_FIELD+" text,").append(NEWLINE)
-		.append(ReceiptLine.DEPARTMENT_CODE_FIELD+" text,").append(NEWLINE)
-		.append(ReceiptLine.CREATION_TIME_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceiptLine.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
+		.append(CloudReceiptLine.PRODUCT_ID_FIELD+" integer,").append(NEWLINE)
+		.append(CloudReceiptLine.RECEIPT_ID_FIELD+" integer,").append(NEWLINE)
+		.append(CloudReceiptLine.SKU_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceiptLine.NAME_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceiptLine.UOM_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceiptLine.QUANTITY_FIELD+" numeric(16,3),").append(NEWLINE)
+		.append(CloudReceiptLine.PRICE_FIELD+" numeric(12,2),").append(NEWLINE)
+		.append(CloudReceiptLine.TAX_TOTAL_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(CloudReceiptLine.TOTAL_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(CloudReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" integer,").append(NEWLINE)
+		.append(CloudReceiptLine.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" numeric(16,2),").append(NEWLINE)
+		.append(CloudReceiptLine.TAX_CODE_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceiptLine.DEPARTMENT_CODE_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceiptLine.CREATION_TIME_FIELD+" text,").append(NEWLINE)
+		.append(CloudReceiptLine.SYNCED_FIELD+" integer,").append(NEWLINE)
 		.append(LegacyReceiptLine.WAREHOUSE_ID_FIELD+" integer,").append(NEWLINE)
 		.append(LegacyReceiptLine.USER_ID_FIELD+" integer").append(NEWLINE)
 		.append(");");

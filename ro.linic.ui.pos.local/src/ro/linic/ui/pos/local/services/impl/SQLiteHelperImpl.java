@@ -1,4 +1,4 @@
-package ro.linic.ui.pos.base.services.impl;
+package ro.linic.ui.pos.local.services.impl;
 
 import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
 import static ro.linic.util.commons.PresentationUtils.NEWLINE;
@@ -80,6 +80,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		sb.append(ReceiptLine.ID_FIELD).append(LIST_SEPARATOR)
 		.append(ReceiptLine.PRODUCT_ID_FIELD).append(LIST_SEPARATOR)
 		.append(ReceiptLine.RECEIPT_ID_FIELD).append(LIST_SEPARATOR)
+		.append(ReceiptLine.SKU_FIELD).append(LIST_SEPARATOR)
 		.append(ReceiptLine.NAME_FIELD).append(LIST_SEPARATOR)
 		.append(ReceiptLine.UOM_FIELD).append(LIST_SEPARATOR)
 		.append(ReceiptLine.QUANTITY_FIELD).append(LIST_SEPARATOR)
@@ -96,7 +97,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 	
 	@Override
 	public String receiptLineColumnsPlaceholder() {
-		return "?,?,?,?,?,?,?,?,?,?,?,?,?,?";
+		return "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?";
 	}
 	
 	@Override
@@ -107,6 +108,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 			model.setId(rs.getLong(ReceiptLine.ID_FIELD));
 			model.setProductId(rs.getLong(ReceiptLine.PRODUCT_ID_FIELD));
 			model.setReceiptId(rs.getLong(ReceiptLine.RECEIPT_ID_FIELD));
+			model.setSku(rs.getString(ReceiptLine.SKU_FIELD));
 			model.setName(rs.getString(ReceiptLine.NAME_FIELD));
 			model.setUom(rs.getString(ReceiptLine.UOM_FIELD));
 			model.setQuantity(rs.getBigDecimal(ReceiptLine.QUANTITY_FIELD));
@@ -131,17 +133,18 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 		stmt.setLong(1, model.getId());
 		stmt.setObject(2, model.getProductId(), Types.BIGINT);
 		stmt.setObject(3, model.getReceiptId(), Types.BIGINT);
-		stmt.setString(4, model.getName());
-		stmt.setString(5, model.getUom());
-		stmt.setBigDecimal(6, model.getQuantity());
-		stmt.setBigDecimal(7, model.getPrice());
-    	stmt.setBoolean(8, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
-    	stmt.setBigDecimal(9, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
-    	stmt.setString(10, model.getTaxCode());
-    	stmt.setString(11, model.getDepartmentCode());
-    	stmt.setString(12, model.getCreationTime().toString());
-    	stmt.setBigDecimal(13, model.getTaxTotal());
-    	stmt.setBigDecimal(14, model.getTotal());
+		stmt.setString(4, model.getSku());
+		stmt.setString(5, model.getName());
+		stmt.setString(6, model.getUom());
+		stmt.setBigDecimal(7, model.getQuantity());
+		stmt.setBigDecimal(8, model.getPrice());
+    	stmt.setBoolean(9, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
+    	stmt.setBigDecimal(10, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
+    	stmt.setString(11, model.getTaxCode());
+    	stmt.setString(12, model.getDepartmentCode());
+    	stmt.setString(13, model.getCreationTime().toString());
+    	stmt.setBigDecimal(14, model.getTaxTotal());
+    	stmt.setBigDecimal(15, model.getTotal());
 	}
 	
 	@Override

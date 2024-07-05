@@ -62,13 +62,17 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.100.v20230
  org.eclipse.osgi.services;bundle-version="3.11.100",
  ro.linic.ui.base;bundle-version="0.0.3",
  org.mapstruct;bundle-version="1.5.5",
- ro.linic.ui.base.services;bundle-version="0.0.1"
+ ro.linic.ui.base.services;bundle-version="0.0.1",
+ ro.linic.ui.pos.cloud;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Description: %Bundle-Description
 Model-Fragment: fragment.e4xmi
 Automatic-Module-Name: ro.linic.ui.legacy
 Service-Component: OSGI-INF/ro.linic.ui.legacy.LegacyAuthenticationManager.xml,
+ OSGI-INF/ro.linic.ui.legacy.service.impl.LegacyReceiptLineUpdater.xml,
+ OSGI-INF/ro.linic.ui.legacy.service.impl.LegacyReceiptUpdater.xml,
+ OSGI-INF/ro.linic.ui.legacy.service.impl.LegacyRemoteSyncer.xml,
  OSGI-INF/ro.linic.ui.legacy.service.impl.SQLiteDatabase.xml,
  OSGI-INF/ro.linic.ui.legacy.service.impl.SQLiteHelperImpl.xml
 Import-Package: jakarta.annotation;version="[2.1.0,3.0.0]",

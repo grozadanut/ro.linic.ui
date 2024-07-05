@@ -1,4 +1,4 @@
-package ro.linic.ui.pos.base.addons;
+package ro.linic.ui.pos.local.addons;
 
 import static ro.linic.util.commons.PresentationUtils.NEWLINE;
 
@@ -24,7 +24,7 @@ public class InitAddon {
 	@PostConstruct
 	public void postConstruct(final LocalDatabase localDatabase, final ILog log, final ProductDataHolder productHolder,
 			final ProductDataLoader productLoader) {
-		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement()) {
@@ -79,6 +79,7 @@ public class InitAddon {
 		.append(ReceiptLine.ID_FIELD+" integer PRIMARY KEY,").append(NEWLINE)
 		.append(ReceiptLine.PRODUCT_ID_FIELD+" integer,").append(NEWLINE)
 		.append(ReceiptLine.RECEIPT_ID_FIELD+" integer,").append(NEWLINE)
+		.append(ReceiptLine.SKU_FIELD+" text,").append(NEWLINE)
 		.append(ReceiptLine.NAME_FIELD+" text,").append(NEWLINE)
 		.append(ReceiptLine.UOM_FIELD+" text,").append(NEWLINE)
 		.append(ReceiptLine.QUANTITY_FIELD+" numeric(16,3),").append(NEWLINE)

@@ -108,6 +108,8 @@
    <module>ro.linic.ui.pos.base</module>
    <module>ro.linic.ui.pos.base.tests</module>
    <module>ro.linic.ui.pos</module>
+   <module>ro.linic.ui.pos.cloud</module>
+   <module>ro.linic.ui.pos.local</module>
    <module>ro.linic.ui.workbench</module>
    <module>ro.linic.ui.security</module>
    <module>ro.linic.ui.help</module>
