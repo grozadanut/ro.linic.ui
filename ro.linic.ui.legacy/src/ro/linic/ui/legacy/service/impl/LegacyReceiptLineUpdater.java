@@ -26,6 +26,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 import ro.linic.ui.base.services.LocalDatabase;
+import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
 import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.model.Receipt;
@@ -101,8 +102,35 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
     }
 	
 	@Override
-	public IStatus update(final ReceiptLine model) {
-		return ValidationStatus.error("Not implemented!");
+	public IStatus update(final ReceiptLine m) {
+		if (m == null || m.getId() == null)
+			return ValidationStatus.OK_STATUS;
+		
+		final LegacyReceiptLine model = (LegacyReceiptLine) m;
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
+		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
+		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
+		
+		final StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE "+ReceiptLine.class.getSimpleName()+" SET ")
+		.append(LegacyReceiptLine.RECEIPT_ID_FIELD+" = ?").append(NEWLINE)
+		.append(LegacyReceiptLine.SYNCED_FIELD+" = ?").append(NEWLINE)
+		.append("WHERE").append(NEWLINE)
+		.append(LegacyReceiptLine.ID_FIELD+" = ?");
+		
+		dbLock.writeLock().lock();
+        try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
+            pstmt.setLong(0, model.getReceiptId());
+            pstmt.setBoolean(1, model.synced());
+            // WHERE
+            pstmt.setLong(2, model.getId());
+            pstmt.executeUpdate();
+            return ValidationStatus.OK_STATUS;
+        } catch (final SQLException e) {
+        	throw new RuntimeException(e);
+        } finally {
+			dbLock.writeLock().unlock();
+		}
 	}
 	
 	@Override

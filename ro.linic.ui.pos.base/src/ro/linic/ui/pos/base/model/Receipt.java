@@ -96,6 +96,10 @@ public class Receipt extends JavaBean {
 		return closed;
 	}
 	
+	public boolean closed() {
+		return closed == null ? false : closed;
+	}
+	
 	public void setClosed(final Boolean closed) {
 		firePropertyChange("closed", this.closed, this.closed = closed);
 	}

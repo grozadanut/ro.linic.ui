@@ -1,6 +1,5 @@
 package ro.linic.ui.legacy.service.impl;
 
-import static ro.colibri.util.PresentationUtils.LIST_SEPARATOR;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 
 import java.sql.PreparedStatement;
@@ -21,10 +20,12 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import ro.colibri.util.InvocationResult;
 import ro.linic.ui.base.services.LocalDatabase;
-import ro.linic.ui.pos.base.model.AllowanceCharge;
+import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
+import ro.linic.ui.pos.base.services.ReceiptLoader;
 import ro.linic.ui.pos.base.services.ReceiptUpdater;
 import ro.linic.ui.pos.base.services.SQLiteHelper;
 import ro.linic.ui.pos.cloud.model.CloudReceipt;
@@ -33,6 +34,7 @@ import ro.linic.ui.pos.cloud.model.CloudReceipt;
 public class LegacyReceiptUpdater implements ReceiptUpdater {
 	@Reference private LocalDatabase localDatabase;
 	@Reference private SQLiteHelper sqliteHelper;
+	@Reference private ReceiptLoader receiptLoader;
 	
 	@Override
 	public IStatus create(final Receipt model) {
@@ -92,27 +94,26 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
     }
 
 	@Override
-	public IStatus update(final Receipt model) {
-		if (model == null || model.getId() == null)
+	public IStatus update(final long id, final Receipt m) {
+		if (m == null || m.getId() == null)
 			return ValidationStatus.OK_STATUS;
 		
+		final CloudReceipt model = (CloudReceipt) m;
 		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(PreferenceKey.class).getSymbolicName());
 		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
 		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
 		
 		final StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE "+Receipt.class.getSimpleName()+" SET ")
-		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" = ?").append(LIST_SEPARATOR)
-		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" = ?").append(NEWLINE)
+		.append(sqliteHelper.receiptColumns())
 		.append("WHERE").append(NEWLINE)
-		.append(Receipt.ID_FIELD+" = ?");
+		.append(CloudReceipt.ID_FIELD+" = ?");
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
-        	pstmt.setBoolean(1, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
-        	pstmt.setBigDecimal(2, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
+        	sqliteHelper.insertReceiptInStatement(model, pstmt);
             // WHERE
-            pstmt.setLong(3, model.getId());
+            pstmt.setLong(sqliteHelper.receiptColumnsPlaceholder().split(",").length+1, id);
             pstmt.executeUpdate();
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {
@@ -164,6 +165,10 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
+        	final IStatus remoteResult = closeReceiptRemote(id);
+        	if (!remoteResult.isOK())
+        		return remoteResult;
+        	
         	pstmt.setBoolean(1, true);
             // WHERE
             pstmt.setLong(2, id);
@@ -174,5 +179,25 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
         } finally {
 			dbLock.writeLock().unlock();
 		}
+	}
+
+	private IStatus closeReceiptRemote(final long id) {
+		/**
+		 * The only workflow for the receipt to be synchronized and unclosed here is:
+		 * 1. user opens CloseFacturaBCWizard(thus receipt is synchronized)
+		 * 2. user closes the wizard
+		 * 3. user closes the receipt by cash/card
+		 * 
+		 * In this case, the receipt id is equal to the remote AccDoc id
+		 */
+		final Optional<CloudReceipt> receipt = receiptLoader.findById(id)
+				.map(CloudReceipt.class::cast)
+				.filter(r -> r.synced() && !r.closed());
+		
+		if (receipt.isEmpty())
+			return ValidationStatus.OK_STATUS;
+		
+		final InvocationResult result = BusinessDelegate.closeBonCasa(id, true);
+		return result.statusOk() ? ValidationStatus.OK_STATUS : ValidationStatus.error(result.toTextDescription());
 	}
 }

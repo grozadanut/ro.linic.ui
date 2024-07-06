@@ -15,7 +15,7 @@ public interface ReceiptUpdater {
 	/**
 	 * Does not update containing lines.
 	 */
-	IStatus update(Receipt r);
+	IStatus update(long id, Receipt r);
 	IStatus delete(List<Long> ids);
 	IStatus closeReceipt(Long id);
 }

@@ -73,7 +73,7 @@ public class LocalReceiptUpdater implements ReceiptUpdater {
     }
 
 	@Override
-	public IStatus update(final Receipt model) {
+	public IStatus update(final long id, final Receipt model) {
 		if (model == null || model.getId() == null)
 			return ValidationStatus.OK_STATUS;
 		

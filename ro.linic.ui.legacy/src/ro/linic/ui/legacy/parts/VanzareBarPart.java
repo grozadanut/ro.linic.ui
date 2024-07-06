@@ -60,9 +60,11 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Operatiune;
+import ro.colibri.entities.comercial.Operatiune.TransferType;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
+import ro.colibri.util.InvocationResult;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.linic.ui.legacy.components.AsyncLoadData;
@@ -90,6 +92,7 @@ import ro.linic.ui.pos.base.services.ProductDataUpdater;
 import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
 import ro.linic.ui.pos.base.services.ReceiptLoader;
 import ro.linic.ui.pos.base.services.ReceiptUpdater;
+import ro.linic.ui.pos.cloud.model.CloudReceipt;
 
 public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	public static final String PART_ID = "linic_gest_client.part.vanzari_bar"; //$NON-NLS-1$
@@ -104,7 +107,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari_bar.horizontal_sash"; //$NON-NLS-1$
 
 	// MODEL
-	private Receipt bonCasa;
+	private CloudReceipt bonCasa;
 	// loaded from VanzariIncarcaDocDialog
 	private AccountingDocument loadedBonCasa;
 
@@ -153,7 +156,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	@Inject private Logger log;
 	@Inject IEclipseContext ctx;
 
-	public static VanzareBarPart newPartForBon(final EPartService partService, final Receipt bon) {
+	public static VanzareBarPart newPartForBon(final EPartService partService, final CloudReceipt bon) {
 		final MPart createdPart = partService.showPart(partService.createPart(VanzareBarPart.PART_DESCRIPTOR_ID),
 				PartState.VISIBLE);
 
@@ -177,7 +180,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
 				Boolean.TRUE.toString()))) {
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
-			receiptLoader.findUnclosed().forEach(unclosedReceipt -> newPartForBon(partService, unclosedReceipt));
+			receiptLoader.findUnclosed().stream().map(CloudReceipt.class::cast)
+			.forEach(unclosedReceipt -> newPartForBon(partService, unclosedReceipt));
 			reloadProduct(null, false);
 		}
 
@@ -547,7 +551,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		incarcaBonuriButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Receipt originalReceipt = bonCasa;
+				final CloudReceipt originalReceipt = bonCasa;
 				new VanzariIncarcaDocDialog(Display.getCurrent().getActiveShell(), VanzareBarPart.this, ctx).open();
 				loadReceipt(originalReceipt, true);
 			}
@@ -609,7 +613,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		}
 	}
 
-	public void loadReceipt(final Receipt bonCasa, final boolean updateTotalLabels) {
+	public void loadReceipt(final CloudReceipt bonCasa, final boolean updateTotalLabels) {
 		this.loadedBonCasa = null;
 		this.bonCasa = bonCasa;
 		if (this.bonCasa != null)
@@ -641,11 +645,22 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private void addNewOperationToBon(final Optional<ro.linic.ui.pos.base.model.Product> product) {
 		if (!product.isPresent())
 			return;
-
+		
 		final BigDecimal cantitate = parse(cantitateText.getText());
 		if (bonCasa == null) {
-			bonCasa = new Receipt();
+			bonCasa = new CloudReceipt();
 			receiptUpdater.create(bonCasa);
+		} else {
+			/**
+			 * The only workflow for the receipt to be synchronized here is:
+			 * 1. user opens CloseFacturaBCWizard(thus receipt is synchronized)
+			 * 2. user closes the wizard
+			 * 3. user tries to add some more lines to this receipt
+			 * 
+			 * This case is not allowed, either close the receipt, or delete it
+			 */
+			if (bonCasa.synced())
+				throw new UnsupportedOperationException(Messages.VanzareBarPart_UnsuppOpSyncedReceipt);
 		}
 
 		final BigDecimal taxPercent = product.map(ro.linic.ui.pos.base.model.Product::getTaxPercentage)
@@ -725,7 +740,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		}
 
 		// update bonCasa(may be deleted) and reload affected products
-		loadReceipt(receiptLoader.findById(bonCasa.getId()).orElse(null), true);
+		loadReceipt((CloudReceipt) receiptLoader.findById(bonCasa.getId()).orElse(null), true);
 	}
 
 	@Override
@@ -747,7 +762,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				if (closeReceiptDialog.open() == Window.OK)
 					loadReceipt(null, false);
 			} else {
-				// TODO make sure the receipt is synchronized to server
+				syncReceiptRemote();
 				
 				final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 						Display.getCurrent().getActiveShell(),
@@ -760,6 +775,45 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 			search.setFocus();
 		}
+	}
+
+	private void syncReceiptRemote() {
+		/*
+		 * 1. if (!line.synced)
+		 * 		Synchronize remote(addToBonCasa for each line)
+		 * 2. Update bonCasa.id, bonCasa.synced and bonCasa.lines.synced
+		 */
+		
+		for (final ReceiptLine l : bonCasa.getLines()) {
+			final LegacyReceiptLine line = (LegacyReceiptLine) l;
+			
+			if (!line.synced()) {
+				final Long accDocId = bonCasa.synced() ? bonCasa.getId() : null;
+				final InvocationResult result = BusinessDelegate.addToBonCasa(line.getSku(), line.getQuantity(), null, accDocId,
+						true, TransferType.FARA_TRANSFER, null, bundle, log);
+				
+				if (result.statusCanceled())
+					throw new RuntimeException(result.toTextDescription());
+				
+				final long oldId = bonCasa.getId();
+				final AccountingDocument accDoc = result.extra(InvocationResult.ACCT_DOC_KEY);
+				bonCasa.setSynced(true);
+				bonCasa.setId(accDoc.getId());
+				
+				// can call update(receipt) on each line update, because it is idempotent
+				final IStatus receiptUpdateResult = receiptUpdater.update(oldId, bonCasa);
+				if (!receiptUpdateResult.isOK())
+					throw new RuntimeException(receiptUpdateResult.getMessage());
+				
+				line.setSynced(true);
+				line.setReceiptId(bonCasa.getId());
+				
+				final IStatus lineUpdateResult = receiptLineUpdater.update(line);
+				if (!lineUpdateResult.isOK())
+					throw new RuntimeException(lineUpdateResult.getMessage());
+			}
+		}
+		
 	}
 
 	@Override
