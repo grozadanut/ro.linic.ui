@@ -83,4 +83,30 @@ public class LocalReceiptLineLoader implements ReceiptLineLoader {
 		
 		return result;
 	}
+	
+	@Override
+	public List<ReceiptLine> findWhere(final String where) {
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
+		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
+		
+		List<ReceiptLine> result = new ArrayList<>();
+		final StringBuilder querySb = new StringBuilder();
+		querySb.append("SELECT ").append(NEWLINE)
+		.append(sqliteHelper.receiptLineColumns())
+		.append("FROM "+ReceiptLine.class.getSimpleName()).append(NEWLINE)
+		.append("WHERE ").append(where).append(NEWLINE);
+		
+		dbLock.readLock().lock();
+		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
+			final ResultSet rs = stmt.executeQuery();
+			result = sqliteHelper.readReceiptLines(rs);
+		} catch (final SQLException e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			dbLock.readLock().unlock();
+		}
+		
+		return result;
+	}
 }

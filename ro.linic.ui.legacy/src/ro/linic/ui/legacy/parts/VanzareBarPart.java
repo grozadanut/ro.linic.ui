@@ -79,6 +79,7 @@ import ro.linic.ui.legacy.mapper.ProductMapper;
 import ro.linic.ui.legacy.parts.components.VanzareInterface;
 import ro.linic.ui.legacy.preferences.PreferenceKey;
 import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
+import ro.linic.ui.legacy.service.impl.LegacyReceiptLineUpdater;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
@@ -94,6 +95,7 @@ import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
 import ro.linic.ui.pos.base.services.ProductDataUpdater;
+import ro.linic.ui.pos.base.services.ReceiptLineLoader;
 import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
 import ro.linic.ui.pos.base.services.ReceiptLoader;
 import ro.linic.ui.pos.base.services.ReceiptUpdater;
@@ -153,6 +155,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	@Inject private ReceiptLoader receiptLoader;
 	@Inject private ReceiptUpdater receiptUpdater;
 	@Inject private ReceiptLineUpdater receiptLineUpdater;
+	@Inject private ReceiptLineLoader receiptLineLoader;
 	@Inject private CamelService camel;
 
 	@Inject private MPart part;
@@ -790,7 +793,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				if (wizardDialog.open() == Window.OK)
 					loadReceipt(null, false);
 			}
-
+			
+			LegacyReceiptLineUpdater.updateSyncLabel(receiptLineLoader);
 			search.setFocus();
 		}
 	}

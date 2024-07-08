@@ -27,20 +27,29 @@ import org.osgi.service.component.annotations.Reference;
 
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
+import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
+import ro.linic.ui.pos.base.services.ReceiptLineLoader;
 import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
 import ro.linic.ui.pos.base.services.SQLiteHelper;
 
 @Component(property = org.osgi.framework.Constants.SERVICE_RANKING + "=1")
 public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
+	public static void updateSyncLabel(final ReceiptLineLoader receiptLineLoader) {
+		final String matchUnsyncedLines = LegacyReceiptLine.SYNCED_FIELD + " IS NULL OR "+LegacyReceiptLine.SYNCED_FIELD+" IS FALSE";
+        final boolean allSynced = receiptLineLoader.findWhere(matchUnsyncedLines).isEmpty();
+		ClientSession.instance().setAllSynced(allSynced);
+	}
+	
 	@Reference private LocalDatabase localDatabase;
 	@Reference private ProductDataHolder productDataHolder;
 	@Reference private SQLiteHelper sqliteHelper;
+	@Reference private ReceiptLineLoader receiptLineLoader;
 	
 	@Override
 	public IStatus create(final ReceiptLine model) {
@@ -64,10 +73,13 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
         	model.setId(nextId(dbName));
         	sqliteHelper.insertReceiptLineInStatement(model, pstmt);
-        	if (pstmt.executeUpdate() == 1)
+        	if (pstmt.executeUpdate() == 1) {
         		// update stock
         		if (model.getProductId() != null && model.getProductId() > 0)
         			decreaseStock(model.getProductId(), model.getQuantity());
+        		// update sync label
+        		ClientSession.instance().setAllSynced(false);
+        	}
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {
             throw new RuntimeException(e);
@@ -207,6 +219,7 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
 				if (hasNoLine(receiptId))
 					deleteReceipt(receiptId);
         	
+            updateSyncLabel(receiptLineLoader);
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {
         	throw new RuntimeException(e);

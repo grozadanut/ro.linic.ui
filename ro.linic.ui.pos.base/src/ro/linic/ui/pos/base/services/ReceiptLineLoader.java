@@ -14,6 +14,7 @@ public interface ReceiptLineLoader {
 	 * Note: for the Receipt field it only loads the receipt.id
 	 */
 	List<ReceiptLine> findByIdIn(List<Long> ids);
+	List<ReceiptLine> findWhere(String where);
 	
 	/**
 	 * Note: for the Receipt field it only loads the receipt.id

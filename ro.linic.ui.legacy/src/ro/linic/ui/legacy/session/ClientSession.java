@@ -22,6 +22,7 @@ import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.StringUtils;
 
 public class ClientSession
 {
@@ -39,6 +40,8 @@ public class ClientSession
 	private Properties properties = new Properties();
 	private List<Control> hideStateControls = new ArrayList<>();
 	private List<CLabel> syncStateControls = new ArrayList<>();
+	private String syncError;
+	private boolean allSynced = true;
 	
 	// caching
 	private ImmutableList<PersistedProp> allPersistedProps;
@@ -105,36 +108,35 @@ public class ClientSession
 		control.addDisposeListener(e -> syncStateControls.remove(control));
 	}
 	
-	public void showSyncOk()
-	{
-		syncStateControls.stream()
-		.filter(label -> !label.isDisposed())
-		.forEach(label -> {
-			label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
-			label.setText("OK");
-			label.setToolTipText(null);
-		});
+	public synchronized void setAllSynced(final boolean allSynced) {
+		this.allSynced = allSynced;
+		updateSyncLabel();
 	}
 	
-	public void showSyncInProgress()
-	{
-		syncStateControls.stream()
-		.filter(label -> !label.isDisposed())
-		.forEach(label -> {
-			label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
-			label.setText(Messages.SyncingSales);
-			label.setToolTipText(null);
-		});
+	public synchronized void setSyncError(final String error) {
+		this.syncError = error;
+		updateSyncLabel();
 	}
 	
-	public void showSyncError(final String error)
-	{
-		syncStateControls.stream()
-		.filter(label -> !label.isDisposed())
-		.forEach(label -> {
-			label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
-			label.setText(ro.linic.ui.legacy.parts.Messages.Error);
-			label.setToolTipText(error);
+	private void updateSyncLabel() {
+		Display.getDefault().execute(() -> {
+			syncStateControls.stream()
+			.filter(label -> !label.isDisposed())
+			.forEach(label -> {
+				if (!StringUtils.isEmpty(syncError)) {
+					label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
+					label.setText(ro.linic.ui.legacy.parts.Messages.Error);
+					label.setToolTipText(syncError);
+				} else if (allSynced) {
+					label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+					label.setText("OK");
+					label.setToolTipText("OK");
+				} else {
+					label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
+					label.setText(Messages.SyncingSales);
+					label.setToolTipText(Messages.SyncingSales);
+				}
+			});
 		});
 	}
 	

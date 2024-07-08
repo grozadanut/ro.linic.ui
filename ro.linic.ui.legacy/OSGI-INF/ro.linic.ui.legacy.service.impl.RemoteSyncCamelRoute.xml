@@ -3,6 +3,7 @@
    <service>
       <provide interface="ro.linic.ui.camel.core.service.CamelRouteBuilder"/>
    </service>
+   <reference cardinality="1..1" field="receiptLineLoader" interface="ro.linic.ui.pos.base.services.ReceiptLineLoader" name="receiptLineLoader"/>
    <reference cardinality="1..1" field="receiptLineUpdater" interface="ro.linic.ui.pos.base.services.ReceiptLineUpdater" name="receiptLineUpdater"/>
    <reference cardinality="1..1" field="receiptLoader" interface="ro.linic.ui.pos.base.services.ReceiptLoader" name="receiptLoader"/>
    <reference cardinality="1..1" field="remoteSyncer" interface="ro.linic.ui.pos.cloud.services.RemoteSyncer" name="remoteSyncer"/>
