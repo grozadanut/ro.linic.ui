@@ -62,6 +62,34 @@
 			 </dependency>
 		 </dependencies>
 	 </location>
+	 <location includeDependencyDepth="infinite" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+
+		 <feature id="org.apache.camel" label="org.apache.camel" version="1.0.0">
+
+   
+
+   
+
+   
+			 <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+			 <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+			 <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+		 </feature>
+		 <dependencies>
+			 <dependency>
+				 <groupId>org.apache.camel</groupId>
+				 <artifactId>camel-core</artifactId>
+				 <version>4.6.0</version>
+				 <type>jar</type>
+			 </dependency>
+		 </dependencies>
+	 </location>
  </locations>
 	<includeBundles>
 		<plugin id="bcpg"/>
@@ -439,7 +467,6 @@
 		<plugin id="org.sat4j.pb.source"/>
 		<plugin id="org.tukaani.xz"/>
 		<plugin id="org.tukaani.xz.source"/>
-		<plugin id="slf4j.api" version="2.0.12"/>
 		<plugin id="slf4j.simple" version="2.0.12"/>
 		<plugin id="org.eclipse.debug.core"/>
 		<plugin id="org.eclipse.debug.core.source"/>
@@ -448,13 +475,13 @@
 		<plugin id="wrapped.ro.linic.util.commons"/>
 		<plugin id="org.eclipse.jetty.servlet-api" version="4.0.6"/>
 		<plugin id="jakarta.annotation-api" version="2.1.1"/>
-		<plugin id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
+		<plugin id="jakarta.inject.jakarta.inject-api" version="1.0.5"/>
 		<plugin id="bcpg.source"/>
 		<plugin id="bcprov.source"/>
 		<plugin id="com.sun.jna.platform.source"/>
 		<plugin id="com.sun.jna.source"/>
-		<plugin id="jakarta.annotation-api.source" version="2.1.1"/>
 		<plugin id="jakarta.annotation-api.source" version="1.3.5"/>
+		<plugin id="jakarta.annotation-api.source" version="2.1.1"/>
 		<plugin id="org.apache.aries.spifly.dynamic.bundle.source" version="1.3.7"/>
 		<plugin id="org.apache.commons.commons-io.source" version="2.15.1"/>
 		<plugin id="org.apache.lucene.analysis-common.source"/>
@@ -466,7 +493,7 @@
 		<plugin id="org.objectweb.asm.tree.analysis.source" version="9.6.0"/>
 		<plugin id="org.objectweb.asm.tree.source" version="9.6.0"/>
 		<plugin id="org.objectweb.asm.util.source" version="9.6.0"/>
-		<plugin id="slf4j.api.source" version="2.0.12"/>
+		<plugin id="slf4j.api.source"/>
 		<plugin id="slf4j.simple.source" version="2.0.12"/>
 		<plugin id="org.osgi.service.http.whiteboard" version="1.1.1.202109301733"/>
 		<plugin id="org.eclipse.equinox.http.service.api" version="1.2.2.v20231218-2126"/>
@@ -488,11 +515,11 @@
 		<plugin id="junit-jupiter-migrationsupport"/>
 		<plugin id="org.hamcrest"/>
 		<plugin id="org.hamcrest.core"/>
-		<plugin id="com.fasterxml.jackson.core.jackson-databind"/>
-		<plugin id="com.fasterxml.jackson.core.jackson-core"/>
-		<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
+		<plugin id="com.fasterxml.jackson.core.jackson-databind" version="2.17.1"/>
+		<plugin id="com.fasterxml.jackson.core.jackson-core" version="2.17.1"/>
+		<plugin id="com.fasterxml.jackson.core.jackson-annotations" version="2.17.1"/>
 		<plugin id="org.eclipse.nebula.widgets.nattable.extension.e4"/>
-		<plugin id="jakarta.inject.jakarta.inject-api" version="1.0.5"/>
+		<plugin id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
 		<plugin id="org.mapstruct"/>
 		<plugin id="org.mockito.mockito-core"/>
 		<plugin id="org.eclipse.jdt.junit"/>
@@ -500,5 +527,48 @@
 		<plugin id="org.eclipse.jdt.junit.runtime"/>
 		<plugin id="net.bytebuddy.byte-buddy"/>
 		<plugin id="net.bytebuddy.byte-buddy-agent"/>
+		<plugin id="wrapped.org.apache.camel.camel-api"/>
+		<plugin id="wrapped.org.apache.camel.camel-base"/>
+		<plugin id="wrapped.org.apache.camel.camel-base-engine"/>
+		<plugin id="wrapped.org.apache.camel.camel-bean"/>
+		<plugin id="wrapped.org.apache.camel.camel-browse"/>
+		<plugin id="wrapped.org.apache.camel.camel-cluster"/>
+		<plugin id="wrapped.org.apache.camel.camel-controlbus"/>
+		<plugin id="wrapped.org.apache.camel.camel-core"/>
+		<plugin id="wrapped.org.apache.camel.camel-core-catalog"/>
+		<plugin id="wrapped.org.apache.camel.camel-core-engine"/>
+		<plugin id="wrapped.org.apache.camel.camel-core-languages"/>
+		<plugin id="wrapped.org.apache.camel.camel-core-model"/>
+		<plugin id="wrapped.org.apache.camel.camel-core-processor"/>
+		<plugin id="wrapped.org.apache.camel.camel-core-reifier"/>
+		<plugin id="wrapped.org.apache.camel.camel-dataformat"/>
+		<plugin id="wrapped.org.apache.camel.camel-dataset"/>
+		<plugin id="wrapped.org.apache.camel.camel-direct"/>
+		<plugin id="wrapped.org.apache.camel.camel-file"/>
+		<plugin id="wrapped.org.apache.camel.camel-health"/>
+		<plugin id="wrapped.org.apache.camel.camel-language"/>
+		<plugin id="wrapped.org.apache.camel.camel-log"/>
+		<plugin id="wrapped.org.apache.camel.camel-management-api"/>
+		<plugin id="wrapped.org.apache.camel.camel-mock"/>
+		<plugin id="wrapped.org.apache.camel.camel-ref"/>
+		<plugin id="wrapped.org.apache.camel.camel-rest"/>
+		<plugin id="wrapped.org.apache.camel.camel-saga"/>
+		<plugin id="wrapped.org.apache.camel.camel-scheduler"/>
+		<plugin id="wrapped.org.apache.camel.camel-seda"/>
+		<plugin id="wrapped.org.apache.camel.camel-stub"/>
+		<plugin id="wrapped.org.apache.camel.camel-support"/>
+		<plugin id="wrapped.org.apache.camel.camel-timer"/>
+		<plugin id="wrapped.org.apache.camel.camel-tooling-model"/>
+		<plugin id="wrapped.org.apache.camel.camel-util"/>
+		<plugin id="wrapped.org.apache.camel.camel-util-json"/>
+		<plugin id="wrapped.org.apache.camel.camel-validator"/>
+		<plugin id="wrapped.org.apache.camel.camel-xml-io"/>
+		<plugin id="wrapped.org.apache.camel.camel-xml-io-util"/>
+		<plugin id="wrapped.org.apache.camel.camel-xml-jaxb"/>
+		<plugin id="wrapped.org.apache.camel.camel-xml-jaxp"/>
+		<plugin id="wrapped.org.apache.camel.camel-xml-jaxp-util"/>
+		<plugin id="wrapped.org.apache.camel.camel-xpath"/>
+		<plugin id="wrapped.org.apache.camel.camel-xslt"/>
+		<plugin id="wrapped.org.apache.camel.camel-yaml-io"/>
 	</includeBundles>
 </target>

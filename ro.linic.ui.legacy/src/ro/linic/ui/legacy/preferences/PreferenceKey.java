@@ -15,4 +15,6 @@ public interface PreferenceKey {
 	 * value for REGISTER_Z_DIALOG_KEY specifying to use the cafe dialog
 	 */
 	public static final String REGISTER_Z_DIALOG_CAFE_VALUE = "cafe";
+	
+	public static final String TVA_PERCENT_KEY = "tva_percent";
 }

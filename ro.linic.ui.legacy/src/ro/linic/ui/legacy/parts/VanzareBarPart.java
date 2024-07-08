@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
@@ -52,6 +54,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -67,12 +70,14 @@ import ro.colibri.entities.comercial.ProductUiCategory;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
+import ro.linic.ui.camel.core.service.CamelService;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.VanzariIncarcaDocDialog;
 import ro.linic.ui.legacy.mapper.OperatiuneMapper;
 import ro.linic.ui.legacy.mapper.ProductMapper;
 import ro.linic.ui.legacy.parts.components.VanzareInterface;
+import ro.linic.ui.legacy.preferences.PreferenceKey;
 import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -148,6 +153,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	@Inject private ReceiptLoader receiptLoader;
 	@Inject private ReceiptUpdater receiptUpdater;
 	@Inject private ReceiptLineUpdater receiptLineUpdater;
+	@Inject private CamelService camel;
 
 	@Inject private MPart part;
 	@Inject private UISynchronize sync;
@@ -174,8 +180,15 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	@PostConstruct
 	public void createComposite(final Composite parent) {
-		tvaPercentDb = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
-				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
+		final Bundle bundle = FrameworkUtil.getBundle(getClass());
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		try {
+			tvaPercentDb = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
+					.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
+			prefs.put(PreferenceKey.TVA_PERCENT_KEY, tvaPercentDb.toString());
+		} catch (final Exception e) {
+			tvaPercentDb = parse(prefs.get(PreferenceKey.TVA_PERCENT_KEY, null));
+		}
 
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
 				Boolean.TRUE.toString()))) {
@@ -759,8 +772,13 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 						.build();
 				ContextInjectionFactory.inject(closeReceiptDialog, ctx);
 				
-				if (closeReceiptDialog.open() == Window.OK)
+				if (closeReceiptDialog.open() == Window.OK) {
+					// also try to eager sync to remote if server is online, 
+					// so we don't wait 5 minutes for the next sync to trigger.
+					camel.get().createProducerTemplate().asyncSendBody("direct:syncReceipts", EMPTY_STRING);
+					
 					loadReceipt(null, false);
+				}
 			} else {
 				syncReceiptRemote();
 				

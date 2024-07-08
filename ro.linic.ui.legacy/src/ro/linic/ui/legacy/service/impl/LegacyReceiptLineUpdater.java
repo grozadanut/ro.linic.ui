@@ -147,8 +147,12 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
-        	final ReceiptLine receiptLine = findReceiptLinesByIdIn(Set.of(id))
+        	final LegacyReceiptLine receiptLine = (LegacyReceiptLine) findReceiptLinesByIdIn(Set.of(id))
         			.stream().findFirst().get();
+        	
+        	if (receiptLine.synced())
+    			return ValidationStatus.error(ro.linic.ui.legacy.session.Messages.LegacyReceiptLineUpdater_UpdateQuantitySyncErr);
+        	
         	final BigDecimal oldQuantity = receiptLine.getQuantity();
         	
             pstmt.setBigDecimal(1, newQuantity);
@@ -188,11 +192,12 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
         			.collect(Collectors.toSet());
         	
         	// 1. delete lines
-        	for (final ReceiptLine lineToDelete : linesToDelete) {
+        	for (final ReceiptLine l : linesToDelete) {
+        		final LegacyReceiptLine lineToDelete = (LegacyReceiptLine) l;
         		pstmt.setLong(1, lineToDelete.getId());
         		if (pstmt.executeUpdate() == 1) {
-        			// update product stock
-        			if (lineToDelete.getProductId() != null && lineToDelete.getProductId() > 0)
+        			// update product stock if line is unsynced
+        			if (lineToDelete.getProductId() != null && lineToDelete.getProductId() > 0 && !lineToDelete.synced())
         				increaseStock(lineToDelete.getProductId(), lineToDelete.getQuantity());
         		}
 			}

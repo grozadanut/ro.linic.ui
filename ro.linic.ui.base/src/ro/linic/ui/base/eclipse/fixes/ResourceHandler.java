@@ -68,7 +68,7 @@ public class ResourceHandler implements IModelResourceHandler {
 			"ro.linic.ui.pos.base", "ro.linic.ui.http", "ro.linic.ui.security", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			"ro.linic.ui.workbench", "ro.linic.ui.p2", "ro.linic.ui.e4.help", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			"ro.linic.ui.base.services", "ro.linic.ui.sqlite", "ro.linic.ui.nattable.localization", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			"ro.linic.ui.pos.cloud", "ro.linic.ui.pos.local"); //$NON-NLS-1$ //$NON-NLS-2$
+			"ro.linic.ui.pos.cloud", "ro.linic.ui.pos.local", "ro.linic.ui.camel.core"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	private ResourceSet resourceSet;
 	private Resource resource;

@@ -9,6 +9,7 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import com.google.common.collect.ImmutableList;
 
@@ -22,12 +23,17 @@ import ro.colibri.util.ListUtils;
 import ro.colibri.util.NumberUtils;
 import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
+import ro.linic.ui.pos.base.services.ReceiptUpdater;
 import ro.linic.ui.pos.cloud.model.CloudReceipt;
 import ro.linic.ui.pos.cloud.model.CloudReceiptLine;
 import ro.linic.ui.pos.cloud.services.RemoteSyncer;
 
 @Component
 public class LegacyRemoteSyncer implements RemoteSyncer {
+	@Reference private ReceiptUpdater receiptUpdater;
+	@Reference private ReceiptLineUpdater receiptLineUpdater;
+	
 	private static Stream<Operatiune> toOp(final CloudReceipt receipt) {
 		return receipt.getLines().stream()
 				.map(LegacyReceiptLine.class::cast)
@@ -75,6 +81,16 @@ public class LegacyRemoteSyncer implements RemoteSyncer {
 		final InvocationResult result = BusinessDelegate.saveLocalOps(ops);
 		if (result.statusCanceled())
 			return ValidationStatus.error(result.toTextDescription());
+		
+		receipts.forEach(receipt -> {
+			receipt.setSynced(true);
+			receiptUpdater.update(receipt.getId(), receipt);
+			receipt.getLines().stream().map(LegacyReceiptLine.class::cast).forEach(line -> {
+				line.setSynced(true);
+				receiptLineUpdater.update(line);
+			});
+		});
+		
 		return ValidationStatus.OK_STATUS;
 	}
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" immediate="true" name="ro.linic.ui.camel.core.service.impl.CamelApp">
+   <service>
+      <provide interface="ro.linic.ui.camel.core.service.CamelService"/>
+   </service>
+   <reference bind="setRoute" cardinality="0..1" interface="ro.linic.ui.camel.core.service.CamelRouteBuilder" name="Route" policy="dynamic" unbind="unsetRoute"/>
+   <implementation class="ro.linic.ui.camel.core.service.impl.CamelApp"/>
+</scr:component>

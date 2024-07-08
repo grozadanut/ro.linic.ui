@@ -57,4 +57,5 @@ public class Messages extends NLS
 	public static String UrmarireParteneriExtraFilters_UsedOnly;
 	public static String UrmarireParteneriExtraFilters_User;
 	public static String SyncingSales;
+	public static String LegacyReceiptLineUpdater_UpdateQuantitySyncErr;
 }

@@ -63,7 +63,10 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.100.v20230
  ro.linic.ui.base;bundle-version="0.0.3",
  org.mapstruct;bundle-version="1.5.5",
  ro.linic.ui.base.services;bundle-version="0.0.1",
- ro.linic.ui.pos.cloud;bundle-version="0.0.1"
+ ro.linic.ui.pos.cloud;bundle-version="0.0.1",
+ ro.linic.ui.camel.core;bundle-version="0.0.1",
+ wrapped.org.apache.camel.camel-core-model;bundle-version="4.6.0",
+ wrapped.org.apache.camel.camel-api;bundle-version="4.6.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Description: %Bundle-Description
@@ -73,6 +76,7 @@ Service-Component: OSGI-INF/ro.linic.ui.legacy.LegacyAuthenticationManager.xml,
  OSGI-INF/ro.linic.ui.legacy.service.impl.LegacyReceiptLineUpdater.xml,
  OSGI-INF/ro.linic.ui.legacy.service.impl.LegacyReceiptUpdater.xml,
  OSGI-INF/ro.linic.ui.legacy.service.impl.LegacyRemoteSyncer.xml,
+ OSGI-INF/ro.linic.ui.legacy.service.impl.RemoteSyncCamelRoute.xml,
  OSGI-INF/ro.linic.ui.legacy.service.impl.SQLiteDatabase.xml,
  OSGI-INF/ro.linic.ui.legacy.service.impl.SQLiteHelperImpl.xml
 Import-Package: jakarta.annotation;version="[2.1.0,3.0.0]",

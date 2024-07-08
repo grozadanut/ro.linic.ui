@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Camel Core
+Bundle-SymbolicName: ro.linic.ui.camel.core
+Bundle-Version: 0.0.1
+Export-Package: ro.linic.ui.camel.core.service
+Require-Bundle: org.eclipse.osgi.services;bundle-version="3.12.0",
+ wrapped.org.apache.camel.camel-core;bundle-version="4.6.0",
+ wrapped.org.apache.camel.camel-core-engine;bundle-version="4.6.0",
+ wrapped.org.apache.camel.camel-api;bundle-version="4.6.0",
+ wrapped.org.apache.camel.camel-base-engine;bundle-version="4.6.0",
+ wrapped.org.apache.camel.camel-core-model;bundle-version="4.6.0",
+ wrapped.org.apache.camel.camel-core-languages;bundle-version="4.6.0",
+ wrapped.org.apache.camel.camel-language;bundle-version="4.6.0"
+Service-Component: OSGI-INF/ro.linic.ui.camel.core.service.impl.CamelApp.xml
+Bundle-Vendor: LINIC
+Automatic-Module-Name: ro.linic.ui.camel.core
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-17

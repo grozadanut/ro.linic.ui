@@ -135,4 +135,33 @@ public class LocalReceiptLoader implements ReceiptLoader {
 		
 		return result;
 	}
+	
+	@Override
+	public List<Receipt> findClosed() {
+		final IEclipsePreferences node = ConfigurationScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
+		final String dbName = node.get(PreferenceKey.LOCAL_DB_NAME, PreferenceKey.LOCAL_DB_NAME_DEF);
+		final ReadWriteLock dbLock = localDatabase.getLock(dbName);
+		
+		List<Receipt> result = new ArrayList<>();
+		final StringBuilder querySb = new StringBuilder();
+		querySb.append("SELECT ").append(NEWLINE)
+		.append(sqliteHelper.receiptColumns())
+		.append("FROM "+Receipt.class.getSimpleName()).append(NEWLINE)
+		.append("WHERE ").append(NEWLINE)
+		.append(Receipt.CLOSED_FIELD).append(" = TRUE");
+		
+		dbLock.readLock().lock();
+		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
+			final ResultSet rs = stmt.executeQuery();
+			result = sqliteHelper.readReceipts(rs);
+			for (final Receipt receipt : result)
+				receipt.setLines(loadLines(receipt.getId(), dbName));
+		} catch (final SQLException e) {
+			log.error(e.getMessage(), e);
+		} finally {
+			dbLock.readLock().unlock();
+		}
+		
+		return result;
+	}
 }

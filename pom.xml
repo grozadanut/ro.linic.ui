@@ -117,6 +117,7 @@
    <module>ro.linic.ui.sqlite</module>
    <module>ro.linic.ui.jface.localization</module>
    <module>ro.linic.ui.nattable.localization</module>
+   <module>ro.linic.ui.camel.core</module>
  </modules>
  
  <profiles>
