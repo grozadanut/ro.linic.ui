@@ -11,10 +11,9 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -48,7 +47,7 @@ import ro.linic.ui.legacy.session.ServiceLocator;
 
 public class LoginDialog extends TitleAreaDialog
 {
-	private static final Logger log = Logger.getLogger(LoginDialog.class.getName());
+	private static final ILog log = ILog.of(LoginDialog.class);
 	
 	public static final String DB_USERS_PROP = "all_db_users"; //$NON-NLS-1$
 	public static final String DB_COMPANIES_PROP = "all_db_companies"; //$NON-NLS-1$
@@ -362,11 +361,15 @@ public class LoginDialog extends TitleAreaDialog
 			final Optional<Gestiune> selGest = getSelectedGestiune();
 			if (selUser.isPresent() && selGest.isPresent())
 			{
-				final InvocationResult result = BusinessDelegate.changeGestiune(selUser.get().getId(), selGest.get().getId());
-				if (result.statusCanceled())
-				{
-					setErrorMessage(result.toTextDescriptionWithCode());
-					return;
+				try {
+					final InvocationResult result = BusinessDelegate.changeGestiune(selUser.get().getId(), selGest.get().getId());
+					if (result.statusCanceled())
+					{
+						setErrorMessage(result.toTextDescriptionWithCode());
+						return;
+					}
+				} catch (final Exception e) {
+					log.error(e.getMessage(), e);
 				}
 			}
 			
@@ -378,7 +381,7 @@ public class LoginDialog extends TitleAreaDialog
 				try {
 					prefs.flush();
 				} catch (final BackingStoreException e) {
-					log.log(Level.SEVERE, e.getMessage(), e);
+					log.error(e.getMessage(), e);
 				}
 				super.okPressed();
 			}
@@ -387,7 +390,7 @@ public class LoginDialog extends TitleAreaDialog
 		}
 		catch (final EJBException e)
 		{
-			log.log(Level.SEVERE, e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			if (e.getCausedByException() instanceof ConnectException)
 				setErrorMessage(Messages.LoginDialog_ConnectionError);
 			else

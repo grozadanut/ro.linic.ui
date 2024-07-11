@@ -17,11 +17,19 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 
 import org.eclipse.core.runtime.ICoreRunnable;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -80,6 +88,7 @@ import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.Permission;
 import ro.colibri.entities.user.Role;
 import ro.colibri.entities.user.User;
+import ro.colibri.security.SecurityUtils;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.wrappers.ClasamentEntry;
 import ro.colibri.wrappers.LastYearStats;
@@ -93,9 +102,12 @@ import ro.colibri.wrappers.SalesPerOperators;
 import ro.colibri.wrappers.ThreeEntityWrapper;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.components.AsyncLoadResult;
+import ro.linic.ui.legacy.preferences.PreferenceKey;
 
 public class BusinessDelegate
 {
+	private static ILog log = ILog.of(BusinessDelegate.class);
+	
 	private static void fillImageCache(final Bundle bundle, final Logger log, final ImmutableSet<String> uuids)
 	{
 		final ImmutableSet<String> unfoundUUIDs = uuids.stream()
@@ -123,13 +135,6 @@ public class BusinessDelegate
 	public static String productImageFilename(final String uuid)
 	{
 		return "produse/"+uuid+".jpeg";
-	}
-	
-	public static User login()
-	{
-		ServiceLocator.clearCache();
-		final LoginBeanRemote loginBean = ServiceLocator.getBusinessService(LoginBean.class, LoginBeanRemote.class);
-		return loginBean.loggedUser();
 	}
 	
 	public static ImmutableList<User> dbUsers()
@@ -181,6 +186,37 @@ public class BusinessDelegate
 		usersBean.updateUser(user, faraLogin);
 	}
 	
+	public static User login()
+	{
+		try {
+			ServiceLocator.clearCache();
+			final LoginBeanRemote loginBean = ServiceLocator.getBusinessService(LoginBean.class, LoginBeanRemote.class);
+			return loginBean.loggedUser();
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+			// try offline login
+			return loginUserOffline();
+		}
+	}
+	
+	private static User loginUserOffline() {
+		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
+		final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+ 		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName());
+ 		
+ 		try {
+ 			final ObjectMapper objectMapper = new ObjectMapper();
+			final String userHash = SecurityUtils.hashSha512(ClientSession.instance().getUsername() +
+					ClientSession.instance().getPassword());
+			final String foundUser = secureNode.get(userHash, null);
+			return isEmpty(foundUser) ? null : objectMapper.readValue(foundUser, new TypeReference<User>(){});
+		} catch (final StorageException | JsonProcessingException e) {
+			log.error("Error getting secure preferences", e);
+		}
+		
+		return null;
+	}
+
 	public static InvocationResult changeGestiune(final int userId, final int gestiuneId)
 	{
 		final UsersBeanRemote usersBean = ServiceLocator.getBusinessService(UsersBean.class, UsersBeanRemote.class);

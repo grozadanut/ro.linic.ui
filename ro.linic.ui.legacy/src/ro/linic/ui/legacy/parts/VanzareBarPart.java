@@ -10,6 +10,7 @@ import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Comparator;
@@ -30,6 +31,9 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.window.Window;
@@ -56,6 +60,7 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -67,6 +72,7 @@ import ro.colibri.entities.comercial.Operatiune.TransferType;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
+import ro.colibri.security.SecurityUtils;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
@@ -195,6 +201,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
 				Boolean.TRUE.toString()))) {
+			saveUserForOfflineLogin();
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
 			receiptLoader.findUnclosed().stream().map(CloudReceipt.class::cast)
 			.forEach(unclosedReceipt -> newPartForBon(partService, unclosedReceipt));
@@ -228,6 +235,22 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 		loadVisualState();
 		addListeners();
+	}
+	
+	private void saveUserForOfflineLogin() {
+		final ObjectMapper objectMapper = new ObjectMapper();
+		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
+		final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+ 		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName());
+ 		
+		try {
+			final String userHash = SecurityUtils.hashSha512(ClientSession.instance().getUsername() +
+					ClientSession.instance().getPassword());
+			secureNode.put(userHash, objectMapper.writeValueAsString(ClientSession.instance().getLoggedUser()), true);
+			secureNode.flush();
+		} catch (final IOException | StorageException e) {
+			log.error("Error storing secure preferences", e);
+		}
 	}
 
 	private void createRightArea(final Composite parent) {
