@@ -57,7 +57,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 	private static final int SHELL_HEIGHT = 150;
 	private static final int BUTTON_WIDTH = 100;
 	private static final int BUTTON_HEIGHT = 100;
-	private static final int TABLE_WIDTH = 450;
+	private static final int TABLE_WIDTH = 520;
 	
 	private Text infoArea;
 	private AccDocsNatTable docsTable;

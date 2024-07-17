@@ -6,6 +6,7 @@ import static ro.colibri.util.PresentationUtils.safeString;
 
 import java.io.Serializable;
 import java.math.RoundingMode;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
@@ -47,6 +48,7 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Partner;
+import ro.colibri.util.LocalDateUtils;
 import ro.linic.ui.legacy.tables.components.LinicColumnHeaderStyleConfiguration;
 import ro.linic.ui.legacy.tables.components.LinicNatTableStyleConfiguration;
 import ro.linic.ui.legacy.tables.components.LinicSelectionStyleConfiguration;
@@ -56,6 +58,7 @@ public class AccDocsNatTable
 	private static ImmutableList<String> columns = ImmutableList.<String>builder()
 			.add("Tip")
 			.add("NrBon")
+			.add("Ora")
 			.add("Client")
 			.add("Total")
 			.build();
@@ -83,8 +86,9 @@ public class AccDocsNatTable
 		bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));
 		bodyDataLayer.setDefaultColumnWidthByPosition(0, 120); //Tip
 		bodyDataLayer.setDefaultColumnWidthByPosition(1, 70); //NrBon
-		bodyDataLayer.setDefaultColumnWidthByPosition(2, 120); //Client
-		bodyDataLayer.setDefaultColumnWidthByPosition(3, 90); //Total
+		bodyDataLayer.setDefaultColumnWidthByPosition(2, 70); //Ora
+		bodyDataLayer.setDefaultColumnWidthByPosition(3, 120); //Client
+		bodyDataLayer.setDefaultColumnWidthByPosition(4, 90); //Total
 		// add a DataChangeLayer that tracks data changes but directly updates
 		// the underlying data model
 		final GlazedListsEventLayer<AccountingDocument> glazedListsEventLayer = new GlazedListsEventLayer<>(bodyDataLayer, sourceData);
@@ -183,11 +187,14 @@ public class AccDocsNatTable
 
 			case 1: //NrBon
 				return rowObject.getNrDoc();
+				
+			case 2: //Ora
+				return LocalDateUtils.displayLocalDateTime(rowObject.getDataDoc(),  DateTimeFormatter.ofPattern("HH:mm"));
 
-			case 2: //Client
+			case 3: //Client
 				return safeString(rowObject.getPartner(), Partner::getName);
 
-			case 3: //Total
+			case 4: //Total
 				return displayBigDecimal(rowObject.getTotal(), 2, RoundingMode.HALF_EVEN);
 
 			default:
@@ -217,11 +224,12 @@ public class AccDocsNatTable
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, leftAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 0);
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, leftAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 1);
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, leftAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 2);
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, leftAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 			
 			final Style rightAlignStyle = new Style();
 			rightAlignStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
 			
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rightAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rightAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 4);
 		}
 	}
 }
