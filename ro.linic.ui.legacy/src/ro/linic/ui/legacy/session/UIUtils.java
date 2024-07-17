@@ -7,10 +7,15 @@ import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.colibri.util.StringUtils.isEmpty;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -19,14 +24,15 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
@@ -68,7 +74,7 @@ import ro.linic.ui.legacy.dialogs.PercentagePopup;
 
 public class UIUtils
 {
-	private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(UIUtils.class.getSimpleName());
+	private static final ILog log = ILog.of(UIUtils.class);
 	
 	public static String OS = System.getProperty("os.name").toLowerCase();
 	
@@ -441,7 +447,7 @@ public class UIUtils
 		}
 		catch (final Exception e)
 		{
-			log.log(Level.FINE, "Parsing exception", e);
+			log.error("Parsing exception", e);
 			return Optional.empty();
 		}
 	}
@@ -497,6 +503,30 @@ public class UIUtils
 		{
 			e.printStackTrace();
 			showException(e);
+			return Optional.empty();
+		}
+	}
+	
+	public static String serializeToString(final Serializable object) {
+		try (final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+			oos.writeObject(object);
+			return Base64.getEncoder().encodeToString(baos.toByteArray());
+		} catch (final IOException e) {
+			log.error(e.getMessage(), e);
+			return EMPTY_STRING;
+		}
+	}
+
+	public static <T extends Serializable> Optional<T> deserializeFrom(final String objectAsString) {
+		if (isEmpty(objectAsString))
+			return Optional.empty();
+		
+		final byte[] data = Base64.getDecoder().decode(objectAsString);
+		try (final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data))) {
+			return Optional.of((T) ois.readObject());
+		} catch (final IOException | ClassNotFoundException e) {
+			log.error(e.getMessage(), e);
 			return Optional.empty();
 		}
 	}

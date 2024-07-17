@@ -125,17 +125,17 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
 		
 		final StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE "+ReceiptLine.class.getSimpleName()+" SET ")
-		.append(LegacyReceiptLine.RECEIPT_ID_FIELD+" = ?").append(NEWLINE)
+		.append(LegacyReceiptLine.RECEIPT_ID_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(LegacyReceiptLine.SYNCED_FIELD+" = ?").append(NEWLINE)
 		.append("WHERE").append(NEWLINE)
 		.append(LegacyReceiptLine.ID_FIELD+" = ?");
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
-            pstmt.setLong(0, model.getReceiptId());
-            pstmt.setBoolean(1, model.synced());
+            pstmt.setLong(1, model.getReceiptId());
+            pstmt.setBoolean(2, model.synced());
             // WHERE
-            pstmt.setLong(2, model.getId());
+            pstmt.setLong(3, model.getId());
             pstmt.executeUpdate();
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {

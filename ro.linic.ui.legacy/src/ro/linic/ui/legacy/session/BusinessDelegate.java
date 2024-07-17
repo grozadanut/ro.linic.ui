@@ -27,9 +27,6 @@ import org.eclipse.equinox.security.storage.StorageException;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -205,12 +202,11 @@ public class BusinessDelegate
  		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName());
  		
  		try {
- 			final ObjectMapper objectMapper = new ObjectMapper();
 			final String userHash = SecurityUtils.hashSha512(ClientSession.instance().getUsername() +
 					ClientSession.instance().getPassword());
 			final String foundUser = secureNode.get(userHash, null);
-			return isEmpty(foundUser) ? null : objectMapper.readValue(foundUser, new TypeReference<User>(){});
-		} catch (final StorageException | JsonProcessingException e) {
+			return (User) UIUtils.deserializeFrom(foundUser).orElse(null);
+		} catch (final StorageException e) {
 			log.error("Error getting secure preferences", e);
 		}
 		
@@ -1469,17 +1465,23 @@ public class BusinessDelegate
 	{
 		final Job job = Job.create("Loading All UI Categories", (ICoreRunnable) monitor ->
 		{
-			final ManagerBeanRemote bean = ServiceLocator.getBusinessService(ManagerBean.class, ManagerBeanRemote.class);
-			final ImmutableList<ProductUiCategory> data = bean.uiCategories(lazyLoad, allCategories);
-			sync.asyncExec(() -> provider.success(data));
-			data.forEach(cat ->
-			{
-				if (lazyLoad)
-					fillImageCache(bundle, log, cat.getProducts().stream()
-							.map(Product::getImageUUID)
-							.filter(Objects::nonNull)
-							.collect(toImmutableSet()));
-			});
+			try {
+				final ManagerBeanRemote bean = ServiceLocator.getBusinessService(ManagerBean.class, ManagerBeanRemote.class);
+				final ImmutableList<ProductUiCategory> data = bean.uiCategories(lazyLoad, allCategories);
+				sync.asyncExec(() -> provider.success(data));
+				data.forEach(cat ->
+				{
+					if (lazyLoad)
+						fillImageCache(bundle, log, cat.getProducts().stream()
+								.map(Product::getImageUUID)
+								.filter(Objects::nonNull)
+								.collect(toImmutableSet()));
+				});
+			} catch (final Exception e) {
+				log.error(e);
+				if (!monitor.isCanceled())
+					sync.asyncExec(() -> provider.error(e.getMessage()));
+			}
 		});
 
 		job.schedule();

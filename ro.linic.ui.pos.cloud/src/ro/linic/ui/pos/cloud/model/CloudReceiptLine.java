@@ -14,7 +14,7 @@ public class CloudReceiptLine extends ReceiptLine {
 	 */
 	private Boolean synced;
 	
-	public CloudReceiptLine(final Long id, final Long productId, final Long receiptId, final String name, final String sku, final String uom,
+	public CloudReceiptLine(final Long id, final Long productId, final Long receiptId, final String sku, final String name, final String uom,
 			final BigDecimal quantity, final BigDecimal price, final AllowanceCharge allowanceCharge, final String taxCode,
 			final String departmentCode, final BigDecimal taxTotal, final Boolean synced) {
 		super(id, productId, receiptId, sku, name, uom, quantity, price, allowanceCharge, taxCode, departmentCode, taxTotal);

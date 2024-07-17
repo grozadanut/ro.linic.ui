@@ -60,7 +60,6 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -100,6 +99,7 @@ import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
+import ro.linic.ui.pos.base.services.ProductDataLoader;
 import ro.linic.ui.pos.base.services.ProductDataUpdater;
 import ro.linic.ui.pos.base.services.ReceiptLineLoader;
 import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
@@ -158,6 +158,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	@Inject private ProductDataHolder productDataHolder;
 	@Inject private ProductDataUpdater productDataUpdater;
+	@Inject private ProductDataLoader productDataLoader;
 	@Inject private ReceiptLoader receiptLoader;
 	@Inject private ReceiptUpdater receiptUpdater;
 	@Inject private ReceiptLineUpdater receiptLineUpdater;
@@ -202,11 +203,13 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
 				Boolean.TRUE.toString()))) {
+			productDataHolder.setData(productDataLoader.findAll());
 			saveUserForOfflineLogin();
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
 			receiptLoader.findUnclosed().stream().map(CloudReceipt.class::cast)
 			.forEach(unclosedReceipt -> newPartForBon(partService, unclosedReceipt));
 			reloadProduct(null, false);
+			LegacyReceiptLineUpdater.updateSyncLabel(receiptLineLoader);
 		}
 
 		parent.setLayout(new GridLayout());
@@ -239,7 +242,6 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	}
 	
 	private void saveUserForOfflineLogin() {
-		final ObjectMapper objectMapper = new ObjectMapper();
 		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
 		final ISecurePreferences root = SecurePreferencesFactory.getDefault();
  		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName());
@@ -247,7 +249,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		try {
 			final String userHash = SecurityUtils.hashSha512(ClientSession.instance().getUsername() +
 					ClientSession.instance().getPassword());
-			secureNode.put(userHash, objectMapper.writeValueAsString(ClientSession.instance().getLoggedUser()), true);
+			secureNode.put(userHash, UIUtils.serializeToString(ClientSession.instance().getLoggedUser()), true);
 			secureNode.flush();
 		} catch (final IOException | StorageException e) {
 			log.error(e);

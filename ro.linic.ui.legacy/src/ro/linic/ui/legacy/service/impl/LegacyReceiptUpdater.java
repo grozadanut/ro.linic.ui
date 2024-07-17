@@ -1,11 +1,13 @@
 package ro.linic.ui.legacy.service.impl;
 
+import static ro.colibri.util.PresentationUtils.LIST_SEPARATOR;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.osgi.service.component.annotations.Reference;
 import ro.colibri.util.InvocationResult;
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ReceiptLoader;
@@ -105,13 +108,25 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
 		
 		final StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE "+Receipt.class.getSimpleName()+" SET ")
-		.append(sqliteHelper.receiptColumns())
+		.append(CloudReceipt.ID_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(CloudReceipt.CLOSED_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(CloudReceipt.SYNCED_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(CloudReceipt.CREATION_TIME_FIELD+" = ?").append(LIST_SEPARATOR)
+		.append(CloudReceipt.NUMBER_FIELD+" = ?").append(NEWLINE)
 		.append("WHERE").append(NEWLINE)
 		.append(CloudReceipt.ID_FIELD+" = ?");
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
-        	sqliteHelper.insertReceiptInStatement(model, pstmt);
+        	pstmt.setLong(1, model.getId());
+        	pstmt.setBoolean(2, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
+        	pstmt.setBigDecimal(3, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
+        	pstmt.setObject(4, model.getClosed(), Types.BOOLEAN);
+        	pstmt.setObject(5, model.getSynced(), Types.BOOLEAN);
+        	pstmt.setString(6, model.getCreationTime().toString());
+        	pstmt.setObject(7, model.getNumber(), Types.INTEGER);
             // WHERE
             pstmt.setLong(sqliteHelper.receiptColumnsPlaceholder().split(",").length+1, id);
             pstmt.executeUpdate();

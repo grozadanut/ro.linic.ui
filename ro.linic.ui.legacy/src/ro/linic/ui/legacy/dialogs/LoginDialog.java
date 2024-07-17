@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -376,11 +375,11 @@ public class LoginDialog extends TitleAreaDialog
 			final User user = ClientSession.instance().login();
 			if (user != null)
 			{
-				prefs.put(DB_USERS_PROP, toProp(BusinessDelegate.usersWithCompanyRoles()));
-				prefs.put(DB_COMPANIES_PROP, toPropComp(BusinessDelegate.companiesWithGestiuni()));
 				try {
+					prefs.put(DB_USERS_PROP, toProp(BusinessDelegate.usersWithCompanyRoles()));
+					prefs.put(DB_COMPANIES_PROP, toPropComp(BusinessDelegate.companiesWithGestiuni()));
 					prefs.flush();
-				} catch (final BackingStoreException e) {
+				} catch (final Exception e) {
 					log.error(e.getMessage(), e);
 				}
 				super.okPressed();

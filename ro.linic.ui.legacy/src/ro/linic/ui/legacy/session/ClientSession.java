@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import javax.naming.Context;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -26,6 +27,8 @@ import ro.colibri.util.StringUtils;
 
 public class ClientSession
 {
+	private static ILog log = ILog.of(ClientSession.class);
+	
 	private static ClientSession instance;
 	
 	public static final String INITIAL_CONTEXT_FACTORY_VALUE = "org.wildfly.naming.client.WildFlyInitialContextFactory";
@@ -69,9 +72,13 @@ public class ClientSession
 	
 	public void reloadBillImages()
 	{
-		final InvocationResult billImages = BusinessDelegate.billImages();
-		billSignatureProp = billImages.extraString(PersistedProp.BILL_SIGNATURE_KEY);
-		billStampProp = billImages.extraString(PersistedProp.BILL_STAMP_KEY);
+		try {
+			final InvocationResult billImages = BusinessDelegate.billImages();
+			billSignatureProp = billImages.extraString(PersistedProp.BILL_SIGNATURE_KEY);
+			billStampProp = billImages.extraString(PersistedProp.BILL_STAMP_KEY);
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	public boolean hasPermission(final String permission)
@@ -106,6 +113,7 @@ public class ClientSession
 	{
 		this.syncStateControls.add(control);
 		control.addDisposeListener(e -> syncStateControls.remove(control));
+		updateSyncLabel();
 	}
 	
 	public synchronized void setAllSynced(final boolean allSynced) {
