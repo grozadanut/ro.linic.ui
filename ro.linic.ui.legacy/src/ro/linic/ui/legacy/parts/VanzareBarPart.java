@@ -195,6 +195,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			tvaPercentDb = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
 					.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
 			prefs.put(PreferenceKey.TVA_PERCENT_KEY, tvaPercentDb.toString());
+			prefs.flush();
 		} catch (final Exception e) {
 			tvaPercentDb = parse(prefs.get(PreferenceKey.TVA_PERCENT_KEY, null));
 		}
@@ -249,7 +250,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			secureNode.put(userHash, objectMapper.writeValueAsString(ClientSession.instance().getLoggedUser()), true);
 			secureNode.flush();
 		} catch (final IOException | StorageException e) {
-			log.error("Error storing secure preferences", e);
+			log.error(e);
 		}
 	}
 

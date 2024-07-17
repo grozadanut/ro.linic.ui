@@ -5,10 +5,10 @@ Bundle-SymbolicName: ro.linic.ui.sqlite
 Bundle-Version: 0.0.1
 Require-Bundle: ro.linic.ui.base.services;bundle-version="0.0.1",
  org.eclipse.osgi.services;bundle-version="3.12.0"
-Service-Component: OSGI-INF/ro.linic.ui.sqlite.services.impl.SQLiteDatabase.xml
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.sqlite
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: libs/sqlite-jdbc-3.36.0.1.jar,
  .
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Service-Component: OSGI-INF/ro.linic.ui.sqlite.services.impl.SQLiteDatabase.xml

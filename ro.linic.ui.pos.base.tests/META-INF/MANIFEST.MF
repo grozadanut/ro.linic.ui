@@ -11,6 +11,8 @@ Require-Bundle: org.junit,
  junit-jupiter-api,
  org.apache.felix.scr;bundle-version="2.2.10",
  org.mockito.mockito-core;bundle-version="5.12.0",
- org.eclipse.jdt.junit.runtime;bundle-version="3.7.400",
  net.bytebuddy.byte-buddy-agent;bundle-version="1.14.15",
- net.bytebuddy.byte-buddy;bundle-version="1.14.15"
+ net.bytebuddy.byte-buddy;bundle-version="1.14.15",
+ junit-jupiter-engine;bundle-version="5.10.2",
+ org.eclipse.jdt.junit5.runtime;bundle-version="1.1.300",
+ org.objenesis;bundle-version="3.3.0"

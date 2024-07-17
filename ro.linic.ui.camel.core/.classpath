@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/camel-api-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-base-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-base-engine-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-bean-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-browse-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-cluster-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-controlbus-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-core-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-core-catalog-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-core-engine-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-core-languages-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-core-model-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-core-processor-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-core-reifier-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-dataformat-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-dataset-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-direct-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-file-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-health-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-language-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-log-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-management-api-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-mock-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-ref-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-rest-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-saga-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-scheduler-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-seda-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-stub-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-support-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-timer-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-tooling-model-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-util-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-util-json-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-validator-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-xml-io-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-xml-io-util-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-xml-jaxb-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-xml-jaxp-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-xml-jaxp-util-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-xpath-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-xslt-4.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/camel-yaml-io-4.6.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
