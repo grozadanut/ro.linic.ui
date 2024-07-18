@@ -12,6 +12,7 @@ public class DisplayHelpHandler {
 
 	@Execute
 	public void execute() throws Exception {
-		BaseHelpSystem.getHelpDisplay().displayHelp(false);
+		// hardcoded for now
+		BaseHelpSystem.getHelpDisplay().displayHelpResource("/ro.linic.ui.legacy/html/toc.html", true);
 	}
 }

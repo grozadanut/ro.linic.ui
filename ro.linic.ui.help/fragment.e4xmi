@@ -2,7 +2,7 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_FcoVUA9qEe-Nkt2rGO4dtw">
   <imports xsi:type="menu:Menu" xmi:id="_RH6QsA9qEe-Nkt2rGO4dtw" elementId="org.eclipse.ui.help.menu"/>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Zur5QA9qEe-Nkt2rGO4dtw" featurename="children" parentElementId="org.eclipse.ui.help.menu">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_iDdy4A9qEe-Nkt2rGO4dtw" elementId="ro.linic.ui.help.handledmenuitem.userguide" toBeRendered="false" visible="false" label="%handledmenuitem.label.userguide" iconURI="platform:/plugin/ro.linic.ui.help/icons/user-guide_16x16.png" command="_Od-kkA9rEe-Nkt2rGO4dtw"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_iDdy4A9qEe-Nkt2rGO4dtw" elementId="ro.linic.ui.help.handledmenuitem.userguide" label="%handledmenuitem.label.userguide" iconURI="platform:/plugin/ro.linic.ui.help/icons/user-guide_16x16.png" command="_Od-kkA9rEe-Nkt2rGO4dtw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_LF7DoA9rEe-Nkt2rGO4dtw" featurename="commands" parentElementId="xpath:/">
     <elements xsi:type="commands:Command" xmi:id="_Od-kkA9rEe-Nkt2rGO4dtw" elementId="ro.linic.ui.help.command.userguide" commandName="%command.commandname.userguide"/>
