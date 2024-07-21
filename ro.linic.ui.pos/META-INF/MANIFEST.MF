@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Standalone POS
 Bundle-SymbolicName: ro.linic.ui.pos;singleton:=true
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Bundle-Vendor: LINIC
 Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.200.v20240109-1025",
  org.eclipse.e4.core.di,

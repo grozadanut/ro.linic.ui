@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Help
 Bundle-SymbolicName: ro.linic.ui.help
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Bundle-Vendor: LINIC
 Require-Bundle: ro.linic.ui.e4.help;bundle-version="0.0.1"
 Model-Fragment: fragment.e4xmi

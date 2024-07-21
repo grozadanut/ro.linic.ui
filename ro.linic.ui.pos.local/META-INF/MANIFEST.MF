@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: POS Local
 Bundle-SymbolicName: ro.linic.ui.pos.local
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Export-Package: ro.linic.ui.pos.local.addons
 Require-Bundle: ro.linic.ui.pos.base;bundle-version="0.0.4",
  org.eclipse.osgi.services;bundle-version="3.12.0",

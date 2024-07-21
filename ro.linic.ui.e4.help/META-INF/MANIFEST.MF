@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: E4 Help UI
 Bundle-SymbolicName: ro.linic.ui.e4.help;singleton:=true
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Export-Package: ro.linic.ui.e4.help.handlers
 Import-Package: org.eclipse.swt,
  org.eclipse.swt.browser,
