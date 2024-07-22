@@ -5,6 +5,7 @@ import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.NumberUtils.isNumeric;
 import static ro.colibri.util.NumberUtils.parse;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
+import static ro.colibri.util.StringUtils.globalIsMatch;
 import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
@@ -75,6 +76,7 @@ import ro.colibri.security.SecurityUtils;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
+import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.camel.core.service.CamelService;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
@@ -118,6 +120,15 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private static final String BON_DESCHIS_TABLE_STATE_PREFIX = "vanzari_bar.bon_deschis_nt"; //$NON-NLS-1$
 	private static final String INITIAL_PART_LOAD_PROP = "vanzari_bar.initial_part_load"; //$NON-NLS-1$
 	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari_bar.horizontal_sash"; //$NON-NLS-1$
+	
+	public static boolean isDiscountProcentual(final ro.linic.ui.pos.base.model.Product p) {
+		return globalIsMatch(p.getType(), Product.DISCOUNT_CATEGORY, TextFilterMethod.EQUALS) &&
+				globalIsMatch(p.getUom(), "%", TextFilterMethod.EQUALS);
+	}
+	
+	public static boolean isDiscountProcentual(final ReceiptLine line) {
+		return globalIsMatch(line.getUom(), "%", TextFilterMethod.EQUALS);
+	}
 
 	// MODEL
 	private CloudReceipt bonCasa;
@@ -688,7 +699,23 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		if (!product.isPresent())
 			return;
 		
-		final BigDecimal cantitate = parse(cantitateText.getText());
+		BigDecimal cantitate = parse(cantitateText.getText());
+		BigDecimal price = NumberUtils.adjustPrice(product.get().getPrice(), cantitate);
+		
+		if (globalIsMatch(product.get().getType(), Product.DISCOUNT_CATEGORY, TextFilterMethod.EQUALS))
+			cantitate = cantitate.abs().negate();
+		
+		// calculeaza discountul procentual, doar daca nu avem deja discount procentual pe bon
+		// discountul procentual se cumuleaza cu discountul valoric
+		if (isDiscountProcentual(product.get())) {
+			if (bonCasa != null && !bonCasa.getLines().stream().filter(VanzareBarPart::isDiscountProcentual).findAny().isPresent()) {
+				cantitate = new BigDecimal("-1");
+				price = bonCasa.total().multiply(price).divide(new BigDecimal("100"), 2, RoundingMode.HALF_EVEN).abs();
+			}
+			else if (bonCasa != null)
+				throw new UnsupportedOperationException(Messages.VanzareBarPart_DiscountAlreadyPresent);
+		}
+		
 		if (bonCasa == null) {
 			bonCasa = new CloudReceipt();
 			receiptUpdater.create(bonCasa);
@@ -707,7 +734,6 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 		final BigDecimal taxPercent = product.map(ro.linic.ui.pos.base.model.Product::getTaxPercentage)
 				.orElse(tvaPercentDb);
-		final BigDecimal price = NumberUtils.adjustPrice(product.get().getPrice(), cantitate);
 		final BigDecimal taxTotal = price.multiply(cantitate).setScale(2, RoundingMode.HALF_EVEN).multiply(taxPercent)
 				.setScale(2, RoundingMode.HALF_EVEN);
 
