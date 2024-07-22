@@ -2,6 +2,7 @@ package ro.linic.ui.legacy.parts;
 
 import static ro.colibri.util.ListUtils.toImmutableList;
 import static ro.colibri.util.ListUtils.toImmutableSet;
+import static ro.colibri.util.NumberUtils.greaterThan;
 import static ro.colibri.util.NumberUtils.isNumeric;
 import static ro.colibri.util.NumberUtils.parse;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
@@ -97,6 +98,7 @@ import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 import ro.linic.ui.legacy.wizards.InchideBonWizardDialog;
 import ro.linic.ui.pos.base.dialogs.CloseReceiptDialog;
 import ro.linic.ui.pos.base.dialogs.CloseReceiptDialog.Builder;
+import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
@@ -128,6 +130,28 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	
 	public static boolean isDiscountProcentual(final ReceiptLine line) {
 		return globalIsMatch(line.getUom(), "%", TextFilterMethod.EQUALS);
+	}
+	
+	/**
+	 * In the legacy app we add discounts as products with negative 
+	 * quantity. We need to get these products and transform them in 
+	 * allowance charges.
+	 */
+	private static Receipt fixDiscounts(final CloudReceipt r) {
+		final CloudReceipt clone = new CloudReceipt();
+		clone.setId(r.getId());
+		clone.setClosed(r.getClosed());
+		clone.setCreationTime(r.getCreationTime());
+		clone.setNumber(r.getNumber());
+		clone.setSynced(r.getSynced());
+		clone.setLines(r.getLines().stream().filter(l -> greaterThan(l.getQuantity(), BigDecimal.ZERO)).collect(toImmutableList()));
+		final Optional<AllowanceCharge> allowanceCharge = r.getLines().stream()
+				.filter(l -> NumberUtils.smallerThan(l.getQuantity(), BigDecimal.ZERO))
+				.map(l -> l.getTotal().abs())
+				.reduce(BigDecimal::add)
+				.map(total -> new AllowanceCharge(false, total));
+		clone.setAllowanceCharge(allowanceCharge.orElse(null));
+		return clone;
 	}
 
 	// MODEL
@@ -822,7 +846,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				throw new IllegalArgumentException("Unexpected value: " + tipInchidere);
 				};
 
-				final CloseReceiptDialog closeReceiptDialog = Builder.partial(search.getShell(), bonCasa)
+				final CloseReceiptDialog closeReceiptDialog = Builder.partial(search.getShell(), fixDiscounts(bonCasa))
 						.initialValues(Map.of(paymentType, bonCasa.total()))
 						.build();
 				ContextInjectionFactory.inject(closeReceiptDialog, ctx);
@@ -850,6 +874,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			search.setFocus();
 		}
 	}
+	
 
 	private void syncReceiptRemote() {
 		/*
