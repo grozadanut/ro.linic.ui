@@ -9,7 +9,6 @@ Export-Package: org.apache.camel,
  ro.linic.ui.camel.core.service
 Require-Bundle: org.eclipse.osgi.services;bundle-version="3.12.0",
  slf4j.api;bundle-version="2.0.12"
-Service-Component: OSGI-INF/ro.linic.ui.camel.core.service.impl.CamelApp.xml
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.camel.core
 Bundle-ActivationPolicy: lazy
@@ -58,3 +57,4 @@ Bundle-ClassPath: .,
  libs/camel-xslt-4.6.0.jar,
  libs/camel-yaml-io-4.6.0.jar
 Bundle-RequiredExecutionEnvironment: JavaSE-17
+Service-Component: OSGI-INF/ro.linic.ui.camel.core.service.impl.CamelApp.xml

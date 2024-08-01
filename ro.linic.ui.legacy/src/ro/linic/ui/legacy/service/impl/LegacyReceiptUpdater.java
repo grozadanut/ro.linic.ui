@@ -111,7 +111,6 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
 		.append(CloudReceipt.ID_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.CHARGE_INDICATOR_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(CloudReceipt.ALLOWANCE_CHARGE_FIELD+"_"+AllowanceCharge.AMOUNT_FIELD+" = ?").append(LIST_SEPARATOR)
-		.append(CloudReceipt.CLOSED_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(CloudReceipt.SYNCED_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(CloudReceipt.CREATION_TIME_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(CloudReceipt.NUMBER_FIELD+" = ?").append(NEWLINE)
@@ -123,12 +122,11 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
         	pstmt.setLong(1, model.getId());
         	pstmt.setBoolean(2, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::chargeIndicator).orElse(false));
         	pstmt.setBigDecimal(3, Optional.ofNullable(model.getAllowanceCharge()).map(AllowanceCharge::amount).orElse(null));
-        	pstmt.setObject(4, model.getClosed(), Types.BOOLEAN);
-        	pstmt.setObject(5, model.getSynced(), Types.BOOLEAN);
-        	pstmt.setString(6, model.getCreationTime().toString());
-        	pstmt.setObject(7, model.getNumber(), Types.INTEGER);
+        	pstmt.setObject(4, model.getSynced(), Types.BOOLEAN);
+        	pstmt.setString(5, model.getCreationTime().toString());
+        	pstmt.setObject(6, model.getNumber(), Types.INTEGER);
             // WHERE
-            pstmt.setLong(sqliteHelper.receiptColumnsPlaceholder().split(",").length+1, id);
+            pstmt.setLong(7, id);
             pstmt.executeUpdate();
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {
