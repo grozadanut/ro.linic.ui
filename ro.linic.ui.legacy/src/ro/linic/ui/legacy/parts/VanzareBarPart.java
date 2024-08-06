@@ -866,8 +866,10 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 						new InchideBonWizard(BusinessDelegate.reloadDoc(bonCasa.getId()), true, ctx, bundle, log,
 								tipInchidere));
 
-				if (wizardDialog.open() == Window.OK)
+				if (wizardDialog.open() == Window.OK) {
+					receiptUpdater.closeReceipt(bonCasa.getId());
 					loadReceipt(null, false);
+				}
 			}
 			
 			LegacyReceiptLineUpdater.updateSyncLabel(receiptLineLoader);
