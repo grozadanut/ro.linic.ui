@@ -277,6 +277,9 @@ public class Messages extends NLS {
 	public static String VanzareBarPart_VAT;
 	public static String VanzareBarPart_UnsuppOpSyncedReceipt;
 	public static String VanzareBarPart_DiscountAlreadyPresent;
+	public static String VanzareBarPart_AddPartner;
+	public static String VanzareBarPart_Discount;
+	public static String VanzareBarPart_UseDiscount;
 	public static String VanzarePart_AddPartner;
 	public static String VanzarePart_CancelDoc;
 	public static String VanzarePart_CancelDocMess;

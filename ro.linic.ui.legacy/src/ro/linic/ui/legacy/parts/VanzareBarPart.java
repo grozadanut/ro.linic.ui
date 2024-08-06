@@ -11,10 +11,13 @@ import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
+import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -68,18 +71,24 @@ import com.google.common.collect.ImmutableSet;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import ro.colibri.entities.comercial.AccountingDocument;
+import ro.colibri.entities.comercial.Document.TipDoc;
+import ro.colibri.entities.comercial.DocumentWithDiscount;
 import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.entities.comercial.Operatiune.TransferType;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
+import ro.colibri.security.Permissions;
 import ro.colibri.security.SecurityUtils;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.InvocationResult.Problem;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.colibri.wrappers.RulajPartener;
 import ro.linic.ui.camel.core.service.CamelService;
 import ro.linic.ui.legacy.components.AsyncLoadData;
+import ro.linic.ui.legacy.dialogs.AdaugaClientFidelDialog;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.VanzariIncarcaDocDialog;
 import ro.linic.ui.legacy.mapper.OperatiuneMapper;
@@ -158,6 +167,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private CloudReceipt bonCasa;
 	// loaded from VanzariIncarcaDocDialog
 	private AccountingDocument loadedBonCasa;
+	private ImmutableList<RulajPartener> allPartners = ImmutableList.of();
 
 	private BigDecimal tvaPercentDb;
 
@@ -170,6 +180,11 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private Button plusFive;
 	private Button deleteCant;
 	private Button enter;
+	
+	private RulajPartener selectedClient;
+	private Label partnerLabel;
+	private Text availableDiscount;
+	private Button useDiscount;
 
 	private Text search;
 	private UIProductsSimpleTable allProductsTable;
@@ -188,6 +203,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private Button incarcaBonuriButton;
 	private Button refreshButton;
 	private Button managerCasaButton;
+	private Button addPartnerButton;
 	private Button cancelBonButton;
 	private Button stergeRandButton;
 
@@ -246,6 +262,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			reloadProduct(null, false);
 			LegacyReceiptLineUpdater.updateSyncLabel(receiptLineLoader);
 		}
+		reloadPartners();
 
 		parent.setLayout(new GridLayout());
 		createTopBar(parent, partService, bundle, log);
@@ -327,6 +344,27 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		enter.setText(Messages.VanzareBarPart_ENTER);
 		UIUtils.setBannerFont(enter);
 		GridDataFactory.swtDefaults().span(3, 1).hint(100, 60).applyTo(enter);
+		
+		final Composite discountContainer = new Composite(container, SWT.NONE);
+		discountContainer.setLayout(new GridLayout(3, false));
+		GridDataFactory.fillDefaults().grab(true, false).span(4, 1)
+		.exclude(!ClientSession.instance().hasPermission(Permissions.ADD_CLIENT_DOCS)).applyTo(discountContainer);
+		
+		partnerLabel = new Label(discountContainer, SWT.NONE);
+		UIUtils.setFont(partnerLabel);
+		GridDataFactory.fillDefaults().grab(true, false).span(3, 1).applyTo(partnerLabel);
+		
+		final Label availableDiscountLabel = new Label(discountContainer, SWT.NONE);
+		availableDiscountLabel.setText(Messages.VanzareBarPart_Discount);
+		UIUtils.setFont(availableDiscountLabel);
+		
+		availableDiscount = new Text(discountContainer, SWT.SINGLE | SWT.BORDER);
+		availableDiscount.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		UIUtils.setFont(availableDiscount);
+		
+		useDiscount = new Button(discountContainer, SWT.PUSH);
+		useDiscount.setText(Messages.VanzareBarPart_UseDiscount);
+		UIUtils.setBoldFont(useDiscount);
 
 		bonDeschisTable = new UIBonDeschisNatTable();
 		bonDeschisTable.postConstruct(container);
@@ -418,7 +456,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	private void createBottomBar(final Composite parent) {
 		final Composite footerContainer = new Composite(parent, SWT.NONE);
-		footerContainer.setLayout(new GridLayout(5, false));
+		footerContainer.setLayout(new GridLayout(6, false));
 		footerContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 //		retetaButton = new Button(footerContainer, SWT.PUSH);
@@ -437,6 +475,11 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		managerCasaButton.setText(Messages.VanzareBarPart_ECRManager);
 		UIUtils.setBannerFont(managerCasaButton);
 
+		addPartnerButton = new Button(footerContainer, SWT.PUSH);
+		addPartnerButton.setText(Messages.VanzareBarPart_AddPartner);
+		UIUtils.setBannerFont(addPartnerButton);
+		GridDataFactory.swtDefaults().exclude(!ClientSession.instance().hasPermission(Permissions.ADD_CLIENT_DOCS)).applyTo(addPartnerButton);
+		
 		cancelBonButton = new Button(footerContainer, SWT.PUSH);
 		cancelBonButton.setText(Messages.VanzareBarPart_CancelReceipt);
 		cancelBonButton.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
@@ -491,6 +534,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR))
 					if (selectedProduct().isPresent())
 						addNewOperationToBon(selectedProduct());
+					else if (selectedPartner().isPresent())
+						selectPartner(selectedPartner());
 					else
 						cantitateText.setFocus();
 
@@ -510,6 +555,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			public void keyPressed(final KeyEvent e) {
 				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) && isNumeric(cantitateText.getText()))
 					addNewOperationToBon(selectedProduct());
+				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) && selectedPartner().isPresent())
+					selectPartner(selectedPartner());
 
 				if (e.keyCode == SWT.ARROW_DOWN) {
 					e.doit = false;
@@ -559,6 +606,19 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			public void widgetSelected(final SelectionEvent e) {
 				if (isNumeric(cantitateText.getText()))
 					addNewOperationToBon(selectedProduct());
+				if (selectedPartner().isPresent())
+					selectPartner(selectedPartner());
+				
+			}
+		});
+		
+		useDiscount.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				if (selectedClient != null && MessageDialog.openQuestion(useDiscount.getShell(), "Foloseste Discount",
+						MessageFormat.format("Folositi {0} lei de pe cardul {1}? ATENTIE! Banii NU vor fi returnati pe card daca se anuleaza bonul!",
+								availableDiscount.getText(), selectedClient.getCardNumber())))
+					useDiscount();
 			}
 		});
 
@@ -601,6 +661,15 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				new ManagerCasaDialog(Display.getCurrent().getActiveShell(), log, ctx).open();
+			}
+		});
+		
+		addPartnerButton.addSelectionListener(new SelectionAdapter()
+		{
+			@Override public void widgetSelected(final SelectionEvent e)
+			{
+				if (new AdaugaClientFidelDialog(addPartnerButton.getShell()).open() == Window.OK)
+					reloadPartners();
 			}
 		});
 
@@ -654,6 +723,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				reloadProduct(null, true);
+				reloadPartners();
 			}
 		});
 	}
@@ -709,6 +779,30 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
 		}
 	}
+	
+	private void reloadPartners()
+	{
+		try {
+			allPartners = BusinessDelegate.puncteFidelitate_Sync();
+		} catch (final Exception e) {
+			log.error(e);
+		}
+	}
+	
+	private void selectPartner(final Optional<RulajPartener> client) {
+		this.selectedClient = client.orElse(null);
+		partnerLabel.setText(client.map(cl -> java.text.MessageFormat.format("{0} - {1}", cl.getCardNumber(), cl.getName()))
+				.orElse(EMPTY_STRING));
+		availableDiscount.setText(client.map(RulajPartener::getDiscDisponibil)
+				.map(bd -> bd.setScale(2, RoundingMode.DOWN))
+				.map(BigDecimal::toString)
+				.orElse(EMPTY_STRING));
+		
+		if (client.isPresent()) {
+			search.setText(EMPTY_STRING);
+			search.setFocus();
+		}
+	}
 
 	private Optional<ro.linic.ui.pos.base.model.Product> selectedProduct() {
 		return allProductsTable.getSourceData().stream()
@@ -717,6 +811,13 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				.or(() -> allProductsTable.getFilteredSortedData().size() == 1
 						? allProductsTable.getFilteredSortedData().stream().findFirst()
 						: Optional.empty());
+	}
+	
+	private Optional<RulajPartener> selectedPartner() {
+		return allPartners.stream()
+				.filter(p -> search.getText().strip().equalsIgnoreCase(p.getCardNumber()) ||
+						search.getText().strip().equalsIgnoreCase(p.getPhoneNumber()))
+				.findFirst();
 	}
 
 	private void addNewOperationToBon(final Optional<ro.linic.ui.pos.base.model.Product> product) {
@@ -833,6 +934,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 		// update bonCasa(may be deleted) and reload affected products
 		loadReceipt((CloudReceipt) receiptLoader.findById(bonCasa.getId()).orElse(null), true);
+		if (bonCasa == null)
+			selectPartner(Optional.empty());
 	}
 
 	@Override
@@ -856,7 +959,9 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 					// so we don't wait 5 minutes for the next sync to trigger.
 					camel.get().createProducerTemplate().asyncSendBody("direct:syncReceipts", EMPTY_STRING);
 					
+					accumulateDiscount();
 					loadReceipt(null, false);
+					selectPartner(Optional.empty());
 				}
 			} else {
 				syncReceiptRemote();
@@ -869,14 +974,89 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				if (wizardDialog.open() == Window.OK) {
 					receiptUpdater.closeReceipt(bonCasa.getId());
 					loadReceipt(null, false);
+					selectPartner(Optional.empty());
 				}
 			}
 			
 			LegacyReceiptLineUpdater.updateSyncLabel(receiptLineLoader);
 			search.setFocus();
+			reloadPartners();
 		}
 	}
 	
+	private void accumulateDiscount() {
+		if (selectedClient == null)
+			return;
+		if (NumberUtils.smallerThanOrEqual(bonCasa.total(), BigDecimal.ZERO))
+			return;
+		
+		try {
+			final DocumentWithDiscount discountDoc = new DocumentWithDiscount();
+			discountDoc.setDataDoc(LocalDateTime.now());
+			discountDoc.setName(MessageFormat.format("Conform bon casa ''{0}''", bonCasa.getNumber()));
+			discountDoc.setTipDoc(TipDoc.INCASARE);
+			discountDoc.setTotal(bonCasa.total());
+			discountDoc.setTotalTva(bonCasa.taxTotal());
+			discountDoc.setDiscountPercentage(selectedClient.getDiscountPercentage());
+			final InvocationResult result = BusinessDelegate.persistDiscountDoc(discountDoc, selectedClient.getId());
+			showResult(result);
+		} catch (final Exception e) {
+			log.error(e);
+		}
+	}
+	
+	private void useDiscount() {
+		if (selectedClient == null)
+			return;
+		
+		final BigDecimal discToUse = parse(availableDiscount.getText());
+		
+		if (NumberUtils.smallerThanOrEqual(discToUse, BigDecimal.ZERO))
+			return;
+		if (NumberUtils.smallerThan(selectedClient.getDiscDisponibil(), discToUse)) {
+			showResult(InvocationResult.canceled(Problem.code("VBP1").description("Discountul disponibil este "+selectedClient.getDiscDisponibil())));
+			return;
+		}
+		if (NumberUtils.smallerThan(bonCasa.total(), discToUse)) {
+			showResult(InvocationResult.canceled(Problem.code("VBP2").description("Totalul de pe bon este "+bonCasa.total())));
+			return;
+		}
+		
+		try {
+			final DocumentWithDiscount discountDoc = new DocumentWithDiscount();
+			discountDoc.setDataDoc(LocalDateTime.now());
+			discountDoc.setName("Discount folosit");
+			discountDoc.setTipDoc(TipDoc.PLATA);
+			discountDoc.setTotal(discToUse);
+			discountDoc.setTotalTva(BigDecimal.ZERO);
+			final InvocationResult result = BusinessDelegate.persistDiscountDoc(discountDoc, selectedClient.getId());
+			showResult(result);
+			
+			if (result.statusOk()) {
+				final BigDecimal taxTotal = discToUse.negate().setScale(2, RoundingMode.HALF_EVEN).multiply(tvaPercentDb)
+						.setScale(2, RoundingMode.HALF_EVEN);
+				final LegacyReceiptLine newReceiptLine = new LegacyReceiptLine(null, null, bonCasa.getId(),
+						"DISCOUNT", "DISCOUNT CARD FIDELITATE", "RON", new BigDecimal("-1"), discToUse, null,
+						null, null, taxTotal, false,
+						ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
+						ClientSession.instance().getLoggedUser().getId());
+				final IStatus status = receiptLineUpdater.create(newReceiptLine);
+
+				if (!status.isOK())
+					MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, status.getMessage());
+				else {
+					bonCasa.getLines().add(newReceiptLine);
+					loadReceipt(bonCasa, true);
+					search.setText(EMPTY_STRING);
+					cantitateText.setText("1"); //$NON-NLS-1$
+					search.setFocus();
+				}
+			}
+			
+		} catch (final Exception e) {
+			log.error(e);
+		}
+	}
 
 	private void syncReceiptRemote() {
 		/*

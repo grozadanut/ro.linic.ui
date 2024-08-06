@@ -85,6 +85,7 @@ public class Messages extends NLS {
 	public static String AdaugaPartnerDialog_DiscPerc;
 	public static String AdaugaPartnerDialog_Email;
 	public static String AdaugaPartnerDialog_EmptyNameError;
+	public static String AdaugaPartnerDialog_EmptyNumberError;
 	public static String AdaugaPartnerDialog_FidelityCard;
 	public static String AdaugaPartnerDialog_InactivePartnerWarning;
 	public static String AdaugaPartnerDialog_Individual;
