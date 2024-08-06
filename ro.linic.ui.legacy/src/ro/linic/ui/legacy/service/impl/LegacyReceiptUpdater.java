@@ -200,6 +200,9 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
 		 * 1. user opens CloseFacturaBCWizard(thus receipt is synchronized)
 		 * 2. user closes the wizard
 		 * 3. user closes the receipt by cash/card
+		 * 4. user closes the receipt by CloseFacturaBCWizard as a BonConsum; in this case 
+		 * we need to close the receipt locally, because on the server it is already closed 
+		 * by the time this method is called(after InchideBonWizardDialog is closed)
 		 * 
 		 * In this case, the receipt id is equal to the remote AccDoc id
 		 */
@@ -211,6 +214,10 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
 			return ValidationStatus.OK_STATUS;
 		
 		final InvocationResult result = BusinessDelegate.closeBonCasa(id, true);
+		
+		if (result.toTextCodes().contains("CB_BCls201"))
+			return ValidationStatus.OK_STATUS; // see case 4 above
+		
 		return result.statusOk() ? ValidationStatus.OK_STATUS : ValidationStatus.error(result.toTextDescription());
 	}
 }
