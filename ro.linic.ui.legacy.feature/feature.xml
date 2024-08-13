@@ -2,7 +2,7 @@
 <feature
       id="ro.linic.ui.legacy.feature"
       label="Legacy Client"
-      version="0.0.13"
+      version="0.0.14"
       provider-name="LINIC">
 
    <description url="http://www.example.com/description">

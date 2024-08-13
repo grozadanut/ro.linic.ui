@@ -534,10 +534,11 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR))
 					if (selectedProduct().isPresent())
 						addNewOperationToBon(selectedProduct());
-					else if (selectedPartner().isPresent())
-						selectPartner(selectedPartner());
 					else
 						cantitateText.setFocus();
+				
+				if ((e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) && selectedPartner().isPresent())
+					selectPartner(selectedPartner());
 
 				if (e.keyCode == SWT.ARROW_DOWN) {
 					e.doit = false;
