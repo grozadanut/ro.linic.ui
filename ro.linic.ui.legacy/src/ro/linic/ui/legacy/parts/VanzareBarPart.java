@@ -41,6 +41,7 @@ import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.NatTable;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -310,43 +311,47 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	private void createRightArea(final Composite parent) {
 		final Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(4, false));
+		container.setLayout(new GridLayout(2, false));
 		GridDataFactory.fillDefaults().applyTo(container);
+		
+		final Composite leftContainer = new Composite(container, SWT.NONE);
+		leftContainer.setLayout(new GridLayout(4, false));
+		GridDataFactory.fillDefaults().grab(false, true).applyTo(leftContainer);
 
-		cantitateText = new Text(container, SWT.BORDER);
+		cantitateText = new Text(leftContainer, SWT.BORDER);
 		cantitateText.setMessage(Messages.VanzareBarPart_Quant);
 		cantitateText.setText("1"); //$NON-NLS-1$
 		cantitateText.setTextLimit(10);
 		UIUtils.setBannerFont(cantitateText);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(cantitateText);
 
-		minusOne = new Button(container, SWT.PUSH);
+		minusOne = new Button(leftContainer, SWT.PUSH);
 		minusOne.setText("-1"); //$NON-NLS-1$
 		UIUtils.setBannerFont(minusOne);
-		GridDataFactory.swtDefaults().hint(60, 60).applyTo(minusOne);
+		GridDataFactory.swtDefaults().hint(40, 30).applyTo(minusOne);
 
-		plusOne = new Button(container, SWT.PUSH);
+		plusOne = new Button(leftContainer, SWT.PUSH);
 		plusOne.setText("+1"); //$NON-NLS-1$
 		UIUtils.setBannerFont(plusOne);
-		GridDataFactory.swtDefaults().hint(60, 60).applyTo(plusOne);
+		GridDataFactory.swtDefaults().hint(40, 30).applyTo(plusOne);
 
-		plusFive = new Button(container, SWT.PUSH);
+		plusFive = new Button(leftContainer, SWT.PUSH);
 		plusFive.setText("+5"); //$NON-NLS-1$
 		UIUtils.setBannerFont(plusFive);
-		GridDataFactory.swtDefaults().hint(60, 60).applyTo(plusFive);
+		GridDataFactory.swtDefaults().hint(40, 30).applyTo(plusFive);
 
-		deleteCant = new Button(container, SWT.PUSH);
+		deleteCant = new Button(leftContainer, SWT.PUSH);
 		deleteCant.setText(Messages.VanzareBarPart_DEL);
 		UIUtils.setBannerFont(deleteCant);
-		GridDataFactory.swtDefaults().hint(60, 60).applyTo(deleteCant);
+		GridDataFactory.swtDefaults().hint(60, 30).applyTo(deleteCant);
 
-		enter = new Button(container, SWT.PUSH);
+		enter = new Button(leftContainer, SWT.PUSH);
 		enter.setText(Messages.VanzareBarPart_ENTER);
 		UIUtils.setBannerFont(enter);
-		GridDataFactory.swtDefaults().span(3, 1).hint(100, 60).applyTo(enter);
+		GridDataFactory.swtDefaults().span(3, 1).hint(100, 30).applyTo(enter);
 		
-		final Composite discountContainer = new Composite(container, SWT.NONE);
-		discountContainer.setLayout(new GridLayout(3, false));
+		final Composite discountContainer = new Composite(leftContainer, SWT.NONE);
+		GridLayoutFactory.createFrom(new GridLayout(3, false)).margins(0, 0).applyTo(discountContainer);
 		GridDataFactory.fillDefaults().grab(true, false).span(4, 1)
 		.exclude(!ClientSession.instance().hasPermission(Permissions.ADD_CLIENT_DOCS)).applyTo(discountContainer);
 		
@@ -366,10 +371,14 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		useDiscount.setText(Messages.VanzareBarPart_UseDiscount);
 		UIUtils.setBoldFont(useDiscount);
 
+		final Composite borderContainer = new Composite(container, SWT.BORDER);
+		GridLayoutFactory.swtDefaults().margins(0, 0).applyTo(borderContainer);
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(borderContainer);
+		
 		bonDeschisTable = new UIBonDeschisNatTable();
-		bonDeschisTable.postConstruct(container);
+		bonDeschisTable.postConstruct(borderContainer);
 		bonDeschisTable.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		GridDataFactory.fillDefaults().grab(true, true).span(4, 1).applyTo(bonDeschisTable.getTable());
+		GridDataFactory.fillDefaults().grab(true, true).applyTo(bonDeschisTable.getTable());
 
 //		casaActivaButton = new Button(container, SWT.CHECK);
 //		casaActivaButton.setText(Messages.VanzareBarPart_ECRActive);
@@ -380,7 +389,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 		final Composite buttonsContainer = new Composite(container, SWT.NONE);
 		buttonsContainer.setLayout(new GridLayout(3, false));
-		GridDataFactory.fillDefaults().grab(true, false).span(4, 1).applyTo(buttonsContainer);
+		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(buttonsContainer);
 
 		inchideCasaButton = new Button(buttonsContainer, SWT.PUSH | SWT.WRAP);
 		inchideCasaButton.setText(Messages.VanzareBarPart_CloseCash);
@@ -407,7 +416,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.CENTER)
 				.hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT / 2).applyTo(inchideCardButton);
 
-		container.setTabList(new Control[] { cantitateText });
+		leftContainer.setTabList(new Control[] { cantitateText });
+		container.setTabList(new Control[] { leftContainer });
 		parent.setTabList(new Control[] { container });
 	}
 
@@ -515,9 +525,9 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 		final int[] horizontalWeights = new int[2];
 		horizontalWeights[0] = Integer
-				.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX + ".0", "200")); //$NON-NLS-1$ //$NON-NLS-2$
+				.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX + ".0", "100")); //$NON-NLS-1$ //$NON-NLS-2$
 		horizontalWeights[1] = Integer
-				.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX + ".1", "100")); //$NON-NLS-1$ //$NON-NLS-2$
+				.parseInt(part.getPersistedState().getOrDefault(HORIZONTAL_SASH_STATE_PREFIX + ".1", "200")); //$NON-NLS-1$ //$NON-NLS-2$
 		horizontalSash.setWeights(horizontalWeights);
 	}
 
