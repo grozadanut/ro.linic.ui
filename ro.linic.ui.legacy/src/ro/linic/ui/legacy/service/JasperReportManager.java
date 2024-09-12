@@ -856,6 +856,7 @@ public class JasperReportManager
 		final String seriaFactura = BusinessDelegate.persistedProp(PersistedProp.SERIA_FACTURA_KEY)
 				.getValueOr(PersistedProp.SERIA_FACTURA_DEFAULT);
 		final String tvaReadable = Operatiune.tvaReadable(tvaPercent);
+		final String atentionare = BusinessDelegate.persistedProp("atentionare").getValue();
 
 		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(factura));
 		final Map<String, Object> parameters = new HashMap<>();
@@ -878,6 +879,7 @@ public class JasperReportManager
 		parameters.put("totalTVA", factura.getVanzareTotalTva());
 		parameters.put("total", factura.getVanzareTotal());
 		parameters.put("duplicateNr", duplicate);
+		parameters.put("atentionare", atentionare);
 		
 		final Optional<String> signatureUuid = ClientSession.instance().loggedUserSignature();
 		if (signatureUuid.isPresent())
