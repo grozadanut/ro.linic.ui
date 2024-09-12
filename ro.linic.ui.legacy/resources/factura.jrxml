@@ -167,10 +167,10 @@
 		<fieldDescription><![CDATA[dataDoc]]></fieldDescription>
 	</field>
 	<title>
-		<band height="222" splitType="Stretch">
+		<band height="215" splitType="Stretch">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<line>
-				<reportElement x="-4" y="221" width="556" height="1" uuid="806ce5df-1219-4876-ae0c-ca7405b1f246">
+				<reportElement x="0" y="210" width="556" height="1" uuid="806ce5df-1219-4876-ae0c-ca7405b1f246">
 					<property name="local_mesure_unitheight" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
@@ -333,11 +333,11 @@
 				<textFieldExpression><![CDATA[$P{duplicateNr}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
-				<reportElement x="0" y="171" width="552" height="44" isRemoveLineWhenBlank="true" uuid="f32f6b36-a1f7-468f-b8e3-f118de613cac">
+				<reportElement x="0" y="171" width="552" height="35" isRemoveLineWhenBlank="true" uuid="f32f6b36-a1f7-468f-b8e3-f118de613cac">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="18" isBold="true"/>
+					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{atentionare}]]></textFieldExpression>
 			</textField>
