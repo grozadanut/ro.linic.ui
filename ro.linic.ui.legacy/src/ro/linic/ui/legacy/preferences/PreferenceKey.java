@@ -17,4 +17,5 @@ public interface PreferenceKey {
 	public static final String REGISTER_Z_DIALOG_CAFE_VALUE = "cafe";
 	
 	public static final String TVA_PERCENT_KEY = "tva_percent";
+	public static final String COMPANION_SKUs_KEY = "bundle";
 }

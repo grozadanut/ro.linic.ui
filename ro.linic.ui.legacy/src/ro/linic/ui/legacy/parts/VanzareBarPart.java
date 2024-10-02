@@ -85,6 +85,7 @@ import ro.colibri.util.InvocationResult;
 import ro.colibri.util.InvocationResult.Problem;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
+import ro.colibri.util.StringUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.colibri.wrappers.RulajPartener;
 import ro.linic.ui.camel.core.service.CamelService;
@@ -127,7 +128,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	public static final String PRINT_AROMA_KEY = "print_aroma"; //$NON-NLS-1$
 	public static final String PRINT_AROMA_DEFAULT = "false"; //$NON-NLS-1$
-
+	
 	private static final String PRODUCTS_TABLE_STATE_PREFIX = "vanzari_bar.all_products_nt"; //$NON-NLS-1$
 	private static final String BON_DESCHIS_TABLE_STATE_PREFIX = "vanzari_bar.bon_deschis_nt"; //$NON-NLS-1$
 	private static final String INITIAL_PART_LOAD_PROP = "vanzari_bar.initial_part_load"; //$NON-NLS-1$
@@ -171,6 +172,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private ImmutableList<RulajPartener> allPartners = ImmutableList.of();
 
 	private BigDecimal tvaPercentDb;
+	// format is: productSku:companionSku,productSku:companionSku
+	private String companionSkus;
 
 	// UI
 	private SashForm horizontalSash;
@@ -251,6 +254,15 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			prefs.flush();
 		} catch (final Exception e) {
 			tvaPercentDb = parse(prefs.get(PreferenceKey.TVA_PERCENT_KEY, null));
+		}
+		
+		try {
+			companionSkus = BusinessDelegate.persistedProp(PreferenceKey.COMPANION_SKUs_KEY)
+					.getValue();
+			prefs.put(PreferenceKey.COMPANION_SKUs_KEY, companionSkus);
+			prefs.flush();
+		} catch (final Exception e) {
+			companionSkus = prefs.get(PreferenceKey.COMPANION_SKUs_KEY, null);
 		}
 
 		if (Boolean.valueOf((String) ClientSession.instance().getProperties().getOrDefault(INITIAL_PART_LOAD_PROP,
@@ -885,15 +897,100 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, result.getMessage());
 		} else {
 			// everything was okay;
+			// - add companion product(like a bundle of products)
 			// - reload bonCasa
 			// - clear denumire and cantitate input
 			// - set focus on denumire widget
+			findCompanionProduct(newReceiptLine.getSku())
+			.ifPresent(this::addCompanionOperationToBon);
+			
 			bonCasa.getLines().add(newReceiptLine);
 			loadReceipt(bonCasa, true);
 			search.setText(EMPTY_STRING);
 			cantitateText.setText("1"); //$NON-NLS-1$
 			search.setFocus();
 		}
+	}
+	
+	private Optional<ro.linic.ui.pos.base.model.Product> findCompanionProduct(final String sku) {
+		final String companionSku = findCompanionSku(sku);
+		
+		if (StringUtils.isEmpty(companionSku))
+			return Optional.empty();
+		
+		return allProductsTable.getSourceData().stream()
+				.filter(p -> companionSku.equalsIgnoreCase(p.getSku())).findFirst();
+	}
+
+	private String findCompanionSku(final String sku) {
+		try {
+			// format is: productSku:companionSku,productSku:companionSku
+			final String[] entries = companionSkus.split(",");
+			for (final String entry : entries) {
+				final String[] pair = entry.split(":");
+				
+				if (pair.length == 2 && pair[0].equalsIgnoreCase(sku))
+					return pair[1];
+			}
+			return null;
+		} catch (final Exception e) {
+			log.error(e);
+			return null;
+		}
+	}
+
+	private void addCompanionOperationToBon(final ro.linic.ui.pos.base.model.Product product) {
+		BigDecimal cantitate = parse(cantitateText.getText());
+		BigDecimal price = NumberUtils.adjustPrice(product.getPrice(), cantitate);
+		
+		if (globalIsMatch(product.getType(), Product.DISCOUNT_CATEGORY, TextFilterMethod.EQUALS))
+			cantitate = cantitate.abs().negate();
+		
+		// calculeaza discountul procentual, doar daca nu avem deja discount procentual pe bon
+		// discountul procentual se cumuleaza cu discountul valoric
+		if (isDiscountProcentual(product)) {
+			if (bonCasa != null && !bonCasa.getLines().stream().filter(VanzareBarPart::isDiscountProcentual).findAny().isPresent()) {
+				cantitate = new BigDecimal("-1");
+				price = bonCasa.total().multiply(price).divide(new BigDecimal("100"), 2, RoundingMode.HALF_EVEN).abs();
+			}
+			else if (bonCasa != null)
+				return;
+		}
+		
+		if (bonCasa == null) {
+			bonCasa = new CloudReceipt();
+			receiptUpdater.create(bonCasa);
+		} else {
+			/**
+			 * The only workflow for the receipt to be synchronized here is:
+			 * 1. user opens CloseFacturaBCWizard(thus receipt is synchronized)
+			 * 2. user closes the wizard
+			 * 3. user tries to add some more lines to this receipt
+			 * 
+			 * This case is not allowed, either close the receipt, or delete it
+			 */
+			if (bonCasa.synced())
+				return;
+		}
+
+		final BigDecimal taxPercent = Optional.ofNullable(product.getTaxPercentage())
+				.orElse(tvaPercentDb);
+		final BigDecimal taxTotal = price.multiply(cantitate).setScale(2, RoundingMode.HALF_EVEN).multiply(taxPercent)
+				.setScale(2, RoundingMode.HALF_EVEN);
+
+		final LegacyReceiptLine newReceiptLine = new LegacyReceiptLine(null, product.getId(), bonCasa.getId(),
+				product.getSku(), product.getName(), product.getUom(), cantitate, price, null,
+				product.getTaxCode(), product.getDepartmentCode(), taxTotal, false,
+				ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
+				ClientSession.instance().getLoggedUser().getId());
+		final IStatus result = receiptLineUpdater.create(newReceiptLine);
+
+		if (!result.isOK())
+			// in case we have any error we just show the error and cancel the
+			// operation
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.Error, result.getMessage());
+		else
+			bonCasa.getLines().add(newReceiptLine);
 	}
 
 	/**
