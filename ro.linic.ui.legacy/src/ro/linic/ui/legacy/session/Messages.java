@@ -26,9 +26,9 @@ public class Messages extends NLS
 	
 	public static String VAT_Percentage;
 	public static String VAT;
+	public static String FileSaved;
 	public static String AnafReporter_UnauthorizedMessage;
 	public static String AnafReporter_ReloadBills;
-	public static String AnafReporter_FileSaved;
 	public static String AnafReporter_AllSaved;
 	public static String AdaugaDocDialog_AddDoc;
 	public static String AdaugaDocDialog_Add;

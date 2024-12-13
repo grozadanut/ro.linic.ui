@@ -199,7 +199,7 @@ public class AnafReporter
 				Desktop.getDesktop().browseFileDirectory(new File(outputFileUri));
 			else
 				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
-						NLS.bind(Messages.AnafReporter_FileSaved, outputFileUri));
+						NLS.bind(Messages.FileSaved, outputFileUri));
 		}
 	}
 	
@@ -271,7 +271,7 @@ public class AnafReporter
 			Desktop.getDesktop().browseFileDirectory(new File(outputFileUri));
 		else
 			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
-					NLS.bind(Messages.AnafReporter_FileSaved, outputFileUri));
+					NLS.bind(Messages.FileSaved, outputFileUri));
 	}
 	
 	public static Collection<ReceivedMessage> findAnafMessagesBetween(final LocalDateTime start, final LocalDateTime end)

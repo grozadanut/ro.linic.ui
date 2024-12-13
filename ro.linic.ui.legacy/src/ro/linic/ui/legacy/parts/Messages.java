@@ -203,6 +203,7 @@ public class Messages extends NLS {
 	public static String CatalogTertiPart_TakeData;
 	public static String UrmarireParteneriPart_AllPeriod;
 	public static String UrmarireParteneriPart_AnafReg;
+	public static String UrmarireParteneriPart_RapInvProsoft;
 	public static String UrmarireParteneriPart_BankAcc;
 	public static String UrmarireParteneriPart_BankReg;
 	public static String UrmarireParteneriPart_Connections;

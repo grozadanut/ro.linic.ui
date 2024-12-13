@@ -15,6 +15,8 @@ import static ro.linic.ui.legacy.session.UIUtils.saveState;
 import static ro.linic.ui.legacy.session.UIUtils.showException;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -26,10 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
-
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -66,6 +66,9 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.entities.comercial.AccountingDocument;
@@ -95,6 +98,7 @@ import ro.linic.ui.legacy.parts.components.UrmarireParteneriExtraFilters;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.legacy.session.RestCaller;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.DocumentNatTable;
 import ro.linic.ui.legacy.tables.DocumentNatTable.SourceLoc;
@@ -117,8 +121,9 @@ public class UrmarireParteneriPart implements IMouseAction
 	private static final String RAP_PRINT_FILTRU = Messages.UrmarireParteneriPart_PrintFilter;
 	private static final String RAP_REG_BANCA = Messages.UrmarireParteneriPart_BankReg;
 	private static final String RAP_REG_ANAF = Messages.UrmarireParteneriPart_AnafReg;
+	private static final String RAP_INV_PROSOFT = Messages.UrmarireParteneriPart_RapInvProsoft;
 	private static final ImmutableList<String> ALL_RAPOARTE = ImmutableList.of(RAP_FISA_PARTENERI, RAP_REG_INCASARI_PLATI, RAP_REG_CASA,
-			RAP_JURNAL_GENERAL, RAP_RPZ, RAP_PRINT_FILTRU, RAP_REG_BANCA, RAP_REG_ANAF);
+			RAP_JURNAL_GENERAL, RAP_RPZ, RAP_PRINT_FILTRU, RAP_REG_BANCA, RAP_REG_ANAF, RAP_INV_PROSOFT);
 	
 	private Button goleste;
 	private List gestiuni;
@@ -809,6 +814,8 @@ public class UrmarireParteneriPart implements IMouseAction
 			printareRegBanca();
 		else if (raportType.equalsIgnoreCase(RAP_REG_ANAF))
 			printareRegAnaf();
+		else if (raportType.equalsIgnoreCase(RAP_INV_PROSOFT))
+			exportInvProsoft();
 	}
 	
 	private void printareFisaParteneri()
@@ -1082,6 +1089,37 @@ public class UrmarireParteneriPart implements IMouseAction
 		{
 			log.error(e);
 			showException(e);
+		}
+	}
+	
+	private void exportInvProsoft()
+	{
+		final LocalDate fromDate = extractLocalDate(from);
+		final LocalDate toDate = extractLocalDate(to);
+
+		final FileDialog dialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
+		final String period = fromDate.toString() + "_" + toDate.toString();
+		dialog.setFileName("prosoft_"+period+".zip");
+		final String outputFileUri = dialog.open();
+
+		if (isEmpty(outputFileUri))
+			return;
+
+		final String invoiceBaseUrl = BusinessDelegate.persistedProp(PersistedProp.BILLING_BASE_URL_KEY)
+				.getValueOr(PersistedProp.BILLING_BASE_URL_DEFAULT);
+		final String downloadUrl = invoiceBaseUrl + "/invoice/prosoft";
+
+		final java.util.List<NameValuePair> params = java.util.List.of(new BasicNameValuePair("from", fromDate.toString()),
+				new BasicNameValuePair("to", toDate.toString()));
+		final Optional<Long> downloadResponse = RestCaller.post_WithSSL_DownloadFile(downloadUrl, "", outputFileUri, params);
+
+		if (downloadResponse.isPresent())
+		{
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR))
+				Desktop.getDesktop().browseFileDirectory(new File(outputFileUri));
+			else
+				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "OK",
+						NLS.bind(ro.linic.ui.legacy.session.Messages.FileSaved, outputFileUri));
 		}
 	}
 	
