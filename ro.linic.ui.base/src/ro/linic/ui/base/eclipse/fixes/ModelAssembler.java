@@ -352,14 +352,14 @@ public class ModelAssembler {
 		for (final IExtension extension : extensions) {
 			final IConfigurationElement[] ces = extension.getConfigurationElements();
 			for (final IConfigurationElement ce : ces) {
-				if ("fragment".equals(ce.getName()) && (initial || !INITIAL.equals(ce.getAttribute("apply")))) { //$NON-NLS-1$ //$NON-NLS-2$
+				if ("fragment".equals(ce.getName()) && (initial || !INITIAL.equals(NOTEXISTS/* ce.getAttribute("apply") */))) { //$NON-NLS-1$ //$NON-NLS-2$
 					final MModelFragments fragmentsContainer = getFragmentsContainer(ce.getAttribute("uri"), //$NON-NLS-1$
 							ce.getContributor().getName());
 					if (fragmentsContainer == null) {
 						continue;
 					}
 					for (final MModelFragment fragment : fragmentsContainer.getFragments()) {
-						final boolean checkExist = !initial;// && NOTEXISTS.equals(ce.getAttribute("apply")); //$NON-NLS-1$
+						final boolean checkExist = !initial && NOTEXISTS.equals(NOTEXISTS/* ce.getAttribute("apply") */); //$NON-NLS-1$
 						wrappers.add(new ModelFragmentWrapper(fragmentsContainer, fragment,
 								ce.getContributor().getName(), URIHelper.constructPlatformURI(ce.getContributor()),
 								checkExist)); // $NON-NLS-1$
@@ -392,7 +392,7 @@ public class ModelAssembler {
 		final String[] fr = fragmentHeader.split(";"); //$NON-NLS-1$
 		if (fr.length > 0) {
 			final String uri = fr[0];
-			String apply = fr.length > 1 ? fr[1].split("=")[1] : "always"; //$NON-NLS-1$ //$NON-NLS-2$
+			String apply = NOTEXISTS;//fr.length > 1 ? fr[1].split("=")[1] : "always"; //$NON-NLS-1$ //$NON-NLS-2$
 
 			// check if the value for apply is valid
 			if (!ALWAYS.equals(apply) && !INITIAL.equals(apply) && !NOTEXISTS.equals(apply)) {
@@ -405,7 +405,7 @@ public class ModelAssembler {
 				final MModelFragments fragmentsContainer = getFragmentsContainer(uri, bundle.getSymbolicName());
 				if (fragmentsContainer != null) {
 					for (final MModelFragment fragment : fragmentsContainer.getFragments()) {
-						final boolean checkExist = !initial;// && NOTEXISTS.equals(apply);
+						final boolean checkExist = !initial && NOTEXISTS.equals(apply);
 						wrappers.add(new ModelFragmentWrapper(fragmentsContainer, fragment, bundle.getSymbolicName(),
 								URIHelper.constructPlatformURI(bundle), checkExist)); // $NON-NLS-1$
 					}
@@ -604,7 +604,7 @@ public class ModelAssembler {
 			return new ArrayList<>();
 		}
 		
-		final List<MApplicationElement> existingElements = new ArrayList<>();
+//		final List<MApplicationElement> existingElements = new ArrayList<>();
 
 		for (final MApplicationElement el : elements) {
 			final EObject o = (EObject) el;
@@ -612,7 +612,7 @@ public class ModelAssembler {
 			E4XMIResource r = (E4XMIResource) o.eResource();
 
 			if (checkExist && applicationResource.getIDToEObjectMap().containsKey(r.getID(o))) {
-				existingElements.add(el);
+//				existingElements.add(el);
 				continue;
 			}
 
@@ -635,9 +635,9 @@ public class ModelAssembler {
 		}
 		
 		// remove all existing Elements including all children.
-		fragment.getElements().removeAll(existingElements);
+//		fragment.getElements().removeAll(existingElements);
 
-		return fragment.merge(application);
+		return initial ? fragment.merge(application) : fragment.getElements();
 	}
 
 	/**
@@ -658,7 +658,7 @@ public class ModelAssembler {
 			for (final IConfigurationElement ce : ces) {
 				final boolean parseBoolean = Boolean.parseBoolean(ce.getAttribute("beforefragment")); //$NON-NLS-1$
 				if ("processor".equals(ce.getName()) && afterFragments != parseBoolean) { //$NON-NLS-1$
-					if (initial || !INITIAL.equals(ce.getAttribute("apply"))) { //$NON-NLS-1$
+					if (initial || !INITIAL.equals(NOTEXISTS/* ce.getAttribute("apply") */)) { //$NON-NLS-1$
 						runProcessor(ce);
 					}
 				}
@@ -677,8 +677,8 @@ public class ModelAssembler {
 			}
 
 			final Object applyObject = dict.get(IModelProcessorContribution.APPLY_PROPERTY_KEY);
-			String apply = applyObject instanceof String ? (String) applyObject
-					: IModelProcessorContribution.APPLY_ALWAYS;
+			String apply = NOTEXISTS;// applyObject instanceof String ? (String) applyObject
+					//: IModelProcessorContribution.APPLY_ALWAYS;
 
 			// check if the value for apply is valid
 			if (!ALWAYS.equals(apply) && !INITIAL.equals(apply)) {
