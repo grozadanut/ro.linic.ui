@@ -732,11 +732,11 @@ public class BusinessDelegate
 	}
 	
 	public static InvocationResult inregistreazaZ(final String bfz, final LocalDate date, final BigDecimal discount,
-			final BigDecimal prodFinit, final BigDecimal marfa, final BigDecimal servicii, final BigDecimal bacsis, final BigDecimal totalTva,
-			final ImmutableMap<Integer, BigDecimal> contBancarIdToAmount, final int nrCafele)
+			final BigDecimal prodFinit, final BigDecimal marfa, final BigDecimal servicii, final BigDecimal bacsis, final BigDecimal ambalaje,
+			final BigDecimal totalTva, final ImmutableMap<Integer, BigDecimal> contBancarIdToAmount, final int nrCafele)
 	{
 		final ManagerBeanRemote bean = ServiceLocator.getBusinessService(ManagerBean.class, ManagerBeanRemote.class);
-		return bean.inregistreazaZ(bfz, date, discount, prodFinit, marfa, servicii, bacsis, totalTva, contBancarIdToAmount, nrCafele);
+		return bean.inregistreazaZ(bfz, date, discount, prodFinit, marfa, servicii, bacsis, ambalaje, totalTva, contBancarIdToAmount, nrCafele);
 	}
 	
 	public static void customerDebtDocs(final AsyncLoadResult<InvocationResult> provider, final UISynchronize sync)

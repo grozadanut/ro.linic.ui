@@ -201,6 +201,7 @@ public class Messages extends NLS {
 	public static String RegisterZDialogCafe_Number;
 	public static String RegisterZDialogCafe_Services;
 	public static String RegisterZDialogCafe_Tip;
+	public static String RegisterZDialogCafe_Packing;
 	public static String RegisterZDialogCafe_Title;
 	public static String RegisterZDialogCafe_VAT;
 	public static String ReleaseNotesDialog_Message;

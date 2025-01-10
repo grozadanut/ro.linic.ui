@@ -51,6 +51,7 @@ public class RegisterZDialogCafe extends Dialog
 	private Text marfa;
 	private Text servicii;
 	private Text bacsis;
+	private Text ambalaje;
 	private Text totalTva;
 	private ImmutableMap<ContBancar, Text> contBancarToAmount;
 	
@@ -144,6 +145,14 @@ public class RegisterZDialogCafe extends Dialog
 		bacsis.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		UIUtils.setFont(bacsis);
 		
+		final Label ambalajeLabel = new Label(contents, SWT.NONE);
+		ambalajeLabel.setText(Messages.RegisterZDialogCafe_Packing);
+		UIUtils.setFont(ambalajeLabel);
+		
+		ambalaje = new Text(contents, SWT.SINGLE | SWT.BORDER);
+		ambalaje.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		UIUtils.setFont(ambalaje);
+		
 		contBancarToAmount = BusinessDelegate.allConturiBancare().stream()
 				.collect(toImmutableMap(Function.identity(), contBancar ->
 				{
@@ -186,7 +195,7 @@ public class RegisterZDialogCafe extends Dialog
 	{
 		final LocalDate dataBfz = getData();
 		final InvocationResult result = BusinessDelegate.inregistreazaZ(getBfz(), dataBfz, getDiscount(),
-				getProdFinit(), getMarfa(), getServicii(), getBacsis(), getTotalTva(), contBancarIdToAmount(), getNrCafele());
+				getProdFinit(), getMarfa(), getServicii(), getBacsis(), getAmbalaje(), getTotalTva(), contBancarIdToAmount(), getNrCafele());
 		showResult(result);
 		if (result.statusOk())
 		{
@@ -249,6 +258,11 @@ public class RegisterZDialogCafe extends Dialog
 	public BigDecimal getBacsis()
  	{
 		return parse(bacsis.getText());
+ 	}
+	
+	public BigDecimal getAmbalaje()
+ 	{
+		return parse(ambalaje.getText());
  	}
 	
 	public BigDecimal getTotalTva()
