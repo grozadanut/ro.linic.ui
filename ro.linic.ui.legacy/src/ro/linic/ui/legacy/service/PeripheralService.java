@@ -279,7 +279,7 @@ public abstract class PeripheralService
 	{
 		final ImmutableList<BarcodePrintable> brotherPrintables = printables.stream()
 				.filter(printable -> printable.getCantitate() > 0)
-				.filter(bp -> bp.getLabelType().equals(LabelType.BROTHER))
+				.filter(bp -> bp.getLabelType() != null && bp.getLabelType().equals(LabelType.BROTHER))
 				.map(bp -> bp.fillPromoFields(gestiune))
 				.collect(toImmutableList());
 		return brotherPrintables;
