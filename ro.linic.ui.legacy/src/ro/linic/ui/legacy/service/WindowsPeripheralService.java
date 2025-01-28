@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import javax.print.DocPrintJob;
 import javax.print.PrintService;
 
-import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.core.runtime.ILog;
 import org.krysalis.barcode4j.impl.AbstractBarcodeBean;
 import org.krysalis.barcode4j.impl.code128.Code128Bean;
 import org.krysalis.barcode4j.impl.upcean.EAN13Bean;
@@ -29,20 +29,18 @@ import org.krysalis.barcode4j.output.java2d.Java2DCanvasProvider;
 import org.krysalis.barcode4j.tools.UnitConv;
 
 import jssc.SerialPortException;
+import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 
 final class WindowsPeripheralService extends PeripheralService
 {
+	private static final ILog log = UIUtils.logger(WindowsPeripheralService.class);
+	
 	private static final double WIDTH_INCH = 1.6d;
 	private static final double HEIGHT_INCH = 1d;
 	private static final double MARGIN_INCH = 0.1d;
 	private static final String FONT = "Tahoma";
 	private static final double DPI = 72d;
-	
-	WindowsPeripheralService(final Logger log)
-	{
-		super(log);
-	}
 	
 	@Override
 	public synchronized void printWeightedLabel(final BarcodePrintable printable, final BigDecimal totalUnits, final BigDecimal totalPrice) throws IOException
@@ -75,7 +73,7 @@ final class WindowsPeripheralService extends PeripheralService
             }
             catch (final PrinterException ex)
             {
-            	log.error(ex);
+            	log.error(ex.getMessage(), ex);
             }
         }
     }
@@ -142,7 +140,7 @@ final class WindowsPeripheralService extends PeripheralService
             }
             catch (final PrinterException ex)
             {
-            	log.error(ex);
+            	log.error(ex.getMessage(), ex);
             }
         }
     }
@@ -168,10 +166,10 @@ final class WindowsPeripheralService extends PeripheralService
 		final PrintService[] service = PrinterJob.lookupPrintServices(); // list of printers
 		DocPrintJob docPrintJob = null;
 
-		log.debug("No. Printers: "+service.length);
+		log.info("No. Printers: "+service.length);
 		for (int i = 0; i < service.length; i++)
 		{
-			log.debug(service[i].getName());
+			log.info(service[i].getName());
 		    if (service[i].getName().equalsIgnoreCase(printerName))
 		    {
 		        docPrintJob = service[i].createPrintJob();
@@ -189,7 +187,7 @@ final class WindowsPeripheralService extends PeripheralService
 		}
 		catch (final PrinterException e)
 		{
-			log.error(e);
+			log.error(e.getMessage(), e);
 			if (!pj.printDialog())
 				return;
 		}
@@ -220,7 +218,7 @@ final class WindowsPeripheralService extends PeripheralService
 		}
 		catch (final PrinterException ex)
 		{
-			log.error(ex);
+			log.error(ex.getMessage(), ex);
 		}
 	}
 	

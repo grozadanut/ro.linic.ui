@@ -18,4 +18,7 @@ public interface PreferenceKey {
 	
 	public static final String TVA_PERCENT_KEY = "tva_percent";
 	public static final String COMPANION_SKUs_KEY = "bundle";
+	
+	public static final String BROTHER_PRINT_FOLDER = "brother_print_folder";
+	public static final String BROTHER_PRINT_FOLDER_DEF = "C:\\Program Files\\Brother bPAC3 SDK\\Print";
 }

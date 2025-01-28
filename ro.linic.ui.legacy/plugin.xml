@@ -8,6 +8,11 @@
             id="ro.linic.ui.legacy.preference.registerzpage"
             name="%page.name">
       </page>
+      <page
+            class="ro.linic.ui.legacy.preferences.LabelPage"
+            id="ro.linic.ui.legacy.preference.labelpage"
+            name="%page.labels">
+      </page>
    </extension>
    <extension
          point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">

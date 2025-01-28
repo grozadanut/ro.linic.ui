@@ -44,7 +44,7 @@ public class BarcodePrintable implements Serializable
 	
 	public enum LabelType implements IPresentableEnum
 	{
-		NORMAL_LABEL("Normal"), BIG_LABEL("Fara cod bare"), NORMAL_A4("A4"), MINI_A4("A4 mini");
+		NORMAL_LABEL("Normal"), BIG_LABEL("Fara cod bare"), NORMAL_A4("A4"), MINI_A4("A4 mini"), BROTHER("Brother");
 		
 		private final String name;
 		
@@ -337,6 +337,31 @@ public class BarcodePrintable implements Serializable
 				.filter(red -> greaterThan(red.getUomThreshold(), BigDecimal.ZERO))
 				.findAny()
 				.isPresent();
+	}
+	
+	public boolean isPromoLabel(final Optional<Gestiune> gestiune)
+	{
+		return allReduceri.stream()
+				.filter(red -> red.getGestiune() == null || !gestiune.isPresent() || gestiune.get().equals(red.getGestiune()))
+				.filter(red -> smallerThan(red.getUomThreshold(), BigDecimal.ZERO))
+				.findAny()
+				.isPresent();
+	}
+	
+	public boolean isSingleCantPromoLabel(final Optional<Gestiune> gestiune)
+	{
+		return allReduceri.stream()
+				.filter(red -> red.getGestiune() == null || !gestiune.isPresent() || gestiune.get().equals(red.getGestiune()))
+				.filter(red -> greaterThan(red.getUomThreshold(), BigDecimal.ZERO))
+				.count() == 1;
+	}
+	
+	public boolean isDoubleCantPromoLabel(final Optional<Gestiune> gestiune)
+	{
+		return allReduceri.stream()
+				.filter(red -> red.getGestiune() == null || !gestiune.isPresent() || gestiune.get().equals(red.getGestiune()))
+				.filter(red -> greaterThan(red.getUomThreshold(), BigDecimal.ZERO))
+				.count() == 2;
 	}
 	
 	public BarcodePrintable fillPromoFields(final Optional<Gestiune> gestiune)

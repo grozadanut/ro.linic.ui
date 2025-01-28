@@ -242,7 +242,7 @@ public class LoginAddon {
 		final String remoteJndi = ClientSession.instance().getLoggedUser().getSelectedGestiune().isMatch(L1_NAME) ? 
 				L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
 		final String barcodePrinter = System.getProperty(PeripheralService.BARCODE_PRINTER_KEY, PeripheralService.BARCODE_PRINTER_DEFAULT);
-		if (PeripheralService.instance(log).isPrinterConnected(barcodePrinter))
+		if (PeripheralService.instance().isPrinterConnected(barcodePrinter))
 			MessagingService.instance().registerMsgListener(remoteJndi, new PrintTopicListener(log, bundle));
 	}
 	

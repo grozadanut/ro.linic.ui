@@ -4,13 +4,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.core.runtime.ILog;
 
 import jssc.SerialPortException;
+import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 
 final class LinuxPeripheralService extends PeripheralService
 {
+	private static final ILog log = UIUtils.logger(LinuxPeripheralService.class);
+	
 	private static final String PRINTER_PORT = "/dev/usb/lp0";
 	private static final String PRINTER_LINE_END = "\r\n";
 	
@@ -24,11 +27,6 @@ final class LinuxPeripheralService extends PeripheralService
 				.append("SET PEEL OFF").append(PRINTER_LINE_END)
 				.append("SET TEAR ON").append(PRINTER_LINE_END)
 				.append("CLS").append(PRINTER_LINE_END);
-	}
-	
-	LinuxPeripheralService(final Logger log)
-	{
-		super(log);
 	}
 	
 	@Override
