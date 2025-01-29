@@ -44,7 +44,8 @@ public class BarcodePrintable implements Serializable
 	
 	public enum LabelType implements IPresentableEnum
 	{
-		NORMAL_LABEL("Normal"), BIG_LABEL("Fara cod bare"), NORMAL_A4("A4"), MINI_A4("A4 mini"), BROTHER("Brother");
+		NORMAL_LABEL("Normal"), BIG_LABEL("Fara cod bare"), NORMAL_A4("A4"), MINI_A4("A4 mini"),
+		BROTHER_6X3("Brother 6x3"), BROTHER_6X4("Brother 6x4"), BROTHER_9X6("Brother 9x6");
 		
 		private final String name;
 		

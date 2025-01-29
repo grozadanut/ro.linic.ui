@@ -15,7 +15,9 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.ILog;
@@ -279,32 +281,40 @@ public abstract class PeripheralService
 	{
 		final ImmutableList<BarcodePrintable> brotherPrintables = printables.stream()
 				.filter(printable -> printable.getCantitate() > 0)
-				.filter(bp -> bp.getLabelType() != null && bp.getLabelType().equals(LabelType.BROTHER))
+				.filter(bp -> bp.getLabelType() != null && 
+				(bp.getLabelType().equals(LabelType.BROTHER_6X3) || bp.getLabelType().equals(LabelType.BROTHER_6X4) || bp.getLabelType().equals(LabelType.BROTHER_9X6)))
 				.map(bp -> bp.fillPromoFields(gestiune))
 				.collect(toImmutableList());
 		return brotherPrintables;
 	}
 	
 	private static void printToBrother(final ImmutableList<BarcodePrintable> brotherPrintables, final Optional<Gestiune> gestiune) {
-		final ImmutableList<BarcodePrintable> simpleLabels = brotherPrintables.stream()
-				.filter(bp -> !bp.isPromoLabel(gestiune) && !bp.isSingleCantPromoLabel(gestiune) && !bp.isDoubleCantPromoLabel(gestiune))
-				.collect(toImmutableList());
-		
-		final ImmutableList<BarcodePrintable> singlePromoLabels = brotherPrintables.stream()
-				.filter(bp -> bp.isSingleCantPromoLabel(gestiune))
-				.collect(toImmutableList());
-		
-		final ImmutableList<BarcodePrintable> doublePromoLabels = brotherPrintables.stream()
-				.filter(bp -> bp.isDoubleCantPromoLabel(gestiune))
-				.collect(toImmutableList());
-		
-		sendToBrother(buildBrotherCommands("simple.lbx", simpleLabels));
-		sendToBrother(buildBrotherCommands("single.lbx", singlePromoLabels));
-		sendToBrother(buildBrotherCommands("double.lbx", doublePromoLabels));
+		brotherPrintables.stream()
+		.collect(Collectors.groupingBy(bp -> {
+			final StringBuilder labelName = new StringBuilder();
+			
+			if (!bp.isPromoLabel(gestiune) && !bp.isSingleCantPromoLabel(gestiune) && !bp.isDoubleCantPromoLabel(gestiune))
+				labelName.append("standard");
+			else if (bp.isSingleCantPromoLabel(gestiune))
+				labelName.append("single");
+			else if (bp.isDoubleCantPromoLabel(gestiune))
+				labelName.append("double");
+			
+			final String labelSize = switch (bp.getLabelType()) {
+			case BROTHER_6X3 -> "6x3";
+			case BROTHER_6X4 -> "6x4";
+			case BROTHER_9X6 -> "9x6";
+			default -> "6x3";
+			};
+			
+			labelName.append("_").append(labelSize).append(".lbx");
+			return labelName.toString();
+		})).entrySet()
+		.forEach(entry -> sendToBrother(buildBrotherCommands(entry.getKey(), entry.getValue())));
 	}
 	
 	private static StringBuilder buildBrotherCommands(final String template,
-			final ImmutableList<BarcodePrintable> labels) {
+			final List<BarcodePrintable> labels) {
 		if (labels.isEmpty())
 			return null;
 		
