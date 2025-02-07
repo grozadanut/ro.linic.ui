@@ -5,8 +5,10 @@ import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -31,13 +33,20 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.util.InvocationResult;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadData;
+import ro.linic.ui.legacy.pojo.ProductSupplier;
+import ro.linic.ui.legacy.pojo.ProductSuppliers;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.AllProductsNatTable;
 import ro.linic.ui.legacy.tables.AllProductsNatTable.SourceLoc;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class SupplierOrderPart
 {
@@ -56,6 +65,7 @@ public class SupplierOrderPart
 	@Inject private UISynchronize sync;
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
+	@Inject private AuthenticationSession authSession;
 	
 	@PostConstruct
 	public void createComposite(final Composite parent)
@@ -154,10 +164,24 @@ public class SupplierOrderPart
 	
 	private void loadData(final boolean showConfirmation)
 	{
+		final Optional<ProductSuppliers> productSuppliers = RestCaller.get("/rest/s1/moqui-linic-legacy/products/suppliers")
+				.internal(authSession.authentication())
+				.addUrlParam("organizationPartyId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
+				.get(ProductSuppliers.class, t -> UIUtils.showException(t, sync));
+		
+		final Map<String, ProductSupplier> productToSupplier = productSuppliers.map(ps -> ps.productSupplierList().stream()
+				.collect(Collectors.toMap(ProductSupplier::productId, Function.identity())))
+				.orElse(Map.of());
+		
 		BusinessDelegate.allProductsForOrdering(new AsyncLoadData<Product>()
 		{
 			@Override public void success(final ImmutableList<Product> data)
 			{
+				for (final Product p : data) {
+					final ProductSupplier suppl = productToSupplier.get(p.getId()+"");
+					if (suppl != null)
+						p.setFurnizori(suppl.supplierName());
+				}
 				allProductsTable.loadData(data, ImmutableList.of(), ImmutableList.of(), ImmutableList.of(), ImmutableList.of());
 
 				if (showConfirmation)

@@ -159,7 +159,7 @@ public class AllProductsNatTable
 	private static final Column stocMinimColumn = new Column(9, Product.MIN_STOC_FIELD, "Stoc min", 70);
 	private static final Column idxColumn = new Column(10, Product.ID_FIELD, "Idx", 70);
 	
-	private static final Column furnizoriColumn = new Column(11, Product.FURNIZORI_FIELD, "Furnizori", 150);
+	private static final Column furnizoriColumn = new Column(11, Product.FURNIZORI_FIELD, "Furnizori", 220);
 	private static final Column hideWhenOrderingColumn = new Column(20, Product.HIDE_WHEN_ORDERING_FIELD, "NeComandabil", 70);
 	private static final Column retetaQuantityColumn = new Column(RETETA_QUANTITY_ID, EMPTY_STRING, "Cant", 70);
 	private static final Column uiCategoryColumn = new Column(22, Product.UI_CATEGORY_FIELD, "Cat Vizuala", 120);
@@ -285,14 +285,10 @@ public class AllProductsNatTable
 			.add(uomColumn)
 			.add(ULPColumn)
 			.add(priceColumn)
-			.add(furnizoriColumn)
-			.add(stocMinimColumn);
+			.add(furnizoriColumn);
 			for (int i = 0; i < stocColumns.size(); i++)
 			{
 				builder.add(stocColumns.keySet().asList().get(i))
-				.add(averageDaySaleColumns.keySet().asList().get(i))
-				.add(futureStocColumns.keySet().asList().get(i))
-				.add(maxSaleColumns.keySet().asList().get(i))
 				.add(recommendedOrderColumns.keySet().asList().get(i));
 			}
 			break;

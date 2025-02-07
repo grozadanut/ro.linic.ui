@@ -4,7 +4,14 @@ Bundle-Name: Http Client
 Bundle-SymbolicName: ro.linic.ui.http
 Bundle-Version: 0.0.3
 Export-Package: ro.linic.ui.http
-Require-Bundle: wrapped.ro.linic.util.commons
+Require-Bundle: wrapped.ro.linic.util.commons,
+ org.eclipse.osgi;bundle-version="3.19.0",
+ org.eclipse.equinox.preferences;bundle-version="3.11.0",
+ ro.linic.ui.base;bundle-version="0.0.7",
+ ro.linic.ui.security;bundle-version="0.0.3",
+ org.apache.commons.codec;bundle-version="1.14.0",
+ com.fasterxml.jackson.core.jackson-core;bundle-version="2.17.1",
+ com.fasterxml.jackson.core.jackson-databind;bundle-version="2.17.1"
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.http
 Bundle-RequiredExecutionEnvironment: JavaSE-17

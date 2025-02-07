@@ -139,12 +139,12 @@ public class UIUtils
 					result.toTextDescription().replaceAll(BR_SEPARATOR, NEWLINE));
 	}
 	
-	public static void showException(final Exception ex)
+	public static void showException(final Throwable ex)
 	{
 		showException("Eroare", ex, null, null);
 	}
 	
-	public static void showException(final Exception ex, final UISynchronize sync)
+	public static void showException(final Throwable ex, final UISynchronize sync)
 	{
 		showException("Eroare", ex, null, sync);
 	}
