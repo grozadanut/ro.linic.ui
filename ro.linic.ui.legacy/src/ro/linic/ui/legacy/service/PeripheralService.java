@@ -295,6 +295,8 @@ public abstract class PeripheralService
 			
 			if (!bp.isPromoLabel(gestiune) && !bp.isSingleCantPromoLabel(gestiune) && !bp.isDoubleCantPromoLabel(gestiune))
 				labelName.append("standard");
+			else if (bp.isPromoLabel(gestiune))
+				labelName.append("promo");
 			else if (bp.isSingleCantPromoLabel(gestiune))
 				labelName.append("single");
 			else if (bp.isDoubleCantPromoLabel(gestiune))
