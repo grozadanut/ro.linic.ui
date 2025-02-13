@@ -10,7 +10,6 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.data.ListDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexKeyHandler;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsEventLayer;
@@ -62,10 +61,8 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
             final IConfigRegistry configRegistry, final ColumnGroupModel columnGroupModel,
             final boolean useDefaultConfiguration) {
     	final List<String> propertyNames = columns.stream().map(Column::property).collect(Collectors.toList());
-        columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
-                propertyNames);
-        this.bodyDataProvider = new ListDataProvider<>(eventList,
-                columnPropertyAccessor);
+        columnPropertyAccessor = new GenericValueColumnAccessor<>(propertyNames);
+        this.bodyDataProvider = new ListDataProvider<>(eventList, columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.bodyDataLayer.setDefaultRowHeight(30);
         this.bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));

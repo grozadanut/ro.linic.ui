@@ -67,7 +67,8 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.100.v20230
  ro.linic.ui.camel.core;bundle-version="0.0.1",
  org.eclipse.equinox.security;bundle-version="1.4.200",
  org.eclipse.help,
- ro.linic.ui.http;bundle-version="0.0.3"
+ ro.linic.ui.http;bundle-version="0.0.3",
+ org.eclipse.e4.ui.services
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Description: %Bundle-Description

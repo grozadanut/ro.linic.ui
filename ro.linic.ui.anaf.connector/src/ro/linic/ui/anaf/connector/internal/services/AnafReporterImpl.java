@@ -55,7 +55,7 @@ public class AnafReporterImpl implements AnafReporter {
 		RestCaller.post(xmlToPdfUrl)
 				.addHeader("Content-Type", "text/plain")
 				.body(BodyProvider.of(xml))
-				.async(BodyHandlers.ofInputStream())
+				.asyncRaw(BodyHandlers.ofInputStream())
 				.thenApply(resp -> writeResponseToFile(resp, outputFileUri))
 				.thenAccept(this::openFile);
 	}

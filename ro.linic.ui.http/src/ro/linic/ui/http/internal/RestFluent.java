@@ -12,6 +12,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,10 +21,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import org.apache.commons.codec.binary.Base64;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 import ro.linic.ui.base.preferences.PreferenceKey;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.HttpHeaders;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller.BaseConfigurer;
@@ -31,6 +34,8 @@ import ro.linic.ui.security.model.Authentication;
 import ro.linic.util.commons.ParameterStringBuilder;
 
 abstract class RestFluent implements BaseConfigurer {
+	private static final ILog log = ILog.of(RestFluent.class);
+	
 	protected final String url;
 	protected final Map<String, String> headers;
 	protected final Map<String, String> urlParams;
@@ -66,7 +71,7 @@ abstract class RestFluent implements BaseConfigurer {
 	}
 	
 	@Override
-	final public <T> CompletableFuture<HttpResponse<T>> async(final BodyHandler<T> responseBodyHandler) {
+	final public <T> CompletableFuture<HttpResponse<T>> asyncRaw(final BodyHandler<T> responseBodyHandler) {
 		final HttpClient client = HttpClient.newBuilder()
 		        .version(Version.HTTP_2)
 		        .followRedirects(Redirect.NORMAL)
@@ -83,12 +88,25 @@ abstract class RestFluent implements BaseConfigurer {
 	}
 	
 	@Override
+	public CompletableFuture<List<GenericValue>> async(final Consumer<Throwable> exceptionHandler) {
+		return asyncRaw(BodyHandlers.ofString())
+				.thenApply(HttpUtils::checkOk)
+				.thenApply(resp -> HttpUtils.fromJSON(resp.body()))
+				.exceptionally(t -> {
+					log.error(t.getMessage(), t);
+					exceptionHandler.accept(t);
+					return List.of();
+				});
+	}
+	
+	@Override
 	public <T> Optional<T> get(final Class<T> clazz, final Consumer<Throwable> exceptionHandler) {
 		try {
-			return Optional.ofNullable(async(BodyHandlers.ofString())
+			return Optional.ofNullable(asyncRaw(BodyHandlers.ofString())
 					.thenApply(HttpUtils::checkOk)
-					.thenApply(resp -> HttpUtils.readJson(resp.body(), clazz))
+					.thenApply(resp -> HttpUtils.fromJSON(resp.body(), clazz))
 					.exceptionally(t -> {
+						log.error(t.getMessage(), t);
 						exceptionHandler.accept(t);
 						return null;
 					})

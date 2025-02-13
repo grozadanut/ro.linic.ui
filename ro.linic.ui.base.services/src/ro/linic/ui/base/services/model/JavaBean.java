@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 
 public abstract class JavaBean {
 	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+	private boolean silenceListeners = false;
 	
 	public void addPropertyChangeListener(final PropertyChangeListener listener) {
 		changeSupport.addPropertyChangeListener(listener);
@@ -15,6 +16,14 @@ public abstract class JavaBean {
 	}
 
 	protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
-		changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+		if (!silenceListeners)
+			changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+	}
+	
+	/**
+	 * @param silenceListeners if true, PropertyChangeListeners won't be called until set to false
+	 */
+	public void silenceListeners(final boolean silenceListeners) {
+		this.silenceListeners = silenceListeners;
 	}
 }

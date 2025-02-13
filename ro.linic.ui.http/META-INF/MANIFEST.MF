@@ -11,7 +11,9 @@ Require-Bundle: wrapped.ro.linic.util.commons,
  ro.linic.ui.security;bundle-version="0.0.3",
  org.apache.commons.codec;bundle-version="1.14.0",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.17.1",
- com.fasterxml.jackson.core.jackson-databind;bundle-version="2.17.1"
+ com.fasterxml.jackson.core.jackson-databind;bundle-version="2.17.1",
+ ro.linic.ui.base.services;bundle-version="0.0.2",
+ org.eclipse.core.runtime;bundle-version="3.31.0"
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.http
 Bundle-RequiredExecutionEnvironment: JavaSE-17

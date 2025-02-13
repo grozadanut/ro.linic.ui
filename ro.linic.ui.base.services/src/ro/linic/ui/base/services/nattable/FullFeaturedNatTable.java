@@ -31,6 +31,7 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupModel;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -72,7 +73,9 @@ public class FullFeaturedNatTable<T> {
 	final private EventList<T> baseEventList;
 	private PropertyChangeListener propertyChangeListener;
 	private ListDataProvider<T> bodyDataProvider;
+	private SelectionLayer selectionLayer;
 	private NatTable natTable;
+	private FilterList<T> filterList;
 	
 	/**
 	 * These are for clients that require some data, such as the bodyDataProvider 
@@ -100,7 +103,6 @@ public class FullFeaturedNatTable<T> {
 
 		// Body
 		ObservableElementList<T> observableElementList;
-		FilterList<T> filterList;
 		SortedList<T> sortedList;
 		this.baseEventList.getReadWriteLock().readLock().lock();
 		try {
@@ -117,15 +119,16 @@ public class FullFeaturedNatTable<T> {
 
 		this.bodyDataProvider = bodyLayer.getBodyDataProvider();
 		this.propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
+		this.selectionLayer = bodyLayer.getSelectionLayer();
 		
 		if (configurer.getSelectionService() != null) {
 			// create a E4SelectionListener and configure it for providing selection
 			// on cell selection
-			final E4SelectionListener<T> esl = new E4SelectionListener<>(configurer.getSelectionService(), bodyLayer.getSelectionLayer(),
+			final E4SelectionListener<T> esl = new E4SelectionListener<>(configurer.getSelectionService(), selectionLayer,
 					bodyDataProvider);
 			esl.setFullySelectedRowsOnly(false);
 			esl.setHandleSameRowSelection(false);
-			bodyLayer.getSelectionLayer().addLayerListener(esl);
+			selectionLayer.addLayerListener(esl);
 		}
 		
 		// update MDirtyable dirty property
@@ -147,7 +150,7 @@ public class FullFeaturedNatTable<T> {
 
 		// Column header
 		final FullFeaturedColumnHeaderLayerStack<T> columnHeaderLayer = new FullFeaturedColumnHeaderLayerStack<>(
-				sortedList, filterList, this.columns, bodyLayer, bodyLayer.getSelectionLayer(),
+				sortedList, filterList, this.columns, bodyLayer, selectionLayer,
 				columnGroupModel, configRegistry);
 
 		// Row header
@@ -155,7 +158,7 @@ public class FullFeaturedNatTable<T> {
 				this.bodyDataProvider);
 		final DefaultRowHeaderDataLayer rowHeaderDataLayer = new DefaultRowHeaderDataLayer(rowHeaderDataProvider);
 		rowHeaderDataLayer.setDefaultColumnWidth(60);
-		final ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
+		final ILayer rowHeaderLayer = new RowHeaderLayer(rowHeaderDataLayer, bodyLayer, selectionLayer);
 
 		// Corner
 		final DefaultCornerDataProvider cornerDataProvider = new DefaultCornerDataProvider(
@@ -183,7 +186,7 @@ public class FullFeaturedNatTable<T> {
 
 		// Column chooser
 		final DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
-				bodyLayer.getSelectionLayer(), bodyLayer.getColumnHideShowLayer(),
+				selectionLayer, bodyLayer.getColumnHideShowLayer(),
 				columnHeaderLayer.getColumnHeaderLayer(), columnHeaderLayer.getColumnHeaderDataLayer(),
 				columnHeaderLayer.getColumnGroupHeaderLayer(), columnGroupModel);
 		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
@@ -254,5 +257,9 @@ public class FullFeaturedNatTable<T> {
 	
 	public NatTable natTable() {
 		return natTable;
+	}
+	
+	public FilterList<T> filterList() {
+		return filterList;
 	}
 }

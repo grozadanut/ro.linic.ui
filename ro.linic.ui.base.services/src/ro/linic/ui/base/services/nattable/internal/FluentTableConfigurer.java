@@ -15,7 +15,9 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.IConfiguration;
 import org.eclipse.nebula.widgets.nattable.summaryrow.DefaultSummaryRowConfiguration;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 
 import ca.odell.glazedlists.EventList;
 import ro.linic.ui.base.services.nattable.Column;
@@ -43,6 +45,7 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	public FullFeaturedNatTable<T> build(final Composite parent) {
 		final FullFeaturedNatTable<T> table = new FullFeaturedNatTable<T>(this);
 		table.postConstruct(parent);
+		table.natTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		return table;
 	}
 
