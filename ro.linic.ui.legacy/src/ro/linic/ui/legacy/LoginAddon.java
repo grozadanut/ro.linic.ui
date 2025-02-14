@@ -19,6 +19,8 @@ import static ro.linic.ui.legacy.session.UIUtils.isWindows;
 
 import java.awt.SystemTray;
 import java.lang.reflect.InvocationTargetException;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
@@ -62,9 +64,12 @@ import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.entities.comercial.Partner;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.ServerConstants.JMSMessageType;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.base.services.LocalDatabase;
+import ro.linic.ui.http.HttpUtils;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.CommandHandler;
 import ro.linic.ui.legacy.components.JMSMessageHandler;
 import ro.linic.ui.legacy.dialogs.ReleaseNotesDialog;
@@ -85,7 +90,7 @@ import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.cloud.model.CloudReceipt;
 import ro.linic.ui.pos.cloud.model.CloudReceiptLine;
 import ro.linic.ui.security.services.AuthenticationSession;
-import ro.linic.ui.workbench.services.LinicWorkbench; 
+import ro.linic.ui.workbench.services.LinicWorkbench;
 
 public class LoginAddon {
 	private static final ILog log = ILog.of(LoginAddon.class);
@@ -111,7 +116,19 @@ public class LoginAddon {
 		final Logger log = (Logger) workbenchContext.get(Logger.class.getName());
 		try
 		{
-			update(workbenchContext, prefs, sync);
+			final String forcedPlugin = RestCaller.get("https://colibriserver.go.ro/repository/force-update.txt")
+				.asyncRaw(BodyHandlers.ofString())
+				.thenApply(HttpUtils::checkOk)
+				.thenApply(HttpResponse::body)
+				.get();
+			
+			final Version minForcedVersion = Version.parseVersion(forcedPlugin.split(PresentationUtils.SPACE)[1]);
+			final Version installedVersion = bundle.getVersion();
+
+			if (installedVersion.compareTo(minForcedVersion) < 0) {
+				log.info("current version: {0}, min version: {1}; forcing update!", installedVersion, minForcedVersion);
+				update(workbenchContext, prefs, sync);
+			}
 		}
 		catch (final Exception e)
 		{
