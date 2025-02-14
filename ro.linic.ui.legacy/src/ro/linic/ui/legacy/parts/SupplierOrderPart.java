@@ -20,16 +20,17 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
 import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBigDecimalDisplayConverter;
-import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
+import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.edit.editor.ComboBoxCellEditor;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
-import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -49,6 +50,7 @@ import com.google.common.collect.ImmutableMap;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.TextFilterator;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
@@ -65,6 +67,7 @@ import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.nattable.Column;
 import ro.linic.ui.base.services.nattable.FullFeaturedNatTable;
 import ro.linic.ui.base.services.nattable.TableBuilder;
+import ro.linic.ui.base.services.nattable.components.GenericValueDisplayConverter;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -107,6 +110,8 @@ public class SupplierOrderPart
 		recommendedOrderColumns = recommendedOrderBuilder.build();
 	}
 	
+	private EventList<GenericValue> allSuppliers = GlazedLists.eventListOf();
+	
 	private ImmutableList<Column> columns;
 	private Combo searchMode;
 	private Text searchFilter;
@@ -143,6 +148,11 @@ public class SupplierOrderPart
 	@PostConstruct
 	public void createComposite(final Composite parent, final ESelectionService selectionService)
 	{
+		RestCaller.get("/rest/s1/moqui-linic-legacy/suppliers")
+		.internal(authSession.authentication())
+		.async(t -> UIUtils.showException(t, sync))
+		.thenAccept(allSuppliers::addAll);
+		
 		columns = buildColumns();
 		parent.setLayout(new GridLayout());
 		createTopBar(parent);
@@ -171,7 +181,7 @@ public class SupplierOrderPart
 				.addConfiguration(new ProductStyleConfiguration())
 				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
-				.saveToDbHandler(data -> true) // TODO implement this
+				.saveToDbHandler(data -> true) // TODO fix duplicate update event for same row, take only the last value
 				.build(parent);
 		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(allProductsTable.natTable());
 		loadState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
@@ -303,7 +313,8 @@ public class SupplierOrderPart
 			{
 				productsHolder.addOrUpdate(data.stream()
 						.map(p -> {
-							final GenericValue gv = GenericValue.of(Product.class.getName(), Map.of(Product.ID_FIELD, p.getId(),
+							final GenericValue gv = GenericValue.of(Product.class.getName(), Product.ID_FIELD,
+									Map.of(Product.ID_FIELD, p.getId(),
 									Product.BARCODE_FIELD, p.getBarcode(), Product.NAME_FIELD, p.getName(),
 									Product.UOM_FIELD, p.getUom(), Product.LAST_BUYING_PRICE_FIELD, p.getLastBuyingPriceNoTva(),
 									Product.PRICE_FIELD, p.getPricePerUom()));
@@ -377,6 +388,8 @@ public class SupplierOrderPart
 			final DefaultBigDecimalDisplayConverter quantityConverter = new DefaultBigDecimalDisplayConverter();
 			quantityConverter.setMinimumFractionDigits(4);
 			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new GenericValueDisplayConverter("organizationName"),
+					DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
 			stocColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
 			recommendedOrderColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, defaultBigDecimalConv, DisplayMode.NORMAL, 
@@ -387,14 +400,19 @@ public class SupplierOrderPart
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
 			
-			// add a special style to highlight the modified cells
-			final Style style = new Style();
-			style.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, GUIHelper.COLOR_RED);
-			configRegistry.registerConfigAttribute(
-					CellConfigAttributes.CELL_STYLE,
-					style,
-					DisplayMode.NORMAL,
-					DataChangeLayer.DIRTY);
+			// CELL EDITOR CONFIG
+			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
+					IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
+			
+			final ComboBoxCellEditor supplierCellEditor = new ComboBoxCellEditor(allSuppliers);
+			supplierCellEditor.setFreeEdit(false);
+			supplierCellEditor.setShowDropdownFilter(true);
+			supplierCellEditor.setFocusOnDropdownFilter(true);
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new GenericValueDisplayConverter("organizationName"),
+					DisplayMode.EDIT, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
+			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITOR,
+					supplierCellEditor, DisplayMode.EDIT, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
 		}
 	}
 }

@@ -27,6 +27,6 @@ public class LinicThemeConfiguration extends ModernNatTableThemeConfiguration {
 		this.summaryRowFont = JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT);
 		this.summaryRowHAlign = HorizontalAlignmentEnum.CENTER;
 		
-		this.dataChangeBgColor = GUIHelper.COLOR_YELLOW;
+		this.dataChangeBgColor = GUIHelper.COLOR_RED;
 	}
 }

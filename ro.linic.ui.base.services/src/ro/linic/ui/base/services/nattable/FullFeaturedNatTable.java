@@ -55,7 +55,7 @@ import ro.linic.ui.base.services.nattable.internal.DiscardDataChangesDelegateCom
 import ro.linic.ui.base.services.nattable.internal.FluentTableConfigurer;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedBodyLayerStack;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedColumnHeaderLayerStack;
-import ro.linic.ui.base.services.nattable.internal.HashCodeRowIdAccessor;
+import ro.linic.ui.base.services.nattable.internal.DefaultRowIdAccessor;
 import ro.linic.ui.base.services.nattable.internal.LinicThemeConfiguration;
 import ro.linic.ui.base.services.nattable.internal.MDirtyableUpdateDataChangeHandler;
 import ro.linic.ui.base.services.nattable.internal.SaveDataChangesDelegateCommandHandler;
@@ -115,7 +115,7 @@ public class FullFeaturedNatTable<T> {
 		}
 
 		final FullFeaturedBodyLayerStack<T> bodyLayer = new FullFeaturedBodyLayerStack<>(modelClass,
-				sortedList, new HashCodeRowIdAccessor<>(), columns, configRegistry, columnGroupModel);
+				sortedList, new DefaultRowIdAccessor<>(), columns, configRegistry, columnGroupModel);
 
 		this.bodyDataProvider = bodyLayer.getBodyDataProvider();
 		this.propertyChangeListener = bodyLayer.getGlazedListEventsLayer();

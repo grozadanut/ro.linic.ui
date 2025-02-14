@@ -1,5 +1,6 @@
 package ro.linic.ui.base.services.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,43 +11,48 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class GenericValue extends JavaBean implements Map<String, Object>, Comparable<GenericValue>{
+import ro.linic.ui.base.services.nattable.components.IdSupplier;
+
+public class GenericValue extends JavaBean implements Map<String, Object>, Comparable<GenericValue>, IdSupplier {
 	private final String entityName;
+	private final String primaryKey;
 	protected final HashMap<String, Object> valueMapInternal;
 
 	private transient boolean modified = false;
 	
-	public static GenericValue of(final String entityName) {
-		return new GenericValue(entityName);
+	public static GenericValue of(final String entityName, final String primaryKey) {
+		return new GenericValue(entityName, primaryKey);
 	}
 	
-	public static GenericValue of(final String entityName, final String key, final Object value) {
-		final GenericValue gv = new GenericValue(entityName);
+	public static GenericValue of(final String entityName, final String primaryKey, final String key, final Object value) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
 		gv.put(key, value);
 		return gv;
 	}
 	
-	public static GenericValue of(final String entityName, final String key1, final Object value1,
+	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
 			final String key2, final Object value2) {
-		final GenericValue gv = new GenericValue(entityName);
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
 		gv.put(key1, value1);
 		gv.put(key2, value2);
 		return gv;
 	}
 	
-	public static GenericValue of(final String entityName, final Map<? extends String, ? extends Object> map) {
-		final GenericValue gv = new GenericValue(entityName);
+	public static GenericValue of(final String entityName, final String primaryKey, final Map<? extends String, ? extends Object> map) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
 		gv.putAll(map);
 		return gv;
 	}
 
-	public GenericValue(final String entityName) {
+	public GenericValue(final String entityName, final String primaryKey) {
 		this.entityName = Objects.requireNonNull(entityName);
+		this.primaryKey = Objects.requireNonNull(primaryKey);
 		this.valueMapInternal = new HashMap<String, Object>();
 	}
 	
 	private GenericValue() {
 		this.entityName = "deserialized";
+		this.primaryKey = "id";
 		this.valueMapInternal = new HashMap<String, Object>();
 	}
 	
@@ -160,6 +166,11 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	public Set<Entry<String, Object>> entrySet() {
 		return valueMapInternal.entrySet();
 	}
+	
+	@Override
+	public Serializable getId() {
+		return entityName + ": " + get(primaryKey);
+	}
 
 	@Override
 	public int hashCode() {
@@ -233,9 +244,9 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
      */
 	public GenericValue clone(final Map<String, String> targetToCloneKey) {
 		if (targetToCloneKey == null || targetToCloneKey.isEmpty())
-			return GenericValue.of(entityName, valueMapInternal);
+			return GenericValue.of(entityName, primaryKey, valueMapInternal);
 		else
-			return GenericValue.of(entityName, 
+			return GenericValue.of(entityName, primaryKey,
 					targetToCloneKey.entrySet().stream().collect(Collectors.toMap(Entry::getValue, e -> get(e.getKey()))));
 	}
 	
