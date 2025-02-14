@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Base Services
 Bundle-SymbolicName: ro.linic.ui.base.services
-Bundle-Version: 0.0.2
+Bundle-Version: 0.0.3
 Export-Package: ro.linic.ui.base.services,
  ro.linic.ui.base.services.binding,
  ro.linic.ui.base.services.di,

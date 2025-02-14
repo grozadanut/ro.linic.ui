@@ -2,7 +2,7 @@
 <feature
       id="ro.linic.ui.base.feature"
       label="Base Module"
-      version="0.0.7"
+      version="0.0.8"
       provider-name="LINIC">
 
    <description url="http://www.example.com/description">

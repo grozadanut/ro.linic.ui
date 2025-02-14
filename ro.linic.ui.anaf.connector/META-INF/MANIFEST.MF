@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: ro.linic.ui.anaf.connector;singleton:=true
-Bundle-Version: 0.0.6
+Bundle-Version: 0.0.7
 Import-Package: jakarta.annotation;version="[2.1.0,3.0.0]",
  jakarta.inject;version="2.0.1"
 Bundle-Vendor: LINIC
