@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.data.ReflectiveColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.GlazedListsSortModel;
 import org.eclipse.nebula.widgets.nattable.extension.glazedlists.filterrow.DefaultGlazedListsFilterStrategy;
 import org.eclipse.nebula.widgets.nattable.filterrow.FilterRowDataLayer;
@@ -45,7 +44,7 @@ public class FullFeaturedColumnHeaderLayerStack<T> extends AbstractLayerTransfor
         this.columnHeaderLayer = new ColumnHeaderLayer(this.columnHeaderDataLayer,
                 bodyLayer, selectionLayer);
 
-        final ReflectiveColumnPropertyAccessor<T> columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<>(
+        final GenericValueColumnAccessor<T> columnPropertyAccessor = new GenericValueColumnAccessor<>(
                 propertyNames);
         this.sortableColumnHeaderLayer = new SortHeaderLayer<>(this.columnHeaderLayer,
                 new GlazedListsSortModel<>(sortedList, columnPropertyAccessor,
