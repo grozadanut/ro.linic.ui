@@ -181,7 +181,7 @@ public class SupplierOrderPart
 				.addConfiguration(new ProductStyleConfiguration())
 				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
-				.saveToDbHandler(data -> true) // TODO fix duplicate update event for same row, take only the last value
+				.saveToDbHandler(data -> true) // TODO implement
 				.build(parent);
 		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(allProductsTable.natTable());
 		loadState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);

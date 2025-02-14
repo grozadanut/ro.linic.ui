@@ -3,12 +3,14 @@ package ro.linic.ui.base.services.nattable.internal;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.nebula.widgets.nattable.command.ILayerCommandHandler;
 import org.eclipse.nebula.widgets.nattable.data.IColumnPropertyAccessor;
 import org.eclipse.nebula.widgets.nattable.datachange.DataChangeLayer;
 import org.eclipse.nebula.widgets.nattable.datachange.UpdateDataChange;
+import org.eclipse.nebula.widgets.nattable.datachange.UpdateDataChangeHandler;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 
@@ -37,9 +39,11 @@ public class SaveDataChangesDelegateCommandHandler<T> implements ILayerCommandHa
 	@Override
 	final public boolean doCommand(final ILayer targetLayer, final SaveDataChangesCommand command) {
 		if (saver != null) {
-			final List<UpdateCommand> commands = this.dataChangeLayer.getDataChanges().stream()
-					.filter(UpdateDataChange.class::isInstance)
-					.map(UpdateDataChange.class::cast)
+			@SuppressWarnings("unchecked")
+			final List<UpdateCommand> commands = this.dataChangeLayer.getDataChangeHandler().stream()
+					.filter(UpdateDataChangeHandler.class::isInstance)
+					.map(UpdateDataChangeHandler.class::cast)
+					.flatMap(h -> (Stream<UpdateDataChange>) h.getDataChanges().values().stream())
 					.map(udc -> UpdateCommandMapper.INSTANCE.from(modelClass, cpa, udc))
 					.collect(Collectors.toList());
 			
