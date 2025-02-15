@@ -16,11 +16,11 @@ public interface GenericDataHolder extends DataHolder<GenericValue> {
 	 * @param primaryKey key by which it will match the source and target data
 	 * @param targetToHolderKey maps the key in the target data with this key in the holder data
 	 */
-	GenericDataHolder addOrUpdate(List<GenericValue> targetData, String targetPrimaryKey, String sourcePrimaryKey, Map<String, String> targetToHolderKey);
-	default GenericDataHolder addOrUpdate(final List<GenericValue> targetData, final String primaryKey) {
-		return addOrUpdate(targetData, primaryKey, primaryKey, null);
+	void addOrUpdate(List<GenericValue> targetData, String targetPrimaryKey, String sourcePrimaryKey, Map<String, String> targetToHolderKey);
+	default void addOrUpdate(final List<GenericValue> targetData, final String primaryKey) {
+		addOrUpdate(targetData, primaryKey, primaryKey, null);
 	}
-	default GenericDataHolder addOrUpdate(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey) {
-		return addOrUpdate(targetData, targetPrimaryKey, sourcePrimaryKey, null);
+	default void addOrUpdate(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey) {
+		addOrUpdate(targetData, targetPrimaryKey, sourcePrimaryKey, null);
 	}
 }

@@ -19,7 +19,7 @@ public class GenericDataHolderImpl implements GenericDataHolder {
 	}
 	
 	@Override
-	public GenericDataHolder addOrUpdate(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey,
+	public void addOrUpdate(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey,
 			final Map<String, String> targetToHolderKey) {
 		this.data.getReadWriteLock().writeLock().lock();
 		try {
@@ -40,22 +40,20 @@ public class GenericDataHolderImpl implements GenericDataHolder {
 		} finally {
 			this.data.getReadWriteLock().writeLock().unlock();
 		}
-		return this;
 	}
 	
 	@Override
-	public GenericDataHolder clear() {
+	public void clear() {
 		this.data.getReadWriteLock().writeLock().lock();
 		try {
 			this.data.clear();
 		} finally {
 			this.data.getReadWriteLock().writeLock().unlock();
 		}
-		return this;
 	}
 
 	@Override
-	public GenericDataHolder setData(final List<GenericValue> data) {
+	public void setData(final List<GenericValue> data) {
 		this.data.getReadWriteLock().writeLock().lock();
 		try {
 			this.data.clear();
@@ -63,11 +61,10 @@ public class GenericDataHolderImpl implements GenericDataHolder {
 		} finally {
 			this.data.getReadWriteLock().writeLock().unlock();
 		}
-		return this;
 	}
 
 	@Override
-	public GenericDataHolder replace(final GenericValue source, final GenericValue target) {
+	public void replace(final GenericValue source, final GenericValue target) {
 		data.getReadWriteLock().writeLock().lock();
 		try {
 			if (data.contains(source))
@@ -75,28 +72,25 @@ public class GenericDataHolderImpl implements GenericDataHolder {
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
 		}
-		return this;
 	}
 
 	@Override
-	public GenericDataHolder remove(final List<GenericValue> toRemove) {
+	public void remove(final List<GenericValue> toRemove) {
 		data.getReadWriteLock().writeLock().lock();
 		try {
 			data.removeAll(toRemove);
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
 		}
-		return this;
 	}
 
 	@Override
-	public GenericDataHolder add(final GenericValue toAdd) {
+	public void add(final GenericValue toAdd) {
 		data.getReadWriteLock().writeLock().lock();
 		try {
 			data.add(toAdd);
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
 		}
-		return this;
 	}
 }
