@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: ro.linic.ui.legacy;singleton:=true
-Bundle-Version: 4.0.32
+Bundle-Version: 4.1.0
 Bundle-ClassPath: libs/colibri_stat_ejb.jar,
  libs/gson-2.8.2.jar,
  libs/hibernate-core-5.3.15.Final.jar,
