@@ -105,11 +105,13 @@ public class FullFeaturedNatTable<T> {
 		// Body
 		ObservableElementList<T> observableElementList;
 		SortedList<T> sortedList;
+		FilterList<T> filteredHeaderData;
 		this.baseEventList.getReadWriteLock().readLock().lock();
 		try {
 			observableElementList = new ObservableElementList<>(
 					this.baseEventList, GlazedLists.beanConnector(modelClass));
-			filterList = new FilterList<>(observableElementList);
+			filteredHeaderData = new FilterList<>(observableElementList);
+			filterList = new FilterList<>(filteredHeaderData);
 			sortedList = new SortedList<>(filterList, null);
 		} finally {
 			this.baseEventList.getReadWriteLock().readLock().unlock();
@@ -151,7 +153,7 @@ public class FullFeaturedNatTable<T> {
 
 		// Column header
 		final FullFeaturedColumnHeaderLayerStack<T> columnHeaderLayer = new FullFeaturedColumnHeaderLayerStack<>(
-				sortedList, filterList, this.columns, bodyLayer, selectionLayer,
+				sortedList, filteredHeaderData, this.columns, bodyLayer, selectionLayer,
 				columnGroupModel, configRegistry);
 
 		// Row header
