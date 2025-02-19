@@ -33,10 +33,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
-
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -82,6 +78,9 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.entities.comercial.AccountingDocument;
@@ -175,6 +174,9 @@ public class ManagerPart implements IMouseAction
 	private Button stergeTot;
 	private Button stergeRand;
 	private CLabel docGestiune;
+	
+	private Text invoiceTitleText;
+	private Button saveInvoiceTitle;
 	
 	private OperationsNatTable operationsTable;
 	
@@ -448,15 +450,19 @@ public class ManagerPart implements IMouseAction
 	private void createMasterPart(final Composite parent)
 	{
 		final Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(2, false));
+		container.setLayout(new GridLayout(3, false));
 		container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		
 		final Composite masterContainer = new Composite(container, SWT.NONE);
 		masterContainer.setLayout(layoutNoSpaces(new GridLayout(2, false)));
 		masterContainer.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
-		
 		createMasterWidgets(masterContainer);
+		
+		final Composite uitContainer = new Composite(container, SWT.NONE);
+		uitContainer.setLayout(layoutNoSpaces(new GridLayout(2, false)));
+		createUitWidget(uitContainer);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(uitContainer);
 		
 		docGestiune = new CLabel(container, SWT.BORDER);
 		docGestiune.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
@@ -496,17 +502,34 @@ public class ManagerPart implements IMouseAction
 		});
 		operationsTable.postConstruct(container);
 		operationsTable.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(operationsTable.getTable());
+		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(operationsTable.getTable());
 		loadState(OPERATIONS_TABLE_STATE_PREFIX, operationsTable.getTable(), part);
 		
 		final Composite totalsContainer = new Composite(container, SWT.NONE);
 		totalsContainer.setLayout(new GridLayout(6, false));
 		totalsContainer.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 		final GridData totalsGD = new GridData(SWT.FILL, SWT.TOP, true, false);
-		totalsGD.horizontalSpan = 2;
+		totalsGD.horizontalSpan = 3;
 		totalsContainer.setLayoutData(totalsGD);
 		
 		createMasterTotals(totalsContainer);
+	}
+
+	private void createUitWidget(final Composite uitContainer) {
+		final Label invoiceHeaderLabel = new Label(uitContainer, SWT.NONE);
+		invoiceHeaderLabel.setText(Messages.ManagerPart_InvoiceHeaderText);
+		UIUtils.setFont(invoiceHeaderLabel);
+		
+		saveInvoiceTitle = new Button(uitContainer, SWT.PUSH | SWT.WRAP);
+		saveInvoiceTitle.setText(Messages.Save);
+		saveInvoiceTitle.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
+		saveInvoiceTitle.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setFont(saveInvoiceTitle);
+		
+		invoiceTitleText = new Text(uitContainer, SWT.MULTI | SWT.BORDER);
+		invoiceTitleText.setTextLimit(2000);
+		UIUtils.setFont(invoiceTitleText);
+		GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(invoiceTitleText);
 	}
 
 	private void createMasterWidgets(final Composite parent)
@@ -1110,6 +1133,14 @@ public class ManagerPart implements IMouseAction
 						doc.getText().trim().equalsIgnoreCase(AccountingDocument.AVIZ_NAME);
 				rpz.setSelection(isFacturaOrAviz);
 				rpz.setEnabled(!doc.getText().trim().equalsIgnoreCase(AccountingDocument.PROCES_VERBAL_NAME));
+			}
+		});
+		
+		saveInvoiceTitle.addSelectionListener(new SelectionAdapter()
+		{
+			@Override public void widgetSelected(final SelectionEvent e)
+			{
+				BusinessDelegate.updatePersistedProp("invoice_title", invoiceTitleText.getText());
 			}
 		});
 		

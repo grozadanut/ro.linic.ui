@@ -52,6 +52,7 @@ public class Messages extends NLS {
 	public static String ManagerPart_NoDocDate;
 	public static String ManagerPart_NoRecDate;
 	public static String ManagerPart_Offer;
+	public static String ManagerPart_InvoiceHeaderText;
 	public static String OK;
 	public static String ManagerPart_Outgoing;
 	public static String ManagerPart_OutgoingOps;

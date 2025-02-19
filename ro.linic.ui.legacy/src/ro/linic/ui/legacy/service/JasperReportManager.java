@@ -856,7 +856,7 @@ public class JasperReportManager
 		final String seriaFactura = BusinessDelegate.persistedProp(PersistedProp.SERIA_FACTURA_KEY)
 				.getValueOr(PersistedProp.SERIA_FACTURA_DEFAULT);
 		final String tvaReadable = Operatiune.tvaReadable(tvaPercent);
-		final String atentionare = BusinessDelegate.persistedProp("atentionare").getValue();
+		final String atentionare = BusinessDelegate.persistedProp("invoice_title").getValue();
 
 		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(factura));
 		final Map<String, Object> parameters = new HashMap<>();
