@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.internal.GetFluent;
 import ro.linic.ui.http.internal.PostFluent;
+import ro.linic.ui.http.internal.PutFluent;
 import ro.linic.ui.security.model.Authentication;
 
 public interface RestCaller {
@@ -47,7 +48,15 @@ public interface RestCaller {
 	interface PostConfigurer extends BaseConfigurer {
 		@Override PostConfigurer addHeader(String key, String value);
 		@Override PostConfigurer addUrlParam(String key, String value);
+		@Override PostConfigurer internal(Authentication auth);
 		PostConfigurer body(BodyProvider body);
+    }
+	
+	interface PutConfigurer extends BaseConfigurer {
+		@Override PutConfigurer addHeader(String key, String value);
+		@Override PutConfigurer addUrlParam(String key, String value);
+		@Override PutConfigurer internal(Authentication auth);
+		PutConfigurer body(BodyProvider body);
     }
 	
 	public static PostConfigurer post(final String url) {
@@ -56,5 +65,9 @@ public interface RestCaller {
 	
 	public static BaseConfigurer get(final String url) {
         return new GetFluent(url);
+    }
+	
+	public static PutConfigurer put(final String url) {
+        return new PutFluent(url);
     }
 }

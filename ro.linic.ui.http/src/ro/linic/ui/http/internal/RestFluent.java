@@ -67,6 +67,8 @@ abstract class RestFluent implements BaseConfigurer {
 		final byte[] encodedAuth = Base64.encodeBase64(credentials.getBytes(StandardCharsets.ISO_8859_1));
 		final String authHeader = "Basic " + new String(encodedAuth);
 		addHeader(HttpHeaders.AUTHORIZATION, authHeader);
+		addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+		addHeader(HttpHeaders.ACCEPT, "application/json");
 		return this;
 	}
 	

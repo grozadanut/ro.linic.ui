@@ -12,8 +12,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import ro.linic.ui.base.services.nattable.components.IdSupplier;
+import ro.linic.util.commons.HeterogeneousDataComparator;
 
-public class GenericValue extends JavaBean implements Map<String, Object>, Comparable<GenericValue>, IdSupplier {
+public class GenericValue extends JavaBean implements Map<String, Object>, Comparable<Object>, IdSupplier {
 	private final String entityName;
 	private final String primaryKey;
 	protected final HashMap<String, Object> valueMapInternal;
@@ -179,10 +180,7 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null || !obj.getClass().equals(this.getClass()))
-			return false;
-		// reuse the compare method
-		return this.compareTo((GenericValue) obj) == 0;
+		return this.compareTo(obj) == 0;
 	}
 
 	@Override
@@ -191,9 +189,12 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	}
 	
 	@Override
-    public int compareTo(final GenericValue that) {
-        if (that == null)
+    public int compareTo(final Object t) {
+        if (t == null)
         	return -1;
+        if (!t.getClass().equals(GenericValue.class))
+        	return -1;
+        final GenericValue that = (GenericValue) t;
 
         // first entity names
         int result = entityName.compareTo(that.getEntityName());
@@ -221,7 +222,7 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
         if (thisVal == null) {
             return thatVal == null ? 0 : 1;
         } else {
-            return (thatVal == null ? -1 : thisVal.compareTo(thatVal));
+            return (thatVal == null ? -1 : HeterogeneousDataComparator.INSTANCE.compare(thisVal, thatVal));
         }
     }
 

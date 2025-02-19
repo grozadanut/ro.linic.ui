@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.pojo.Body;
 import ro.linic.ui.http.pojo.Result;
 import ro.linic.util.commons.HttpStatusCode;
 
@@ -22,6 +23,14 @@ public class HttpUtils {
 	public static List<GenericValue> fromJSON(final String json) {
 		try {
 			return new ObjectMapper().readValue(json, Result.class).resultList();
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static String toJSON(final List<GenericValue> items) {
+		try {
+			return new ObjectMapper().writeValueAsString(new Body(items));
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

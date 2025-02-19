@@ -51,11 +51,12 @@ import ca.odell.glazedlists.ObservableElementList;
 import ca.odell.glazedlists.SortedList;
 import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.nattable.internal.BodyMenuConfiguration;
+import ro.linic.ui.base.services.nattable.internal.CustomGeneralConfiguration;
+import ro.linic.ui.base.services.nattable.internal.DefaultRowIdAccessor;
 import ro.linic.ui.base.services.nattable.internal.DiscardDataChangesDelegateCommandHandler;
 import ro.linic.ui.base.services.nattable.internal.FluentTableConfigurer;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedBodyLayerStack;
 import ro.linic.ui.base.services.nattable.internal.FullFeaturedColumnHeaderLayerStack;
-import ro.linic.ui.base.services.nattable.internal.DefaultRowIdAccessor;
 import ro.linic.ui.base.services.nattable.internal.LinicThemeConfiguration;
 import ro.linic.ui.base.services.nattable.internal.MDirtyableUpdateDataChangeHandler;
 import ro.linic.ui.base.services.nattable.internal.SaveDataChangesDelegateCommandHandler;
@@ -182,6 +183,7 @@ public class FullFeaturedNatTable<T> {
 		});
 		this.natTable.addConfiguration(new BodyMenuConfiguration(this.natTable));
 		this.natTable.addConfiguration(new SingleClickSortConfiguration());
+		this.natTable.addConfiguration(new CustomGeneralConfiguration());
 		new NatTableContentTooltip(this.natTable);
 
 		// Column chooser

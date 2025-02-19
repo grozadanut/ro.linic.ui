@@ -67,8 +67,12 @@ import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.nattable.Column;
 import ro.linic.ui.base.services.nattable.FullFeaturedNatTable;
 import ro.linic.ui.base.services.nattable.TableBuilder;
+import ro.linic.ui.base.services.nattable.UpdateCommand;
 import ro.linic.ui.base.services.nattable.components.GenericValueDisplayConverter;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.http.pojo.Result;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -181,7 +185,7 @@ public class SupplierOrderPart
 				.addConfiguration(new ProductStyleConfiguration())
 				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
-				.saveToDbHandler(data -> true) // TODO implement
+				.saveToDbHandler(this::saveSuppliers)
 				.build(parent);
 		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(allProductsTable.natTable());
 		loadState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
@@ -249,6 +253,21 @@ public class SupplierOrderPart
 		allProductsTable.natTable().doCommand(new DiscardDataChangesCommand());
 	}
 	
+	private boolean saveSuppliers(final List<UpdateCommand> updateCommands) {
+		final String organizationPartyId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
+		final List<GenericValue> valuesToUpdate = updateCommands.stream().filter(uc -> uc.updatedProperty().equalsIgnoreCase("furnizori"))
+		.map(uc -> GenericValue.of("", "", Map.of("organizationPartyId", organizationPartyId,
+				"productId", ((GenericValue) uc.model()).getString(Product.ID_FIELD),
+				"supplierId", ((GenericValue) uc.newValue()).getString("partyId"))))
+		.toList();
+		
+		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
+				.internal(authSession.authentication())
+				.body(BodyProvider.of(HttpUtils.toJSON(valuesToUpdate)))
+				.get(Result.class, t -> UIUtils.showException(t, sync))
+				.isPresent();
+	}
+
 	private void addListeners()
 	{
 		searchMode.addModifyListener(this::filterModeChange);
