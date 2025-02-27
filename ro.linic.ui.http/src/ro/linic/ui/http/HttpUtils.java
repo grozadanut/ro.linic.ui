@@ -35,6 +35,14 @@ public class HttpUtils {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public static String toJSON(final GenericValue item) {
+		try {
+			return new ObjectMapper().writeValueAsString(item);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	public static <T> HttpResponse<T> checkOk(final HttpResponse<T> response) {
 		if (response.statusCode() != HttpStatusCode.OK.getValue())
