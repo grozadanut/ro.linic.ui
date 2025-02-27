@@ -98,6 +98,10 @@ import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.dialogs.AdaugaOpDialog;
 import ro.linic.ui.legacy.dialogs.FiltrePopup;
@@ -116,6 +120,7 @@ import ro.linic.ui.legacy.tables.OperationsNatTable;
 import ro.linic.ui.legacy.widgets.ExportButton;
 import ro.linic.ui.legacy.wizards.EFacturaDetailsWizardDialog;
 import ro.linic.ui.legacy.wizards.EFacturaFileWizard;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class ManagerPart implements IMouseAction
 {
@@ -194,6 +199,7 @@ public class ManagerPart implements IMouseAction
 	@Inject private UISynchronize sync;
 	@Inject private EPartService partService;
 	@Inject private Logger log;
+	@Inject private AuthenticationSession authSession;
 
 	public static ManagerPart loadDocInPart(final EPartService partService, final AccountingDocument doc)
 	{
@@ -1378,10 +1384,26 @@ public class ManagerPart implements IMouseAction
 		}
 		
 		showResult(result);
-		if (result.statusOk())
-			updateDoc(result.extra(InvocationResult.ACCT_DOC_KEY));
+		if (result.statusOk()) {
+			final AccountingDocument accDoc = result.extra(InvocationResult.ACCT_DOC_KEY);
+			updateDoc(accDoc);
+			updateProductSuppliers(p, op, accDoc);
+		}
 	}
 	
+	private void updateProductSuppliers(final Optional<Product> p, final Operatiune op, final AccountingDocument accDoc) {
+		if (p.isEmpty() || !TipOp.INTRARE.equals(op.getTipOp()))
+			return;
+		
+		final String organizationPartyId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
+		RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
+				.internal(authSession.authentication())
+				.body(BodyProvider.of(HttpUtils.toJSON(List.of(GenericValue.of("", "", "organizationPartyId", organizationPartyId,
+						"productId", p.get().getId(),
+						"supplierId", accDoc.getPartner().getId())))))
+				.async(t -> log.error(t));
+	}
+
 	private void transferOperations(final List<Operatiune> operations)
 	{
 		int gestiuneId;

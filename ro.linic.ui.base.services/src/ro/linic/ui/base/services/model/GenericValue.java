@@ -39,6 +39,15 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 		return gv;
 	}
 	
+	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
+			final String key2, final Object value2, final String key3, final Object value3) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
+		gv.put(key1, value1);
+		gv.put(key2, value2);
+		gv.put(key3, value3);
+		return gv;
+	}
+	
 	public static GenericValue of(final String entityName, final String primaryKey, final Map<? extends String, ? extends Object> map) {
 		final GenericValue gv = new GenericValue(entityName, primaryKey);
 		gv.putAll(map);
