@@ -530,7 +530,7 @@ public class ManagerPart implements IMouseAction
 		invoiceTitleText.setTextLimit(2000);
 		UIUtils.setFont(invoiceTitleText);
 		GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(invoiceTitleText);
-		invoiceTitleText.setText(BusinessDelegate.persistedProp("invoice_title").getValue());
+		invoiceTitleText.setText(BusinessDelegate.persistedProp("invoice_title").getValueOr(EMPTY_STRING));
 	}
 
 	private void createMasterWidgets(final Composite parent)
