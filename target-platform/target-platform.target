@@ -25,9 +25,9 @@
 	 <location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
 		 <dependencies>
 			 <dependency>
-				 <groupId>ro.linic.util</groupId>
+				 <groupId>ro.flexbiz.util</groupId>
 				 <artifactId>commons</artifactId>
-				 <version>0.0.8</version>
+				 <version>1.0.1</version>
 				 <type>jar</type>
 			 </dependency>
 		 </dependencies>
@@ -444,10 +444,9 @@
 		<plugin id="org.eclipse.debug.core.source"/>
 		<plugin id="org.eclipse.compare.core"/>
 		<plugin id="org.eclipse.compare.core.source"/>
-		<plugin id="wrapped.ro.linic.util.commons"/>
 		<plugin id="org.eclipse.jetty.servlet-api" version="4.0.6"/>
 		<plugin id="jakarta.annotation-api" version="2.1.1"/>
-		<plugin id="jakarta.inject.jakarta.inject-api" version="1.0.5"/>
+		<plugin id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
 		<plugin id="bcpg.source"/>
 		<plugin id="bcprov.source"/>
 		<plugin id="com.sun.jna.platform.source"/>
@@ -489,7 +488,7 @@
 		<plugin id="com.fasterxml.jackson.core.jackson-core"/>
 		<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 		<plugin id="org.eclipse.nebula.widgets.nattable.extension.e4"/>
-		<plugin id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
+		<plugin id="jakarta.inject.jakarta.inject-api" version="1.0.5"/>
 		<plugin id="org.mapstruct"/>
 		<plugin id="org.mockito.mockito-core"/>
 		<plugin id="org.eclipse.jdt.junit"/>
@@ -500,5 +499,6 @@
 		<plugin id="org.eclipse.jdt.junit5.runtime"/>
 		<plugin id="org.objenesis"/>
 		<plugin id="slf4j.api" version="2.0.12"/>
+		<plugin id="wrapped.ro.flexbiz.util.commons"/>
 	</includeBundles>
 </target>

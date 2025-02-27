@@ -1,8 +1,8 @@
 package ro.linic.ui.base.services.binding;
 
-import static ro.linic.util.commons.NumberUtils.isNumeric;
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.NumberUtils.isNumeric;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.math.BigDecimal;
 
@@ -12,7 +12,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Text;
 
-import ro.linic.util.commons.calculator.Calculator;
+import ro.flexbiz.util.commons.calculator.Calculator;
 
 public class StringToBigDecimalConverter implements IConverter<String, BigDecimal> {
 	/**

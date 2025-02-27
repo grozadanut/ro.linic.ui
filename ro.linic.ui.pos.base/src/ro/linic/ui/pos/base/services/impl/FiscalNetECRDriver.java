@@ -1,9 +1,9 @@
 package ro.linic.ui.pos.base.services.impl;
 
-import static ro.linic.util.commons.NumberUtils.smallerThan;
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
-import static ro.linic.util.commons.PresentationUtils.NEWLINE;
-import static ro.linic.util.commons.PresentationUtils.safeString;
+import static ro.flexbiz.util.commons.NumberUtils.smallerThan;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
+import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -34,6 +34,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
+import ro.flexbiz.util.commons.StringUtils;
 import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.pos.base.Messages;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
@@ -42,7 +43,6 @@ import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ECRDriver;
-import ro.linic.util.commons.StringUtils;
 
 @Component
 public class FiscalNetECRDriver implements ECRDriver {

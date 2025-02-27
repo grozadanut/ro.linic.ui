@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.ILog;
+
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ro.linic.ui.base.services.GenericDataHolder;
@@ -12,6 +14,7 @@ import ro.linic.ui.base.services.model.GenericValue;
 
 public class GenericDataHolderImpl implements GenericDataHolder {
 	private EventList<GenericValue> data = GlazedLists.threadSafeList(GlazedLists.eventListOf());
+	private static final ILog log = ILog.of(GenericDataHolderImpl.class);
 	
 	@Override
 	public EventList<GenericValue> getData() {
@@ -37,6 +40,8 @@ public class GenericDataHolderImpl implements GenericDataHolder {
 				else
 					data.add(target.clone(targetToHolderKey));
 			}
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
 		} finally {
 			this.data.getReadWriteLock().writeLock().unlock();
 		}

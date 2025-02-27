@@ -1,6 +1,6 @@
 package ro.linic.ui.base.services.ui;
 
-import static ro.linic.util.commons.NumberUtils.parse;
+import static ro.flexbiz.util.commons.NumberUtils.parse;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

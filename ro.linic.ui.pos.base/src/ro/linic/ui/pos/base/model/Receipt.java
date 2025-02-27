@@ -1,6 +1,6 @@
 package ro.linic.ui.pos.base.model;
 
-import static ro.linic.util.commons.NumberUtils.add;
+import static ro.flexbiz.util.commons.NumberUtils.add;
 
 import java.math.BigDecimal;
 import java.time.Instant;

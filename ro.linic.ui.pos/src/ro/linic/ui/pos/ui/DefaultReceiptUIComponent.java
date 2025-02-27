@@ -1,6 +1,6 @@
 package ro.linic.ui.pos.ui;
 
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
 
 import java.util.List;
 

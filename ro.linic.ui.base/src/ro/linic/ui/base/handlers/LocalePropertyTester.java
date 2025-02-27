@@ -1,7 +1,7 @@
  
 package ro.linic.ui.base.handlers;
 
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.util.Locale;
 

@@ -1,6 +1,6 @@
 package ro.linic.ui.base.services.binding;
 
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;

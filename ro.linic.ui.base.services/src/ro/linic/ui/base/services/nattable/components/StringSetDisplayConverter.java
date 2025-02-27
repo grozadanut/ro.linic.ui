@@ -1,6 +1,6 @@
 package ro.linic.ui.base.services.nattable.components;
 
-import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
+import static ro.flexbiz.util.commons.PresentationUtils.LIST_SEPARATOR;
 
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
-import ro.linic.util.commons.ListUtils;
+import ro.flexbiz.util.commons.ListUtils;
 
 public class StringSetDisplayConverter extends DisplayConverter {
 	@Override

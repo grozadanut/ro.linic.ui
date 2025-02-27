@@ -2,7 +2,7 @@
 <feature
       id="ro.linic.ui.anaf.connector.feature"
       label="ANAF Connector"
-      version="0.0.5"
+      version="0.1.0"
       provider-name="LINIC">
 
    <description url="http://www.example.com/description">

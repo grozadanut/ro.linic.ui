@@ -1,6 +1,6 @@
 package ro.linic.ui.pos.local.addons;
 
-import static ro.linic.util.commons.PresentationUtils.NEWLINE;
+import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
 
 import java.sql.SQLException;
 import java.sql.Statement;

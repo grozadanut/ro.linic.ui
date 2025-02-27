@@ -3,8 +3,8 @@ package ro.linic.ui.pos.base.tests.services.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static ro.linic.util.commons.NumberUtils.add;
-import static ro.linic.util.commons.NumberUtils.multiply;
+import static ro.flexbiz.util.commons.NumberUtils.add;
+import static ro.flexbiz.util.commons.NumberUtils.multiply;
 
 import java.math.BigDecimal;
 import java.util.List;

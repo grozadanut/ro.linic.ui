@@ -1,7 +1,7 @@
 package ro.linic.ui.pos.handlers;
 
-import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
-import static ro.linic.util.commons.StringUtils.truncate;
+import static ro.flexbiz.util.commons.PresentationUtils.LIST_SEPARATOR;
+import static ro.flexbiz.util.commons.StringUtils.truncate;
 
 import java.util.List;
 import java.util.stream.Collectors;

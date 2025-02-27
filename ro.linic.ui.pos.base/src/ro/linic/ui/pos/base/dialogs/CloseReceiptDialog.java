@@ -1,11 +1,11 @@
 package ro.linic.ui.pos.base.dialogs;
 
-import static ro.linic.util.commons.NumberUtils.add;
-import static ro.linic.util.commons.NumberUtils.equal;
-import static ro.linic.util.commons.NumberUtils.greaterThan;
-import static ro.linic.util.commons.NumberUtils.parse;
-import static ro.linic.util.commons.NumberUtils.smallerThan;
-import static ro.linic.util.commons.NumberUtils.subtract;
+import static ro.flexbiz.util.commons.NumberUtils.add;
+import static ro.flexbiz.util.commons.NumberUtils.equal;
+import static ro.flexbiz.util.commons.NumberUtils.greaterThan;
+import static ro.flexbiz.util.commons.NumberUtils.parse;
+import static ro.flexbiz.util.commons.NumberUtils.smallerThan;
+import static ro.flexbiz.util.commons.NumberUtils.subtract;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

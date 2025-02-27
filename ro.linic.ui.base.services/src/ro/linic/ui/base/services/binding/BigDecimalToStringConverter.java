@@ -1,6 +1,6 @@
 package ro.linic.ui.base.services.binding;
 
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
 
 import java.math.BigDecimal;
 

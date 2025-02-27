@@ -25,13 +25,13 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
+import ro.flexbiz.util.commons.ParameterStringBuilder;
 import ro.linic.ui.base.preferences.PreferenceKey;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.HttpHeaders;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller.BaseConfigurer;
 import ro.linic.ui.security.model.Authentication;
-import ro.linic.util.commons.ParameterStringBuilder;
 
 abstract class RestFluent implements BaseConfigurer {
 	private static final ILog log = ILog.of(RestFluent.class);

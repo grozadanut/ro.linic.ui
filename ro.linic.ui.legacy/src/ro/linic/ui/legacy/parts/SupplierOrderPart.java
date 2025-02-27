@@ -22,6 +22,7 @@ import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.config.IEditableRule;
 import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBigDecimalDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultDisplayConverter;
 import org.eclipse.nebula.widgets.nattable.datachange.command.DiscardDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.datachange.command.SaveDataChangesCommand;
 import org.eclipse.nebula.widgets.nattable.edit.EditConfigAttributes;
@@ -92,9 +93,10 @@ public class SupplierOrderPart
 	private static final Column barcodeColumn = new Column(0, Product.BARCODE_FIELD, "Cod", 70);
 	private static final Column nameColumn = new Column(1, Product.NAME_FIELD, "Denumire", 300);
 	private static final Column uomColumn = new Column(2, Product.UOM_FIELD, "UM", 50);
-	private static final Column ULPColumn = new Column(3,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
-	private static final Column priceColumn = new Column(4, Product.PRICE_FIELD, "PU", 90);
-	private static final Column furnizoriColumn = new Column(5, Product.FURNIZORI_FIELD, "Furnizori", 220);
+	private static final Column paretoColumn = new Column(3, "pareto", "Pareto", 50);
+	private static final Column ULPColumn = new Column(4,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
+	private static final Column priceColumn = new Column(5, Product.PRICE_FIELD, "PU", 90);
+	private static final Column furnizoriColumn = new Column(6, Product.FURNIZORI_FIELD, "Furnizori", 220);
 	
 	private static final ImmutableMap<Column, Gestiune> stocColumns;
 	private static final ImmutableMap<Column, Gestiune> recommendedOrderColumns;
@@ -139,6 +141,7 @@ public class SupplierOrderPart
 		builder.add(barcodeColumn)
 		.add(nameColumn)
 		.add(uomColumn)
+		.add(paretoColumn)
 		.add(ULPColumn)
 		.add(priceColumn)
 		.add(furnizoriColumn);
@@ -324,7 +327,7 @@ public class SupplierOrderPart
 				.addUrlParam("organizationPartyId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
 				.async(t -> UIUtils.showException(t, sync))
 				.thenAccept(productSuppliers -> productsHolder.addOrUpdate(productSuppliers, "productId", Product.ID_FIELD,
-						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD)));
+						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto")));
 		
 		BusinessDelegate.allProductsForOrdering(new AsyncLoadData<Product>()
 		{
@@ -418,6 +421,14 @@ public class SupplierOrderPart
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ULPColumn));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER,
+					new DefaultDisplayConverter() {
+						@Override
+						public Object canonicalToDisplayValue(final Object sourceValue) {
+							final String val = super.canonicalToDisplayValue(sourceValue).toString();
+							return val.length() > 2 ? val.substring(2) : val;
+						}
+					}, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(paretoColumn));
 			
 			// CELL EDITOR CONFIG
 			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,

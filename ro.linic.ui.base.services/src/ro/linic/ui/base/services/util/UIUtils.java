@@ -1,9 +1,9 @@
 package ro.linic.ui.base.services.util;
 
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
-import static ro.linic.util.commons.PresentationUtils.NEWLINE;
-import static ro.linic.util.commons.PresentationUtils.safeString;
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
+import static ro.flexbiz.util.commons.PresentationUtils.safeString;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

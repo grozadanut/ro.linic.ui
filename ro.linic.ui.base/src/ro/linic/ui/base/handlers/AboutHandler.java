@@ -1,6 +1,6 @@
 package ro.linic.ui.base.handlers;
 
-import static ro.linic.util.commons.PresentationUtils.NEWLINE;
+import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.swt.widgets.Shell;

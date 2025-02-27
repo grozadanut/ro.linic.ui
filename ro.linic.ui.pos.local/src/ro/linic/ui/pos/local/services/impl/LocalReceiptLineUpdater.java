@@ -1,10 +1,10 @@
 package ro.linic.ui.pos.local.services.impl;
 
-import static ro.linic.util.commons.NumberUtils.add;
-import static ro.linic.util.commons.NumberUtils.subtract;
-import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
-import static ro.linic.util.commons.PresentationUtils.NEWLINE;
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.NumberUtils.add;
+import static ro.flexbiz.util.commons.NumberUtils.subtract;
+import static ro.flexbiz.util.commons.PresentationUtils.LIST_SEPARATOR;
+import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;

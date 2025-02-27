@@ -1,8 +1,8 @@
 package ro.linic.ui.base.eclipse.fixes;
 
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
-import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.PresentationUtils.LIST_SEPARATOR;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.io.File;
 import java.io.IOException;

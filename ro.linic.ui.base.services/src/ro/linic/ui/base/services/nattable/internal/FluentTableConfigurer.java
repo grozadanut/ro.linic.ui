@@ -1,7 +1,7 @@
 package ro.linic.ui.base.services.nattable.internal;
 
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
-import static ro.linic.util.commons.PresentationUtils.safeString;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package ro.linic.ui.pos.parts;
 
-import static ro.linic.util.commons.NumberUtils.parseToInt;
-import static ro.linic.util.commons.StringUtils.notEmpty;
+import static ro.flexbiz.util.commons.NumberUtils.parseToInt;
+import static ro.flexbiz.util.commons.StringUtils.notEmpty;
 
 import java.util.Arrays;
 import java.util.Comparator;

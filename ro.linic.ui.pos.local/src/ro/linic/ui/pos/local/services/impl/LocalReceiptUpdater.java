@@ -1,7 +1,7 @@
 package ro.linic.ui.pos.local.services.impl;
 
-import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
-import static ro.linic.util.commons.PresentationUtils.NEWLINE;
+import static ro.flexbiz.util.commons.PresentationUtils.LIST_SEPARATOR;
+import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

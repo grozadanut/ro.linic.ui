@@ -9,7 +9,7 @@ import org.eclipse.nebula.widgets.nattable.Messages;
 import org.eclipse.nebula.widgets.nattable.data.convert.ConversionFailedException;
 import org.eclipse.nebula.widgets.nattable.data.convert.DisplayConverter;
 
-import ro.linic.util.commons.calculator.Calculator;
+import ro.flexbiz.util.commons.calculator.Calculator;
 
 /**
  * Converts the display value to a {@link BigDecimal} and vice versa.

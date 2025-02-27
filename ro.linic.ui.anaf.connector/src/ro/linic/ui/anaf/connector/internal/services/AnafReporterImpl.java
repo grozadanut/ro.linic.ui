@@ -1,7 +1,7 @@
 package ro.linic.ui.anaf.connector.internal.services;
 
-import static ro.linic.util.commons.PresentationUtils.EMPTY_STRING;
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.awt.Desktop;
 import java.io.File;
@@ -24,12 +24,12 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 
+import ro.flexbiz.util.commons.HttpStatusCode;
 import ro.linic.ui.anaf.connector.Messages;
 import ro.linic.ui.anaf.connector.internal.preferences.PreferenceKey;
 import ro.linic.ui.anaf.connector.services.AnafReporter;
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.RestCaller;
-import ro.linic.util.commons.HttpStatusCode;
 
 @Component
 public class AnafReporterImpl implements AnafReporter {

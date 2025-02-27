@@ -1,6 +1,6 @@
 package ro.linic.ui.pos.widgets;
 
-import static ro.linic.util.commons.PresentationUtils.LIST_SEPARATOR;
+import static ro.flexbiz.util.commons.PresentationUtils.LIST_SEPARATOR;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import jakarta.inject.Inject;
+import ro.flexbiz.util.commons.ListUtils;
 import ro.linic.ui.base.services.binding.NotEmptyValidator;
 import ro.linic.ui.base.services.binding.NotNullValidator;
 import ro.linic.ui.base.services.binding.StringToBigDecimalConverter;
@@ -35,7 +36,6 @@ import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.pos.Messages;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.services.ProductDataLoader;
-import ro.linic.util.commons.ListUtils;
 
 public class ProductWidget extends Composite {
 	private Combo type;

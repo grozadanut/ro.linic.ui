@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import ro.flexbiz.util.commons.HeterogeneousDataComparator;
+import ro.flexbiz.util.commons.ListUtils;
 import ro.linic.ui.base.services.nattable.components.IdSupplier;
-import ro.linic.util.commons.HeterogeneousDataComparator;
 
 public class GenericValue extends JavaBean implements Map<String, Object>, Comparable<Object>, IdSupplier {
 	private final String entityName;
@@ -257,7 +257,7 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 			return GenericValue.of(entityName, primaryKey, valueMapInternal);
 		else
 			return GenericValue.of(entityName, primaryKey,
-					targetToCloneKey.entrySet().stream().collect(Collectors.toMap(Entry::getValue, e -> get(e.getKey()))));
+					targetToCloneKey.entrySet().stream().collect(ListUtils.toMapOfNullables(Entry::getValue, e -> get(e.getKey()))));
 	}
 	
 	/**
@@ -271,7 +271,7 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 		if (targetToSourceKey == null || targetToSourceKey.isEmpty())
 			putAll(target);
 		else
-			putAll(targetToSourceKey.entrySet().stream().collect(Collectors.toMap(Entry::getValue, e -> target.get(e.getKey()))));
+			putAll(targetToSourceKey.entrySet().stream().collect(ListUtils.toMapOfNullables(Entry::getValue, e -> target.get(e.getKey()))));
 		return this;
 	}
 }

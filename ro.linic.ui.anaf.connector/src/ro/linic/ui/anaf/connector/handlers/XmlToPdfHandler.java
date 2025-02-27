@@ -1,7 +1,7 @@
  
 package ro.linic.ui.anaf.connector.handlers;
 
-import static ro.linic.util.commons.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -5,7 +5,7 @@ import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
 import org.eclipse.nebula.widgets.nattable.filterrow.config.FilterRowConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 
-import ro.linic.util.commons.HeterogeneousDataComparator;
+import ro.flexbiz.util.commons.HeterogeneousDataComparator;
 
 public class CustomGeneralConfiguration extends AbstractRegistryConfiguration {
 	@Override

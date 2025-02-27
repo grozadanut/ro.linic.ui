@@ -6,10 +6,10 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ro.flexbiz.util.commons.HttpStatusCode;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.pojo.Body;
 import ro.linic.ui.http.pojo.Result;
-import ro.linic.util.commons.HttpStatusCode;
 
 public class HttpUtils {
 	public static <C> C fromJSON(final String json, final Class<C> clazz) {
