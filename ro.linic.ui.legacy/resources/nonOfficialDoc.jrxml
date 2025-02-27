@@ -187,7 +187,7 @@
 				<textElement>
 					<font size="16" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{doc}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{doc}.equals("BON CONSUM") ? "BON TRANSPORT - CMR" : $F{doc}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="330" y="30" width="70" height="15" uuid="1cd67f38-6fb7-4bcb-b76b-1a8787e72d59"/>
