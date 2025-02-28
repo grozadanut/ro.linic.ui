@@ -1392,7 +1392,7 @@ public class ManagerPart implements IMouseAction
 	}
 	
 	private void updateProductSuppliers(final Optional<Product> p, final Operatiune op, final AccountingDocument accDoc) {
-		if (p.isEmpty() || !TipOp.INTRARE.equals(op.getTipOp()))
+		if (p.isEmpty() || !TipOp.INTRARE.equals(op.getTipOp()) || !Product.MARFA_CATEGORY.equalsIgnoreCase(op.getCategorie()))
 			return;
 		
 		final String organizationPartyId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
