@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -30,6 +31,8 @@ import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.security.services.AuthenticationSession;
 
 public class EliminateFromOrderingHandler {
+	private static final ILog log = ILog.of(EliminateFromOrderingHandler.class);
+	
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) final List<GenericValue> products, final DataServices dataServices,
 			@Named(IServiceConstants.ACTIVE_SHELL) final Shell shell, final EPartService partService, final AuthenticationSession authSession) {
@@ -40,10 +43,13 @@ public class EliminateFromOrderingHandler {
 			return;
 		
 		products.forEach(gv -> {
-			final InvocationResult result = BusinessDelegate.eliminateProductFromOrdering(gv.getInt(Product.ID_FIELD));
-			ro.linic.ui.legacy.session.UIUtils.showResult(result);
-			if (result.statusOk())
-				dataServices.holder("ProductsToOrder").remove(List.of(gv));
+			try {
+				final InvocationResult result = BusinessDelegate.eliminateProductFromOrdering(gv.getInt(Product.ID_FIELD));
+				ro.linic.ui.legacy.session.UIUtils.showResult(result);
+			} catch (final Exception e) {
+				// might throw NPE if the product was deleted from colibri_stat_db but not Moqui
+				log.error(e.getMessage(), e);
+			}
 			
 			// MOQUI
 			final String pId = gv.getString(Product.ID_FIELD);
@@ -55,6 +61,8 @@ public class EliminateFromOrderingHandler {
 					.body(BodyProvider.of(HttpUtils.toJSON(valueToUpdate)))
 					.get(GenericValue.class, t -> UIUtils.showException(t, t.getMessage()));
 		});
+		
+		dataServices.holder("ProductsToOrder").remove(products);
 	}
 	
 	@CanExecute
