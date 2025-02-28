@@ -415,9 +415,10 @@ public class BarcodePrintable implements Serializable
 		this.customLabel = customLabel;
 	}
 	
-	public boolean hasSomethingToPrintNotA4()
+	public boolean hasSomethingToPrintRemote()
 	{
-		return getCantitate() > 0 && (isNotA4() || isCustomLabel());
+		return getCantitate() > 0 && labelType != null &&
+				(labelType.equals(LabelType.NORMAL_LABEL) || labelType.equals(LabelType.BIG_LABEL));
 	}
 	
 	@Override

@@ -103,8 +103,11 @@ public abstract class PeripheralService
 			log.error(e1);
 		}
 		
-		final ImmutableList<BarcodePrintable> printablesToSend = printables.stream().filter(BarcodePrintable::hasSomethingToPrintNotA4).collect(toImmutableList());
-		if (sendFurther && gestiune.isPresent() && !gestiune.get().equals(ClientSession.instance().getLoggedUser().getSelectedGestiune()))
+		final ImmutableList<BarcodePrintable> printablesToSend = printables.stream()
+				.filter(BarcodePrintable::hasSomethingToPrintRemote)
+				.collect(toImmutableList());
+		if (sendFurther && gestiune.isPresent() && !gestiune.get().equals(ClientSession.instance().getLoggedUser().getSelectedGestiune()) &&
+				!printablesToSend.isEmpty())
 		{
 			final String remoteJndi = gestiune.get().isMatch(L1_NAME) ? 
 					L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
@@ -112,7 +115,7 @@ public abstract class PeripheralService
 			return;
 		}
 		
-		if (sendFurther && !instance().isPrinterConnected(printerName))
+		if (sendFurther && !instance().isPrinterConnected(printerName) && !printablesToSend.isEmpty())
 		{
 			final String remoteJndi = ClientSession.instance().getLoggedUser().getSelectedGestiune().isMatch(L1_NAME) ? 
 					L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
