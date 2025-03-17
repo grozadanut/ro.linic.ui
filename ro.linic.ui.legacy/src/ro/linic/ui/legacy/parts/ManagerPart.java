@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -1388,6 +1389,7 @@ public class ManagerPart implements IMouseAction
 			final AccountingDocument accDoc = result.extra(InvocationResult.ACCT_DOC_KEY);
 			updateDoc(accDoc);
 			updateProductSuppliers(p, op, accDoc);
+			updateProductPurchPrice(p, op, accDoc);
 		}
 	}
 	
@@ -1401,6 +1403,22 @@ public class ManagerPart implements IMouseAction
 				.body(BodyProvider.of(HttpUtils.toJSON(List.of(GenericValue.of("", "", "organizationPartyId", organizationPartyId,
 						"productId", p.get().getId(),
 						"supplierId", accDoc.getPartner().getId())))))
+				.async(t -> log.error(t));
+	}
+	
+	private void updateProductPurchPrice(final Optional<Product> p, final Operatiune op, final AccountingDocument accDoc) {
+		if (p.isEmpty() || !TipOp.INTRARE.equals(op.getTipOp()))
+			return;
+		
+		final String productPriceId = "purch"+p.get().getId();
+		final Map<String, Object> jsonPriceMap = Map.of("productId", p.get().getId(),
+				"productPriceId", productPriceId, "priceTypeEnumId", "PptAverage",
+				"pricePurposeEnumId", "PppPurchase", "priceUomId", "RON",
+				"price", op.getPretUnitarAchizitieFaraTVA());
+		
+		RestCaller.patch("/rest/s1/mantle/products/" + p.get().getId() + "/prices/" + productPriceId)
+				.internal(authSession.authentication())
+				.body(BodyProvider.of(HttpUtils.toJSON(jsonPriceMap)))
 				.async(t -> log.error(t));
 	}
 

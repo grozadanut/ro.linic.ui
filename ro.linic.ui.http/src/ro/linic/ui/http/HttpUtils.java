@@ -2,6 +2,7 @@ package ro.linic.ui.http;
 
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +40,14 @@ public class HttpUtils {
 	public static String toJSON(final GenericValue item) {
 		try {
 			return new ObjectMapper().writeValueAsString(item);
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static String toJSON(final Map<String, Object> map) {
+		try {
+			return new ObjectMapper().writeValueAsString(map);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
