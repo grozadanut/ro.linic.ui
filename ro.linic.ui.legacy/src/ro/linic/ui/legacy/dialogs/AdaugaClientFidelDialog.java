@@ -113,7 +113,7 @@ public class AdaugaClientFidelDialog extends TitleAreaDialog
 		else
 		{
 			fidelityCard.setNumber(fidelityNumber.getText());
-			fidelityCard.setDiscountPercentage(new BigDecimal("0.05"));
+			fidelityCard.setDiscountPercentage(new BigDecimal("0.1"));
 		}
 		partner.setFidelityCard(fidelityCard);
 		return partner;
