@@ -1394,7 +1394,8 @@ public class ManagerPart implements IMouseAction
 	}
 	
 	private void updateProductSuppliers(final Optional<Product> p, final Operatiune op, final AccountingDocument accDoc) {
-		if (p.isEmpty() || !TipOp.INTRARE.equals(op.getTipOp()) || !Product.MARFA_CATEGORY.equalsIgnoreCase(op.getCategorie()))
+		if (p.isEmpty() || !TipOp.INTRARE.equals(op.getTipOp()) || !Product.MARFA_CATEGORY.equalsIgnoreCase(op.getCategorie()) ||
+				!AccountingDocument.FACTURA_NAME.equalsIgnoreCase(accDoc.getDoc()))
 			return;
 		
 		final String organizationPartyId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();

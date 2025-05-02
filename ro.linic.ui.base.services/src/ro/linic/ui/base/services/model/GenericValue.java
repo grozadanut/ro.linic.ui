@@ -110,6 +110,10 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	public BigDecimal getBigDecimal(final Object key) {
 		return (BigDecimal) get(key);
 	}
+	
+	public Boolean getBoolean(final Object key) {
+		return get(key) instanceof Boolean ? (Boolean) get(key) : Boolean.parseBoolean(getString(key));
+	}
 
 	@Override
 	public Object put(final String key, final Object value) {
