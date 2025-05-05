@@ -36,14 +36,14 @@ public class RemoteSyncCamelRoute extends RouteBuilder implements CamelRouteBuil
 
 	@Override
 	public void configure() throws Exception {
-		from("direct:syncReceipts")
-		.bean(receiptLoader, "findClosed")
-		.bean(this, "routeReceipts")
-		.bean(this, "updateSyncLabel");
+		from("seda:syncReceipts?concurrentConsumers=1")
+	    .bean(receiptLoader, "findClosed")
+	    .bean(this, "routeReceipts")
+	    .bean(this, "updateSyncLabel");
 		
 		// run every 5 minutes: 5 * 60 * 1000 = 300000 ms
 		from("scheduler://global?delay=300000")
-		.to("direct:syncReceipts");
+		.to("seda:syncReceipts");
 	}
 	
 	public Collection<IStatus> routeReceipts(final Collection<CloudReceipt> receipts) {

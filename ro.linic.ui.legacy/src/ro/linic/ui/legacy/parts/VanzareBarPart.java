@@ -1064,7 +1064,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				if (closeReceiptDialog.open() == Window.OK) {
 					// also try to eager sync to remote if server is online, 
 					// so we don't wait 5 minutes for the next sync to trigger.
-					camel.get().createProducerTemplate().asyncSendBody("direct:syncReceipts", EMPTY_STRING);
+					camel.get().createProducerTemplate().asyncSendBody("seda:syncReceipts", EMPTY_STRING);
 					
 					accumulateDiscount();
 					loadReceipt(null, false);
