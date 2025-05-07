@@ -192,8 +192,9 @@ public class VanzareMoquiPart implements VanzareInterface
 		return operations.stream().flatMap(operation ->
 		{
 			Operatiune lastOwner = operation;
-			while (lastOwner.getOwnerOp() != null)
-				lastOwner = lastOwner.getOwnerOp();
+			if (!Product.DISCOUNT_CATEGORY.equalsIgnoreCase(operation.getCategorie())) // for discounts don't take the owner
+				while (lastOwner.getOwnerOp() != null)
+					lastOwner = lastOwner.getOwnerOp();
 
 			Operatiune lastChild = lastOwner.getChildOp();
 			final List<Operatiune> deletableOps = new ArrayList<Operatiune>();
