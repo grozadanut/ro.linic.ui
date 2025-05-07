@@ -532,6 +532,22 @@ public class BusinessDelegate
 		return result;
 	}
 	
+	public static InvocationResult addToBonCasa_V2(final String productBarcode, final BigDecimal cantitate, final BigDecimal overridePret,
+			final Long accDocId, final boolean negativeAllowed, final TransferType transferType, final String overrideName,
+			final Bundle bundle, final Logger log)
+	{
+		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);
+		final InvocationResult result = bean.addToBonCasa_V2(productBarcode, cantitate, overridePret, accDocId, negativeAllowed, transferType, overrideName);
+		return result;
+	}
+	
+	public static InvocationResult addOpToBonCasa(final Operatiune op, final Long ownerOpId, final Long bonId)
+	{
+		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);
+		final InvocationResult result = bean.addOpToBonCasa(op, ownerOpId, bonId);
+		return result;
+	}
+	
 	public static ImmutableList<AccountingDocument> unfinishedBonuriCasa()
 	{
 		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);

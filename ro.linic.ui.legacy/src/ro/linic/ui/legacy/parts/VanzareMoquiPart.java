@@ -4,6 +4,7 @@ import static ro.colibri.util.ListUtils.toImmutableList;
 import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.NumberUtils.isNumeric;
 import static ro.colibri.util.NumberUtils.parse;
+import static ro.colibri.util.NumberUtils.smallerThan;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.StringUtils.globalIsMatch;
@@ -17,6 +18,7 @@ import static ro.linic.ui.legacy.session.UIUtils.showException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -68,15 +70,22 @@ import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.Operatiune;
+import ro.colibri.entities.comercial.Operatiune.TipOp;
 import ro.colibri.entities.comercial.Operatiune.TransferType;
 import ro.colibri.entities.comercial.Partner;
+import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
+import ro.colibri.entities.comercial.Reducere;
 import ro.colibri.entities.comercial.mappings.ProductGestiuneMapping;
+import ro.colibri.entities.comercial.mappings.ProductReducereMapping;
 import ro.colibri.entities.user.User;
 import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.AdaugaPartnerDialog;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
@@ -96,6 +105,7 @@ import ro.linic.ui.legacy.tables.TreeOperationsNatTable;
 import ro.linic.ui.legacy.wizards.InchideBonWizard;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 import ro.linic.ui.legacy.wizards.InchideBonWizardDialog;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class VanzareMoquiPart implements VanzareInterface
 {
@@ -144,13 +154,16 @@ public class VanzareMoquiPart implements VanzareInterface
 	private Button stergeRandButton;
 	
 	private boolean partnersAreUpdating = false;
+	
+	private BigDecimal tvaPercentGlobal;
+	private BigDecimal tvaExtractDivisorGlobal;
 
 	@Inject private MPart part;
 	@Inject private UISynchronize sync;
 	@Inject private EPartService partService;
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
-	@Inject IEclipseContext ctx;
+	@Inject private IEclipseContext ctx;
 
 	public static VanzareMoquiPart newPartForBon(final EPartService partService, final AccountingDocument bon)
 	{
@@ -218,6 +231,10 @@ public class VanzareMoquiPart implements VanzareInterface
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
 			BusinessDelegate.unfinishedBonuriCasa().forEach(unfinishedBon -> newPartForBon(partService, unfinishedBon));
 		}
+		
+		tvaPercentGlobal = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
+				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
+		tvaExtractDivisorGlobal = tvaPercentGlobal.add(BigDecimal.ONE);
 
 		parent.setLayout(new GridLayout());
 		createTopBar(parent);
@@ -758,7 +775,7 @@ public class VanzareMoquiPart implements VanzareInterface
 		}
 		
 		final Long accDocId = Optional.ofNullable(bonCasa).map(AccountingDocument::getId).orElse(null);
-		final InvocationResult result = BusinessDelegate.addToBonCasa(barcode, cantitate, 
+		final InvocationResult result = BusinessDelegate.addToBonCasa_V2(barcode, cantitate, 
 				overridePrice, accDocId, negativeAllowed, transferType, overrideName, bundle, log);
 
 		if (!result.statusOk())
@@ -798,6 +815,10 @@ public class VanzareMoquiPart implements VanzareInterface
 			denumireText.setText(EMPTY_STRING);
 			cantitateText.setText("1"); //$NON-NLS-1$
 			denumireText.setFocus();
+			
+			if (product.isPresent())
+				addDiscountLine(product.get(), cantitate, overridePrice, 
+						((Operatiune) result.extra(InvocationResult.OPERATIONS_KEY)).getId());
 		}
 	}
 
@@ -974,5 +995,87 @@ public class VanzareMoquiPart implements VanzareInterface
 			return Optional.empty();
 		
 		return Optional.of(allPartners.get(index));
+	}
+	
+	private void addDiscountLine(final Product p, final BigDecimal quantity, final BigDecimal overridePrice, final Long ownerOpId) {
+		final Long bonId = Optional.ofNullable(bonCasa).map(AccountingDocument::getId).orElse(null);
+		final Long customerId = Optional.ofNullable(bonCasa).map(AccountingDocument::getPartner).map(Partner::getId).orElse(null);
+		final GenericValue disc = calculateDiscount(p, quantity, customerId, overridePrice);
+		
+		final BigDecimal discTotal = disc.getBigDecimal("discTotal");
+		
+		if (!NumberUtils.nullOrZero(discTotal)) {
+			final BigDecimal tvaPercent = p.deptTvaPercentage().orElse(tvaPercentGlobal);
+			final BigDecimal tvaExtractDivisor = Operatiune.tvaExtractDivisor(tvaPercent);
+			
+			final Operatiune discOp = new Operatiune();
+			discOp.setBarcode(Product.DISCOUNT_BARCODE);
+			discOp.setCantitate(disc.getBigDecimal("discQuantity"));
+			discOp.setCategorie(Product.DISCOUNT_CATEGORY);
+			discOp.setName(MessageFormat.format("{0}: {1}", Product.DISCOUNT_NAME, p.getName()));
+			discOp.setUom(Product.DISCOUNT_UOM);
+			discOp.setTipOp(TipOp.IESIRE);
+			discOp.setRpz(false);
+			discOp.setPretVanzareUnitarCuTVA(disc.getBigDecimal("discPerUom"));
+			Operatiune.updateAmounts(discOp, tvaPercent, tvaExtractDivisor);
+			
+			final InvocationResult result = BusinessDelegate.addOpToBonCasa(discOp, ownerOpId, bonId);
+			UIUtils.showResult(result);
+			
+			if (result.statusOk()) {
+				updateBonCasa(result.extra(InvocationResult.ACCT_DOC_KEY), true);
+				denumireText.setFocus();
+			}
+		}
+	}
+	
+	private GenericValue calculateDiscount(final Product p, final BigDecimal quantity, final Long customerId, final BigDecimal overridePrice) {
+		BigDecimal discPerUom = null;
+		
+		final BigDecimal moquiPrice = RestCaller.get("/rest/s1/mantle/products/"+p.getId()+"/price")
+				.internal(ctx.get(AuthenticationSession.class).authentication())
+				.addUrlParam("quantity", PresentationUtils.safeString(quantity, BigDecimal::toString))
+				.addUrlParam("customerPartyId", PresentationUtils.safeString(customerId, id -> id.toString()))
+				.get(GenericValue.class, t -> log.error(t.getMessage(), t))
+				.map(gv -> NumberUtils.parse(gv.getString("price")))
+				.orElse(null);
+		
+		if (!NumberUtils.nullOrZero(moquiPrice) && NumberUtils.nullOrZero(overridePrice))
+			discPerUom = NumberUtils.subtract(p.getPricePerUom(), moquiPrice);
+		
+		BigDecimal discQuantity = quantity.negate();
+		BigDecimal discTotal = NumberUtils.multiply(discPerUom, discQuantity);
+		
+		if (NumberUtils.nullOrZero(discTotal)) {
+			// legacy discount as fallback
+			final BigDecimal legacyDiscTotal = calculateLegacyDisc(p, quantity);
+			discPerUom = legacyDiscTotal.abs();
+			discQuantity = smallerThan(legacyDiscTotal, BigDecimal.ZERO) ? BigDecimal.ONE : BigDecimal.ONE.negate();
+			discTotal = legacyDiscTotal.abs();
+		}
+		
+		return GenericValue.of("Discount", "id",
+				"discPerUom", discPerUom, "discQuantity", discQuantity, "discTotal", discTotal);
+	}
+
+	private BigDecimal calculateLegacyDisc(final Product p, final BigDecimal quantity) {
+		final Operatiune originalOp = new Operatiune();
+		originalOp.setValoareAchizitieFaraTVA(NumberUtils.multiply(p.getLastBuyingPriceNoTva(), quantity)
+				.multiply(tvaExtractDivisorGlobal)
+				.setScale(2, RoundingMode.HALF_EVEN));
+		originalOp.setValoareVanzareFaraTVA(NumberUtils.multiply(p.getPricePerUom(), quantity).setScale(2, RoundingMode.HALF_EVEN));
+		originalOp.setCantitate(quantity);
+		originalOp.setGestiune(ClientSession.instance().getLoggedUser().getSelectedGestiune());
+		
+		final Reducere reducere = p.getReduceri().stream()
+				.map(ProductReducereMapping::getReducere)
+				.filter(red -> red.isApplicable(originalOp))
+				.reduce((red1, red2) -> red1.max(red2, originalOp))
+				.orElse(null);
+		
+		if (reducere == null)
+			return BigDecimal.ZERO;
+		
+		return reducere.calculateDiscount(originalOp);
 	}
 }
