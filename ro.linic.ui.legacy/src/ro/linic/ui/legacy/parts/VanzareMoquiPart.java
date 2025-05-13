@@ -1091,7 +1091,7 @@ public class VanzareMoquiPart implements VanzareInterface
 		
 		final BigDecimal moquiPrice = RestCaller.get("/rest/s1/mantle/products/"+p.getId()+"/price")
 				.internal(ctx.get(AuthenticationSession.class).authentication())
-				.addUrlParam("quantity", PresentationUtils.safeString(quantity, BigDecimal::toString))
+				.addUrlParam("quantity", PresentationUtils.safeString(quantity, BigDecimal::abs, BigDecimal::toString))
 				.addUrlParam("customerPartyId", PresentationUtils.safeString(customerId, id -> id.toString()))
 				.get(GenericValue.class, t -> log.error(t.getMessage(), t))
 				.map(gv -> NumberUtils.parse(gv.getString("price")))
