@@ -5,10 +5,13 @@ import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
 import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
+import java.awt.Desktop;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -28,6 +31,8 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -47,6 +52,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 
 import ro.linic.ui.base.services.Messages;
+import ro.linic.ui.base.services.preferences.PreferenceKey;
 import ro.linic.ui.base.services.ui.PercentagePopup;
 
 public class UIUtils {
@@ -338,5 +344,19 @@ public class UIUtils {
 				}
 			};
 		}
+	}
+
+	public static void openUrl(final String url) {
+		try {
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
+				Desktop.getDesktop().browse(new URI(url));
+		} catch (IOException | URISyntaxException e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	public static String moquiBaseUrl() {
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
+		return prefs.get(PreferenceKey.SERVER_BASE_URL, PreferenceKey.SERVER_BASE_URL_DEF);
 	}
 }

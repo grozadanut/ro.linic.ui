@@ -4,6 +4,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 
 import ro.linic.ui.base.Messages;
+import ro.linic.ui.base.services.preferences.PreferenceKey;
 
 public class SettingsPage extends FieldEditorPreferencePage {
 

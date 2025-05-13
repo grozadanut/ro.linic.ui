@@ -22,12 +22,10 @@ import java.util.function.Consumer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.runtime.ILog;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
 import ro.flexbiz.util.commons.ParameterStringBuilder;
-import ro.linic.ui.base.preferences.PreferenceKey;
 import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.http.HttpHeaders;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller.BaseConfigurer;
@@ -80,7 +78,7 @@ abstract class RestFluent implements BaseConfigurer {
 		        .connectTimeout(Duration.ofSeconds(30))
 		        .build();
 		
-		final String serverUrl = internal ? findServerBaseUrl() : "";
+		final String serverUrl = internal ? UIUtils.moquiBaseUrl() : "";
 		final Builder reqBuilder = HttpRequest.newBuilder()
 		.uri(URI.create(serverUrl + url + ParameterStringBuilder.getParamsString(urlParams)));
 		headers.entrySet().forEach(h -> reqBuilder.header(h.getKey(), h.getValue()));
@@ -117,11 +115,6 @@ abstract class RestFluent implements BaseConfigurer {
 			exceptionHandler.accept(e);
 			return Optional.empty();
 		}
-	}
-
-	private String findServerBaseUrl() {
-		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
-		return prefs.get(PreferenceKey.SERVER_BASE_URL, PreferenceKey.SERVER_BASE_URL_DEF);
 	}
 
 	protected abstract Builder buildMethod(Builder reqBuilder);

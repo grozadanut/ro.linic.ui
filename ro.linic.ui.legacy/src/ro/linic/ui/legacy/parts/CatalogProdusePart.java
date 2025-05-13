@@ -12,9 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -42,6 +39,8 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.LobImage;
 import ro.colibri.entities.comercial.Product;
@@ -56,6 +55,7 @@ import ro.linic.ui.legacy.dialogs.PrintOfertaDiscountDialog;
 import ro.linic.ui.legacy.dialogs.RaionDialog;
 import ro.linic.ui.legacy.dialogs.ReducereDialog;
 import ro.linic.ui.legacy.dialogs.RetetarDialog;
+import ro.linic.ui.legacy.expressions.BetaTester;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -64,6 +64,7 @@ import ro.linic.ui.legacy.session.Icons;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.AllProductsNatTable;
 import ro.linic.ui.legacy.tables.AllProductsNatTable.SourceLoc;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class CatalogProdusePart
 {
@@ -83,6 +84,7 @@ public class CatalogProdusePart
 	private Button sterge;
 	private Button printareOferta;
 	private Button printareCatalog;
+	private Button editInMoqui;
 	
 	private Combo category;
 	private Combo uiCategory;
@@ -90,6 +92,7 @@ public class CatalogProdusePart
 	private Text searchFilter;
 	private AllProductsNatTable table;
 	
+	@Inject private AuthenticationSession auth;
 	@Inject private MPart part;
 	@Inject private UISynchronize sync;
 	@Inject @OSGiBundle private Bundle bundle;
@@ -203,6 +206,13 @@ public class CatalogProdusePart
 		printareCatalog.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBannerFont(printareCatalog);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(printareCatalog);
+		
+		editInMoqui = new Button(container, SWT.PUSH);
+		editInMoqui.setText(Messages.CatalogProdusePart_EditInMoqui);
+		editInMoqui.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN));
+		editInMoqui.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBannerFont(editInMoqui);
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).exclude(!new BetaTester().evaluate(auth)).applyTo(editInMoqui);
 	}
 	
 	private void createSecondRow(final Composite parent)
@@ -420,6 +430,16 @@ public class CatalogProdusePart
 						log.error(ex);
 						showException(ex);
 					}
+			}
+		});
+		
+		editInMoqui.addSelectionListener(new SelectionAdapter()
+		{
+			@Override public void widgetSelected(final SelectionEvent e)
+			{
+				final String baseUrl = ro.linic.ui.base.services.util.UIUtils.moquiBaseUrl();
+				table.selection().forEach(p -> 
+				ro.linic.ui.base.services.util.UIUtils.openUrl(baseUrl+"/qapps/PopcAdmin/Catalog/Product/EditPrices?productId="+p.getId()));
 			}
 		});
 	}

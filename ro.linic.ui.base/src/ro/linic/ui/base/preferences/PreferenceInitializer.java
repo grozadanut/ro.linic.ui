@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.prefs.BackingStoreException;
 
+import ro.linic.ui.base.services.preferences.PreferenceKey;
+
 public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	private static final Logger log = Logger.getLogger(PreferenceInitializer.class.getName());
 
