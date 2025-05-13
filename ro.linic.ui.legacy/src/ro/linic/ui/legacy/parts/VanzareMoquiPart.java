@@ -23,7 +23,12 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -117,6 +122,9 @@ public class VanzareMoquiPart implements VanzareInterface
 	private static final String VERTICAL_SASH_STATE_PREFIX = "vanzari.vertical_sash"; //$NON-NLS-1$
 	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari.horizontal_sash"; //$NON-NLS-1$
 
+	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+	private ScheduledFuture<?> jobHandle;
+	
 	// MODEL
 	private AccountingDocument bonCasa;
 	private ImmutableList<Partner> allPartners;
@@ -179,6 +187,7 @@ public class VanzareMoquiPart implements VanzareInterface
 			return null;
 
 		vanzarePart.updateBonCasa(bon, true);
+		vanzarePart.selectComboPartner();
 		return vanzarePart;
 	}
 	
@@ -518,6 +527,7 @@ public class VanzareMoquiPart implements VanzareInterface
 				final ScheduleDialog dialog = new ScheduleDialog(scheduleButton.getShell(), sync, log, bundle, bonCasa);
 				if (dialog.open() == Window.OK)
 					updateBonCasa(dialog.reloadedDoc(), false);
+				selectComboPartner();
 			}
 		});
 
@@ -657,6 +667,29 @@ public class VanzareMoquiPart implements VanzareInterface
 				}
 			}
 		});
+		
+		partner.addModifyListener(e ->
+		{
+			if (!partnersAreUpdating)
+			{
+				if (jobHandle != null)
+					jobHandle.cancel(false);
+				
+				jobHandle = executorService.schedule(() ->
+				{
+					sync.syncExec(() ->
+					{
+						final Optional<Partner> newPartner = partner();
+						if (bonCasa == null || Objects.equals(newPartner.orElse(null), bonCasa.getPartner()))
+							return;
+						
+						bonCasa.setPartner(newPartner.orElse(null));
+						final InvocationResult result = BusinessDelegate.changeDocPartner(bonCasa.getId(), newPartner.map(Partner::getId), false);
+						UIUtils.showResult(result);
+					});
+				}, 200, TimeUnit.MILLISECONDS); // on average it takes 40-60ms between calls when scrolling
+			}
+		});
 	}
 	
 	private void loadData()
@@ -673,6 +706,19 @@ public class VanzareMoquiPart implements VanzareInterface
 		partner.setItems(allPartners.stream()
 				.map(Partner::getName)
 				.toArray(String[]::new));
+		partner.deselectAll();
+		if (bonCasa != null && bonCasa.getPartner() != null)
+			partner.select(allPartners.indexOf(bonCasa.getPartner()));
+		partnersAreUpdating = false;
+	}
+	
+	private void selectComboPartner() {
+		partnersAreUpdating = true;
+//		partner.setText(EMPTY_STRING);
+//		partner.clearSelection();
+		partner.deselectAll();
+		if (bonCasa != null && bonCasa.getPartner() != null)
+			partner.select(allPartners.indexOf(bonCasa.getPartner()));
 		partnersAreUpdating = false;
 	}
 	
@@ -804,6 +850,7 @@ public class VanzareMoquiPart implements VanzareInterface
 						result.toTextDescription());
 		} else
 		{
+			final Optional<Partner> newPartner = partner();
 			// everything was okay;
 			// - reload product and bonCasa
 			// - clear denumire and cantitate input
@@ -816,6 +863,11 @@ public class VanzareMoquiPart implements VanzareInterface
 			denumireText.setText(EMPTY_STRING);
 			cantitateText.setText("1"); //$NON-NLS-1$
 			denumireText.setFocus();
+			
+			if (newPartner.isPresent()) {
+				bonCasa.setPartner(newPartner.orElse(null));
+				UIUtils.showResult(BusinessDelegate.changeDocPartner(bonCasa.getId(), newPartner.map(Partner::getId), false));
+			}
 			
 			if (product.isPresent())
 				addDiscountLine(product.get(), cantitate, overridePrice, 
@@ -882,6 +934,8 @@ public class VanzareMoquiPart implements VanzareInterface
 			reloadProduct(null, false);
 		else
 			productsToReload.forEach(p -> reloadProduct(p, false));
+		
+		selectComboPartner();
 	}
 	
 	private void transferOperations(final ImmutableList<Operatiune> operations)
@@ -945,6 +999,8 @@ public class VanzareMoquiPart implements VanzareInterface
 				partner.deselectAll();
 				reloadPartners();
 			}
+			else
+				selectComboPartner(); // user just changes the invoice partner and doesn't close the receipt
 			denumireText.setFocus();
 		}
 	}
