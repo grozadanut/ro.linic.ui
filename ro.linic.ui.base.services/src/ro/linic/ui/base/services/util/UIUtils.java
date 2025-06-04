@@ -50,6 +50,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 
 import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.preferences.PreferenceKey;
@@ -358,5 +360,17 @@ public class UIUtils {
 	public static String moquiBaseUrl() {
 		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
 		return prefs.get(PreferenceKey.SERVER_BASE_URL, PreferenceKey.SERVER_BASE_URL_DEF);
+	}
+	
+	public static String bundleNicenames() {
+		final StringBuilder bundleNicenames = new StringBuilder();
+		for (final Bundle bundle : FrameworkUtil.getBundle(UIUtils.class).getBundleContext().getBundles()) {
+			final Version v = bundle.getVersion();
+			final String bundleNicename = String.format("%s %d.%d.%d", bundle.getSymbolicName(),
+					v.getMajor(), v.getMinor(), v.getMicro());
+			if (bundleNicename.startsWith("ro.linic.ui"))
+				bundleNicenames.append(bundleNicename).append(NEWLINE);
+		}
+		return bundleNicenames.toString();
 	}
 }

@@ -34,9 +34,11 @@ import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.entities.comercial.Partner;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.ServerConstants.JMSMessageType;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.base.dialogs.InfoDialog;
+import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.legacy.components.CommandHandler;
 import ro.linic.ui.legacy.components.JMSMessageHandler;
 import ro.linic.ui.legacy.parts.VerifyOperationsPart;
@@ -145,8 +147,11 @@ public class JMSGeneralTopicHandler {
 			final Path installPath = Paths.get(Platform.getInstallLocation().getURL().toURI());
 			final Path logPath = Paths.get(installPath.toString(), "workspace-"+ClientSession.instance().getLoggedUser().getId(),
 					".metadata", ".log");
+			final String logData = Files.readString(logPath);
+			final String bundleNicenames = UIUtils.bundleNicenames();
+			
 			MessagingService.instance().sendMsg(GENERAL_TOPIC_REMOTE_JNDI, JMSMSGTYPE_LOG_RESPONSE,
-					ImmutableMap.of(JMS_USERS_KEY, replyTo), Files.readString(logPath));
+					ImmutableMap.of(JMS_USERS_KEY, replyTo), MessageFormat.format("{0}{1}{1}{1}{2}", bundleNicenames, PresentationUtils.NEWLINE, logData));
 		}
 	}
 	
