@@ -195,10 +195,13 @@ public class MessagingService
 	}
 	
 	public void sendMsg(final String topicJndi, final JMSMessageType messageType, final ImmutableMap<String, String> properties,
-			final Message message)
-	{
-		try
-		{
+			final Message message) {
+		sendMsg(topicJndi, messageType.toString(), properties, message);
+	}
+	
+	public void sendMsg(final String topicJndi, final String messageType, final ImmutableMap<String, String> properties,
+			final Message message) {
+		try {
 			final Properties jndiProps = new Properties();
 			jndiProps.put(Context.INITIAL_CONTEXT_FACTORY, ClientSession.INITIAL_CONTEXT_FACTORY_VALUE);
 			jndiProps.put(Context.PROVIDER_URL, ClientSession.PROVIDER_URL_VALUE);
@@ -208,31 +211,31 @@ public class MessagingService
 			final Topic topic = (Topic) ic.lookup(topicJndi);
 			ic.close();
 			final MessageProducer publisher = jmsSession().get().createProducer(topic);
-			message.setIntProperty(COMPANY_ID_KEY, ClientSession.instance().getLoggedUser().getSelectedCompany().getId());
-			message.setStringProperty(JMS_MESSAGE_TYPE_KEY, messageType.toString());
+			message.setIntProperty(COMPANY_ID_KEY,
+					ClientSession.instance().getLoggedUser().getSelectedCompany().getId());
+			message.setStringProperty(JMS_MESSAGE_TYPE_KEY, messageType);
 			for (final Entry<String, String> prop : properties.entrySet())
 				message.setStringProperty(prop.getKey(), prop.getValue());
 			publisher.send(message);
 			publisher.close();
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 			showException(e);
-		} 
+		}
 	}
-	
-	public void sendMsg(final String topicJndi, final JMSMessageType messageType, final ImmutableMap<String, String> properties,
-			final Serializable objectToSend)
-	{
-		try
-		{
+
+	public void sendMsg(final String topicJndi, final JMSMessageType messageType,
+			final ImmutableMap<String, String> properties, final Serializable objectToSend) {
+		sendMsg(topicJndi, messageType.toString(), properties, objectToSend);
+	}
+
+	public void sendMsg(final String topicJndi, final String messageType, final ImmutableMap<String, String> properties,
+			final Serializable objectToSend) {
+		try {
 			sendMsg(topicJndi, messageType, properties, jmsSession().get().createObjectMessage(objectToSend));
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 			showException(e);
-		} 
+		}
 	}
 }

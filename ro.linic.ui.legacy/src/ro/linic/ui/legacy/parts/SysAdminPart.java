@@ -4,6 +4,8 @@ import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.LocalDateUtils.POSTGRES_MAX;
 import static ro.colibri.util.LocalDateUtils.POSTGRES_MIN;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
+import static ro.colibri.util.ServerConstants.GENERAL_TOPIC_REMOTE_JNDI;
+import static ro.colibri.util.ServerConstants.JMS_USERS_KEY;
 import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
@@ -18,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -47,8 +46,11 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.DocumentWithDiscount;
 import ro.colibri.entities.comercial.Operatiune;
@@ -58,6 +60,7 @@ import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.legacy.JMSGeneralTopicHandler;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.PrintBarcodeDialog;
 import ro.linic.ui.legacy.dialogs.ReplaceUserDialog;
@@ -65,6 +68,8 @@ import ro.linic.ui.legacy.inport.ExcelImportTransformer;
 import ro.linic.ui.legacy.inport.ImportParseException;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.legacy.session.MessagingService;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.PersistedPropNatTable;
 
@@ -84,6 +89,7 @@ public class SysAdminPart
 	private Button verifyRulaje;
 	private Button printBarcodes;
 	private Button updateFurnizori;
+	private Button requestLogs;
 	private Button refresh;
 	private PersistedPropNatTable persistedPropTable;
 	
@@ -154,6 +160,12 @@ public class SysAdminPart
 		updateFurnizori.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		updateFurnizori.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setFont(updateFurnizori);
+		
+		requestLogs = new Button(container, SWT.PUSH);
+		requestLogs.setText("Get user Logs");
+		requestLogs.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
+		requestLogs.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setFont(requestLogs);
 		
 		users = new List(container, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL);
 		users.setItems(allUsers.stream().map(User::displayName).toArray(String[]::new));
@@ -329,6 +341,15 @@ public class SysAdminPart
 				if (result.statusOk())
 					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Succes!",
 							MessageFormat.format("Au fost actualizate {0} produse.", result.extraLong(InvocationResult.UPDATE_COUNT_KEY)));
+			}
+		});
+		
+		requestLogs.addSelectionListener(new SelectionAdapter() {
+			@Override public void widgetSelected(final SelectionEvent e) {
+				if (selectedUser().isPresent())
+					MessagingService.instance().sendMsg(GENERAL_TOPIC_REMOTE_JNDI, JMSGeneralTopicHandler.JMSMSGTYPE_LOG_REQUEST, 
+							ImmutableMap.of(JMS_USERS_KEY, selectedUser().get().getId()+"",
+									JMSGeneralTopicHandler.REPLY_TO, ClientSession.instance().getLoggedUser().getId()+""), "");
 			}
 		});
 		

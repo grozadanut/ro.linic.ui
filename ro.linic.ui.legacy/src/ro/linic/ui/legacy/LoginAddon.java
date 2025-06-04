@@ -119,7 +119,11 @@ public class LoginAddon {
 		// force authentication early
 		workbenchContext.get(AuthenticationSession.class).authentication();
 		// after successful login
-		initSQLite(workbenchContext);
+		try {
+			initSQLite(workbenchContext);
+		} catch (final Exception e) {
+			log.error(e);
+		}
 //		SQLiteJDBC.instance(bundle, log).init();
 //		SQLiteJDBC.instance(bundle, log).saveLocalToServer();
 		workbenchContext.get(LinicWorkbench.class).switchWorkspace("workspace-"+ClientSession.instance().getLoggedUser().getId());
