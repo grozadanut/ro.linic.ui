@@ -19,7 +19,8 @@ public class AboutHandler {
 			final Version v = bundle.getVersion();
 			final String bundleNicename = String.format("%s %d.%d.%d", bundle.getSymbolicName(),
 					v.getMajor(), v.getMinor(), v.getMicro());
-			bundleNicenames.append(bundleNicename).append(NEWLINE);
+			if (bundleNicename.startsWith("ro.linic.ui"))
+				bundleNicenames.append(bundleNicename).append(NEWLINE);
 		}
 		
 		InfoDialog.open(shell, Messages.About, bundleNicenames.toString());
