@@ -68,6 +68,7 @@ import ro.colibri.entities.comercial.PontajZilnic.PontajDayType;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.NumberUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.colibri.wrappers.PontajLine;
 import ro.colibri.wrappers.RulajPartener;
@@ -871,9 +872,8 @@ public class JasperReportManager
 		parameters.put("gestiune", safeString(factura.getGestiune(), Gestiune::getName));
 		parameters.put("gestiuneShort", safeString(factura.getGestiune(), Gestiune::getImportName));
 		parameters.put("delegatDetails", buildDetails(factura.getPartner().getDelegat(), factura.getDataDoc()));
-		parameters.put("intocmit", MessageFormat.format("TERMEN DE PLATA {2} ZILE; INTOCMIT DE {0}; CNP {1}", 
+		parameters.put("intocmit", MessageFormat.format("TERMEN DE PLATA {1} ZILE; INTOCMIT DE {0}", 
 				safeString(factura.getOperator(), User::getName),
-				safeString(factura.getOperator(), User::getCnp),
 				safeString(factura.getPartner(), Partner::getTermenPlata, String::valueOf, AccountingDocument.DEFAULT_TERMEN_PLATA.toString())));
 		parameters.put("totalFaraTVA", factura.getVanzareTotal().subtract(factura.getVanzareTotalTva()));
 		parameters.put("totalTVA", factura.getVanzareTotalTva());
@@ -1007,6 +1007,12 @@ public class JasperReportManager
 		final BigDecimal tvaPercent = parse(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
 				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
 		final String tvaReadable = Operatiune.tvaReadable(tvaPercent);
+		
+		final Optional<BigDecimal> totalDiscount = reloadedDoc.getOperatiuni().stream()
+				.filter(op -> Objects.equals(op.getCategorie(), Product.DISCOUNT_CATEGORY))
+				.filter(op -> NumberUtils.smallerThan(op.getCantitate(), BigDecimal.ZERO))
+				.map(op -> NumberUtils.add(op.getValoareVanzareFaraTVA(), op.getValoareVanzareTVA()).abs())
+				.reduce(BigDecimal::add);
 
 		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(reloadedDoc));
 		final Map<String, Object> parameters = new HashMap<>();
@@ -1018,6 +1024,7 @@ public class JasperReportManager
 		parameters.put("tvaReadable", tvaReadable);
 		parameters.put("gestiune", safeString(reloadedDoc.getGestiune(), Gestiune::getName));
 		parameters.put("total", reloadedDoc.getVanzareTotal());
+		parameters.put("totalDiscount", totalDiscount.orElse(null));
 		
 		return JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource);
 	}
