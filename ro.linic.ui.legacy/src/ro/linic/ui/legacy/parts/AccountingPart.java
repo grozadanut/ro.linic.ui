@@ -24,9 +24,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -58,6 +56,9 @@ import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.entities.comercial.AccountingDocument;
@@ -120,12 +121,15 @@ public class AccountingPart implements IMouseAction
 	private ImmutableList<Gestiune> allGestiuni;
 	private ImmutableList<Partner> allPartners;
 	
+	private Job contaJob;
+	private Job anafJob;
+	
 	@Inject private MPart part;
 	@Inject private EPartService partService;
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private UISynchronize sync;
 	@Inject private Logger log;
-	
+
 	@PostConstruct
 	public void createComposite(final Composite parent)
 	{
@@ -288,6 +292,11 @@ public class AccountingPart implements IMouseAction
 		printareDocs.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(printareDocs);
 		GridDataFactory.fillDefaults().grab(false, true).applyTo(printareDocs);
+	}
+	
+	@PreDestroy
+	public void preDestroy() {
+		cancelLoadJob();
 	}
 	
 	@PersistState
@@ -480,9 +489,10 @@ public class AccountingPart implements IMouseAction
 	
 	private void loadData()
 	{
+		cancelLoadJob();
 		execute.setEnabled(false);
-
-		BusinessDelegate.contaDocs(new AsyncLoadData<AccountingDocument>()
+		
+		contaJob = BusinessDelegate.contaDocs(new AsyncLoadData<AccountingDocument>()
 		{
 			@Override public void success(final ImmutableList<AccountingDocument> data)
 			{
@@ -505,7 +515,7 @@ public class AccountingPart implements IMouseAction
 		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selectedPartner().map(Partner::getId).orElse(null),
 		extractLocalDate(from), extractLocalDate(to), log);
 		
-		AnafReporter.findInvoicesBetween(new AsyncLoadData<Invoice<?>>()
+		anafJob = AnafReporter.findInvoicesBetween(new AsyncLoadData<Invoice<?>>()
 		{
 			@Override public void success(final ImmutableList<Invoice<?>> data)
 			{
@@ -517,6 +527,13 @@ public class AccountingPart implements IMouseAction
 				MessageDialog.openError(execute.getShell(), Messages.AccountingPart_ErrorFilteringAnaf, details);
 			}
 		}, sync, log, extractLocalDate(from), extractLocalDate(to));
+	}
+	
+	private void cancelLoadJob() {
+		if (contaJob != null)
+			contaJob.cancel();
+		if (anafJob != null)
+			anafJob.cancel();
 	}
 	
 	@Persist
