@@ -11,6 +11,7 @@ import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
+import static ro.linic.ui.legacy.session.UIUtils.setFont;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
@@ -196,6 +197,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private Button inchideCasaButton;
 	private Button inchideFacturaBCButton;
 	private Button inchideCardButton;
+	private Button casaActivaButton;
 
 //	private Button casaActivaButton;
 	private UIBonDeschisNatTable bonDeschisTable;
@@ -427,6 +429,13 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		UIUtils.setFont(inchideCardButton);
 		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.CENTER)
 				.hint(InchideBonWizard.BUTTON_WIDTH, InchideBonWizard.BUTTON_HEIGHT / 2).applyTo(inchideCardButton);
+		
+		casaActivaButton = new Button(buttonsContainer, SWT.CHECK);
+		casaActivaButton.setText(Messages.VanzarePart_ECRActive);
+		casaActivaButton.setSelection(true);
+		casaActivaButton.setEnabled(ClientSession.instance().hasPermission(Permissions.CLOSE_WITHOUT_CASA));
+		setFont(casaActivaButton);
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(casaActivaButton);
 
 		leftContainer.setTabList(new Control[] { cantitateText });
 		container.setTabList(new Control[] { leftContainer });
@@ -1048,7 +1057,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	@Override
 	public void closeBon(final TipInchidere tipInchidere) {
 		if (bonCasa != null) {
-			if (tipInchidere.equals(TipInchidere.PRIN_CASA) || tipInchidere.equals(TipInchidere.PRIN_CARD)) {
+			if (casaActivaButton.getSelection() &&
+					(tipInchidere.equals(TipInchidere.PRIN_CASA) || tipInchidere.equals(TipInchidere.PRIN_CARD))) {
 				final PaymentType paymentType = switch (tipInchidere) {
 				case PRIN_CASA -> PaymentType.CASH;
 				case PRIN_CARD -> PaymentType.CARD;
@@ -1075,10 +1085,14 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				
 				final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 						Display.getCurrent().getActiveShell(),
-						new InchideBonWizard(BusinessDelegate.reloadDoc(bonCasa.getId()), true, ctx, bundle, log,
+						new InchideBonWizard(BusinessDelegate.reloadDoc(bonCasa.getId()), casaActivaButton.getSelection(), ctx, bundle, log,
 								tipInchidere));
 
 				if (wizardDialog.open() == Window.OK) {
+					if (!casaActivaButton.getSelection() &&
+							(tipInchidere.equals(TipInchidere.PRIN_CASA) || tipInchidere.equals(TipInchidere.PRIN_CARD)))
+						accumulateDiscount();
+					
 					receiptUpdater.closeReceipt(bonCasa.getId());
 					loadReceipt(null, false);
 					selectPartner(Optional.empty());
@@ -1177,7 +1191,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			
 			if (!line.synced()) {
 				final Long accDocId = bonCasa.synced() ? bonCasa.getId() : null;
-				final InvocationResult result = BusinessDelegate.addToBonCasa(line.getSku(), line.getQuantity(), null, accDocId,
+				final InvocationResult result = BusinessDelegate.addToBonCasa(line.getSku(), line.getQuantity(), line.getPrice(), accDocId,
 						true, TransferType.FARA_TRANSFER, null, bundle, log);
 				
 				if (result.statusCanceled())
