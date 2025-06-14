@@ -185,10 +185,20 @@ public class VanzariIncarcaDocDialog extends Dialog
 						.map(AccountingDocument::getTotal)
 						.reduce(BigDecimal::add)
 						.orElse(BigDecimal.ZERO);
-				final BigDecimal totalPrinCasa = total.subtract(totalFacturi).subtract(totalAvize);
+				final BigDecimal totalPrinCasa = data.stream()
+						.filter(accDoc -> globalIsMatch(accDoc.getDoc(), AccountingDocument.BON_CASA_NAME, TextFilterMethod.EQUALS))
+						.map(AccountingDocument::getTotal)
+						.reduce(BigDecimal::add)
+						.orElse(BigDecimal.ZERO);
+				final BigDecimal totalProcese = data.stream()
+						.filter(accDoc -> globalIsMatch(accDoc.getDoc(), AccountingDocument.PROCES_VERBAL_NAME, TextFilterMethod.EQUALS))
+						.map(AccountingDocument::getTotal)
+						.reduce(BigDecimal::add)
+						.orElse(BigDecimal.ZERO);
 				
 				infoArea.setText(MessageFormat.format(Messages.VanzariIncarcaDocDialog_Info, NEWLINE, displayLocalDate(LocalDate.now()),
-						displayBigDecimal(total), displayBigDecimal(totalPrinCasa), displayBigDecimal(totalFacturi), displayBigDecimal(totalAvize)));
+						displayBigDecimal(total), displayBigDecimal(totalPrinCasa), displayBigDecimal(totalFacturi), displayBigDecimal(totalAvize),
+						displayBigDecimal(totalProcese)));
 			}
 
 			@Override public void error(final String details)
