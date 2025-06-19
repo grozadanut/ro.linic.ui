@@ -20,6 +20,8 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -54,7 +56,7 @@ import ro.linic.ui.pos.base.services.ECRService;
 
 public class VanzariIncarcaDocDialog extends Dialog
 {
-	private static final int SHELL_HEIGHT = 150;
+	private static final int SHELL_HEIGHT = 160;
 	private static final int BUTTON_WIDTH = 100;
 	private static final int BUTTON_HEIGHT = 100;
 	private static final int TABLE_WIDTH = 520;
@@ -109,6 +111,7 @@ public class VanzariIncarcaDocDialog extends Dialog
 		infoArea = new Text(container, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY);
 		final GridData infoAreaGD = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		infoAreaGD.heightHint = BUTTON_HEIGHT;
+		infoAreaGD.minimumWidth = 120;
 		infoArea.setLayoutData(infoAreaGD);
 		
 		docsTable = new AccDocsNatTable();
@@ -125,17 +128,22 @@ public class VanzariIncarcaDocDialog extends Dialog
 		incarca.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		setFont(incarca);
 		
-		printare = new Button(container, SWT.PUSH | SWT.WRAP);
+		final Composite printContainer = new Composite(container, SWT.NONE);
+		printContainer.setLayout(GridLayoutFactory.swtDefaults().spacing(0, 0).margins(0, 5).create());
+		printContainer.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
+		GridDataFactory.swtDefaults().align(SWT.LEFT, SWT.TOP).applyTo(printContainer);
+		
+		printare = new Button(printContainer, SWT.PUSH | SWT.WRAP);
 		printare.setText(Messages.VanzariIncarcaDocDialog_Print);
-		final GridData printareGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
+		final GridData printareGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT*2/3);
 		printare.setLayoutData(printareGD);
 		printare.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		printare.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		setFont(printare);
 		
-		printareFaraDisc = new Button(container, SWT.PUSH | SWT.WRAP);
+		printareFaraDisc = new Button(printContainer, SWT.PUSH | SWT.WRAP);
 		printareFaraDisc.setText(Messages.VanzariIncarcaDocDialog_PrintDocNoDisc);
-		final GridData printareFaraDiscGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT);
+		final GridData printareFaraDiscGD = new GridData(BUTTON_WIDTH, BUTTON_HEIGHT/3);
 		printareFaraDisc.setLayoutData(printareFaraDiscGD);
 		printareFaraDisc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		printareFaraDisc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
