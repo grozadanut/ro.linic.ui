@@ -7,6 +7,7 @@ import static ro.linic.ui.legacy.session.UIUtils.saveState;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -326,6 +327,7 @@ public class SupplierOrderPart
 				.internal(authSession.authentication())
 				.addUrlParam("organizationPartyId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
 				.async(t -> UIUtils.showException(t, sync))
+				.thenApply(ps -> ps.stream().filter(gv -> Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
 				.thenAccept(productSuppliers -> productsHolder.addOrUpdate(productSuppliers, "productId", Product.ID_FIELD,
 						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto")));
 		

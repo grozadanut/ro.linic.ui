@@ -13,7 +13,8 @@ public interface GenericDataHolder extends DataHolder<GenericValue> {
 	 * if the map is empty or null takes all keys from target and maps them to the same name in source.
 	 * 
 	 * @param targetData target data to add to this holder
-	 * @param primaryKey key by which it will match the source and target data
+	 * @param targetPrimaryKey key by which it will match the target data
+	 * @param sourcePrimaryKey key by which it will match the source data
 	 * @param targetToHolderKey maps the key in the target data with this key in the holder data
 	 */
 	void addOrUpdate(List<GenericValue> targetData, String targetPrimaryKey, String sourcePrimaryKey, Map<String, String> targetToHolderKey);
