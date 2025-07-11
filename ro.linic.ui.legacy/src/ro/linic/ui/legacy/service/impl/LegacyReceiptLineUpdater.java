@@ -114,7 +114,7 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
     }
 	
 	@Override
-	public IStatus update(final ReceiptLine m) {
+	public IStatus update(final long id, final ReceiptLine m) {
 		if (m == null || m.getId() == null)
 			return ValidationStatus.OK_STATUS;
 		
@@ -125,6 +125,7 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
 		
 		final StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE "+ReceiptLine.class.getSimpleName()+" SET ")
+		.append(LegacyReceiptLine.ID_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(LegacyReceiptLine.RECEIPT_ID_FIELD+" = ?").append(LIST_SEPARATOR)
 		.append(LegacyReceiptLine.SYNCED_FIELD+" = ?").append(NEWLINE)
 		.append("WHERE").append(NEWLINE)
@@ -132,10 +133,11 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
 		
 		dbLock.writeLock().lock();
         try (PreparedStatement pstmt = localDatabase.getConnection(dbName).prepareStatement(sb.toString())) {
-            pstmt.setLong(1, model.getReceiptId());
-            pstmt.setBoolean(2, model.synced());
+        	pstmt.setLong(1, model.getId());
+            pstmt.setLong(2, model.getReceiptId());
+            pstmt.setBoolean(3, model.synced());
             // WHERE
-            pstmt.setLong(3, model.getId());
+            pstmt.setLong(4, id);
             pstmt.executeUpdate();
             return ValidationStatus.OK_STATUS;
         } catch (final SQLException e) {

@@ -15,7 +15,7 @@ public interface ReceiptLineUpdater {
 	/**
 	 * Does NOT update quantity. Use updateQuantity for that. 
 	 */
-	IStatus update(ReceiptLine model);
+	IStatus update(long id, ReceiptLine model);
 	/**
 	 * Also updates Product.quantity
 	 */

@@ -101,7 +101,7 @@ public class LocalReceiptLineUpdater implements ReceiptLineUpdater {
     }
 	
 	@Override
-	public IStatus update(final ReceiptLine model) {
+	public IStatus update(final long id, final ReceiptLine model) {
 		return ValidationStatus.error("Not implemented!");
 	}
 	

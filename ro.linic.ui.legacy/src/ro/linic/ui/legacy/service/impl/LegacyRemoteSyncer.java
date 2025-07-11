@@ -87,7 +87,7 @@ public class LegacyRemoteSyncer implements RemoteSyncer {
 			receiptUpdater.update(receipt.getId(), receipt);
 			receipt.getLines().stream().map(LegacyReceiptLine.class::cast).forEach(line -> {
 				line.setSynced(true);
-				receiptLineUpdater.update(line);
+				receiptLineUpdater.update(line.getId(), line);
 			});
 		});
 		

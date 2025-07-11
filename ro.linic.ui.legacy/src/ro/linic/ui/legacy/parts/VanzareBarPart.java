@@ -122,6 +122,7 @@ import ro.linic.ui.pos.base.services.ReceiptLineUpdater;
 import ro.linic.ui.pos.base.services.ReceiptLoader;
 import ro.linic.ui.pos.base.services.ReceiptUpdater;
 import ro.linic.ui.pos.cloud.model.CloudReceipt;
+import ro.linic.ui.pos.cloud.model.CloudReceiptLine;
 
 public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	public static final String PART_ID = "linic_gest_client.part.vanzari_bar"; //$NON-NLS-1$
@@ -1039,6 +1040,18 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	}
 
 	private void deleteOperations(final ImmutableList<ReceiptLine> lines) {
+		// delete remote lines if synced
+		final InvocationResult remoteResult = BusinessDelegate
+				.deleteOperations(lines.stream()
+						.map(CloudReceiptLine.class::cast)
+						.filter(CloudReceiptLine::synced)
+						.map(CloudReceiptLine::getId)
+						.collect(toImmutableSet()));
+		if (!remoteResult.statusOk()) {
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), remoteResult.toTextCodes(), remoteResult.toTextDescription());
+			return;
+		}
+		
 		final ImmutableSet<Long> lineIds = lines.stream().map(ReceiptLine::getId).collect(toImmutableSet());
 
 		final IStatus result = receiptLineUpdater.delete(lineIds);
@@ -1207,10 +1220,12 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				if (!receiptUpdateResult.isOK())
 					throw new RuntimeException(receiptUpdateResult.getMessage());
 				
+				final long oldLineId = line.getId();
+				line.setId(accDoc.getOperatiuni_Stream().mapToLong(Operatiune::getId).max().getAsLong());
 				line.setSynced(true);
 				line.setReceiptId(bonCasa.getId());
 				
-				final IStatus lineUpdateResult = receiptLineUpdater.update(line);
+				final IStatus lineUpdateResult = receiptLineUpdater.update(oldLineId, line);
 				if (!lineUpdateResult.isOK())
 					throw new RuntimeException(lineUpdateResult.getMessage());
 			}
