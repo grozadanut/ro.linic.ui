@@ -14,7 +14,9 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -93,24 +95,10 @@ public class LoginAddon {
 	{
 		Locale.setDefault(Locale.Category.FORMAT, Locale.ENGLISH);
 		final Logger log = (Logger) workbenchContext.get(Logger.class.getName());
-		try
-		{
-			final String forcedPlugin = RestCaller.get("https://colibriserver.go.ro/repository/force-update.txt")
-				.asyncRaw(BodyHandlers.ofString())
-				.thenApply(HttpUtils::checkOk)
-				.thenApply(HttpResponse::body)
-				.get();
-			
-			final Version minForcedVersion = Version.parseVersion(forcedPlugin.split(PresentationUtils.SPACE)[1]);
-			final Version installedVersion = bundle.getVersion();
-
-			if (installedVersion.compareTo(minForcedVersion) < 0) {
-				log.info("current version: {0}, min version: {1}; forcing update!", installedVersion, minForcedVersion);
+		try{
+			if (shouldForceUpdate())
 				update(workbenchContext, prefs, sync);
-			}
-		}
-		catch (final Exception e)
-		{
+		} catch (final Exception e) {
 			log.error(e);
 		}
 		
@@ -140,6 +128,39 @@ public class LoginAddon {
 				new ScopedPreferenceStore(ConfigurationScope.INSTANCE, bundle.getSymbolicName()));
 	}
 	
+	private boolean shouldForceUpdate()
+			throws InterruptedException, ExecutionException {
+		final String[] forcedPlugins = RestCaller.get(System.getProperty("forceUpdateUrl", "https://p2.flexbiz.ro/force-update.txt"))
+				.asyncRaw(BodyHandlers.ofString())
+				.thenApply(HttpUtils::checkOk)
+				.thenApply(HttpResponse::body)
+				.thenApply(lines -> lines.split(NEWLINE))
+				.get();
+
+		for (final String forcedPlugin : forcedPlugins) {
+			final String pluginName = forcedPlugin.split(PresentationUtils.SPACE)[0];
+			final String pluginVersion = forcedPlugin.split(PresentationUtils.SPACE)[1];
+			final Version minForcedVersion = Version.parseVersion(pluginVersion);
+			
+			final String installedBundles = ro.linic.ui.base.services.util.UIUtils.bundleNicenames();
+			
+			for (final String installedBundle : installedBundles.split(NEWLINE)) {
+				final String installedBundleName = installedBundle.split(PresentationUtils.SPACE)[0];
+				final Version installedBundleVersion = Version.parseVersion(installedBundle.split(PresentationUtils.SPACE)[1]);
+				
+				if (pluginName.equalsIgnoreCase(installedBundleName)) {
+					if (installedBundleVersion.compareTo(minForcedVersion) < 0) {
+						log.info(MessageFormat.format("Bundle: {0} current version: {1}, min version: {2}; forcing update!",
+								installedBundleName, installedBundleVersion, minForcedVersion));
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+
 	private void logVersion(final Logger log)
 	{
 		final Bundle bundle = FrameworkUtil.getBundle(getClass());
