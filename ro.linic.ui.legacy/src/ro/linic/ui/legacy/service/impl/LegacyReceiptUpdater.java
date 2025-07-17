@@ -69,7 +69,8 @@ public class LegacyReceiptUpdater implements ReceiptUpdater {
 	}
 	
 	private long nextId(final String dbName) throws SQLException {
-        final String sql = "SELECT MAX("+CloudReceipt.ID_FIELD+") FROM "+Receipt.class.getSimpleName();
+        final String sql = "SELECT MAX("+CloudReceipt.ID_FIELD+") FROM "+Receipt.class.getSimpleName() +
+        		" WHERE "+CloudReceipt.ID_FIELD+" < 10000";
         long nextId = 1;
         
         try (Statement stmt  = localDatabase.getConnection(dbName).createStatement();

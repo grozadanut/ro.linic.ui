@@ -101,7 +101,8 @@ public class LegacyReceiptLineUpdater implements ReceiptLineUpdater {
 	}
 	
 	private long nextId(final String dbName) throws SQLException {
-        final String sql = "SELECT MAX("+ReceiptLine.ID_FIELD+") FROM "+ReceiptLine.class.getSimpleName();
+        final String sql = "SELECT MAX("+ReceiptLine.ID_FIELD+") FROM "+ReceiptLine.class.getSimpleName() +
+        		" WHERE "+ReceiptLine.ID_FIELD+" < 100000";
         long nextId = 1;
         
         try (Statement stmt  = localDatabase.getConnection(dbName).createStatement();
