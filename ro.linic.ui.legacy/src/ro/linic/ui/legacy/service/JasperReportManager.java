@@ -349,6 +349,12 @@ public class JasperReportManager
 		final URL url = FileLocator.find(bundle, new Path("resources/oferta.jasper"));
 		final URL fileUrl = FileLocator.toFileURL(url);
 		final InvocationResult firmaDetails = BusinessDelegate.firmaDetails();
+		
+		final Optional<BigDecimal> totalDiscount = bonCasa.getOperatiuni().stream()
+				.filter(op -> Objects.equals(op.getCategorie(), Product.DISCOUNT_CATEGORY))
+				.filter(op -> NumberUtils.smallerThan(op.getCantitate(), BigDecimal.ZERO))
+				.map(op -> NumberUtils.add(op.getValoareVanzareFaraTVA(), op.getValoareVanzareTVA()).abs())
+				.reduce(BigDecimal::add);
 
 		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(bonCasa));
 		final Map<String, Object> parameters = new HashMap<>();
@@ -358,6 +364,7 @@ public class JasperReportManager
 		parameters.put(PersistedProp.FIRMA_ADDRESS_KEY, firmaDetails.extraString(PersistedProp.FIRMA_ADDRESS_KEY));
 		parameters.put(PersistedProp.FIRMA_PHONE_KEY, firmaDetails.extraString(PersistedProp.FIRMA_PHONE_KEY));
 		parameters.put(PersistedProp.FIRMA_EMAIL_KEY, firmaDetails.extraString(PersistedProp.FIRMA_EMAIL_KEY));
+		parameters.put("totalDiscount", totalDiscount.orElse(null));
 		
 		JasperViewer.viewReport(JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource), false);
 	}

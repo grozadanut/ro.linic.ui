@@ -115,6 +115,7 @@
 	<parameter name="firma_address" class="java.lang.String"/>
 	<parameter name="firma_phone" class="java.lang.String"/>
 	<parameter name="firma_email" class="java.lang.String"/>
+	<parameter name="totalDiscount" class="java.math.BigDecimal"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -324,4 +325,49 @@
 			</textField>
 		</band>
 	</pageFooter>
+	<summary>
+		<band height="50">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<rectangle>
+				<reportElement x="80" y="7" width="298" height="43" uuid="60b1826b-2c43-4596-b29c-c8af2467a5d9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$P{totalDiscount} != null && $P{totalDiscount}.compareTo(java.math.BigDecimal.ZERO) > 0]]></printWhenExpression>
+				</reportElement>
+				<graphicElement>
+					<pen lineColor="#009900"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="80" y="7" width="140" height="43" forecolor="#009900" uuid="05fccf03-80dd-40fa-9948-c62a2fdafae6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$P{totalDiscount} != null && $P{totalDiscount}.compareTo(java.math.BigDecimal.ZERO) > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AI ECONOMISIT]]></text>
+			</staticText>
+			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
+				<reportElement x="220" y="7" width="102" height="43" forecolor="#009900" uuid="14566797-eec0-4b42-aaa9-fa1516c859b8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$P{totalDiscount}  != null && $P{totalDiscount}.compareTo(java.math.BigDecimal.ZERO) > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="25" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{totalDiscount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="322" y="7" width="56" height="43" forecolor="#009900" uuid="72ba98b8-11cd-4b23-b675-83010483cb54">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$P{totalDiscount} != null && $P{totalDiscount}.compareTo(java.math.BigDecimal.ZERO) > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RON]]></text>
+			</staticText>
+		</band>
+	</summary>
 </jasperReport>
