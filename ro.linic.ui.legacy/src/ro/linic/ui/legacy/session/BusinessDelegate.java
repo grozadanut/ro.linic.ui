@@ -1032,6 +1032,12 @@ public class BusinessDelegate
 		return job;
 	}
 	
+	public static InvocationResult regRPZ(final Integer gestiuneId, final LocalDate from, final LocalDate to)
+	{
+		final ManagerBeanRemote bean = ServiceLocator.getBusinessService(ManagerBean.class, ManagerBeanRemote.class);
+		return bean.regRPZ(gestiuneId, from, to);
+	}
+	
 	public static Job regBanca(final AsyncLoadResult<InvocationResult> provider, final UISynchronize sync,
 			final Integer gestiuneId, final Integer contBancarId, final LocalDate from, final LocalDate to, final Logger log)
 	{

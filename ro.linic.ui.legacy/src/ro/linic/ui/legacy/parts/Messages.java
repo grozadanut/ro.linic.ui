@@ -119,6 +119,7 @@ public class Messages extends NLS {
 	public static String CatalogProdusePart_ErrorLoading;
 	public static String CatalogProdusePart_Offer;
 	public static String CatalogProdusePart_PrintCatalogue;
+	public static String CatalogProdusePart_AnafCatalogue;
 	public static String CatalogProdusePart_EditInMoqui;
 	public static String PrintLabels;
 	public static String CatalogProdusePart_Recipes;

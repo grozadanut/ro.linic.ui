@@ -7,8 +7,12 @@ import static ro.linic.ui.legacy.session.UIUtils.showException;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -37,11 +41,13 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
+import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.LobImage;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
@@ -84,6 +90,7 @@ public class CatalogProdusePart
 	private Button sterge;
 	private Button printareOferta;
 	private Button printareCatalog;
+	private Button catalogAnaf;
 	private Button editInMoqui;
 	
 	private Combo category;
@@ -206,6 +213,13 @@ public class CatalogProdusePart
 		printareCatalog.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBannerFont(printareCatalog);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(printareCatalog);
+		
+		catalogAnaf = new Button(container, SWT.PUSH);
+		catalogAnaf.setText(Messages.CatalogProdusePart_AnafCatalogue);
+		catalogAnaf.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+		catalogAnaf.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBannerFont(catalogAnaf);
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(catalogAnaf);
 		
 		editInMoqui = new Button(container, SWT.PUSH);
 		editInMoqui.setText(Messages.CatalogProdusePart_EditInMoqui);
@@ -430,6 +444,53 @@ public class CatalogProdusePart
 						log.error(ex);
 						showException(ex);
 					}
+			}
+		});
+		
+		catalogAnaf.addSelectionListener(new SelectionAdapter()
+		{
+			@Override public void widgetSelected(final SelectionEvent e)
+			{
+				try
+				{
+					final InvocationResult result = BusinessDelegate.regRPZ(ClientSession.instance().getLoggedUser().getSelectedGestiune().getId(),
+							LocalDate.now().minusDays(2), LocalDate.now());
+					final Map<LocalDate, java.util.List<AccountingDocument>> accDocsByDate = result.extra(InvocationResult.ACCT_DOC_KEY);
+					final ImmutableList<AccountingDocument> accDocs = accDocsByDate.values().stream()
+							.flatMap(List::stream)
+							.collect(toImmutableList());
+					final ImmutableMap<LocalDate, BigDecimal> solduriInitiale = result.extra(InvocationResult.SOLD_INITIAL_KEY);
+					
+					final BigDecimal soldInitial = solduriInitiale.entrySet().stream()
+							.sorted(Comparator.comparing(Entry::getKey))
+							.findFirst()
+							.map(Entry::getValue)
+							.orElse(BigDecimal.ZERO);
+					final BigDecimal subtotalIntrare = accDocs.stream()
+							.filter(AccountingDocument::isIntrareInRpz)
+							.map(AccountingDocument::getTotalRpz)
+							.reduce(BigDecimal::add)
+							.orElse(BigDecimal.ZERO);
+					final BigDecimal subtotalIesire = accDocs.stream()
+							.filter(AccountingDocument::isIesireInRpz)
+							.map(AccountingDocument::getTotalRpz)
+							.reduce(BigDecimal::add)
+							.orElse(BigDecimal.ZERO);
+					
+					final BigDecimal soldFinal = soldInitial.add(subtotalIntrare).subtract(subtotalIesire);
+					
+					JasperReportManager.instance(bundle, log)
+					.printCatalogAnaf(bundle, ClientSession.instance().getLoggedUser().getSelectedGestiune(),
+							table.getSourceData().stream()
+								.filter(p -> Product.MARFA_CATEGORY.equals(p.getCategorie()))
+								.collect(toImmutableList()),
+							soldFinal);
+				}
+				catch (IOException | JRException ex)
+				{
+					log.error(ex);
+					showException(ex);
+				}
 			}
 		});
 		

@@ -490,6 +490,12 @@ public class JasperReportManager
 		JasperViewer.viewReport(createCatalogProduse(bundle, gestiune, products), false);
 	}
 	
+	public void printCatalogAnaf(final Bundle bundle, final Gestiune gestiune, final ImmutableList<Product> products, final BigDecimal soldFinal)
+			throws IOException, JRException
+	{
+		JasperViewer.viewReport(createCatalogAnaf(bundle, gestiune, products, soldFinal), false);
+	}
+	
 	public void printFisaParteneri_Centralizat(final Bundle bundle, final LocalDate from, final LocalDate to,
 			final ImmutableList<RulajPartener> rulajeParteneri) throws IOException, JRException
 	{
@@ -1048,6 +1054,23 @@ public class JasperReportManager
 		parameters.put("furnizorName", firmaDetails.extraString(PersistedProp.FIRMA_NAME_KEY));
 		parameters.put("furnizorDetails", buildRequiredDetails(firmaDetails));
 		parameters.put("gestiune", safeString(gestiune, Gestiune::getName));
+		return JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource);
+	}
+	
+	private JasperPrint createCatalogAnaf(final Bundle bundle, final Gestiune gestiune, final ImmutableList<Product> products, final BigDecimal soldFinal)
+			throws IOException, JRException
+	{
+		final URL url = FileLocator.find(bundle, new Path("resources/catalog_anaf.jasper"));
+		final URL fileUrl = FileLocator.toFileURL(url);
+		final InvocationResult firmaDetails = BusinessDelegate.firmaDetails();
+
+		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(gestiune));
+		final Map<String, Object> parameters = new HashMap<>();
+		parameters.put("tableDataSource", new ProductsDatasource(products));
+		parameters.put("furnizorName", firmaDetails.extraString(PersistedProp.FIRMA_NAME_KEY));
+		parameters.put("furnizorDetails", buildRequiredDetails(firmaDetails));
+		parameters.put("gestiune", safeString(gestiune, Gestiune::getName));
+		parameters.put("soldFinal", soldFinal);
 		return JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource);
 	}
 	
