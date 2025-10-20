@@ -406,7 +406,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="14" isBold="true"/>
 				</textElement>
-				<text><![CDATA[TOTAL RPZ]]></text>
+				<text><![CDATA[TOTAL MATERIALE]]></text>
 			</staticText>
 			<textField textAdjust="ScaleFont" isBlankWhenNull="true">
 				<reportElement x="390" y="10" width="162" height="50" uuid="5734ab4f-9abf-4507-bce5-a5e3238ffcc5">
