@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -216,6 +217,11 @@ public class UIUtils
 	{
 		return LocalDateTime.of(dateWidget.getYear(), dateWidget.getMonth()+1, dateWidget.getDay(),
 				timeWidget.getHours(), timeWidget.getMinutes(), 0);
+	}
+	
+	public static Timestamp extractTimestamp(final DateTime dateWidget, final DateTime timeWidget)
+	{
+		return Timestamp.valueOf(extractLocalDateTime(dateWidget, timeWidget));
 	}
 	
 	public static LocalTime extractLocalTime(final DateTime timeWidget)

@@ -4,6 +4,7 @@ import static ro.colibri.util.LocalDateUtils.DATE_TIME_FORMATTER;
 import static ro.colibri.util.LocalDateUtils.displayLocalDate;
 import static ro.colibri.util.LocalDateUtils.displayLocalDateTime;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +44,10 @@ public class LocalDateTimeDisplayConverter extends DisplayConverter
             		return displayLocalDateTime((LocalDateTime) canonicalValue, format);
             	else if (canonicalValue instanceof LocalDate)
             		return displayLocalDate((LocalDate) canonicalValue, format);
+            	else if (canonicalValue instanceof Timestamp)
+            		return displayLocalDateTime(((Timestamp) canonicalValue).toLocalDateTime(), format);
+            	else if (canonicalValue instanceof Long)
+            		return displayLocalDateTime(new Timestamp((Long) canonicalValue).toLocalDateTime(), format);
         }
         catch (final Exception e)
         {

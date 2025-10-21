@@ -19,17 +19,18 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 	}
 	
 	@Override
-	public void clear() {
+	public ProductDataHolder clear() {
 		this.data.getReadWriteLock().writeLock().lock();
 		try {
 			this.data.clear();
 		} finally {
 			this.data.getReadWriteLock().writeLock().unlock();
 		}
+		return this;
 	}
 
 	@Override
-	public void setData(final List<Product> data) {
+	public ProductDataHolder setData(final List<Product> data) {
 		this.data.getReadWriteLock().writeLock().lock();
 		try {
 			this.data.clear();
@@ -37,10 +38,11 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 		} finally {
 			this.data.getReadWriteLock().writeLock().unlock();
 		}
+		return this;
 	}
 
 	@Override
-	public void replace(final Product source, final Product target) {
+	public ProductDataHolder replace(final Product source, final Product target) {
 		data.getReadWriteLock().writeLock().lock();
 		try {
 			if (data.contains(source))
@@ -48,25 +50,28 @@ public class ProductDataHolderImpl implements ProductDataHolder {
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
 		}
+		return this;
 	}
 
 	@Override
-	public void remove(final List<Product> toRemove) {
+	public ProductDataHolder remove(final List<Product> toRemove) {
 		data.getReadWriteLock().writeLock().lock();
 		try {
 			data.removeAll(toRemove);
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
 		}
+		return this;
 	}
 
 	@Override
-	public void add(final Product toAdd) {
+	public ProductDataHolder add(final Product toAdd) {
 		data.getReadWriteLock().writeLock().lock();
 		try {
 			data.add(toAdd);
 		} finally {
 			data.getReadWriteLock().writeLock().unlock();
 		}
+		return this;
 	}
 }

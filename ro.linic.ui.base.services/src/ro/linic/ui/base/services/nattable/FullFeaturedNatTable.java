@@ -32,6 +32,7 @@ import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
+import org.eclipse.nebula.widgets.nattable.selection.SelectionUtils;
 import org.eclipse.nebula.widgets.nattable.sort.config.SingleClickSortConfiguration;
 import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
@@ -265,5 +266,9 @@ public class FullFeaturedNatTable<T> {
 	
 	public FilterList<T> filterList() {
 		return filterList;
+	}
+	
+	public List<T> selection() {
+		return SelectionUtils.getSelectedRowObjects(this.selectionLayer, this.bodyDataProvider, false);
 	}
 }

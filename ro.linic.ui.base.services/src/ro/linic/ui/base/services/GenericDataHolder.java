@@ -11,17 +11,25 @@ public interface GenericDataHolder extends DataHolder<GenericValue> {
 	 * If GenericValues already exist with the <code>primaryKey</code>, they will be updated, if not, new GenericValues will be added. 
 	 * Only the keys that are found in <code>targetToHolderKey</code> will be taken from <code>data</code>, 
 	 * if the map is empty or null takes all keys from target and maps them to the same name in source.
+	 * <br/><br/>
+	 * <b>NOTE</b>: Due to speed considerations you have to manually refresh the table after this method, by calling <code>table.natTable().refresh();</code>
 	 * 
 	 * @param targetData target data to add to this holder
 	 * @param targetPrimaryKey key by which it will match the target data
 	 * @param sourcePrimaryKey key by which it will match the source data
 	 * @param targetToHolderKey maps the key in the target data with this key in the holder data
 	 */
-	void addOrUpdate(List<GenericValue> targetData, String targetPrimaryKey, String sourcePrimaryKey, Map<String, String> targetToHolderKey);
-	default void addOrUpdate(final List<GenericValue> targetData, final String primaryKey) {
-		addOrUpdate(targetData, primaryKey, primaryKey, null);
+	GenericDataHolder addOrUpdate(List<GenericValue> targetData, String targetPrimaryKey, String sourcePrimaryKey, Map<String, String> targetToHolderKey);
+	/**
+	 * <b>NOTE</b>: Due to speed considerations you have to manually refresh the table after this method, by calling <code>table.natTable().refresh();</code>
+	 */
+	default GenericDataHolder addOrUpdate(final List<GenericValue> targetData, final String primaryKey) {
+		return addOrUpdate(targetData, primaryKey, primaryKey, null);
 	}
-	default void addOrUpdate(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey) {
-		addOrUpdate(targetData, targetPrimaryKey, sourcePrimaryKey, null);
+	/**
+	 * <b>NOTE</b>: Due to speed considerations you have to manually refresh the table after this method, by calling <code>table.natTable().refresh();</code>
+	 */
+	default GenericDataHolder addOrUpdate(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey) {
+		return addOrUpdate(targetData, targetPrimaryKey, sourcePrimaryKey, null);
 	}
 }

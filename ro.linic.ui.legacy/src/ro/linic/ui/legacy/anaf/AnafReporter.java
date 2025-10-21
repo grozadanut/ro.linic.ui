@@ -258,11 +258,14 @@ public class AnafReporter
 		
 		final String xmlToPdfUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_XML_TO_PDF_BASE_URL_KEY)
 				.getValueOr(PersistedProp.ANAF_XML_TO_PDF_BASE_URL_DEFAULT);
+		final String noValidation = BusinessDelegate.persistedProp("anaf_xml_to_pdf_novalidate")
+				.getValueOr("/DA");
+
 		String xmlStandard = "FACT1";
 		if (invoiceXml.contains("<CreditNote"))
 			xmlStandard = "FCN";
 		
-		RestCaller.post_WithSSL_DownloadFile(xmlToPdfUrl+xmlStandard, invoiceXml, outputFileUri, List.of(),
+		RestCaller.post_WithSSL_DownloadFile(xmlToPdfUrl+xmlStandard+noValidation, invoiceXml, outputFileUri, List.of(),
 				Map.of("Content-Type", "text/plain"));
 		
 		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN))
