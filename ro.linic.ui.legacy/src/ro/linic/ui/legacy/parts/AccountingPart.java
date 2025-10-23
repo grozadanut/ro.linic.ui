@@ -90,8 +90,10 @@ import ro.linic.ui.base.services.nattable.Column;
 import ro.linic.ui.base.services.nattable.FullFeaturedNatTable;
 import ro.linic.ui.base.services.nattable.TableBuilder;
 import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.http.pojo.Result;
 import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.components.AsyncLoadData;
+import ro.linic.ui.legacy.dialogs.ReceptieEFacturaDialog;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -147,6 +149,7 @@ public class AccountingPart implements IMouseAction {
 	private Button printAllDocs;
 	private Button printTvaDocs;
 
+	private Button receptie;
 	private Button salveaza;
 	private Button closeAll;
 	private Button openAll;
@@ -292,16 +295,23 @@ public class AccountingPart implements IMouseAction {
 
 	private void createBottom(final Composite parent) {
 		final Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(layoutNoSpaces(new GridLayout(4, false)));
+		container.setLayout(layoutNoSpaces(new GridLayout(5, false)));
 		container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
 		GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 50).span(7, 1).applyTo(container);
 
+		receptie = new Button(container, SWT.PUSH);
+		receptie.setText(Messages.AccountingPart_Receive);
+		receptie.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+		receptie.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBoldFont(receptie);
+		GridDataFactory.swtDefaults().grab(true, true).align(SWT.RIGHT, SWT.FILL).applyTo(receptie);
+		
 		salveaza = new Button(container, SWT.PUSH);
 		salveaza.setText(Messages.Save);
 		salveaza.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		salveaza.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(salveaza);
-		GridDataFactory.swtDefaults().grab(true, true).align(SWT.RIGHT, SWT.FILL).applyTo(salveaza);
+		GridDataFactory.fillDefaults().grab(false, true).applyTo(salveaza);
 
 		closeAll = new Button(container, SWT.PUSH);
 		closeAll.setText(Messages.AccountingPart_CloseAllDocs);
@@ -390,6 +400,21 @@ public class AccountingPart implements IMouseAction {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				printTvaDocs();
+			}
+		});
+		
+		receptie.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				final Optional<GenericValue> selAnafInvoice = recInvTable.selection().stream().findFirst();
+				if (selAnafInvoice.isPresent())
+					new ReceptieEFacturaDialog(receptie.getShell(), log, bundle, selAnafInvoice.get(),
+							RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoiceLines")
+							.internal(authSession.authentication())
+							.addUrlParam("systemMessageId", selAnafInvoice.get().getString("id"))
+							.get(Result.class, t -> UIUtils.showException(t, sync))
+							.get().resultList())
+					.open();
 			}
 		});
 

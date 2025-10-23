@@ -94,6 +94,7 @@ public class Messages extends NLS {
 	public static String AccountingPart_RepVAT;
 	public static String Save;
 	public static String AccountingPart_SMTPError;
+	public static String AccountingPart_Receive;
 	public static String Success;
 	public static String SupplierOrderPart_Eliminate;
 	public static String SupplierOrderPart_EliminateProd;

@@ -276,6 +276,13 @@ public class Messages extends NLS {
 	public static String VerifyDialog_Delivered;
 	public static String VerifyDialog_Title;
 	public static String VerifyDialog_Transfer;
+	public static String ReceptieEFacturaDialog_Title;
+	public static String ReceptieEFacturaDialog_Supplier;
+	public static String ReceptieEFacturaDialog_InvoiceNumber;
+	public static String ReceptieEFacturaDialog_IssueDate;
+	public static String ReceptieEFacturaDialog_TaxExclusiveAmount;
+	public static String ReceptieEFacturaDialog_TaxTotal;
+	public static String ReceptieEFacturaDialog_InvoiceTotal;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
