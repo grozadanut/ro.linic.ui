@@ -283,6 +283,10 @@ public class Messages extends NLS {
 	public static String ReceptieEFacturaDialog_TaxExclusiveAmount;
 	public static String ReceptieEFacturaDialog_TaxTotal;
 	public static String ReceptieEFacturaDialog_InvoiceTotal;
+	public static String ReceptieEFacturaDialog_PartnerMissingError;
+	public static String ReceptieEFacturaDialog_TypeMissingError;
+	public static String ReceptieEFacturaDialog_UnknownTypeError;
+	public static String ReceptieEFacturaDialog_InvoiceAlreadyReceivedError;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
