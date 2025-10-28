@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -30,6 +31,7 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	final private List<Column> columns;
 	final private EventList<T> sourceData;
 	final private Map<String, List<Function<Object, IConfiguration>>> dynamicConfigs = new HashMap<>();
+	final private Map<Column, BiConsumer<T, Object>> clickConsumers = new HashMap<>();
 	private AbstractRegistryConfiguration summaryConfig;
 	private ESelectionService selectionService;
 	private MDirtyable dirtyable;
@@ -57,13 +59,19 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 		dynamicConfigs.put(EMPTY_STRING, value);
 		return this;
 	}
-
+	
 	@Override
 	public TableConfigurer<T> addConfiguration(final String key, final Function<Object, IConfiguration> configSupplier) {
 		final List<Function<Object, IConfiguration>> value = dynamicConfigs.getOrDefault(safeString(key),
 				new ArrayList<Function<Object, IConfiguration>>());
 		value.add(configSupplier);
 		dynamicConfigs.put(safeString(key), value);
+		return this;
+	}
+	
+	@Override
+	public TableConfigurer<T> addClickListener(final Column column, final BiConsumer<T, Object> listener) {
+		clickConsumers.put(column, listener);
 		return this;
 	}
 
@@ -126,5 +134,9 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	
 	public Function<List<UpdateCommand>, Boolean> getSaveToDbHandler() {
 		return saveToDbHandler;
+	}
+	
+	public Map<Column, BiConsumer<T, Object>> getClickConsumers() {
+		return clickConsumers;
 	}
 }

@@ -186,7 +186,7 @@ public class FullFeaturedNatTable<T> {
 		});
 		this.natTable.addConfiguration(new BodyMenuConfiguration(this.natTable));
 		this.natTable.addConfiguration(new SingleClickSortConfiguration());
-		this.natTable.addConfiguration(new CustomGeneralConfiguration());
+		this.natTable.addConfiguration(new CustomGeneralConfiguration<>(columns, bodyDataProvider, configurer.getClickConsumers()));
 		new NatTableContentTooltip(this.natTable);
 
 		// Column chooser

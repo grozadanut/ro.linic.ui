@@ -82,6 +82,7 @@ import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.LocalDateUtils;
+import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.wrappers.RulajPartener;
 import ro.linic.ui.base.services.DataServices;
@@ -247,6 +248,7 @@ public class AccountingPart implements IMouseAction {
 
 		recInvTable = TableBuilder.with(GenericValue.class, REC_INV_COLUMNS, dataServices.holder(REC_INV_DATA_HOLDER).getData())
 				.addConfiguration(new RecInvStyleConfiguration())
+				.addClickListener(invoiceIdColumn, AccountingPart.this::openInvoice)
 				.build(verticalSash);
 		GridDataFactory.fillDefaults().applyTo(recInvTable.natTable());
 
@@ -596,6 +598,11 @@ public class AccountingPart implements IMouseAction {
 
 		if (selectedDoc.isPresent() && !selectedDoc.get().getOperatiuni().isEmpty())
 			ManagerPart.loadDocInPart(partService, selectedDoc.get());
+	}
+	
+	private void openInvoice(final GenericValue row, final Object value) {
+		if (value != null && NumberUtils.parseToLong(value.toString()) > 0)
+			ManagerPart.loadDocInPart(partService, BusinessDelegate.reloadDoc(NumberUtils.parseToLong(value.toString())));
 	}
 
 	private void printareFisaParteneri() {

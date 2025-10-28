@@ -4,6 +4,7 @@ import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
@@ -51,6 +52,7 @@ public interface TableBuilder {
 		 * @param handler should return true if the save has succeeded, false otherwise
 		 */
 		TableConfigurer<T> saveToDbHandler(Function<List<UpdateCommand>, Boolean> handler);
+		TableConfigurer<T> addClickListener(Column column, BiConsumer<T, Object> listener);
 		FullFeaturedNatTable<T> build(Composite parent);
 	}
 	
