@@ -19,7 +19,6 @@ import java.math.RoundingMode;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.text.MessageFormat;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -66,6 +65,7 @@ import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.NumberAwareStringComparator;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
@@ -559,7 +559,7 @@ public class AdaugaOpDialog extends TrayDialog {
 				allProductsTable.loadData(data, ImmutableList.of(), ImmutableList.of(), ImmutableList.of(),
 						ImmutableList.of());
 
-				selectAnafInvoiceLine(anafInvoiceLines.stream().sorted(Comparator.comparing(gv -> gv.getString("id")))
+				selectAnafInvoiceLine(anafInvoiceLines.stream().sorted(NumberAwareStringComparator.comparing(gv -> gv.getString("id")))
 						.filter(gv -> gv.getString("statusId").equalsIgnoreCase("SmsgConsumed")).findFirst()
 						.orElse(null));
 			}
@@ -694,7 +694,7 @@ public class AdaugaOpDialog extends TrayDialog {
 			clearAllFields();
 			barcodeName.setFocus();
 
-			selectAnafInvoiceLine(anafInvoiceLines.stream().sorted(Comparator.comparing(gv -> gv.getString("id")))
+			selectAnafInvoiceLine(anafInvoiceLines.stream().sorted(NumberAwareStringComparator.comparing(gv -> gv.getString("id")))
 					.filter(gv -> gv.getString("statusId").equalsIgnoreCase("SmsgConsumed")).findFirst().orElse(null));
 		}
 	}

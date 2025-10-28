@@ -5,7 +5,6 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -30,6 +29,7 @@ import com.google.common.collect.ImmutableList;
 
 import ro.colibri.entities.comercial.Partner;
 import ro.colibri.util.LocalDateUtils;
+import ro.colibri.util.NumberAwareStringComparator;
 import ro.colibri.util.PresentationUtils;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.RestCaller;
@@ -187,7 +187,7 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 		final StringBuilder summary = new StringBuilder();
 		
 		for (final GenericValue line : anafInvoiceLines.stream()
-				.sorted(Comparator.comparing(gv -> gv.getString("id")))
+				.sorted(NumberAwareStringComparator.comparing(gv -> gv.getString("id")))
 				.toList()) {
 			summary.append(line.getString("lineId")).append(PresentationUtils.SPACE)
 			.append(line.getString("name")).append(PresentationUtils.SPACE)
