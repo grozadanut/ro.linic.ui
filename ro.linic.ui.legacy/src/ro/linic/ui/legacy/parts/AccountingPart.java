@@ -408,7 +408,7 @@ public class AccountingPart implements IMouseAction {
 			public void widgetSelected(final SelectionEvent e) {
 				final Optional<GenericValue> selAnafInvoice = recInvTable.selection().stream().findFirst();
 				if (selAnafInvoice.isPresent())
-					new ReceptieEFacturaDialog(receptie.getShell(), log, authSession, selAnafInvoice.get(),
+					new ReceptieEFacturaDialog(receptie.getShell(), log, partService, authSession, selAnafInvoice.get(),
 							RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoiceLines")
 							.internal(authSession.authentication())
 							.addUrlParam("systemMessageId", selAnafInvoice.get().getString("id"))

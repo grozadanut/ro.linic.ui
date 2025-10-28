@@ -5,11 +5,13 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -31,6 +33,7 @@ import ro.colibri.util.LocalDateUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.parts.ManagerPart;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.security.exception.AuthenticationException;
@@ -68,11 +71,13 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 
 	private Logger log;
 	private AuthenticationSession authSession;
+	private EPartService partService;
 
-	public ReceptieEFacturaDialog(final Shell parent, final Logger log, final AuthenticationSession authSession,
+	public ReceptieEFacturaDialog(final Shell parent, final Logger log, final EPartService partService, final AuthenticationSession authSession,
 			final GenericValue anafInvoice, final List<GenericValue> anafInvoiceLines) {
 		super(parent);
 		this.log = log;
+		this.partService = partService;
 		this.authSession = authSession;
 		this.anafInvoice = anafInvoice;
 		this.anafInvoiceLines = anafInvoiceLines;
@@ -181,7 +186,9 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 	private String linesSummary() {
 		final StringBuilder summary = new StringBuilder();
 		
-		for (final GenericValue line : anafInvoiceLines) {
+		for (final GenericValue line : anafInvoiceLines.stream()
+				.sorted(Comparator.comparing(gv -> gv.getString("id")))
+				.toList()) {
 			summary.append(line.getString("lineId")).append(PresentationUtils.SPACE)
 			.append(line.getString("name")).append(PresentationUtils.SPACE)
 			.append(line.getString("price")).append(PresentationUtils.SPACE)
@@ -229,7 +236,7 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 		
 		switch (type().get()) {
 		case RECEIVE:
-			
+			ManagerPart.loadAnafInvoiceInPart(partService, anafInvoice, anafInvoiceLines, partner().get());
 			break;
 			
 		case MARK:

@@ -48,13 +48,15 @@ abstract class RestFluent implements BaseConfigurer {
 
 	@Override
 	public BaseConfigurer addHeader(final String key, final String value) {
-		headers.put(key, value);
+		if (value != null)
+			headers.put(key, value);
 		return this;
 	}
 
 	@Override
 	public BaseConfigurer addUrlParam(final String key, final String value) {
-		urlParams.put(key, value);
+		if (value != null)
+			urlParams.put(key, value);
 		return this;
 	}
 	

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import ro.flexbiz.util.commons.HeterogeneousDataComparator;
 import ro.flexbiz.util.commons.ListUtils;
+import ro.flexbiz.util.commons.NumberUtils;
 import ro.linic.ui.base.services.nattable.components.IdSupplier;
 
 public class GenericValue extends JavaBean implements Map<String, Object>, Comparable<Object>, IdSupplier {
@@ -112,7 +113,7 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	}
 	
 	public BigDecimal getBigDecimal(final Object key) {
-		return (BigDecimal) get(key);
+		return get(key) instanceof BigDecimal ? (BigDecimal) get(key) : NumberUtils.parse(getString(key));
 	}
 	
 	public Boolean getBoolean(final Object key) {

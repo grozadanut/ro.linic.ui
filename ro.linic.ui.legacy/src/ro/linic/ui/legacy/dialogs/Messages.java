@@ -75,6 +75,7 @@ public class Messages extends NLS {
 	public static String AdaugaOpDialog_VATVA;
 	public static String AdaugaOpDialog_VVfTVA;
 	public static String AdaugaOpDialog_VVTVA;
+	public static String AdaugaOpDialog_PressCToCopy;
 	public static String AdaugaPartnerDialog_Account;
 	public static String AdaugaPartnerDialog_Auto;
 	public static String AdaugaPartnerDialog_Bank;
@@ -287,6 +288,7 @@ public class Messages extends NLS {
 	public static String ReceptieEFacturaDialog_TypeMissingError;
 	public static String ReceptieEFacturaDialog_UnknownTypeError;
 	public static String ReceptieEFacturaDialog_InvoiceAlreadyReceivedError;
+	public static String AnafInvoiceLineTray_Disconnect;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

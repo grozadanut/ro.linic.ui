@@ -22,6 +22,7 @@ import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -98,6 +99,7 @@ import ro.colibri.entities.comercial.mappings.ProductGestiuneMapping;
 import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.InvocationResult.Problem;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
@@ -140,6 +142,7 @@ public class ManagerPart implements IMouseAction
 	private AccountingDocument docIncarcat;
 	private ImmutableList<Partner> allPartners;
 	private ImmutableList<Gestiune> allGestiuni;
+	private List<GenericValue> anafInvoiceLines = List.of();
 	
 	// 0 - receptie, 1 - iesiri
 	private int tipOp = 0;
@@ -229,6 +232,35 @@ public class ManagerPart implements IMouseAction
 		
 		managerPart.updateSelectedTipOp(tipOp);
 		managerPart.updateDoc(dbDoc);
+		managerPart.anafInvoiceLines = List.of();
+		return managerPart;
+	}
+	
+	public static ManagerPart loadAnafInvoiceInPart(final EPartService partService, final GenericValue anafInvoice, final List<GenericValue> anafInvoiceLines,
+			final Partner supplier)
+	{
+		final MPart createdPart = partService.showPart(ManagerPart.PART_ID, PartState.ACTIVATE);
+
+		if (createdPart == null)
+			return null;
+
+		final ManagerPart managerPart = (ManagerPart) createdPart.getObject();
+
+		if (managerPart == null)
+			return null;
+
+		managerPart.updateSelectedTipOp(TIP_OP_RECEPTIE);
+		managerPart.updateDoc(null);
+		managerPart.anafInvoiceLines = anafInvoiceLines;
+		
+		managerPart.doc.setText(AccountingDocument.FACTURA_NAME);
+		managerPart.nrDoc.setText(anafInvoice.getString("invoiceNumber"));
+		insertDate(managerPart.dataDoc, new Timestamp(anafInvoice.getLong("issueDate")).toLocalDateTime());
+		managerPart.nrReceptie.setText(String.valueOf(BusinessDelegate.autoNumber(TipDoc.CUMPARARE, AccountingDocument.FACTURA_NAME, null)));
+		insertDate(managerPart.dataReceptie, LocalDateTime.now());
+		managerPart.partner.select(managerPart.allPartners.indexOf(supplier));
+		managerPart.rpz.setSelection(true);
+		managerPart.docGestiune.setText(safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getName));
 		return managerPart;
 	}
 	
@@ -505,6 +537,7 @@ public class ManagerPart implements IMouseAction
 						docIncarcat.getOperatiuni_Stream()
 						.filter(o -> o.getId().equals(opToOpen.getId()))
 						.collect(toImmutableList())));
+				anafInvoiceLines = List.of();
 			}
 		});
 		operationsTable.postConstruct(container);
@@ -830,6 +863,7 @@ public class ManagerPart implements IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				updateSelectedTipOp(TIP_OP_RECEPTIE);
+				anafInvoiceLines = List.of();
 			}
 		});
 		
@@ -838,6 +872,7 @@ public class ManagerPart implements IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				updateSelectedTipOp(TIP_OP_IESIRE);
+				anafInvoiceLines = List.of();
 			}
 		});
 		
@@ -1013,6 +1048,7 @@ public class ManagerPart implements IMouseAction
 						dbDuplicate.setTransportType(docIncarcat.getTransportType());
 						dbDuplicate.setPayAtDriver(docIncarcat.isPayAtDriver());
 						updateDoc(dbDuplicate);
+						anafInvoiceLines = List.of();
 					}
 				}
 			}
@@ -1053,6 +1089,7 @@ public class ManagerPart implements IMouseAction
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				updateDoc(null);
+				anafInvoiceLines = List.of();
 			}
 		});
 		
@@ -1067,7 +1104,8 @@ public class ManagerPart implements IMouseAction
 				
 				if (docIncarcat != null || validToCreateDoc)
 					new AdaugaOpDialog(adauga.getShell(), localToDisplayLocation(docGestiune.getParent()), 
-							sync, bundle, log, ManagerPart.this::adaugaOperatiune, ManagerPart.this::docIncarcat)
+							sync, bundle, log, ManagerPart.this::adaugaOperatiune, ManagerPart.this::docIncarcat,
+							authSession, ManagerPart.this::selectedPartnerId, anafInvoiceLines)
 					.open();
 			}
 		});
@@ -1203,6 +1241,7 @@ public class ManagerPart implements IMouseAction
 		
 		if (selectedDoc.isPresent())
 			updateDoc(BusinessDelegate.reloadDoc(selectedDoc.get()));
+		anafInvoiceLines = List.of();
 	}
 	
 	private void deleteOperations(final ImmutableList<Operatiune> operations)
@@ -1221,6 +1260,8 @@ public class ManagerPart implements IMouseAction
 
 		// 3. update bonCasa(may be deleted)
 		updateDoc(BusinessDelegate.reloadDoc(docIncarcat));
+		if (docIncarcat == null)
+			anafInvoiceLines = List.of();
 	}
 
 	private void updateSelectedTipOp(final int tipOp)
@@ -1337,7 +1378,7 @@ public class ManagerPart implements IMouseAction
 			partner.setText(EMPTY_STRING);
 	}
 	
-	private void adaugaOperatiune(final Operatiune op, final Optional<Product> p)
+	private InvocationResult adaugaOperatiune(final Operatiune op, final Optional<Product> p)
 	{
 		final InvocationResult result;
 		op.setTipOp(toTipOp());
@@ -1366,7 +1407,7 @@ public class ManagerPart implements IMouseAction
 				final int dialogResult = gestiuneDialog.open();
 
 				if (dialogResult != 0)
-					return;
+					return InvocationResult.canceled(Problem.code("NO_GESTIUNE"));
 
 				gestiuneId = gestiuneDialog.selectedEntity().map(Gestiune::getId).get();
 			}
@@ -1390,6 +1431,7 @@ public class ManagerPart implements IMouseAction
 			updateDoc(accDoc);
 			updateProductSuppliers(p, op, accDoc);
 		}
+		return result;
 	}
 	
 	private void updateProductSuppliers(final Optional<Product> p, final Operatiune op, final AccountingDocument accDoc) {
