@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: POS Base
 Bundle-SymbolicName: ro.linic.ui.pos.base;singleton:=true
-Bundle-Version: 0.1.1
+Bundle-Version: 0.1.2
 Export-Package: ro.linic.ui.pos.base;x-friends:="ro.linic.ui.pos,ro.linic.ui.pos.local,ro.linic.ui.legacy",
  ro.linic.ui.pos.base.dialogs,
  ro.linic.ui.pos.base.model,
