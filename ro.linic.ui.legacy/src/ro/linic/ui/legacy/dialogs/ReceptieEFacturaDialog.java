@@ -151,7 +151,7 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 		UIUtils.setFont(invoiceTotal);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(invoiceTotal);
 
-		linesSummary = new Text(container, SWT.MULTI | SWT.BORDER);
+		linesSummary = new Text(container, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		linesSummary.setEditable(false);
 		UIUtils.setFont(linesSummary);
 		GridDataFactory.fillDefaults().span(3, 1).grab(true, true).applyTo(linesSummary);
