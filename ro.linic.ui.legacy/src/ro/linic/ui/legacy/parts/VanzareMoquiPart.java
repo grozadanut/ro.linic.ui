@@ -1093,6 +1093,7 @@ public class VanzareMoquiPart implements VanzareInterface
 				.internal(ctx.get(AuthenticationSession.class).authentication())
 				.addUrlParam("quantity", PresentationUtils.safeString(quantity, BigDecimal::abs, BigDecimal::toString))
 				.addUrlParam("customerPartyId", PresentationUtils.safeString(customerId, id -> id.toString()))
+				.addUrlParam("productStoreId", PresentationUtils.safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getImportName))
 				.get(GenericValue.class, t -> log.error(t.getMessage(), t))
 				.map(gv -> NumberUtils.parse(gv.getString("price")))
 				.orElse(null);
