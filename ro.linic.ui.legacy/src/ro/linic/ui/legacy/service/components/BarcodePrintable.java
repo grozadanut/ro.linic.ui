@@ -13,12 +13,15 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 
+import org.eclipse.core.runtime.ILog;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
 
 import ro.colibri.base.IPresentableEnum;
+import ro.colibri.embeddable.ProductReducereMappingId;
 import ro.colibri.embeddable.Verificat;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.CasaDepartment;
@@ -28,12 +31,21 @@ import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.Reducere;
 import ro.colibri.entities.comercial.mappings.ProductReducereMapping;
+import ro.colibri.entities.user.User;
+import ro.colibri.util.NumberUtils;
+import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.base.services.util.UIUtils;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class BarcodePrintable implements Serializable
 {
 	private static final long serialVersionUID = 1L;
+	private static final ILog log = UIUtils.logger(BarcodePrintable.class);
 	
 	public static final String BARCODE_FIELD = "barcode";
 	public static final String NAME_FIELD = "name";
@@ -84,7 +96,7 @@ public class BarcodePrintable implements Serializable
 	private BigDecimal promoPrice2;
 	private ImmutableList<Reducere> allReduceri;
 	
-	public static ImmutableList<BarcodePrintable> fromProducts(final Collection<Product> products)
+	public static ImmutableList<BarcodePrintable> fromProducts(final IEclipseContext ctx, final Collection<Product> products)
 	{
 		final BigDecimal tvaPercentDb = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
 				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT));
@@ -93,6 +105,10 @@ public class BarcodePrintable implements Serializable
 				.filter(p -> !isEmpty(p.getName()) && p.getPricePerUom() != null)
 				.map(p -> 
 				{
+					final Optional<BarcodePrintable> moquiPrintable = findMoquiPrintable(ctx, tvaPercentDb, p);
+					if (moquiPrintable.isPresent())
+						return moquiPrintable.get();
+					
 					final BigDecimal tvaPercent = p.deptTvaPercentage().orElse(tvaPercentDb);
 					final BigDecimal tvaExtractDivisor = Operatiune.tvaExtractDivisor(tvaPercent);
 					return new BarcodePrintable(p, tvaExtractDivisor);
@@ -100,6 +116,36 @@ public class BarcodePrintable implements Serializable
 				.collect(toImmutableList());
 	}
 	
+	private static Optional<BarcodePrintable> findMoquiPrintable(final IEclipseContext ctx, final BigDecimal tvaPercentDb, final Product p) {
+		final BigDecimal moquiPrice = RestCaller.get("/rest/s1/mantle/products/"+p.getId()+"/price")
+				.internal(ctx.get(AuthenticationSession.class).authentication())
+				.addUrlParam("quantity", "1")
+				.addUrlParam("productStoreId", PresentationUtils.safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getImportName))
+				.get(GenericValue.class, t -> log.error(t.getMessage(), t))
+				.map(gv -> NumberUtils.parse(gv.getString("price")))
+				.orElse(null);
+		
+		if (!NumberUtils.nullOrZero(moquiPrice)) {
+			final BigDecimal discPerUom = NumberUtils.subtract(p.getPricePerUom(), moquiPrice);
+			final BigDecimal tvaPercent = p.deptTvaPercentage().orElse(tvaPercentDb);
+			final BigDecimal tvaExtractDivisor = Operatiune.tvaExtractDivisor(tvaPercent);
+			
+			final Product pCopy = new Product();
+			pCopy.setBarcode(p.getBarcode());
+			pCopy.setName(p.getName());
+			pCopy.setUom(p.getUom());
+			pCopy.setPricePerUom(p.getPricePerUom());
+			pCopy.setLastBuyingPriceNoTva(p.getLastBuyingPriceNoTva());
+			final Reducere reducere = new Reducere();
+			reducere.setDiscountAmount(discPerUom);
+			pCopy.getReduceri().add(new ProductReducereMapping(new ProductReducereMappingId(), reducere));
+			
+			return Optional.of(new BarcodePrintable(pCopy, tvaExtractDivisor));
+		}
+		
+		return Optional.empty();
+	}
+
 	public static ImmutableList<BarcodePrintable> fromOperations(final ImmutableList<Operatiune> ops, final Bundle bundle, final Logger log)
 	{
 		final BigDecimal tvaPercentDb = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)

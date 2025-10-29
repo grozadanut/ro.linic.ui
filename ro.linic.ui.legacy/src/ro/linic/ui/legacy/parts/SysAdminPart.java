@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -103,6 +104,7 @@ public class SysAdminPart
 	@Inject private Logger log;
 	@Inject private UISynchronize sync;
 	@Inject @OSGiBundle private Bundle bundle;
+	@Inject private IEclipseContext ctx;
 	
 	@PostConstruct
 	public void createComposite(final Composite parent)
@@ -555,7 +557,7 @@ public class SysAdminPart
 		try
 		{
 			final ImmutableSet<Product> products = ExcelImportTransformer.toShortProducts(Files.newInputStream(Paths.get(filePath)));
-			final ImmutableList<BarcodePrintable> printables = BarcodePrintable.fromProducts(products);
+			final ImmutableList<BarcodePrintable> printables = BarcodePrintable.fromProducts(ctx, products);
 			
 			if (!printables.isEmpty())
 				new PrintBarcodeDialog(printBarcodes.getShell(), printables, log, bundle).open();

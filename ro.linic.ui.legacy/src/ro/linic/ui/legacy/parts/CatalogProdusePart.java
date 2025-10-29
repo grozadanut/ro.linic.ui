@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -104,6 +105,7 @@ public class CatalogProdusePart
 	@Inject private UISynchronize sync;
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
+	@Inject private IEclipseContext ctx;
 	
 	public static void openPart(final EPartService partService)
 	{
@@ -388,7 +390,7 @@ public class CatalogProdusePart
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				final ImmutableList<BarcodePrintable> printables = BarcodePrintable.fromProducts(table.selection());
+				final ImmutableList<BarcodePrintable> printables = BarcodePrintable.fromProducts(ctx, table.selection());
 				
 				if (!printables.isEmpty())
 					new PrintBarcodeDialog(etichete.getShell(), printables, log, bundle).open();
