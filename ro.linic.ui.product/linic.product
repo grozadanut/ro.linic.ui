@@ -7,6 +7,9 @@
    </configIni>
 
    <launcherArgs>
+      <programArgs>-nl
+ro_RO
+      </programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
@@ -40,8 +43,8 @@
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
-      <property name="eclipse.p2.metadataRepository" value="https://colibriserver.go.ro/repository/" />
-      <property name="eclipse.p2.artifactRepository" value="https://colibriserver.go.ro/repository/" />
+      <property name="eclipse.p2.metadataRepository" value="https://p2.flexbiz.ro" />
+      <property name="eclipse.p2.artifactRepository" value="https://p2.flexbiz.ro" />
    </configurations>
 
    <preferencesInfo>
