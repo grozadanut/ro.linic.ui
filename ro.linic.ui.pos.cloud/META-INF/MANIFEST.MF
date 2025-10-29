@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Cloud Connector for POS
 Bundle-SymbolicName: ro.linic.ui.pos.cloud
-Bundle-Version: 0.0.1
+Bundle-Version: 0.0.2
 Export-Package: ro.linic.ui.pos.cloud.model,
  ro.linic.ui.pos.cloud.services
 Import-Package: org.eclipse.core.runtime;version="3.7.0"
-Require-Bundle: ro.linic.ui.pos.base;bundle-version="0.0.4",
- ro.linic.ui.base.services;bundle-version="0.0.1"
+Require-Bundle: ro.linic.ui.pos.base;bundle-version="0.1.3",
+ ro.linic.ui.base.services;bundle-version="0.1.5"
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.pos.cloud
 Bundle-RequiredExecutionEnvironment: JavaSE-17

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Base UI
 Bundle-SymbolicName: ro.linic.ui.base;singleton:=true
-Bundle-Version: 0.1.2
+Bundle-Version: 0.1.3
 Bundle-Vendor: LINIC
 Export-Package: ro.linic.ui.base.dialogs,
  ro.linic.ui.base.preferences,
@@ -27,7 +27,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.29.0",
  ro.linic.ui.workbench;bundle-version="0.0.1",
  ro.linic.ui.security;bundle-version="0.0.1",
  org.eclipse.core.expressions;bundle-version="3.9.100",
- ro.linic.ui.base.services;bundle-version="0.0.1",
+ ro.linic.ui.base.services;bundle-version="0.1.5",
  org.eclipse.e4.ui.services;bundle-version="1.6.300",
  wrapped.ro.flexbiz.util.commons;bundle-version="1.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-17

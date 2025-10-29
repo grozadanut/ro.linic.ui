@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: POS Base
 Bundle-SymbolicName: ro.linic.ui.pos.base;singleton:=true
-Bundle-Version: 0.1.2
+Bundle-Version: 0.1.3
 Export-Package: ro.linic.ui.pos.base;x-friends:="ro.linic.ui.pos,ro.linic.ui.pos.local,ro.linic.ui.legacy",
  ro.linic.ui.pos.base.dialogs,
  ro.linic.ui.pos.base.model,
@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.osgi.services;bundle-version="3.11.100",
  org.eclipse.equinox.preferences;bundle-version="3.10.300",
  com.opcoach.e4.preferences;bundle-version="1.3.2",
  org.eclipse.jface;bundle-version="3.31.0",
- ro.linic.ui.base.services;bundle-version="0.0.1",
+ ro.linic.ui.base.services;bundle-version="0.1.5",
  ca.odell.glazedlists;bundle-version="1.11.0",
  com.fasterxml.jackson.core.jackson-databind;bundle-version="2.17.1",
  com.fasterxml.jackson.core.jackson-core;bundle-version="2.17.1",

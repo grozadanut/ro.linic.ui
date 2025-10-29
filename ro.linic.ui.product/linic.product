@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="linic" uid="ro.linic.ui.product" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.2.1" type="mixed" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="linic" uid="ro.linic.ui.product" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.2.2" type="mixed" includeLaunchers="true" autoIncludeRequirements="true">
 
    <configIni use="default">
    </configIni>
