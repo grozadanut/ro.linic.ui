@@ -325,6 +325,9 @@ public class Messages extends NLS {
 	public static String VerifyOperationsPart_WrongDoc;
 	public static String VerifyOperationsPart_WrongDocMess;
 	public static String Warning;
+	public static String Confirm;
+	public static String BrotherWhiteLabel;
+	public static String BrotherColoredLabel;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

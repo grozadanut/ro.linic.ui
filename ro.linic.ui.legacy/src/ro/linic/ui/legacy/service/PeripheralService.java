@@ -16,7 +16,9 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -292,30 +294,54 @@ public abstract class PeripheralService
 	}
 	
 	private static void printToBrother(final ImmutableList<BarcodePrintable> brotherPrintables, final Optional<Gestiune> gestiune) {
-		brotherPrintables.stream()
-		.collect(Collectors.groupingBy(bp -> {
-			final StringBuilder labelName = new StringBuilder();
-			
-			if (!bp.isPromoLabel(gestiune) && !bp.isSingleCantPromoLabel(gestiune) && !bp.isDoubleCantPromoLabel(gestiune))
-				labelName.append("standard");
-			else if (bp.isPromoLabel(gestiune))
-				labelName.append("promo");
-			else if (bp.isSingleCantPromoLabel(gestiune))
-				labelName.append("single");
-			else if (bp.isDoubleCantPromoLabel(gestiune))
-				labelName.append("double");
-			
-			final String labelSize = switch (bp.getLabelType()) {
-			case BROTHER_6X3 -> "6x3";
-			case BROTHER_6X4 -> "6x4";
-			case BROTHER_9X6 -> "9x6";
-			default -> "6x3";
-			};
-			
-			labelName.append("_").append(labelSize).append(".lbx");
-			return labelName.toString();
-		})).entrySet()
-		.forEach(entry -> sendToBrother(buildBrotherCommands(entry.getKey(), entry.getValue())));
+		// standard requires white paper
+		final Set<Entry<String, List<BarcodePrintable>>> standardLabels = brotherPrintables.stream()
+				.filter(bp -> !bp.isPromoLabel(gestiune) && !bp.isSingleCantPromoLabel(gestiune) && !bp.isDoubleCantPromoLabel(gestiune))
+				.collect(Collectors.groupingBy(bp -> {
+					final StringBuilder labelName = new StringBuilder();
+					
+					if (!bp.isPromoLabel(gestiune) && !bp.isSingleCantPromoLabel(gestiune) && !bp.isDoubleCantPromoLabel(gestiune))
+						labelName.append("standard");
+					
+					final String labelSize = switch (bp.getLabelType()) {
+					case BROTHER_6X3 -> "6x3";
+					case BROTHER_6X4 -> "6x4";
+					case BROTHER_9X6 -> "9x6";
+					default -> "6x3";
+					};
+					
+					labelName.append("_").append(labelSize).append(".lbx");
+					return labelName.toString();
+				})).entrySet();
+		
+		// all other labels require red paper
+		final Set<Entry<String, List<BarcodePrintable>>> coloredLabels = brotherPrintables.stream()
+				.filter(bp -> bp.isPromoLabel(gestiune) || bp.isSingleCantPromoLabel(gestiune) || bp.isDoubleCantPromoLabel(gestiune))
+				.collect(Collectors.groupingBy(bp -> {
+					final StringBuilder labelName = new StringBuilder();
+					
+					if (bp.isPromoLabel(gestiune))
+						labelName.append("promo");
+					else if (bp.isSingleCantPromoLabel(gestiune))
+						labelName.append("single");
+					else if (bp.isDoubleCantPromoLabel(gestiune))
+						labelName.append("double");
+					
+					final String labelSize = switch (bp.getLabelType()) {
+					case BROTHER_6X3 -> "6x3";
+					case BROTHER_6X4 -> "6x4";
+					case BROTHER_9X6 -> "9x6";
+					default -> "6x3";
+					};
+					
+					labelName.append("_").append(labelSize).append(".lbx");
+					return labelName.toString();
+				})).entrySet();
+		
+		if (!standardLabels.isEmpty() && MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.Confirm, Messages.BrotherWhiteLabel))
+			standardLabels.forEach(entry -> sendToBrother(buildBrotherCommands(entry.getKey(), entry.getValue())));
+		if (!coloredLabels.isEmpty() && MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.Confirm, Messages.BrotherColoredLabel))
+			coloredLabels.forEach(entry -> sendToBrother(buildBrotherCommands(entry.getKey(), entry.getValue())));
 	}
 	
 	private static StringBuilder buildBrotherCommands(final String template,
