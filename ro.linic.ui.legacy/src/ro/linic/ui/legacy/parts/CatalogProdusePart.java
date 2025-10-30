@@ -8,6 +8,7 @@ import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.window.Window;
@@ -53,6 +55,10 @@ import ro.colibri.entities.comercial.LobImage;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.NumberUtils;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.AdaugaProductDialog;
 import ro.linic.ui.legacy.dialogs.CasaDeptDialog;
@@ -93,6 +99,7 @@ public class CatalogProdusePart
 	private Button printareCatalog;
 	private Button catalogAnaf;
 	private Button editInMoqui;
+	private Button bulkEditPrice;
 	
 	private Combo category;
 	private Combo uiCategory;
@@ -229,6 +236,13 @@ public class CatalogProdusePart
 		editInMoqui.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBannerFont(editInMoqui);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).exclude(!new BetaTester().evaluate(auth)).applyTo(editInMoqui);
+		
+		bulkEditPrice = new Button(container, SWT.PUSH);
+		bulkEditPrice.setText(Messages.CatalogProdusePart_BulkEditPrice);
+		bulkEditPrice.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN));
+		bulkEditPrice.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBannerFont(bulkEditPrice);
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).exclude(!new BetaTester().evaluate(auth)).applyTo(bulkEditPrice);
 	}
 	
 	private void createSecondRow(final Composite parent)
@@ -503,6 +517,46 @@ public class CatalogProdusePart
 				final String baseUrl = ro.linic.ui.base.services.util.UIUtils.moquiBaseUrl();
 				table.selection().forEach(p -> 
 				ro.linic.ui.base.services.util.UIUtils.openUrl(baseUrl+"/qapps/PopcAdmin/Catalog/Product/EditPrices?productId="+p.getId()));
+			}
+		});
+		
+		bulkEditPrice.addSelectionListener(new SelectionAdapter()
+		{
+			@Override public void widgetSelected(final SelectionEvent e)
+			{
+				final List<Product> selProducts = table.selection();
+				if (selProducts.isEmpty())
+					return;
+				
+				final InputDialog inputDialog = new InputDialog(Display.getCurrent().getActiveShell(),
+						"Seteaza pret cu adaos fata de achizitie", "Adaos(%): ",
+						"20",
+						newVal -> null);
+				
+				if (inputDialog.open() == Window.OK) {
+					final BigDecimal adaosPerc = NumberUtils.extractPercentage(inputDialog.getValue());
+					selProducts.forEach(p -> {
+						BigDecimal price = NumberUtils.multiply(p.getLastBuyingPriceNoTva(), adaosPerc.add(BigDecimal.ONE))
+								.multiply(new BigDecimal("1.21")) // add VAT
+								.setScale(1, RoundingMode.CEILING);
+						if (NumberUtils.smallerThanOrEqual(price, BigDecimal.ZERO))
+							price = p.getPricePerUom();
+						
+						final String productPriceId = "BLACK_"+p.getId();
+						final GenericValue body = new GenericValue("mantle.product.ProductPrice", "productPriceId");
+						body.put("productStoreId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName());
+						body.put("priceTypeEnumId", "PptCurrent");
+						body.put("pricePurposeEnumId", "PppPurchase");
+						body.put("thruDate", "2025-11-09");
+						body.put("price", price);
+						body.put("priceUomId", "RON");
+						
+						RestCaller.put("/rest/s1/mantle/products/"+p.getId()+"/prices/"+productPriceId)
+						.internal(ctx.get(AuthenticationSession.class).authentication())
+						.body(BodyProvider.of(body))
+						.async(UIUtils::showException);
+					});
+				}
 			}
 		});
 	}

@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ro.linic.ui.base.services.model.GenericValue;
+
 @FunctionalInterface
 public interface BodyProvider {
 	static final Logger log = Logger.getLogger(BodyProvider.class.getName());
@@ -19,6 +21,10 @@ public interface BodyProvider {
 	
 	public static BodyProvider of(final String body) {
         return () -> BodyPublishers.ofString(body);
+    }
+	
+	public static BodyProvider of(final GenericValue body) {
+        return () -> BodyPublishers.ofString(HttpUtils.toJSON(body));
     }
 	
 	public static BodyProvider of(final Path filepath) {
