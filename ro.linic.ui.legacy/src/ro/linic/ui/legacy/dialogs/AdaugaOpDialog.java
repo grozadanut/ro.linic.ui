@@ -756,7 +756,7 @@ public class AdaugaOpDialog extends TrayDialog {
 			closeTray();
 
 		if (selAnafInvoiceLine != null) {
-			openTray(new AnafInvoiceLineTray(selAnafInvoiceLine, e -> selectAnafInvoiceLine(null)));
+			openTray(new AnafInvoiceLineTray(selAnafInvoiceLine, e -> selectAnafInvoiceLine(null), e -> markReceived()));
 			cantitate.setText(selAnafInvoiceLine.getString("quantity"));
 			findProduct().ifPresent(productId -> allProductsTable.getSourceData().stream()
 					.filter(p -> p.getId().equals(productId)).findFirst().ifPresent(this::updateProduct));
@@ -791,6 +791,27 @@ public class AdaugaOpDialog extends TrayDialog {
 					.addUrlParam("facilityPartyId", selectedGest().getImportName())
 					.addUrlParam("supplierProductId", selAnafInvoiceLine.getString("itemId"))
 					.addUrlParam("supplierProductName", selAnafInvoiceLine.getString("name"))
+					.asyncRaw(BodyHandlers.ofString()).get();
+
+			if (response.statusCode() != 200) {
+				ro.linic.ui.base.services.util.UIUtils.showResult(ValidationStatus.error(response.body()));
+				return;
+			}
+
+			selAnafInvoiceLine.put("statusId", "SmsgConfirmed");
+		} catch (AuthenticationException | InterruptedException | ExecutionException e) {
+			log.error(e);
+			UIUtils.showException(e);
+			return;
+		}
+	}
+	
+	private void markReceived() {
+		try {
+			final HttpResponse<String> response = RestCaller
+					.post("/rest/s1/moqui-linic-legacy/anafInvoiceLines/receive").internal(authSession.authentication())
+					.addUrlParam("systemMessageId", selAnafInvoiceLine.getString("id"))
+					.addUrlParam("invoiceId", safeString(accDocSupplier.get(), AccountingDocument::getId, Object::toString))
 					.asyncRaw(BodyHandlers.ofString()).get();
 
 			if (response.statusCode() != 200) {

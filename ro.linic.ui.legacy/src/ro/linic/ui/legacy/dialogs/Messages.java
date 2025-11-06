@@ -289,6 +289,7 @@ public class Messages extends NLS {
 	public static String ReceptieEFacturaDialog_UnknownTypeError;
 	public static String ReceptieEFacturaDialog_InvoiceAlreadyReceivedError;
 	public static String AnafInvoiceLineTray_Disconnect;
+	public static String AnafInvoiceLineTray_IgnoreLine;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -25,6 +25,7 @@ import ro.linic.ui.legacy.session.UIUtils;
 public class AnafInvoiceLineTray extends DialogTray {
 	private final GenericValue anafInvoiceLine;
 	private final Consumer<SelectionEvent> disconnected;
+	private final Consumer<SelectionEvent> markReceived;
 	
 	private Text code;
 	private Text quantity;
@@ -34,11 +35,14 @@ public class AnafInvoiceLineTray extends DialogTray {
 	private Text valAchFaraTVA;
 	private Text valAchTVA;
 	private Button disconnectLine;
+	private Button ignoreLine;
 
 	
-	public AnafInvoiceLineTray(final GenericValue anafInvoiceLine, final Consumer<SelectionEvent> disconnected) {
+	public AnafInvoiceLineTray(final GenericValue anafInvoiceLine, final Consumer<SelectionEvent> disconnected,
+			final Consumer<SelectionEvent> markReceived) {
 		this.anafInvoiceLine = Objects.requireNonNull(anafInvoiceLine);
 		this.disconnected = disconnected;
+		this.markReceived = markReceived;
 	}
 
 	@Override
@@ -114,8 +118,15 @@ public class AnafInvoiceLineTray extends DialogTray {
 		disconnectLine.setText(Messages.AnafInvoiceLineTray_Disconnect);
 		disconnectLine.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		disconnectLine.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		GridDataFactory.swtDefaults().span(3, 1).applyTo(disconnectLine);
+		GridDataFactory.swtDefaults().span(2, 1).applyTo(disconnectLine);
 		UIUtils.setBoldBannerFont(disconnectLine);
+		
+		ignoreLine = new Button(container, SWT.PUSH);
+		ignoreLine.setText(Messages.AnafInvoiceLineTray_IgnoreLine);
+		ignoreLine.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+		ignoreLine.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		GridDataFactory.swtDefaults().applyTo(ignoreLine);
+		UIUtils.setBoldBannerFont(ignoreLine);
 		
 		container.setTabList(new Control[] {});
 		fillFields();
@@ -135,5 +146,7 @@ public class AnafInvoiceLineTray extends DialogTray {
 	private void addListeners() {
 		if (disconnected != null)
 			disconnectLine.addSelectionListener(SelectionListener.widgetSelectedAdapter(this.disconnected));
+		if (markReceived != null)
+			ignoreLine.addSelectionListener(SelectionListener.widgetSelectedAdapter(this.markReceived));
 	}
 }
