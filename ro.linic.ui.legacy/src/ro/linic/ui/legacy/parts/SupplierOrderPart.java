@@ -403,6 +403,7 @@ public class SupplierOrderPart
 						.collect(Collectors.groupingBy(ProductProfitability::getBarcode));
 				
 				for (final GenericValue product : productsHolder.getData()) {
+					product.silenceListeners(true);
 					// "Stoc la AchCuTVA / Medie vanzari pe zi la PAcuTVA";
 					final List<ProductProfitability> productProfitability = productProfitabilities.getOrDefault(product.get(Product.BARCODE_FIELD), List.of());
 					final BigDecimal lastBuyingPriceWithVAT = NumberUtils.multiply(product.getBigDecimal(Product.LAST_BUYING_PRICE_FIELD), tvaPercentPlusOne);
@@ -431,7 +432,9 @@ public class SupplierOrderPart
 					product.put("inventoryDio", NumberUtils.multiply(dio, stocAchCuTVA)
 							.setScale(0, RoundingMode.UP)
 							.divide(new BigDecimal(1000000), 2, RoundingMode.UP));
+					product.silenceListeners(false);
 				}
+				allProductsTable.natTable().refresh();
 			}
 
 			@Override public void error(final String details)
