@@ -5,9 +5,13 @@ import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -49,6 +53,7 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
@@ -60,8 +65,13 @@ import ca.odell.glazedlists.matchers.SearchEngineTextMatcherEditor;
 import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
+import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Gestiune;
+import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
+import ro.colibri.util.NumberUtils;
+import ro.colibri.wrappers.ProductProfitability;
+import ro.colibri.wrappers.RaionProfitability;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.GenericDataHolder;
 import ro.linic.ui.base.services.di.DiscardChanges;
@@ -76,6 +86,7 @@ import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.http.pojo.Result;
 import ro.linic.ui.legacy.components.AsyncLoadData;
+import ro.linic.ui.legacy.components.AsyncLoadResult;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
@@ -87,6 +98,7 @@ public class SupplierOrderPart
 	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori"; //$NON-NLS-1$
 	
 	private static final String TABLE_STATE_PREFIX = "supplier_order.products_nt"; //$NON-NLS-1$
+	private static final String DATA_HOLDER = "SupplierOrderPart.ProductsToOrder"; //$NON-NLS-1$
 	
 	private static final int STOC_ID_BASE = 1000;
 	private static final int RECOMMENDED_ORDER_ID_BASE = 2000;
@@ -98,6 +110,9 @@ public class SupplierOrderPart
 	private static final Column ULPColumn = new Column(4,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
 	private static final Column priceColumn = new Column(5, Product.PRICE_FIELD, "PU", 90);
 	private static final Column furnizoriColumn = new Column(6, Product.FURNIZORI_FIELD, "Furnizori", 220);
+	private static final Column inventoryValueColumn = new Column(7, "stocAchCuTVA", "StocAchCuTVA", 90);
+	private static final Column dioColumn = new Column(8, "daysOfStock", "(DIO)Zile epuizare stoc", 70, "Stoc la AchCuTVA / Medie vanzari pe zi la PAcuTVA");
+	private static final Column inventoryDioColumn = new Column(9, "inventoryDio", "7*8", 90, "StocAchCuTVA * DIO");
 	
 	private static final ImmutableMap<Column, Gestiune> stocColumns;
 	private static final ImmutableMap<Column, Gestiune> recommendedOrderColumns;
@@ -108,7 +123,7 @@ public class SupplierOrderPart
 		
 		int i = 0;
 		for (final Gestiune gest : BusinessDelegate.allGestiuni()) {
-			stocBuilder.put(new Column(STOC_ID_BASE+i, "STC_"+gest.getImportName(), "STC "+gest.getImportName(), 70), gest);
+			stocBuilder.put(new Column(STOC_ID_BASE+i, "STC_"+gest.getImportName(), "STC "+gest.getImportName(), 90), gest);
 			recommendedOrderBuilder.put(new Column(RECOMMENDED_ORDER_ID_BASE+i, "QTO_"+gest.getImportName(), "Comanda recomandata "+gest.getImportName(), 100), gest);
 			i++;
 		}
@@ -145,7 +160,10 @@ public class SupplierOrderPart
 		.add(paretoColumn)
 		.add(ULPColumn)
 		.add(priceColumn)
-		.add(furnizoriColumn);
+		.add(furnizoriColumn)
+		.add(inventoryValueColumn)
+		.add(dioColumn)
+		.add(inventoryDioColumn);
 		for (int i = 0; i < stocColumns.size(); i++) {
 			builder.add(stocColumns.keySet().asList().get(i))
 			.add(recommendedOrderColumns.keySet().asList().get(i));
@@ -185,7 +203,7 @@ public class SupplierOrderPart
 		UIUtils.setFont(furnizorFilter);
 		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(furnizorFilter);
 		
-		allProductsTable = TableBuilder.with(GenericValue.class, columns, dataServices.holder("ProductsToOrder").getData())
+		allProductsTable = TableBuilder.with(GenericValue.class, columns, dataServices.holder(DATA_HOLDER).getData())
 				.addConfiguration(new ProductStyleConfiguration())
 				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
@@ -320,7 +338,7 @@ public class SupplierOrderPart
 	
 	private void loadData(final boolean showConfirmation)
 	{
-		final GenericDataHolder productsHolder = dataServices.holder("ProductsToOrder");
+		final GenericDataHolder productsHolder = dataServices.holder(DATA_HOLDER);
 		productsHolder.clear();
 		
 		RestCaller.get("/rest/s1/moqui-linic-legacy/products/suppliers")
@@ -355,6 +373,7 @@ public class SupplierOrderPart
 				// source.silenceListeners(true); // speed fix
 				allProductsTable.natTable().refresh();
 
+				reloadDaysOfInventoryOutstanding();
 				if (showConfirmation)
 					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.Success,
 							Messages.SupplierOrderPart_SuccessMessage);
@@ -366,6 +385,61 @@ public class SupplierOrderPart
 						details);
 			}
 		}, sync, bundle, log);
+	}
+	
+	private void reloadDaysOfInventoryOutstanding() {
+		final BigDecimal tvaPercentPlusOne = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
+				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT))
+				.add(BigDecimal.ONE);
+		final Gestiune gestiune = ClientSession.instance().getGestiune();
+		
+		BusinessDelegate.profitability(new AsyncLoadResult<ImmutableMap<RaionProfitability, List<ProductProfitability>>>()
+		{
+			@Override public void success(final ImmutableMap<RaionProfitability, List<ProductProfitability>> data)
+			{
+				final GenericDataHolder productsHolder = dataServices.holder(DATA_HOLDER);
+				final Map<String, List<ProductProfitability>> productProfitabilities = data.values().stream()
+						.flatMap(List::stream)
+						.collect(Collectors.groupingBy(ProductProfitability::getBarcode));
+				
+				for (final GenericValue product : productsHolder.getData()) {
+					// "Stoc la AchCuTVA / Medie vanzari pe zi la PAcuTVA";
+					final List<ProductProfitability> productProfitability = productProfitabilities.getOrDefault(product.get(Product.BARCODE_FIELD), List.of());
+					final BigDecimal lastBuyingPriceWithVAT = NumberUtils.multiply(product.getBigDecimal(Product.LAST_BUYING_PRICE_FIELD), tvaPercentPlusOne);
+					
+					if (NumberUtils.smallerThanOrEqual(lastBuyingPriceWithVAT, BigDecimal.ZERO)) {
+						product.put("stocAchCuTVA", BigDecimal.ZERO);
+						product.put("daysOfStock", BigDecimal.ZERO);
+						product.put("inventoryDio", BigDecimal.ZERO);
+						continue;
+					}
+					
+					final BigDecimal stocAchCuTVA = NumberUtils.multiply(product.getBigDecimal("STC_"+gestiune.getImportName()), lastBuyingPriceWithVAT)
+							.setScale(4, RoundingMode.HALF_EVEN);
+					final BigDecimal dailyCogs = productProfitability.stream()
+							.map(pp -> NumberUtils.subtract(pp.getTotalSales(), pp.getTotalProfit()))
+							.reduce(BigDecimal::add)
+							.map(total -> NumberUtils.divide(total, new BigDecimal(250), 12, RoundingMode.HALF_EVEN)) // around 250 working days per year
+							.orElse(BigDecimal.ZERO);
+					
+					final BigDecimal dio = NumberUtils.smallerThanOrEqual(dailyCogs, BigDecimal.ZERO)
+							? new BigDecimal(730)
+							: NumberUtils.divide(stocAchCuTVA, dailyCogs, 0, RoundingMode.UP);
+					
+					product.put("stocAchCuTVA", stocAchCuTVA.setScale(0, RoundingMode.UP));
+					product.put("daysOfStock", dio);
+					product.put("inventoryDio", NumberUtils.multiply(dio, stocAchCuTVA)
+							.setScale(0, RoundingMode.UP)
+							.divide(new BigDecimal(1000000), 2, RoundingMode.UP));
+				}
+			}
+
+			@Override public void error(final String details)
+			{
+				MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.ErrorFiltering, details);
+			}
+		}, sync, LocalDate.now().minusYears(1), LocalDate.now(), gestiune,
+		ImmutableSet.of(AccountingDocument.FACTURA_NAME, AccountingDocument.BON_CONSUM_NAME, AccountingDocument.BON_CASA_NAME));
 	}
 
 	private class ProductStyleConfiguration extends AbstractRegistryConfiguration

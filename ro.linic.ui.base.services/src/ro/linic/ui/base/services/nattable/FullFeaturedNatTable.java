@@ -39,7 +39,6 @@ import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.summaryrow.FixedSummaryRowLayer;
 import org.eclipse.nebula.widgets.nattable.summaryrow.SummaryRowLayer;
-import org.eclipse.nebula.widgets.nattable.tooltip.NatTableContentTooltip;
 import org.eclipse.nebula.widgets.nattable.ui.menu.HeaderMenuConfiguration;
 import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
@@ -51,6 +50,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.ObservableElementList;
 import ca.odell.glazedlists.SortedList;
 import ro.linic.ui.base.services.Messages;
+import ro.linic.ui.base.services.nattable.components.FullFeaturedContentTooltip;
 import ro.linic.ui.base.services.nattable.internal.BodyMenuConfiguration;
 import ro.linic.ui.base.services.nattable.internal.CustomGeneralConfiguration;
 import ro.linic.ui.base.services.nattable.internal.DefaultRowIdAccessor;
@@ -187,7 +187,7 @@ public class FullFeaturedNatTable<T> {
 		this.natTable.addConfiguration(new BodyMenuConfiguration(this.natTable));
 		this.natTable.addConfiguration(new SingleClickSortConfiguration());
 		this.natTable.addConfiguration(new CustomGeneralConfiguration<>(columns, bodyDataProvider, configurer.getClickConsumers()));
-		new NatTableContentTooltip(this.natTable);
+		new FullFeaturedContentTooltip(this.natTable, columns);
 
 		// Column chooser
 		final DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(

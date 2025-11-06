@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.google.common.collect.ImmutableList;
 
+import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
@@ -176,6 +177,11 @@ public class ClientSession
 	public User getLoggedUser()
 	{
 		return loggedUser;
+	}
+	
+	public Gestiune getGestiune()
+	{
+		return loggedUser.getSelectedGestiune();
 	}
 	
 	public Properties getProperties()
