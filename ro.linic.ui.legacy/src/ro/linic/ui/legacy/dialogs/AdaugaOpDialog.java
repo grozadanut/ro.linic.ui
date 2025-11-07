@@ -559,9 +559,7 @@ public class AdaugaOpDialog extends TrayDialog {
 				allProductsTable.loadData(data, ImmutableList.of(), ImmutableList.of(), ImmutableList.of(),
 						ImmutableList.of());
 
-				selectAnafInvoiceLine(anafInvoiceLines.stream().sorted(NumberAwareStringComparator.comparing(gv -> gv.getString("id")))
-						.filter(gv -> gv.getString("statusId").equalsIgnoreCase("SmsgConsumed")).findFirst()
-						.orElse(null));
+				nextAnafInvoiceLine();
 			}
 
 			@Override
@@ -694,11 +692,10 @@ public class AdaugaOpDialog extends TrayDialog {
 			clearAllFields();
 			barcodeName.setFocus();
 
-			selectAnafInvoiceLine(anafInvoiceLines.stream().sorted(NumberAwareStringComparator.comparing(gv -> gv.getString("id")))
-					.filter(gv -> gv.getString("statusId").equalsIgnoreCase("SmsgConsumed")).findFirst().orElse(null));
+			nextAnafInvoiceLine();
 		}
 	}
-
+	
 	private void adaugaDiscount() {
 		if (greaterThan(parse(discountValue.getText()), BigDecimal.ZERO) && accDocSupplier.get() != null) {
 			final Operatiune op = new Operatiune();
@@ -747,6 +744,13 @@ public class AdaugaOpDialog extends TrayDialog {
 
 		allProductsTable.filterMode(filterMode);
 		allProductsTable.filter(barcodeName.getText());
+	}
+	
+	private void nextAnafInvoiceLine() {
+		selectAnafInvoiceLine(anafInvoiceLines.stream().sorted(NumberAwareStringComparator.comparing(gv -> gv.getString("id")))
+				.filter(gv -> gv.getString("statusId").equalsIgnoreCase("SmsgConsumed"))
+				.findFirst()
+				.orElse(null));
 	}
 
 	private void selectAnafInvoiceLine(final GenericValue selAnafInvoiceLine) {
@@ -820,6 +824,7 @@ public class AdaugaOpDialog extends TrayDialog {
 			}
 
 			selAnafInvoiceLine.put("statusId", "SmsgConfirmed");
+			nextAnafInvoiceLine();
 		} catch (AuthenticationException | InterruptedException | ExecutionException e) {
 			log.error(e);
 			UIUtils.showException(e);
