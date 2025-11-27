@@ -786,6 +786,8 @@ public class AdaugaOpDialog extends TrayDialog {
 		try {
 			final AccountingDocument accDoc = result.extra(InvocationResult.ACCT_DOC_KEY);
 
+			// run this with a delay from ManagerPart.updateProductSuppliers because of Moqui entity auto 'store' concurrency issues
+			Thread.sleep(1000);
 			final HttpResponse<String> response = RestCaller
 					.post("/rest/s1/moqui-linic-legacy/anafInvoiceLines/receive").internal(authSession.authentication())
 					.addUrlParam("systemMessageId", selAnafInvoiceLine.getString("id"))
