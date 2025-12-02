@@ -136,6 +136,8 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	private static final String INITIAL_PART_LOAD_PROP = "vanzari_bar.initial_part_load"; //$NON-NLS-1$
 	private static final String HORIZONTAL_SASH_STATE_PREFIX = "vanzari_bar.horizontal_sash"; //$NON-NLS-1$
 	
+	private static int PART_INDEX = 1;
+
 	public static boolean isDiscountProcentual(final ro.linic.ui.pos.base.model.Product p) {
 		return globalIsMatch(p.getType(), Product.DISCOUNT_CATEGORY, TextFilterMethod.EQUALS) &&
 				globalIsMatch(p.getUom(), "%", TextFilterMethod.EQUALS);
@@ -237,6 +239,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		if (createdPart == null)
 			return null;
 
+		createdPart.setLabel(""+PART_INDEX++);
 		final VanzareBarPart vanzarePart = (VanzareBarPart) createdPart.getObject();
 
 		if (vanzarePart == null)
