@@ -15,10 +15,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.inject.Inject;
-
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -46,14 +42,20 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Gestiune;
+import ro.colibri.entities.comercial.Operatiune;
+import ro.colibri.entities.comercial.Operatiune.TipOp;
 import ro.colibri.wrappers.LastYearStats;
 import ro.colibri.wrappers.ProductProfitability;
 import ro.colibri.wrappers.RaionProfitability;
 import ro.colibri.wrappers.SalesPerHours;
 import ro.colibri.wrappers.SalesPerOperators;
+import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.components.AsyncLoadResult;
 import ro.linic.ui.legacy.dialogs.InfoDialog;
 import ro.linic.ui.legacy.service.JasperReportManager;
@@ -395,17 +397,17 @@ public class StatisticsPart
 		salesPerHours.setEnabled(false);
 		
 		final Gestiune gest = selectedGestiune().orElse(null);
-		loadJob = BusinessDelegate.salesPerHours(new AsyncLoadResult<SalesPerHours>()
+		loadJob = BusinessDelegate.filteredOperations(new AsyncLoadData<Operatiune>()
 		{
-			@Override public void success(final SalesPerHours result)
+			@Override public void success(final ImmutableList<Operatiune> data)
 			{
 				salesPerHours.setEnabled(true);
 				try
 				{
 					JasperReportManager.instance(bundle, log)
-					.printBarchart(bundle, Messages.StatisticsPart_HourDaySales, gest, JasperChartSerie.fromVanzari(result));
+					.printBarchart(bundle, Messages.StatisticsPart_HourDaySales, gest, JasperChartSerie.fromVanzari(SalesPerHours.from(data)));
 					JasperReportManager.instance(bundle, log)
-					.printBarchart(bundle, Messages.StatisticsPart_OutgMinute, gest, JasperChartSerie.fromOpsPerMinute(result));
+					.printBarchart(bundle, Messages.StatisticsPart_OutgMinute, gest, JasperChartSerie.fromOpsPerMinute(SalesPerHours.from(data)));
 				}
 				catch (IOException | JRException e)
 				{
@@ -413,13 +415,15 @@ public class StatisticsPart
 					showException(e);
 				}
 			}
-			
+
 			@Override public void error(final String details)
 			{
 				salesPerHours.setEnabled(true);
 				MessageDialog.openError(salesPerHours.getShell(), Messages.Error, details);
 			}
-		}, sync, gest, selectedDocTypes());
+		}, sync,
+		TipOp.IESIRE, null, extractLocalDate(from), extractLocalDate(to),
+				selectedDocTypes(), null, null, null, null, gest, null, null, 1000000, POSTGRES_MIN.toLocalDate(), POSTGRES_MAX.toLocalDate(), log);
 	}
 	
 	private void printSalesPerOperators()
