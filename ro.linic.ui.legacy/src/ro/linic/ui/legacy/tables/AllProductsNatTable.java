@@ -156,7 +156,7 @@ public class AllProductsNatTable
 	
 	private static final Column activColumn = new Column(7, Product.ACTIV_FIELD, "Activ", 70);
 	private static final Column categoryColumn = new Column(8, Product.CATEGORY_FIELD, "Categorie", 100);
-	private static final Column stocMinimColumn = new Column(9, Product.MIN_STOC_FIELD, "Stoc min", 70);
+//	private static final Column stocMinimColumn = new Column(9, Product.MIN_STOC_FIELD, "Stoc min", 70);
 	private static final Column idxColumn = new Column(10, Product.ID_FIELD, "Idx", 70);
 	
 	private static final Column furnizoriColumn = new Column(11, Product.FURNIZORI_FIELD, "Furnizori", 220);
@@ -276,7 +276,7 @@ public class AllProductsNatTable
 			.add(ULPColumn)
 			.add(priceColumn)
 			.addAll(stocColumns.keySet())
-			.add(stocMinimColumn)
+//			.add(stocMinimColumn)
 			.add(idxColumn);
 			break;
 		case COMENZI_FURNIZORI:
@@ -888,7 +888,7 @@ public class AllProductsNatTable
 					rightAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
 			recommendedOrderColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
 					magentaBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rightAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(stocMinimColumn));
+//			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rightAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(stocMinimColumn));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, greenBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(retetaQuantityColumn));
 			
 			// Register Cell Painters
@@ -923,8 +923,8 @@ public class AllProductsNatTable
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ULPColumn));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
-			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
-					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(stocMinimColumn));
+//			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
+//					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(stocMinimColumn));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(activColumn));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new DefaultBooleanDisplayConverter(), DisplayMode.NORMAL, 
@@ -970,8 +970,8 @@ public class AllProductsNatTable
 						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(categoryColumn));
 				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(uiCategoryColumn));
-				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
-						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(stocMinimColumn));
+//				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
+//						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(stocMinimColumn));
 				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(imageColumn));
 				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,

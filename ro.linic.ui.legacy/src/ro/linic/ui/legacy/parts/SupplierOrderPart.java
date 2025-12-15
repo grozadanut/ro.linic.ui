@@ -8,10 +8,12 @@ import static ro.linic.ui.legacy.session.UIUtils.saveState;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -110,9 +112,10 @@ public class SupplierOrderPart
 	private static final Column ULPColumn = new Column(4,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
 	private static final Column priceColumn = new Column(5, Product.PRICE_FIELD, "PU", 90);
 	private static final Column furnizoriColumn = new Column(6, Product.FURNIZORI_FIELD, "Furnizori", 220);
-	private static final Column inventoryValueColumn = new Column(7, "stocAchCuTVA", "StocAchCuTVA", 90);
-	private static final Column dioColumn = new Column(8, "daysOfStock", "(DIO)Zile epuizare stoc", 70, "Stoc la AchCuTVA / Medie vanzari pe zi la PAcuTVA");
-	private static final Column inventoryDioColumn = new Column(9, "inventoryDio", "7*8", 90, "StocAchCuTVA * DIO");
+	private static final Column inventoryValueColumn = new Column(7, "stocAchCuTVA", "StocAchCuTVA", 90, true);
+	private static final Column dioColumn = new Column(8, "daysOfStock", "(DIO)Zile epuizare stoc", 70, "Stoc la AchCuTVA / Medie vanzari pe zi la PAcuTVA", true);
+	private static final Column inventoryDioColumn = new Column(9, "inventoryDio", "7*8", 90, "StocAchCuTVA * DIO", true);
+	private static final Column minStockColumn = new Column(10, "minimumStock", "Stoc minim", 70);
 	
 	private static final ImmutableMap<Column, Gestiune> stocColumns;
 	private static final ImmutableMap<Column, Gestiune> recommendedOrderColumns;
@@ -163,7 +166,8 @@ public class SupplierOrderPart
 		.add(furnizoriColumn)
 		.add(inventoryValueColumn)
 		.add(dioColumn)
-		.add(inventoryDioColumn);
+		.add(inventoryDioColumn)
+		.add(minStockColumn);
 		for (int i = 0; i < stocColumns.size(); i++) {
 			builder.add(stocColumns.keySet().asList().get(i))
 			.add(recommendedOrderColumns.keySet().asList().get(i));
@@ -207,7 +211,7 @@ public class SupplierOrderPart
 				.addConfiguration(new ProductStyleConfiguration())
 				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
-				.saveToDbHandler(this::saveSuppliers)
+				.saveToDbHandler(this::saveChangesToDb)
 				.build(parent);
 		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(allProductsTable.natTable());
 		loadState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
@@ -275,15 +279,34 @@ public class SupplierOrderPart
 		allProductsTable.natTable().doCommand(new DiscardDataChangesCommand());
 	}
 	
-	private boolean saveSuppliers(final List<UpdateCommand> updateCommands) {
+	private boolean saveChangesToDb(final List<UpdateCommand> updateCommands) {
+		return saveSuppliers(updateCommands.stream().filter(uc -> uc.updatedProperty().equalsIgnoreCase("furnizori"))) &&
+				saveMinStock(updateCommands.stream().filter(uc -> uc.updatedProperty().equalsIgnoreCase("minimumStock")));
+	}
+	
+	private boolean saveSuppliers(final Stream<UpdateCommand> updateCommands) {
 		final String organizationPartyId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
-		final List<GenericValue> valuesToUpdate = updateCommands.stream().filter(uc -> uc.updatedProperty().equalsIgnoreCase("furnizori"))
-		.map(uc -> GenericValue.of("", "", Map.of("organizationPartyId", organizationPartyId,
+		final List<GenericValue> valuesToUpdate = updateCommands.map(uc -> GenericValue.of("", "", Map.of("organizationPartyId", organizationPartyId,
 				"productId", ((GenericValue) uc.model()).getString(Product.ID_FIELD),
 				"supplierId", ((GenericValue) uc.newValue()).getString("partyId"))))
 		.toList();
 		
 		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
+				.internal(authSession.authentication())
+				.body(BodyProvider.of(HttpUtils.toJSON(valuesToUpdate)))
+				.get(Result.class, t -> UIUtils.showException(t, sync))
+				.isPresent();
+	}
+	
+	private boolean saveMinStock(final Stream<UpdateCommand> updateCommands) {
+		final String facilityId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
+		final List<GenericValue> valuesToUpdate = updateCommands.map(uc -> GenericValue.of("", "", Map.of(
+				"productId", ((GenericValue) uc.model()).getString(Product.ID_FIELD),
+				"facilityId", facilityId,
+				"minimumStock", (BigDecimal) uc.newValue())))
+		.toList();
+		
+		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/facility")
 				.internal(authSession.authentication())
 				.body(BodyProvider.of(HttpUtils.toJSON(valuesToUpdate)))
 				.get(Result.class, t -> UIUtils.showException(t, sync))
@@ -347,7 +370,7 @@ public class SupplierOrderPart
 				.async(t -> UIUtils.showException(t, sync))
 				.thenApply(ps -> ps.stream().filter(gv -> Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
 				.thenAccept(productSuppliers -> productsHolder.addOrUpdate(productSuppliers, "productId", Product.ID_FIELD,
-						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto")));
+						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock")));
 		
 		BusinessDelegate.allProductsForOrdering(new AsyncLoadData<Product>()
 		{
@@ -368,7 +391,10 @@ public class SupplierOrderPart
 						})
 						.toList(),
 						Product.ID_FIELD);
-
+				
+				updateRecommendedOrder();
+				productsHolder.getData().sort(Comparator.comparing(gv -> ((GenericValue) gv).get("minimumStock") != null)
+						.thenComparing(gv -> ((GenericValue) gv).getBigDecimal("QTO_"+ClientSession.instance().getGestiune().getImportName())).reversed());
 				// need this fix because of the speed fix in GenericDataHolderImpl:
 				// source.silenceListeners(true); // speed fix
 				allProductsTable.natTable().refresh();
@@ -387,6 +413,18 @@ public class SupplierOrderPart
 		}, sync, bundle, log);
 	}
 	
+	private void updateRecommendedOrder() {
+		final String gestName = ClientSession.instance().getGestiune().getImportName();
+		
+		dataServices.holder(DATA_HOLDER).getData().forEach(gv -> {
+			if (gv.get("minimumStock") != null) {
+				gv.silenceListeners(true);
+				gv.put("QTO_"+gestName, NumberUtils.subtract(gv.getBigDecimal("minimumStock"), gv.getBigDecimal("STC_"+gestName)));
+				gv.silenceListeners(false);
+			}
+		});
+	}
+
 	private void reloadDaysOfInventoryOutstanding() {
 		final BigDecimal tvaPercentPlusOne = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
 				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT))
@@ -491,6 +529,8 @@ public class SupplierOrderPart
 			
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new GenericValueDisplayConverter("organizationName"),
 					DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter,
+					DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(minStockColumn));
 			stocColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
 			recommendedOrderColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, defaultBigDecimalConv, DisplayMode.NORMAL, 
@@ -512,6 +552,8 @@ public class SupplierOrderPart
 			// CELL EDITOR CONFIG
 			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 					IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
+			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
+					IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(minStockColumn));
 			
 			final ComboBoxCellEditor supplierCellEditor = new ComboBoxCellEditor(allSuppliers);
 			supplierCellEditor.setFreeEdit(false);
