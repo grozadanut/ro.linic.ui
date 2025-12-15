@@ -195,6 +195,12 @@ public class FullFeaturedNatTable<T> {
 				columnHeaderLayer.getColumnHeaderLayer(), columnHeaderLayer.getColumnHeaderDataLayer(),
 				columnHeaderLayer.getColumnGroupHeaderLayer(), columnGroupModel);
 		bodyLayer.registerCommandHandler(columnChooserCommandHandler);
+		
+		// hide columns
+		bodyLayer.getColumnHideShowLayer().hideColumnIndexes(configurer.getColumns().stream()
+				.filter(Column::hidden)
+				.map(Column::index)
+				.toList());
 
 		// Extra configuration
 		for (final Entry<String, List<Function<Object, IConfiguration>>> entry : dynamicConfigs.entrySet()) {
