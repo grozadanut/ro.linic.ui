@@ -368,7 +368,8 @@ public class SupplierOrderPart
 				.internal(authSession.authentication())
 				.addUrlParam("organizationPartyId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
 				.async(t -> UIUtils.showException(t, sync))
-				.thenApply(ps -> ps.stream().filter(gv -> Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
+				.thenApply(ps -> ps.stream().filter(gv -> gv.getString("preferredOrderEnumId") == null ||
+															Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
 				.thenAccept(productSuppliers -> productsHolder.addOrUpdate(productSuppliers, "productId", Product.ID_FIELD,
 						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock")));
 		
