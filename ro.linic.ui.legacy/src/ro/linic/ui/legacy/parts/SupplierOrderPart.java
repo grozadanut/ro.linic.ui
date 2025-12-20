@@ -100,7 +100,7 @@ public class SupplierOrderPart
 	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori"; //$NON-NLS-1$
 	
 	private static final String TABLE_STATE_PREFIX = "supplier_order.products_nt"; //$NON-NLS-1$
-	private static final String DATA_HOLDER = "SupplierOrderPart.ProductsToOrder"; //$NON-NLS-1$
+	public static final String DATA_HOLDER = "SupplierOrderPart.ProductsToOrder"; //$NON-NLS-1$
 	
 	private static final int STOC_ID_BASE = 1000;
 	private static final int RECOMMENDED_ORDER_ID_BASE = 2000;

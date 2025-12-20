@@ -4,7 +4,6 @@ import static ro.colibri.util.PresentationUtils.LIST_SEPARATOR;
 import static ro.colibri.util.StringUtils.truncate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.ILog;
@@ -23,9 +22,8 @@ import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.util.UIUtils;
-import ro.linic.ui.http.BodyProvider;
-import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.parts.SupplierOrderPart;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.security.services.AuthenticationSession;
@@ -53,16 +51,12 @@ public class EliminateFromOrderingHandler {
 			
 			// MOQUI
 			final String pId = gv.getString(Product.ID_FIELD);
-			final GenericValue valueToUpdate = GenericValue.of("", "", Map.of("productId", pId,
-					"requireInventory", "N"));
-
-			RestCaller.patch("/rest/s1/mantle/products/"+pId)
+			RestCaller.delete("/rest/s1/mantle/products/"+pId)
 					.internal(authSession.authentication())
-					.body(BodyProvider.of(HttpUtils.toJSON(valueToUpdate)))
 					.get(GenericValue.class, t -> UIUtils.showException(t, t.getMessage()));
 		});
 		
-		dataServices.holder("ProductsToOrder").remove(products);
+		dataServices.holder(SupplierOrderPart.DATA_HOLDER).remove(products);
 	}
 	
 	@CanExecute

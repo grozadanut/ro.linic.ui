@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.internal.DeleteFluent;
 import ro.linic.ui.http.internal.GetFluent;
 import ro.linic.ui.http.internal.PatchFluent;
 import ro.linic.ui.http.internal.PostFluent;
@@ -67,6 +68,12 @@ public interface RestCaller {
 		PatchConfigurer body(BodyProvider body);
     }
 	
+	interface DeleteConfigurer extends BaseConfigurer {
+		@Override DeleteConfigurer addHeader(String key, String value);
+		@Override DeleteConfigurer addUrlParam(String key, String value);
+		@Override DeleteConfigurer internal(Authentication auth);
+    }
+	
 	public static PostConfigurer post(final String url) {
         return new PostFluent(url);
     }
@@ -81,5 +88,9 @@ public interface RestCaller {
 	
 	public static PatchConfigurer patch(final String url) {
         return new PatchFluent(url);
+    }
+	
+	public static DeleteConfigurer delete(final String url) {
+        return new DeleteFluent(url);
     }
 }
