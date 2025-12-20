@@ -149,7 +149,7 @@ public class AllProductsNatTable
 	private static final int RECOMMENDED_ORDER_ID_BASE = 5000;
 	
 	private static final Column barcodeColumn = new Column(0, Product.BARCODE_FIELD, "Cod", 70);
-	private static final Column nameColumn = new Column(1, Product.NAME_FIELD, "Denumire", 300);
+	private static final Column nameColumn = new Column(1, Product.NAME_FIELD, "Denumire", 370);
 	private static final Column uomColumn = new Column(2, Product.UOM_FIELD, "UM", 50);
 	private static final Column ULPColumn = new Column(3,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
 	private static final Column priceColumn = new Column(4, Product.PRICE_FIELD, "PU", 70);
@@ -185,7 +185,7 @@ public class AllProductsNatTable
 		int i = 0;
 		for (final Gestiune gest : BusinessDelegate.allGestiuni())
 		{
-			stocBuilder.put(new Column(STOC_ID_BASE+i, EMPTY_STRING, "STC "+gest.getImportName(), 70), gest);
+			stocBuilder.put(new Column(STOC_ID_BASE+i, EMPTY_STRING, "STC "+gest.getImportName(), 80), gest);
 			averageDaySaleBuilder.put(new Column(AVERAGE_DAY_SALE_ID_BASE+i, EMPTY_STRING, "Media Vanzari "+gest.getImportName(), 100), gest);
 			futureStocBuilder.put(new Column(FUTURE_STOC_ID_BASE+i, EMPTY_STRING, "Stoc "+gest.getImportName()+" dupa "+Product.FUTURE_STOC_DAYS+" zile", 100), gest);
 			maxSaleBuilder.put(new Column(MAX_SALE_ID_BASE+i, EMPTY_STRING, "Vanzare maxima "+gest.getImportName(), 100), gest);
