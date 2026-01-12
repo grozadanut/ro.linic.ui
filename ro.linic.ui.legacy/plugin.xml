@@ -13,6 +13,17 @@
             id="ro.linic.ui.legacy.preference.labelpage"
             name="%page.labels">
       </page>
+      <page
+            class="ro.linic.ui.legacy.preferences.PrintPage"
+            id="ro.linic.ui.legacy.preference.printpage"
+            name="%page.print">
+      </page>
+      <page
+            category="ro.linic.ui.legacy.preference.printpage"
+            class="ro.linic.ui.legacy.preferences.PrintReceptiePage"
+            id="ro.linic.ui.legacy.preference.printpage.receptie"
+            name="%page.receptie">
+      </page>
    </extension>
    <extension
          point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">

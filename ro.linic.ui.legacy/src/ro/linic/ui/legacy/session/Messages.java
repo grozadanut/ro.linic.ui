@@ -59,4 +59,5 @@ public class Messages extends NLS
 	public static String SyncingSales;
 	public static String LegacyReceiptLineUpdater_UpdateQuantitySyncErr;
 	public static String BrotherPrintFolder;
+	public static String PrintReceptiePage_GroupByVAT;
 }

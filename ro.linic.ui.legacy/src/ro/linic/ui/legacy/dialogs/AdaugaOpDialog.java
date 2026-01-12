@@ -162,7 +162,7 @@ public class AdaugaOpDialog extends TrayDialog {
 		allProductsTable = new AllProductsNatTable(SourceLoc.MANAGER_ADAUGA, bundle, log);
 		allProductsTable.postConstruct(contents);
 		allProductsTable.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		GridDataFactory.fillDefaults().grab(true, true).span(2, 1).minSize(850, 200)
+		GridDataFactory.fillDefaults().grab(true, true).span(2, 1).minSize(910, 200)
 				.applyTo(allProductsTable.getTable());
 
 		addListeners();

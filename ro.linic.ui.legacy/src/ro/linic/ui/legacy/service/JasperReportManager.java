@@ -77,6 +77,7 @@ import ro.colibri.wrappers.TwoEntityWrapper;
 import ro.linic.ui.legacy.anaf.ReceivedMessage;
 import ro.linic.ui.legacy.dialogs.SendEmailDialog;
 import ro.linic.ui.legacy.jasper.datasource.AccDocDatasource;
+import ro.linic.ui.legacy.jasper.datasource.AccDocReceptieDatasource;
 import ro.linic.ui.legacy.jasper.datasource.OfertaCuDiscountDatasource;
 import ro.linic.ui.legacy.jasper.datasource.OfertaDatasource;
 import ro.linic.ui.legacy.jasper.datasource.ProductsDatasource;
@@ -915,7 +916,7 @@ public class JasperReportManager
 
 		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(doc));
 		final Map<String, Object> parameters = new HashMap<>();
-		parameters.put("tableDataSource", new AccDocDatasource(doc));
+		parameters.put("tableDataSource", new AccDocReceptieDatasource(doc));
 		parameters.put("furnizorName", firmaDetails.extraString(PersistedProp.FIRMA_NAME_KEY));
 		parameters.put("furnizorDetails", buildShortDetails(firmaDetails));
 		parameters.put("clientName", safeString(doc.getPartner(), Partner::getName));

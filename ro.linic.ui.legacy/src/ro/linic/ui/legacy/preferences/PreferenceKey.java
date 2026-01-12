@@ -21,4 +21,6 @@ public interface PreferenceKey {
 	
 	public static final String BROTHER_PRINT_FOLDER = "brother_print_folder";
 	public static final String BROTHER_PRINT_FOLDER_DEF = "C:\\Program Files\\Brother bPAC3 SDK\\Print";
+	
+	public static final String RECEPTIE_GROUPBY_VAT_KEY = "receptie_groupby_vat";
 }

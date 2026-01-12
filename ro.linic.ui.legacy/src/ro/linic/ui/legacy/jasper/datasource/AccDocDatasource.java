@@ -12,9 +12,9 @@ import ro.colibri.entities.comercial.Operatiune;
 
 public class AccDocDatasource implements JRDataSource
 {
-	private AccountingDocument doc;
-	private ImmutableList<Operatiune> ops;
-    private int index = -1;
+	protected AccountingDocument doc;
+	protected ImmutableList<Operatiune> ops;
+	protected int index = -1;
     
     public AccDocDatasource(final AccountingDocument factura)
     {
