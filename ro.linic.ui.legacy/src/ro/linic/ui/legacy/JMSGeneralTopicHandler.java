@@ -8,7 +8,6 @@ import static ro.colibri.util.ServerConstants.JMS_MESSAGE_TYPE_KEY;
 import static ro.colibri.util.ServerConstants.JMS_USERS_KEY;
 import static ro.colibri.util.ServerConstants.REFRESH_ALL_PERSISTED_PROPS;
 import static ro.colibri.util.StringUtils.globalIsMatch;
-import static ro.colibri.util.StringUtils.truncate;
 import static ro.linic.ui.legacy.session.UIUtils.getEPartService;
 
 import java.io.IOException;
@@ -106,10 +105,10 @@ public class JMSGeneralTopicHandler {
 					final String opName = accDoc.getOperatiuni_Stream().filter(o -> o.getId().equals(opId)).findFirst()
 							.map(Operatiune::getName).orElse(EMPTY_STRING);
 
-					NotificationManager.showNotification(
+					sync.asyncExec(() -> NotificationManager.showNotification(
 							"Marfa primita " + safeString(accDoc, AccountingDocument::getPartner, Partner::getName),
-							MessageFormat.format("{0}. Click pentru a deschide!", truncate(opName, 24)),
-							ev -> sync.asyncExec(() -> VerifyOperationsPart.loadDoc(getEPartService(), accDoc)));
+							opName,
+							ev -> VerifyOperationsPart.loadDoc(getEPartService(), accDoc)));
 					return true;
 				}
 				return false;

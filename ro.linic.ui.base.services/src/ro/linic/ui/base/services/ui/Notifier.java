@@ -351,8 +351,10 @@ public class Notifier {
 					&& event.y <= yUpperLeftCorner + 16) {
 				Display.getDefault().timerExec(0, fadeOut(shell, true));
 			}
-			else if (callback != null)
+			else if (callback != null) {
 				callback.accept(event);
+				Display.getDefault().timerExec(0, fadeOut(shell, true));
+			}
 		});
 	}
 }
