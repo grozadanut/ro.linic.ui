@@ -42,7 +42,8 @@ Require-Bundle: org.eclipse.nebula.widgets.nattable.core;bundle-version="2.3.0",
  org.eclipse.e4.core.contexts,
  slf4j.api;bundle-version="2.0.12",
  wrapped.ro.flexbiz.util.commons;bundle-version="1.0.1",
- org.eclipse.equinox.preferences;bundle-version="3.11.0"
+ org.eclipse.equinox.preferences;bundle-version="3.11.0",
+ org.eclipse.nebula.widgets.opal.commons;bundle-version="1.0.0"
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.base.services
 Bundle-ActivationPolicy: lazy

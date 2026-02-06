@@ -6,9 +6,7 @@ import static ro.colibri.util.ServerConstants.L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI
 import static ro.colibri.util.ServerConstants.L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
 import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_DEFAULT;
 import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_KEY;
-import static ro.linic.ui.legacy.session.UIUtils.isWindows;
 
-import java.awt.SystemTray;
 import java.lang.reflect.InvocationTargetException;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
@@ -55,8 +53,8 @@ import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.dialogs.ReleaseNotesDialog;
+import ro.linic.ui.legacy.service.InAppNotificationService;
 import ro.linic.ui.legacy.service.PeripheralService;
-import ro.linic.ui.legacy.service.WindowsNotificationService;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -117,9 +115,8 @@ public class LoginAddon {
 		workbenchContext.get(LinicWorkbench.class).switchWorkspace("workspace-"+ClientSession.instance().getLoggedUser().getId());
 
 		if (Boolean.valueOf(System.getProperty(NotificationManager.SHOW_NOTIFICATIONS_PROP_KEY,
-				NotificationManager.SHOW_NOTIFICATIONS_PROP_DEFAULT)) &&
-				isWindows() && SystemTray.isSupported())
-			NotificationManager.initialize(new WindowsNotificationService(bundle, log));
+				NotificationManager.SHOW_NOTIFICATIONS_PROP_DEFAULT)))
+			NotificationManager.initialize(new InAppNotificationService(bundle, log));
 
 		registerBarcodePrinter(log, bundle);
 		new JMSGeneralTopicHandler(log, bundle, sync);
