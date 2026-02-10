@@ -39,6 +39,7 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
 import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
 import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.nebula.widgets.nattable.style.TextDecorationEnum;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -103,10 +104,9 @@ public class SupplierOrderPart
 	public static final String DATA_HOLDER = "SupplierOrderPart.ProductsToOrder"; //$NON-NLS-1$
 	
 	private static final int STOC_ID_BASE = 1000;
-	private static final int RECOMMENDED_ORDER_ID_BASE = 2000;
 	
 	private static final Column barcodeColumn = new Column(0, Product.BARCODE_FIELD, "Cod", 70);
-	private static final Column nameColumn = new Column(1, Product.NAME_FIELD, "Denumire", 300);
+	private static final Column nameColumn = new Column(1, Product.NAME_FIELD, "Denumire", 350);
 	private static final Column uomColumn = new Column(2, Product.UOM_FIELD, "UM", 50);
 	private static final Column paretoColumn = new Column(3, "pareto", "Pareto", 50);
 	private static final Column ULPColumn = new Column(4,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
@@ -116,23 +116,23 @@ public class SupplierOrderPart
 	private static final Column dioColumn = new Column(8, "daysOfStock", "(DIO)Zile epuizare stoc", 70, "Stoc la AchCuTVA / Medie vanzari pe zi la PAcuTVA", true);
 	private static final Column inventoryDioColumn = new Column(9, "inventoryDio", "7*8", 90, "StocAchCuTVA * DIO", true);
 	private static final Column minStockColumn = new Column(10, "minimumStock", "Stoc minim", 70);
+	private Column recommendedOrderColumn;
+	private Column supplierOrdersColumn;
+	private static final Column addRequirementColumn = new Column(4000, "newRequirement", "Adauga", 100);
+	private static final Column addRequirementButtonColumn = new Column(4001, "add", "", 50);
 	
 	private static final ImmutableMap<Column, Gestiune> stocColumns;
-	private static final ImmutableMap<Column, Gestiune> recommendedOrderColumns;
 	
 	static {
 		final com.google.common.collect.ImmutableMap.Builder<Column, Gestiune> stocBuilder = ImmutableMap.builder();
-		final com.google.common.collect.ImmutableMap.Builder<Column, Gestiune> recommendedOrderBuilder = ImmutableMap.builder();
 		
 		int i = 0;
 		for (final Gestiune gest : BusinessDelegate.allGestiuni()) {
 			stocBuilder.put(new Column(STOC_ID_BASE+i, "STC_"+gest.getImportName(), "STC "+gest.getImportName(), 90), gest);
-			recommendedOrderBuilder.put(new Column(RECOMMENDED_ORDER_ID_BASE+i, "QTO_"+gest.getImportName(), "Comanda recomandata "+gest.getImportName(), 100), gest);
 			i++;
 		}
 		
 		stocColumns = stocBuilder.build();
-		recommendedOrderColumns = recommendedOrderBuilder.build();
 	}
 	
 	private EventList<GenericValue> allSuppliers = GlazedLists.eventListOf();
@@ -156,6 +156,10 @@ public class SupplierOrderPart
 	@Inject private DataServices dataServices;
 	
 	private ImmutableList<Column> buildColumns() {
+		final Gestiune gest = ClientSession.instance().getGestiune();
+		recommendedOrderColumn = new Column(2000, "QTO_"+gest.getImportName(), "Comanda recomandata "+gest.getImportName(), 100);
+		supplierOrdersColumn = new Column(3000, "requiredQuantityTotal", "Comenzi "+gest.getImportName(), 100);
+		
 		final Builder<Column> builder = ImmutableList.<Column>builder();
 		builder.add(barcodeColumn)
 		.add(nameColumn)
@@ -169,9 +173,12 @@ public class SupplierOrderPart
 		.add(inventoryDioColumn)
 		.add(minStockColumn);
 		for (int i = 0; i < stocColumns.size(); i++) {
-			builder.add(stocColumns.keySet().asList().get(i))
-			.add(recommendedOrderColumns.keySet().asList().get(i));
+			builder.add(stocColumns.keySet().asList().get(i));
 		}
+		builder.add(recommendedOrderColumn)
+		.add(supplierOrdersColumn)
+		.add(addRequirementColumn)
+		.add(addRequirementButtonColumn);
 		return builder.build();
 	}
 	
@@ -212,6 +219,7 @@ public class SupplierOrderPart
 				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
 				.saveToDbHandler(this::saveChangesToDb)
+				.addClickListener(addRequirementButtonColumn, this::createRequirement)
 				.build(parent);
 		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(allProductsTable.natTable());
 		loadState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
@@ -371,7 +379,8 @@ public class SupplierOrderPart
 				.thenApply(ps -> ps.stream().filter(gv -> gv.getString("preferredOrderEnumId") == null ||
 															Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
 				.thenAccept(productSuppliers -> productsHolder.addOrUpdate(productSuppliers, "productId", Product.ID_FIELD,
-						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock")));
+						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock",
+								"requiredQuantityTotal", "requiredQuantityTotal")));
 		
 		BusinessDelegate.allProductsForOrdering(new AsyncLoadData<Product>()
 		{
@@ -383,7 +392,7 @@ public class SupplierOrderPart
 									Map.of(Product.ID_FIELD, p.getId(),
 									Product.BARCODE_FIELD, p.getBarcode(), Product.NAME_FIELD, p.getName(),
 									Product.UOM_FIELD, p.getUom(), Product.LAST_BUYING_PRICE_FIELD, p.getLastBuyingPriceNoTva(),
-									Product.PRICE_FIELD, p.getPricePerUom()));
+									Product.PRICE_FIELD, p.getPricePerUom(), "add", "Add"));
 							for (final Gestiune gest : stocColumns.values()) {
 								gv.put("STC_"+gest.getImportName(), p.stoc(gest));
 								gv.put("QTO_"+gest.getImportName(), p.recommendedOrder(gest));
@@ -420,7 +429,12 @@ public class SupplierOrderPart
 		dataServices.holder(DATA_HOLDER).getData().forEach(gv -> {
 			if (gv.get("minimumStock") != null) {
 				gv.silenceListeners(true);
-				gv.put("QTO_"+gestName, NumberUtils.subtract(gv.getBigDecimal("minimumStock"), gv.getBigDecimal("STC_"+gestName)));
+				final BigDecimal recommendedOrder = NumberUtils.subtract(gv.getBigDecimal("minimumStock"), gv.getBigDecimal("STC_"+gestName));
+				gv.put("QTO_"+gestName, recommendedOrder);
+				
+				final BigDecimal newRequirement = NumberUtils.subtract(recommendedOrder, gv.getBigDecimal("requiredQuantityTotal"));
+				if (NumberUtils.greaterThan(newRequirement, BigDecimal.ZERO))
+					gv.put("newRequirement", newRequirement);
 				gv.silenceListeners(false);
 			}
 		});
@@ -484,11 +498,13 @@ public class SupplierOrderPart
 		ImmutableSet.of(AccountingDocument.FACTURA_NAME, AccountingDocument.BON_CONSUM_NAME, AccountingDocument.BON_CASA_NAME));
 	}
 
-	private class ProductStyleConfiguration extends AbstractRegistryConfiguration
-	{
+	private void createRequirement(final GenericValue row, final Object cellValue) {
+
+	}
+
+	private class ProductStyleConfiguration extends AbstractRegistryConfiguration {
 		@Override
-		public void configureRegistry(final IConfigRegistry configRegistry)
-		{
+		public void configureRegistry(final IConfigRegistry configRegistry) {
 			final Style leftAlignStyle = new Style();
 			leftAlignStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
 			final Style yellowBgStyle = new Style();
@@ -518,8 +534,21 @@ public class SupplierOrderPart
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, blueBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
 			stocColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
 					greenBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
-			recommendedOrderColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
-					magentaBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE,
+					magentaBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(recommendedOrderColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rightAlignStyle, DisplayMode.NORMAL,
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(addRequirementColumn));
+			
+			final Style linkStyle = new Style();
+	        linkStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+	        linkStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, TextDecorationEnum.UNDERLINE);
+	        final Style linkSelectStyle = new Style();
+	        linkSelectStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+	        linkSelectStyle.setAttributeValue(CellStyleAttributes.TEXT_DECORATION, TextDecorationEnum.UNDERLINE);
+	        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, linkStyle, DisplayMode.NORMAL,
+	        		ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(addRequirementButtonColumn));
+	        configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, linkSelectStyle, DisplayMode.SELECT,
+	        		ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(addRequirementButtonColumn));
 			
 			// Display converters
 			final DefaultBigDecimalDisplayConverter defaultBigDecimalConv = new DefaultBigDecimalDisplayConverter();
@@ -534,8 +563,10 @@ public class SupplierOrderPart
 					DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(minStockColumn));
 			stocColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
-			recommendedOrderColumns.keySet().forEach(col -> configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, defaultBigDecimalConv, DisplayMode.NORMAL, 
-					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(col)));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, defaultBigDecimalConv, DisplayMode.NORMAL, 
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(recommendedOrderColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(supplierOrdersColumn));
 			
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, defaultBigDecimalConv, DisplayMode.NORMAL, 
 					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ULPColumn));
@@ -549,12 +580,16 @@ public class SupplierOrderPart
 							return val.length() > 2 ? val.substring(2) : val;
 						}
 					}, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(paretoColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(addRequirementColumn));
 			
 			// CELL EDITOR CONFIG
 			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 					IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
 			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 					IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(minStockColumn));
+			configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
+					IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(addRequirementColumn));
 			
 			final ComboBoxCellEditor supplierCellEditor = new ComboBoxCellEditor(allSuppliers);
 			supplierCellEditor.setFreeEdit(false);

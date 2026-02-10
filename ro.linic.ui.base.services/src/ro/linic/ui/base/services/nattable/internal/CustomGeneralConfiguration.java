@@ -13,6 +13,7 @@ import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.sort.SortConfigAttributes;
 import org.eclipse.nebula.widgets.nattable.ui.NatEventData;
+import org.eclipse.nebula.widgets.nattable.ui.action.ClearCursorAction;
 import org.eclipse.nebula.widgets.nattable.ui.action.IMouseAction;
 import org.eclipse.nebula.widgets.nattable.ui.binding.UiBindingRegistry;
 import org.eclipse.nebula.widgets.nattable.ui.matcher.CellLabelMouseEventMatcher;
@@ -59,7 +60,7 @@ public class CustomGeneralConfiguration<T> extends AbstractRegistryConfiguration
 			// show hand cursor, which is usually used for links
 			uiBindingRegistry.registerFirstMouseMoveBinding(mouseHoverMatcher, 
 					(natTable, event) -> natTable.setCursor(natTable.getDisplay().getSystemCursor(SWT.CURSOR_HAND)), 
-					(natTable, event) -> natTable.setCursor(null));
+					new ClearCursorAction());
 		});
 	}
 	
