@@ -320,6 +320,31 @@ public class SupplierOrderPart
 				.get(Result.class, t -> UIUtils.showException(t, sync))
 				.isPresent();
 	}
+	
+	private void createRequirement(final GenericValue row, final Object cellValue) {
+		// fix for DataChangeLayer.temporaryDataStorage: if the data changes should be handled temporary in this layer and update the model on save
+		allProductsTable.natTable().doCommand(new SaveDataChangesCommand());
+		
+		final BigDecimal quantity = row.getBigDecimal("newRequirement");
+		if (NumberUtils.smallerThanOrEqual(quantity, BigDecimal.ZERO))
+			return;
+		
+		final String facilityId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
+		final Map<String, Object> body = Map.of("facilityId", facilityId,
+				"requirementTypeEnumId", "RqTpInventory",
+				"statusId", "RqmtStCreated",
+				"productId", row.getString(Product.ID_FIELD),
+				"quantity", quantity);
+		
+		RestCaller.post("/rest/s1/moqui-linic-legacy/requirements")
+				.internal(authSession.authentication())
+				.body(BodyProvider.of(HttpUtils.toJSON(body)))
+				.get(GenericValue.class, t -> UIUtils.showException(t, sync))
+				.ifPresent(reqId -> {
+					row.put("newRequirement", "");
+					row.put("requiredQuantityTotal", NumberUtils.add(row.getBigDecimal("requiredQuantityTotal"), quantity));
+				});
+	}
 
 	private void addListeners()
 	{
@@ -496,10 +521,6 @@ public class SupplierOrderPart
 			}
 		}, sync, LocalDate.now().minusYears(1), LocalDate.now(), gestiune,
 		ImmutableSet.of(AccountingDocument.FACTURA_NAME, AccountingDocument.BON_CONSUM_NAME, AccountingDocument.BON_CASA_NAME));
-	}
-
-	private void createRequirement(final GenericValue row, final Object cellValue) {
-
 	}
 
 	private class ProductStyleConfiguration extends AbstractRegistryConfiguration {
