@@ -353,7 +353,7 @@ public class SupplierOrderPart
 									Product.BARCODE_FIELD, row.getString(Product.BARCODE_FIELD),
 									Product.NAME_FIELD, row.getString(Product.NAME_FIELD),
 									Product.UOM_FIELD, row.getString(Product.UOM_FIELD),
-									Product.LAST_BUYING_PRICE_FIELD, row.getString(Product.LAST_BUYING_PRICE_FIELD),
+									Product.LAST_BUYING_PRICE_FIELD, row.getBigDecimal(Product.LAST_BUYING_PRICE_FIELD),
 									Product.PRICE_FIELD, row.getString(Product.PRICE_FIELD),
 									Product.FURNIZORI_FIELD, row.getString(Product.FURNIZORI_FIELD),
 									"requiredQuantityTotal", quantity)));

@@ -25,6 +25,7 @@
     <elements xsi:type="commands:Command" xmi:id="_fGbrUMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.xmltopdf" commandName="%command.commandname.20"/>
     <elements xsi:type="commands:Command" xmi:id="_YBYLwOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.command.delete" commandName="%label.delete"/>
     <elements xsi:type="commands:Command" xmi:id="_zYIDYCdCEfC8xrnX11KqgQ" elementId="ro.linic.ui.legacy.command.new_moqui_receipt" commandName="%command.commandname.2"/>
+    <elements xsi:type="commands:Command" xmi:id="_VfxRoAcwEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.command.delete.approve_order" commandName="%label.delete"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_i7ppYMZ_Ee6UtK1nDebMVw" featurename="handlers" parentElementId="ro.linic.ui.base.application">
     <elements xsi:type="commands:Handler" xmi:id="_lNH8wMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.handler.inchideBonCommand" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.InchideBonHandler" command="_tmURwMZ-Ee6UtK1nDebMVw"/>
@@ -49,6 +50,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_zhB1UMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.xmltopdf" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.XmlToPdfHandler" command="_fGbrUMZ_Ee6UtK1nDebMVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_JC-SwOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.handler.delete.fromorder" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.EliminateFromOrderingHandler" command="_YBYLwOnYEe-hVvaptRHwRg"/>
     <elements xsi:type="commands:Handler" xmi:id="_GJdi0CdAEfC8xrnX11KqgQ" elementId="ro.linic.ui.legacy.handler.new_moqui_receipt" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenNewMoquiReceiptHandler" command="_zYIDYCdCEfC8xrnX11KqgQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_alCiUAcwEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.handler.delete.fromorder.approve" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.EliminateFromApproveOrderHandler" command="_VfxRoAcwEfG-q5zKPT839w"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_XoPUEMaCEe6UtK1nDebMVw" featurename="children" parentElementId="org.eclipse.ui.contexts.window">
     <elements xsi:type="commands:BindingContext" xmi:id="_dV2XIMaCEe6UtK1nDebMVw" elementId="linic_gest_client.bindingcontext.vanzari" name="In Vanzari Part"/>
@@ -124,7 +126,11 @@
               <children xsi:type="menu:HandledToolItem" xmi:id="_wKYzIOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.handledtoolitem.delete.fromorder" label="%label.delete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/delete_16x16.png" command="_YBYLwOnYEe-hVvaptRHwRg"/>
             </toolbar>
           </children>
-          <children xsi:type="basic_1:Part" xmi:id="_yggmkAZ4EfGnAPXIK_mrFw" elementId="linic_gest_client.part.comenzi_furnizori_approve" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.ApproveOrderPart" label="%part.label.order.approve"/>
+          <children xsi:type="basic_1:Part" xmi:id="_yggmkAZ4EfGnAPXIK_mrFw" elementId="linic_gest_client.part.comenzi_furnizori_approve" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.ApproveOrderPart" label="%part.label.order.approve">
+            <toolbar xmi:id="_HguZUAcvEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.toolbar.1">
+              <children xsi:type="menu:HandledToolItem" xmi:id="_IpVnMAcvEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.handledtoolitem.delete.fromorder.approve" label="%label.delete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/delete_16x16.png" command="_VfxRoAcwEfG-q5zKPT839w"/>
+            </toolbar>
+          </children>
         </children>
       </children>
       <children xsi:type="basic_1:Part" xmi:id="_heGX8MccEe6dhubwzOpIzg" elementId="linic_gest_client.part.accounting" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.AccountingPart" label="%part.label.10" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/contabilitate_32x32.png" closeable="true"/>

@@ -113,7 +113,7 @@ public class UIUtils {
 		showException("Error", ex, null, null);
 	}
 
-	public static void showException(final Exception ex, final UISynchronize sync) {
+	public static void showException(final Throwable ex, final UISynchronize sync) {
 		showException("Error", ex, null, sync);
 	}
 
@@ -128,11 +128,11 @@ public class UIUtils {
 	public static void showException(final String title, final Throwable ex, final String message,
 			final UISynchronize sync) {
 		if (sync != null)
-			sync.asyncExec(() -> MessageDialog.openError(Display.getCurrent().getActiveShell(), title,
+			sync.asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), title,
 					MessageFormat.format("{1}{0}{0}{2}", isEmpty(message) ? EMPTY_STRING : NEWLINE, safeString(message),
 							safeString(ex, Throwable::getMessage))));
 		else
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), title,
+			MessageDialog.openError(Display.getDefault().getActiveShell(), title,
 					MessageFormat.format("{1}{0}{0}{2}", isEmpty(message) ? EMPTY_STRING : NEWLINE, safeString(message),
 							safeString(ex, Throwable::getMessage)));
 	}
