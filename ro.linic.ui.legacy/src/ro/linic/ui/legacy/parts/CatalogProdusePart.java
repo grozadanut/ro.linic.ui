@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -49,10 +50,14 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.AccountingDocument;
+import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.LobImage;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
 import ro.colibri.util.InvocationResult;
+import ro.linic.ui.base.services.DataServices;
+import ro.linic.ui.base.services.GenericDataHolder;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.AdaugaProductDialog;
 import ro.linic.ui.legacy.dialogs.CasaDeptDialog;
@@ -76,9 +81,12 @@ import ro.linic.ui.security.services.AuthenticationSession;
 public class CatalogProdusePart
 {
 	public static final String PART_ID = "linic_gest_client.part.produse"; //$NON-NLS-1$
+	public static final String PRODUCTS_HOLDER = "Products"; //$NON-NLS-1$
 	
 	private static final String PRODUCTS_TABLE_STATE_PREFIX = "produse.all_products_nt"; //$NON-NLS-1$
-	
+
+	private static List<Gestiune> allGestiuni;
+
 	private Button adauga;
 	private Button salvare;
 	private Button refresh;
@@ -107,10 +115,63 @@ public class CatalogProdusePart
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
 	@Inject private IEclipseContext ctx;
+	@Inject private DataServices dataServices;
 	
 	public static void openPart(final EPartService partService)
 	{
 		partService.showPart(CatalogProdusePart.PART_ID, PartState.ACTIVATE);
+	}
+	
+	public static List<Gestiune> allGestiuni() {
+		if (allGestiuni == null)
+			allGestiuni = BusinessDelegate.allGestiuni();
+		return allGestiuni;
+	}
+	
+	public static synchronized void lazyLoadProducts(final boolean showConfirmation, final Consumer<GenericDataHolder> successConsumer,
+			final DataServices dataServices, final UISynchronize sync, final Bundle bundle, final Logger log) {
+		final GenericDataHolder productsHolder = dataServices.holder(PRODUCTS_HOLDER);
+		
+		if (!productsHolder.getData().isEmpty()) {
+			if (successConsumer != null)
+				successConsumer.accept(productsHolder);
+			return;
+		}
+		
+		BusinessDelegate.allProducts_InclInactive(new AsyncLoadData<Product>() {
+			@Override
+			public void success(final ImmutableList<Product> data) {
+				productsHolder.update(data.stream()
+						.map(p -> {
+							final GenericValue gv = GenericValue.of(Product.class.getName(), Product.ID_FIELD);
+							gv.put(Product.ID_FIELD, p.getId());
+							gv.put(Product.BARCODE_FIELD, p.getBarcode());
+							gv.put(Product.NAME_FIELD, p.getName());
+							gv.put(Product.UOM_FIELD, p.getUom());
+							gv.put(Product.LAST_BUYING_PRICE_FIELD, p.getLastBuyingPriceNoTva());
+							gv.put(Product.PRICE_FIELD, p.getPricePerUom());
+							for (final Gestiune gest : allGestiuni()) {
+								gv.put("STC_"+gest.getImportName(), p.stoc(gest));
+							}
+							return gv;
+						})
+						.toList(),
+						Product.ID_FIELD);
+				
+				if (successConsumer != null)
+					successConsumer.accept(productsHolder);
+				
+				if (showConfirmation)
+					MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.Success,
+							Messages.CatalogProdusePart_SuccessMessage);
+			}
+
+			@Override
+			public void error(final String details) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.CatalogProdusePart_ErrorLoading,
+						details);
+			}
+		}, sync, bundle, log);
 	}
 	
 	@PostConstruct
@@ -339,6 +400,7 @@ public class CatalogProdusePart
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				askSave();
+				dataServices.holder(PRODUCTS_HOLDER).clear();
 				loadData(true);
 			}
 		});

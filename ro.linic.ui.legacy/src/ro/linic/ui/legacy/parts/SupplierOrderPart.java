@@ -343,6 +343,20 @@ public class SupplierOrderPart
 				.ifPresent(reqId -> {
 					row.put("newRequirement", "");
 					row.put("requiredQuantityTotal", NumberUtils.add(row.getBigDecimal("requiredQuantityTotal"), quantity));
+					// update ApproveOrderPart row
+					dataServices.holder(ApproveOrderPart.DATA_HOLDER).getData().stream()
+					.filter(gv -> gv.getString(Product.ID_FIELD).equals(row.getString(Product.ID_FIELD)))
+					.findFirst()
+					.ifPresentOrElse(r -> r.put("requiredQuantityTotal", NumberUtils.add(r.getBigDecimal("requiredQuantityTotal"), quantity)),
+							() -> dataServices.holder(ApproveOrderPart.DATA_HOLDER).add(GenericValue.of("", Product.ID_FIELD, 
+									Product.ID_FIELD, row.getString(Product.ID_FIELD),
+									Product.BARCODE_FIELD, row.getString(Product.BARCODE_FIELD),
+									Product.NAME_FIELD, row.getString(Product.NAME_FIELD),
+									Product.UOM_FIELD, row.getString(Product.UOM_FIELD),
+									Product.LAST_BUYING_PRICE_FIELD, row.getString(Product.LAST_BUYING_PRICE_FIELD),
+									Product.PRICE_FIELD, row.getString(Product.PRICE_FIELD),
+									Product.FURNIZORI_FIELD, row.getString(Product.FURNIZORI_FIELD),
+									"requiredQuantityTotal", quantity)));
 				});
 	}
 
@@ -403,7 +417,7 @@ public class SupplierOrderPart
 				.async(t -> UIUtils.showException(t, sync))
 				.thenApply(ps -> ps.stream().filter(gv -> gv.getString("preferredOrderEnumId") == null ||
 															Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
-				.thenAccept(productSuppliers -> productsHolder.addOrUpdate(productSuppliers, "productId", Product.ID_FIELD,
+				.thenAccept(productSuppliers -> productsHolder.update(productSuppliers, "productId", Product.ID_FIELD,
 						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock",
 								"requiredQuantityTotal", "requiredQuantityTotal")));
 		
@@ -411,7 +425,7 @@ public class SupplierOrderPart
 		{
 			@Override public void success(final ImmutableList<Product> data)
 			{
-				productsHolder.addOrUpdate(data.stream()
+				productsHolder.update(data.stream()
 						.map(p -> {
 							final GenericValue gv = GenericValue.of(Product.class.getName(), Product.ID_FIELD,
 									Map.of(Product.ID_FIELD, p.getId(),

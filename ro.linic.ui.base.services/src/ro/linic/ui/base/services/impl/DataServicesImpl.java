@@ -13,7 +13,7 @@ public class DataServicesImpl implements DataServices {
 	private Map<String, GenericDataHolder> holders = new HashMap<>();
 	
 	@Override
-	public GenericDataHolder holder(final String name) {
+	public synchronized GenericDataHolder holder(final String name) {
 		return holders.computeIfAbsent(name, k -> new GenericDataHolderImpl());
 	}
 }

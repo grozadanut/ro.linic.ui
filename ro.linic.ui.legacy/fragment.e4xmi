@@ -117,10 +117,15 @@
           <children xsi:type="menu:HandledToolItem" xmi:id="_UUzmcMccEe6dhubwzOpIzg" elementId="linic_gest_client.handledtoolitem.xmltopdf" label="%handledtoolitem.label.17" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/xml_to_pdf_28x28.png" command="_fGbrUMZ_Ee6UtK1nDebMVw"/>
         </toolbar>
       </children>
-      <children xsi:type="basic_1:Part" xmi:id="_a3vvAMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.comenzi_furnizori" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SupplierOrderPart" label="%part.label.9" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_32x32.png" closeable="true">
-        <toolbar xmi:id="_si8yYOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.toolbar.0">
-          <children xsi:type="menu:HandledToolItem" xmi:id="_wKYzIOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.handledtoolitem.delete.fromorder" label="%label.delete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/delete_28x28.png" command="_YBYLwOnYEe-hVvaptRHwRg"/>
-        </toolbar>
+      <children xsi:type="basic_1:CompositePart" xmi:id="_UNgXkAZ3EfGnAPXIK_mrFw" elementId="ro.linic.ui.legacy.compositepart.0" toBeRendered="false" label="%part.label.9" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_32x32.png" closeable="true" selectedElement="_VqhIIAZ3EfGnAPXIK_mrFw">
+        <children xsi:type="basic_1:PartStack" xmi:id="_VqhIIAZ3EfGnAPXIK_mrFw" elementId="ro.linic.ui.legacy.partstack.0" selectedElement="_a3vvAMccEe6dhubwzOpIzg">
+          <children xsi:type="basic_1:Part" xmi:id="_a3vvAMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.comenzi_furnizori" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SupplierOrderPart" label="%part.label.order.necesar" iconURI="">
+            <toolbar xmi:id="_si8yYOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.toolbar.0">
+              <children xsi:type="menu:HandledToolItem" xmi:id="_wKYzIOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.handledtoolitem.delete.fromorder" label="%label.delete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/delete_16x16.png" command="_YBYLwOnYEe-hVvaptRHwRg"/>
+            </toolbar>
+          </children>
+          <children xsi:type="basic_1:Part" xmi:id="_yggmkAZ4EfGnAPXIK_mrFw" elementId="linic_gest_client.part.comenzi_furnizori_approve" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.ApproveOrderPart" label="%part.label.order.approve"/>
+        </children>
       </children>
       <children xsi:type="basic_1:Part" xmi:id="_heGX8MccEe6dhubwzOpIzg" elementId="linic_gest_client.part.accounting" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.AccountingPart" label="%part.label.10" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/contabilitate_32x32.png" closeable="true"/>
       <children xsi:type="basic_1:Part" xmi:id="_mkj7cMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.statistics" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.StatisticsPart" label="%part.label.11" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/chart_32x32.png" closeable="true"/>

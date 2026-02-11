@@ -1,0 +1,308 @@
+package ro.linic.ui.legacy.parts;
+
+import static ro.colibri.util.PresentationUtils.SPACE;
+import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
+import static ro.linic.ui.legacy.session.UIUtils.loadState;
+import static ro.linic.ui.legacy.session.UIUtils.saveState;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.e4.core.di.extensions.OSGiBundle;
+import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.di.PersistState;
+import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.nebula.widgets.nattable.config.AbstractRegistryConfiguration;
+import org.eclipse.nebula.widgets.nattable.config.CellConfigAttributes;
+import org.eclipse.nebula.widgets.nattable.config.IConfigRegistry;
+import org.eclipse.nebula.widgets.nattable.data.convert.DefaultBigDecimalDisplayConverter;
+import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
+import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.HorizontalAlignmentEnum;
+import org.eclipse.nebula.widgets.nattable.style.Style;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Bundle;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.TextFilterator;
+import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
+import ca.odell.glazedlists.matchers.MatcherEditor;
+import ca.odell.glazedlists.matchers.SearchEngineTextMatcherEditor;
+import ca.odell.glazedlists.matchers.TextMatcherEditor;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import ro.colibri.entities.comercial.Product;
+import ro.linic.ui.base.services.DataServices;
+import ro.linic.ui.base.services.GenericDataHolder;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.base.services.nattable.Column;
+import ro.linic.ui.base.services.nattable.FullFeaturedNatTable;
+import ro.linic.ui.base.services.nattable.TableBuilder;
+import ro.linic.ui.base.services.nattable.components.GenericValueDisplayConverter;
+import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.legacy.session.UIUtils;
+import ro.linic.ui.legacy.tables.AllProductsNatTable;
+import ro.linic.ui.security.services.AuthenticationSession;
+
+public class ApproveOrderPart {
+	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori_approve"; //$NON-NLS-1$
+	
+	private static final String TABLE_STATE_PREFIX = "supplier_order_approve.requirements_nt"; //$NON-NLS-1$
+	public static final String DATA_HOLDER = "ApproveOrderPart.requirements"; //$NON-NLS-1$
+	
+	private static final Column barcodeColumn = new Column(0, Product.BARCODE_FIELD, "Cod", 70);
+	private static final Column nameColumn = new Column(1, Product.NAME_FIELD, "Denumire", 400);
+	private static final Column uomColumn = new Column(2, Product.UOM_FIELD, "UM", 50);
+	private static final Column ULPColumn = new Column(4,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
+	private static final Column priceColumn = new Column(5, Product.PRICE_FIELD, "PU", 90);
+	private static final Column furnizoriColumn = new Column(6, Product.FURNIZORI_FIELD, "Furnizori", 220);
+	private static final Column requirementColumn = new Column(7, "requiredQuantityTotal", "Necesar", 100);
+	
+	private ImmutableList<Column> columns;
+	private Combo searchMode;
+	private Text searchFilter;
+	private Text furnizorFilter;
+	private FullFeaturedNatTable<GenericValue> allProductsTable;
+	private Button refreshButton;
+	
+	private int quickSearchFilterMode = TextMatcherEditor.CONTAINS;
+	private SearchEngineTextMatcherEditor<GenericValue> quickSearchFilter;
+	private TextMatcherEditor<GenericValue> furnizoriFilter;
+	
+	@Inject private MPart part;
+	@Inject private UISynchronize sync;
+	@Inject @OSGiBundle private Bundle bundle;
+	@Inject private Logger log;
+	@Inject private AuthenticationSession authSession;
+	@Inject private DataServices dataServices;
+	
+	private ImmutableList<Column> buildColumns() {
+		final Builder<Column> builder = ImmutableList.<Column>builder();
+		builder.add(barcodeColumn)
+		.add(nameColumn)
+		.add(uomColumn)
+		.add(ULPColumn)
+		.add(priceColumn)
+		.add(furnizoriColumn)
+		.add(requirementColumn);
+		return builder.build();
+	}
+	
+	@PostConstruct
+	public void createComposite(final Composite parent, final ESelectionService selectionService) {
+		columns = buildColumns();
+		parent.setLayout(new GridLayout());
+		createTopBar(parent);
+		
+		final Composite container = new Composite(parent, SWT.NONE);
+		container.setLayout(new GridLayout(3, false));
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(container);
+		
+		searchMode = new Combo(container, SWT.DROP_DOWN);
+		searchMode.setItems(AllProductsNatTable.ALL_SEARCH_MODES.toArray(new String[] {}));
+		searchMode.select(0);
+		UIUtils.setFont(searchMode);
+		GridDataFactory.swtDefaults().applyTo(searchMode);
+		
+		searchFilter = new Text(container, SWT.BORDER);
+		searchFilter.setMessage(Messages.BarcodeName);
+		UIUtils.setFont(searchFilter);
+		GridDataFactory.swtDefaults().hint(300, SWT.DEFAULT).applyTo(searchFilter);
+		
+		furnizorFilter = new Text(container, SWT.BORDER);
+		furnizorFilter.setMessage(Messages.SupplierOrderPart_Supplier);
+		UIUtils.setFont(furnizorFilter);
+		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(furnizorFilter);
+		
+		allProductsTable = TableBuilder.with(GenericValue.class, columns, dataServices.holder(DATA_HOLDER).getData())
+				.addConfiguration(new ProductStyleConfiguration())
+				.connectDirtyProperty(part)
+				.provideSelection(selectionService)
+				.build(parent);
+		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(allProductsTable.natTable());
+		loadState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
+		createTableFilters();
+		
+		createBottomBar(parent);
+		
+		addListeners();
+		loadData(false);
+	}
+	
+	private void createTableFilters() {
+		final EventList<MatcherEditor<GenericValue>> stringMatcherEditors = new BasicEventList<MatcherEditor<GenericValue>>();
+
+		quickSearchFilter = new SearchEngineTextMatcherEditor<GenericValue>(new TextFilterator<GenericValue>() {
+			@Override
+			public void getFilterStrings(final List<String> baseList, final GenericValue element) {
+				baseList.add(element.getString(Product.BARCODE_FIELD));
+				baseList.add(element.getString(Product.NAME_FIELD));
+			}
+		});
+		quickSearchFilter.setMode(quickSearchFilterMode);
+
+		furnizoriFilter = new TextMatcherEditor<GenericValue>(new TextFilterator<GenericValue>() {
+			@Override
+			public void getFilterStrings(final List<String> baseList, final GenericValue element) {
+				baseList.add(element.getString(Product.FURNIZORI_FIELD));
+			}
+		});
+		furnizoriFilter.setMode(TextMatcherEditor.CONTAINS);
+
+		stringMatcherEditors.add(quickSearchFilter);
+		stringMatcherEditors.add(furnizoriFilter);
+
+		final CompositeMatcherEditor<GenericValue> matcherEditor = new CompositeMatcherEditor<>(stringMatcherEditors);
+		allProductsTable.filterList().setMatcherEditor(matcherEditor);
+	}
+
+	private void createBottomBar(final Composite parent) {
+		final Composite footerContainer = new Composite(parent, SWT.NONE);
+		footerContainer.setLayout(new GridLayout(3, false));
+		footerContainer.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		refreshButton = new Button(footerContainer, SWT.PUSH);
+		refreshButton.setText(Messages.Refresh);
+		UIUtils.setBannerFont(refreshButton);
+		GridDataFactory.swtDefaults().align(SWT.RIGHT, SWT.CENTER).grab(true, false).applyTo(refreshButton);
+	}
+	
+	@PersistState
+	public void persistVisualState() {
+		saveState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
+	}
+	
+	private void addListeners() {
+		searchMode.addModifyListener(this::filterModeChange);
+		searchFilter.addModifyListener(e -> filter(searchFilter.getText()));
+		furnizorFilter.addModifyListener(e -> filterFurnizori(furnizorFilter.getText()));
+		
+		refreshButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				loadData(true);
+			}
+		});
+	}
+	
+	private void filterModeChange(final ModifyEvent e) {
+		int filterMode = TextMatcherEditor.CONTAINS;
+
+		if (AllProductsNatTable.STARTS_WITH_MODE.equalsIgnoreCase(searchMode.getText()))
+			filterMode = TextMatcherEditor.STARTS_WITH;
+
+		filterMode(filterMode);
+		filter(searchFilter.getText());
+	}
+	
+	private void filterMode(final int mode) {
+		quickSearchFilterMode = mode;
+		quickSearchFilter.setMode(quickSearchFilterMode);
+		quickSearchFilter.setFilterText(new String[] {});
+	}
+
+	private void filter(final String searchText) {
+		if (quickSearchFilterMode == TextMatcherEditor.CONTAINS)
+			quickSearchFilter.refilter(searchText);
+		else
+			quickSearchFilter.setFilterText(new String[] { searchText });
+	}
+
+	private void filterFurnizori(final String furnizori) {
+		furnizoriFilter.setFilterText(furnizori.split(SPACE));
+	}
+	
+	private void loadData(final boolean showConfirmation) {
+		final GenericDataHolder requirementsHolder = dataServices.holder(DATA_HOLDER);
+		requirementsHolder.clear();
+		
+		RestCaller.get("/rest/s1/moqui-linic-legacy/requirements")
+				.internal(authSession.authentication())
+				.addUrlParam("facilityId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
+				.addUrlParam("statusId", "RqmtStCreated")
+				.async(t -> UIUtils.showException(t, sync))
+				.thenAccept(productSuppliers -> requirementsHolder.update(productSuppliers, "productId", Product.ID_FIELD,
+						Map.of("productId", Product.ID_FIELD, "supplierNames", Product.FURNIZORI_FIELD,
+								"requiredQuantityTotal", "requiredQuantityTotal")))
+				.thenRun(() -> {
+					CatalogProdusePart.lazyLoadProducts(showConfirmation, productsHolder -> {
+						requirementsHolder.update(productsHolder.getData(), Product.ID_FIELD, false);
+						requirementsHolder.getData().sort(Comparator.comparing((final GenericValue gv) -> gv.getString(Product.FURNIZORI_FIELD))
+								.thenComparing(gv -> gv.getBigDecimal("requiredQuantityTotal")).reversed());
+						allProductsTable.natTable().refresh();
+					}, dataServices, sync, bundle, log);
+				});
+	}
+	
+	
+	private class ProductStyleConfiguration extends AbstractRegistryConfiguration {
+		@Override
+		public void configureRegistry(final IConfigRegistry configRegistry) {
+			final Style leftAlignStyle = new Style();
+			leftAlignStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
+			final Style yellowBgStyle = new Style();
+			yellowBgStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.LEFT);
+			yellowBgStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, yellowBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(barcodeColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, yellowBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(nameColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, yellowBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(uomColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, leftAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
+			
+			final Style rightAlignStyle = new Style();
+			rightAlignStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
+			final Style blueBgStyle = new Style();
+			blueBgStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
+			blueBgStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
+			blueBgStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+			final Style magentaBgStyle = new Style();
+			magentaBgStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
+			magentaBgStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_DARK_MAGENTA));
+			magentaBgStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+			final Style greenBgStyle = new Style();
+			greenBgStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
+			greenBgStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_GREEN));
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rightAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ULPColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, blueBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
+			
+			// Display converters
+			final DefaultBigDecimalDisplayConverter defaultBigDecimalConv = new DefaultBigDecimalDisplayConverter();
+			final DefaultBigDecimalDisplayConverter bigDecimalConverter = new DefaultBigDecimalDisplayConverter();
+			bigDecimalConverter.setMinimumFractionDigits(2);
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new GenericValueDisplayConverter("organizationName"),
+					DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, defaultBigDecimalConv, DisplayMode.NORMAL, 
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ULPColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(requirementColumn));
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new GenericValueDisplayConverter("organizationName"),
+					DisplayMode.EDIT, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
+		}
+	}
+}

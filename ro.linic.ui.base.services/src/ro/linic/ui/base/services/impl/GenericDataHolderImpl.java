@@ -22,8 +22,8 @@ public class GenericDataHolderImpl implements GenericDataHolder {
 	}
 	
 	@Override
-	public GenericDataHolder addOrUpdate(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey,
-			final Map<String, String> targetToHolderKey) {
+	public GenericDataHolder update(final List<GenericValue> targetData, final String targetPrimaryKey, final String sourcePrimaryKey,
+			final Map<String, String> targetToHolderKey, final boolean addMissing) {
 		this.data.getReadWriteLock().writeLock().lock();
 		try {
 			final Map<String, GenericValue> dataById = data.stream()
@@ -37,7 +37,7 @@ public class GenericDataHolderImpl implements GenericDataHolder {
 					source.update(target, targetToHolderKey);
 					source.silenceListeners(false);
 				}
-				else
+				else if (addMissing)
 					data.add(target.clone(targetToHolderKey));
 			}
 		} catch (final Exception e) {

@@ -25,13 +25,11 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	public static GenericValue of(final String entityName, final String primaryKey) {
 		return new GenericValue(entityName, primaryKey);
 	}
-	
 	public static GenericValue of(final String entityName, final String primaryKey, final String key, final Object value) {
 		final GenericValue gv = new GenericValue(entityName, primaryKey);
 		gv.put(key, value);
 		return gv;
 	}
-	
 	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
 			final String key2, final Object value2) {
 		final GenericValue gv = new GenericValue(entityName, primaryKey);
@@ -39,13 +37,72 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 		gv.put(key2, value2);
 		return gv;
 	}
-	
 	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
 			final String key2, final Object value2, final String key3, final Object value3) {
 		final GenericValue gv = new GenericValue(entityName, primaryKey);
 		gv.put(key1, value1);
 		gv.put(key2, value2);
 		gv.put(key3, value3);
+		return gv;
+	}
+	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
+			final String key2, final Object value2, final String key3, final Object value3, final String key4, final Object value4) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
+		gv.put(key1, value1);
+		gv.put(key2, value2);
+		gv.put(key3, value3);
+		gv.put(key4, value4);
+		return gv;
+	}
+	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
+			final String key2, final Object value2, final String key3, final Object value3, final String key4, final Object value4,
+			final String key5, final Object value5) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
+		gv.put(key1, value1);
+		gv.put(key2, value2);
+		gv.put(key3, value3);
+		gv.put(key4, value4);
+		gv.put(key5, value5);
+		return gv;
+	}
+	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
+			final String key2, final Object value2, final String key3, final Object value3, final String key4, final Object value4,
+			final String key5, final Object value5, final String key6, final Object value6) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
+		gv.put(key1, value1);
+		gv.put(key2, value2);
+		gv.put(key3, value3);
+		gv.put(key4, value4);
+		gv.put(key5, value5);
+		gv.put(key6, value6);
+		return gv;
+	}
+	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
+			final String key2, final Object value2, final String key3, final Object value3, final String key4, final Object value4,
+			final String key5, final Object value5, final String key6, final Object value6, final String key7, final Object value7) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
+		gv.put(key1, value1);
+		gv.put(key2, value2);
+		gv.put(key3, value3);
+		gv.put(key4, value4);
+		gv.put(key5, value5);
+		gv.put(key6, value6);
+		gv.put(key7, value7);
+		return gv;
+	}
+	public static GenericValue of(final String entityName, final String primaryKey, final String key1, final Object value1,
+			final String key2, final Object value2, final String key3, final Object value3, final String key4, final Object value4,
+			final String key5, final Object value5, final String key6, final Object value6, final String key7, final Object value7,
+			final String key8, final Object value8) {
+		final GenericValue gv = new GenericValue(entityName, primaryKey);
+		gv.put(key1, value1);
+		gv.put(key2, value2);
+		gv.put(key3, value3);
+		gv.put(key4, value4);
+		gv.put(key5, value5);
+		gv.put(key6, value6);
+		gv.put(key7, value7);
+		gv.put(key8, value8);
 		return gv;
 	}
 	
