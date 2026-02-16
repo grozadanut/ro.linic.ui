@@ -23,13 +23,13 @@ import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.http.RestCaller;
-import ro.linic.ui.legacy.parts.SupplierOrderPart;
+import ro.linic.ui.legacy.parts.RequirementsPart;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.security.services.AuthenticationSession;
 
-public class EliminateFromOrderingHandler {
-	private static final ILog log = ILog.of(EliminateFromOrderingHandler.class);
+public class EliminateFromRequirementsHandler {
+	private static final ILog log = ILog.of(EliminateFromRequirementsHandler.class);
 	
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) final List<GenericValue> products, final DataServices dataServices,
@@ -56,7 +56,7 @@ public class EliminateFromOrderingHandler {
 					.sync(GenericValue.class, t -> UIUtils.showException(t, t.getMessage()));
 		});
 		
-		dataServices.holder(SupplierOrderPart.DATA_HOLDER).remove(products);
+		dataServices.holder(RequirementsPart.DATA_HOLDER).remove(products);
 	}
 	
 	@CanExecute

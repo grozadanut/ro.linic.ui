@@ -63,19 +63,17 @@ import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.AllProductsNatTable;
 import ro.linic.ui.security.services.AuthenticationSession;
 
-public class ApproveOrderPart {
-	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori_approve"; //$NON-NLS-1$
+public class SupplierOrdersPart {
+	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori.orders"; //$NON-NLS-1$
 	
-	private static final String TABLE_STATE_PREFIX = "supplier_order_approve.requirements_nt"; //$NON-NLS-1$
-	public static final String DATA_HOLDER = "ApproveOrderPart.requirements"; //$NON-NLS-1$
+	private static final String TABLE_STATE_PREFIX = "supplier_orders.orders_nt"; //$NON-NLS-1$
+	public static final String DATA_HOLDER = "SupplierOrdersPart.orders"; //$NON-NLS-1$
 	
 	private static final Column barcodeColumn = new Column(0, Product.BARCODE_FIELD, "Cod", 70);
 	private static final Column nameColumn = new Column(1, Product.NAME_FIELD, "Denumire", 400);
 	private static final Column uomColumn = new Column(2, Product.UOM_FIELD, "UM", 50);
-	private static final Column ULPColumn = new Column(4,Product.LAST_BUYING_PRICE_FIELD, "ULPfTVA", 70);
-	private static final Column priceColumn = new Column(5, Product.PRICE_FIELD, "PU", 90);
-	private static final Column furnizoriColumn = new Column(6, Product.FURNIZORI_FIELD, "Furnizori", 220);
-	private static final Column requirementColumn = new Column(7, "quantityTotal", "Necesar", 100);
+	private static final Column furnizoriColumn = new Column(3, "description", "Furnizor", 220);
+	private static final Column ordersColumn = new Column(4, "quantityTotal", "Comandat", 100);
 	
 	private ImmutableList<Column> columns;
 	private Combo searchMode;
@@ -100,10 +98,8 @@ public class ApproveOrderPart {
 		builder.add(barcodeColumn)
 		.add(nameColumn)
 		.add(uomColumn)
-		.add(ULPColumn)
-		.add(priceColumn)
 		.add(furnizoriColumn)
-		.add(requirementColumn);
+		.add(ordersColumn);
 		return builder.build();
 	}
 	
@@ -135,7 +131,6 @@ public class ApproveOrderPart {
 		
 		table = TableBuilder.with(GenericValue.class, columns, dataServices.holder(DATA_HOLDER).getData())
 				.addConfiguration(new CustomStyleConfiguration())
-				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
 				.build(parent);
 		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(table.natTable());
@@ -163,7 +158,7 @@ public class ApproveOrderPart {
 		furnizoriFilter = new TextMatcherEditor<GenericValue>(new TextFilterator<GenericValue>() {
 			@Override
 			public void getFilterStrings(final List<String> baseList, final GenericValue element) {
-				baseList.add(element.getString(Product.FURNIZORI_FIELD));
+				baseList.add(element.getString("description"));
 			}
 		});
 		furnizoriFilter.setMode(TextMatcherEditor.CONTAINS);
@@ -232,21 +227,21 @@ public class ApproveOrderPart {
 	}
 	
 	private void loadData(final boolean showConfirmation) {
-		final GenericDataHolder requirementsHolder = dataServices.holder(DATA_HOLDER);
-		requirementsHolder.clear();
+		final GenericDataHolder ordersHolder = dataServices.holder(DATA_HOLDER);
+		ordersHolder.clear();
 		
 		RestCaller.get("/rest/s1/moqui-linic-legacy/requirements")
 				.internal(authSession.authentication())
 				.addUrlParam("facilityId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
-				.addUrlParam("statusId", "RqmtStCreated")
+				.addUrlParam("statusId", "RqmtStOrdered")
 				.async(t -> UIUtils.showException(t, sync))
-				.thenAccept(requirements -> requirementsHolder.update(requirements, "productId", Product.ID_FIELD,
-						Map.of("productId", Product.ID_FIELD, "supplierNames", Product.FURNIZORI_FIELD,
+				.thenAccept(orders -> ordersHolder.update(orders, "productId", Product.ID_FIELD,
+						Map.of("productId", Product.ID_FIELD, "description", "description",
 								"quantityTotal", "quantityTotal")))
 				.thenRun(() -> {
 					CatalogProdusePart.lazyLoadProducts(showConfirmation, productsHolder -> {
-						requirementsHolder.update(productsHolder.getData(), Product.ID_FIELD, false);
-						requirementsHolder.getData().sort(Comparator.comparing((final GenericValue gv) -> gv.getString(Product.FURNIZORI_FIELD))
+						ordersHolder.update(productsHolder.getData(), Product.ID_FIELD, false);
+						ordersHolder.getData().sort(Comparator.comparing((final GenericValue gv) -> gv.getString("description"))
 								.thenComparing(gv -> gv.getBigDecimal("quantityTotal")).reversed());
 						table.natTable().refresh();
 					}, dataServices, sync, bundle, log);
@@ -268,26 +263,12 @@ public class ApproveOrderPart {
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, yellowBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(uomColumn));
 			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, leftAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(furnizoriColumn));
 			
-			final Style rightAlignStyle = new Style();
-			rightAlignStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
-			final Style blueBgStyle = new Style();
-			blueBgStyle.setAttributeValue(CellStyleAttributes.HORIZONTAL_ALIGNMENT, HorizontalAlignmentEnum.RIGHT);
-			blueBgStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
-			blueBgStyle.setAttributeValue(CellStyleAttributes.FOREGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-			
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, rightAlignStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ULPColumn));
-			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, blueBgStyle, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
-			
 			// Display converters
 			final DefaultBigDecimalDisplayConverter bigDecimalConverter = new DefaultBigDecimalDisplayConverter();
 			bigDecimalConverter.setMinimumFractionDigits(2);
 			
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
-					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ULPColumn));
-			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
-					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(priceColumn));
-			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, bigDecimalConverter, DisplayMode.NORMAL, 
-					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(requirementColumn));
+					ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(ordersColumn));
 		}
 	}
 }

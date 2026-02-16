@@ -22,7 +22,7 @@ public class OrderProductsHandler {
 	@Execute
 	public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) final List<GenericValue> requirements, final DataServices dataServices,
 			@Named(IServiceConstants.ACTIVE_SHELL) final Shell shell, final UISynchronize sync, final AuthenticationSession authSession) {
-		new OrderProductsDialog(shell, authSession, sync, requirements).open();
+		new OrderProductsDialog(shell, authSession, sync, dataServices, requirements).open();
 	}
 	
 	@CanExecute

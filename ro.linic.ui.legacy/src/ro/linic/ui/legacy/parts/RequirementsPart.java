@@ -96,12 +96,12 @@ import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.AllProductsNatTable;
 import ro.linic.ui.security.services.AuthenticationSession;
 
-public class SupplierOrderPart
+public class RequirementsPart
 {
 	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori"; //$NON-NLS-1$
 	
-	private static final String TABLE_STATE_PREFIX = "supplier_order.products_nt"; //$NON-NLS-1$
-	public static final String DATA_HOLDER = "SupplierOrderPart.ProductsToOrder"; //$NON-NLS-1$
+	private static final String TABLE_STATE_PREFIX = "requirements.products_nt"; //$NON-NLS-1$
+	public static final String DATA_HOLDER = "RequirementsPart.ProductsToOrder"; //$NON-NLS-1$
 	
 	private static final int STOC_ID_BASE = 1000;
 	
@@ -141,7 +141,7 @@ public class SupplierOrderPart
 	private Combo searchMode;
 	private Text searchFilter;
 	private Text furnizorFilter;
-	private FullFeaturedNatTable<GenericValue> allProductsTable;
+	private FullFeaturedNatTable<GenericValue> table;
 	private Button refreshButton;
 	
 	private int quickSearchFilterMode = TextMatcherEditor.CONTAINS;
@@ -158,7 +158,7 @@ public class SupplierOrderPart
 	private ImmutableList<Column> buildColumns() {
 		final Gestiune gest = ClientSession.instance().getGestiune();
 		recommendedOrderColumn = new Column(2000, "QTO_"+gest.getImportName(), "Comanda recomandata "+gest.getImportName(), 100);
-		supplierOrdersColumn = new Column(3000, "requiredQuantityTotal", "Comenzi "+gest.getImportName(), 100);
+		supplierOrdersColumn = new Column(3000, "quantityTotal", "Comenzi "+gest.getImportName(), 100);
 		
 		final Builder<Column> builder = ImmutableList.<Column>builder();
 		builder.add(barcodeColumn)
@@ -217,15 +217,15 @@ public class SupplierOrderPart
 		UIUtils.setFont(furnizorFilter);
 		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(furnizorFilter);
 		
-		allProductsTable = TableBuilder.with(GenericValue.class, columns, dataServices.holder(DATA_HOLDER).getData())
-				.addConfiguration(new ProductStyleConfiguration())
+		table = TableBuilder.with(GenericValue.class, columns, dataServices.holder(DATA_HOLDER).getData())
+				.addConfiguration(new CustomStyleConfiguration())
 				.connectDirtyProperty(part)
 				.provideSelection(selectionService)
 				.saveToDbHandler(this::saveChangesToDb)
 				.addClickListener(addRequirementButtonColumn, this::createRequirement)
 				.build(parent);
-		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(allProductsTable.natTable());
-		loadState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
+		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(table.natTable());
+		loadState(TABLE_STATE_PREFIX, table.natTable(), part);
 		createTableFilters();
 		
 		createBottomBar(parent);
@@ -260,7 +260,7 @@ public class SupplierOrderPart
 		stringMatcherEditors.add(furnizoriFilter);
 		
 		final CompositeMatcherEditor<GenericValue> matcherEditor = new CompositeMatcherEditor<>(stringMatcherEditors);
-        allProductsTable.filterList().setMatcherEditor(matcherEditor);
+        table.filterList().setMatcherEditor(matcherEditor);
 	}
 
 	private void createBottomBar(final Composite parent)
@@ -277,17 +277,17 @@ public class SupplierOrderPart
 	
 	@PersistState
 	public void persistVisualState() {
-		saveState(TABLE_STATE_PREFIX, allProductsTable.natTable(), part);
+		saveState(TABLE_STATE_PREFIX, table.natTable(), part);
 	}
 	
 	@Persist
 	public void onSave(final MPart part) {
-		allProductsTable.natTable().doCommand(new SaveDataChangesCommand());
+		table.natTable().doCommand(new SaveDataChangesCommand());
 	}
 	
 	@DiscardChanges
 	public void onDiscard(final MPart part) {
-		allProductsTable.natTable().doCommand(new DiscardDataChangesCommand());
+		table.natTable().doCommand(new DiscardDataChangesCommand());
 	}
 	
 	private boolean saveChangesToDb(final List<UpdateCommand> updateCommands) {
@@ -326,7 +326,7 @@ public class SupplierOrderPart
 	
 	private void createRequirement(final GenericValue row, final Object cellValue) {
 		// fix for DataChangeLayer.temporaryDataStorage: if the data changes should be handled temporary in this layer and update the model on save
-		allProductsTable.natTable().doCommand(new SaveDataChangesCommand());
+		table.natTable().doCommand(new SaveDataChangesCommand());
 		
 		final BigDecimal quantity = row.getBigDecimal("newRequirement");
 		if (NumberUtils.smallerThanOrEqual(quantity, BigDecimal.ZERO))
@@ -345,12 +345,12 @@ public class SupplierOrderPart
 				.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 				.ifPresent(reqId -> {
 					row.put("newRequirement", "");
-					row.put("requiredQuantityTotal", NumberUtils.add(row.getBigDecimal("requiredQuantityTotal"), quantity));
+					row.put("quantityTotal", NumberUtils.add(row.getBigDecimal("quantityTotal"), quantity));
 					// update ApproveOrderPart row
 					dataServices.holder(ApproveOrderPart.DATA_HOLDER).getData().stream()
 					.filter(gv -> gv.getString(Product.ID_FIELD).equals(row.getString(Product.ID_FIELD)))
 					.findFirst()
-					.ifPresentOrElse(r -> r.put("requiredQuantityTotal", NumberUtils.add(r.getBigDecimal("requiredQuantityTotal"), quantity)),
+					.ifPresentOrElse(r -> r.put("quantityTotal", NumberUtils.add(r.getBigDecimal("quantityTotal"), quantity)),
 							() -> dataServices.holder(ApproveOrderPart.DATA_HOLDER).add(GenericValue.of("", Product.ID_FIELD, 
 									Product.ID_FIELD, row.getString(Product.ID_FIELD),
 									Product.BARCODE_FIELD, row.getString(Product.BARCODE_FIELD),
@@ -359,7 +359,7 @@ public class SupplierOrderPart
 									Product.LAST_BUYING_PRICE_FIELD, row.getBigDecimal(Product.LAST_BUYING_PRICE_FIELD),
 									Product.PRICE_FIELD, row.getString(Product.PRICE_FIELD),
 									Product.FURNIZORI_FIELD, row.getString(Product.FURNIZORI_FIELD),
-									"requiredQuantityTotal", quantity)));
+									"quantityTotal", quantity)));
 				});
 	}
 
@@ -422,7 +422,7 @@ public class SupplierOrderPart
 															Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
 				.thenAccept(productSuppliers -> productsHolder.update(productSuppliers, "productId", Product.ID_FIELD,
 						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock",
-								"requiredQuantityTotal", "requiredQuantityTotal")));
+								"quantityTotal", "quantityTotal")));
 		
 		BusinessDelegate.allProductsForOrdering(new AsyncLoadData<Product>()
 		{
@@ -449,7 +449,7 @@ public class SupplierOrderPart
 						.thenComparing(gv -> ((GenericValue) gv).getBigDecimal("QTO_"+ClientSession.instance().getGestiune().getImportName())).reversed());
 				// need this fix because of the speed fix in GenericDataHolderImpl:
 				// source.silenceListeners(true); // speed fix
-				allProductsTable.natTable().refresh();
+				table.natTable().refresh();
 
 				reloadDaysOfInventoryOutstanding();
 				if (showConfirmation)
@@ -474,7 +474,7 @@ public class SupplierOrderPart
 				final BigDecimal recommendedOrder = NumberUtils.subtract(gv.getBigDecimal("minimumStock"), gv.getBigDecimal("STC_"+gestName));
 				gv.put("QTO_"+gestName, recommendedOrder);
 				
-				final BigDecimal newRequirement = NumberUtils.subtract(recommendedOrder, gv.getBigDecimal("requiredQuantityTotal"));
+				final BigDecimal newRequirement = NumberUtils.subtract(recommendedOrder, gv.getBigDecimal("quantityTotal"));
 				if (NumberUtils.greaterThan(newRequirement, BigDecimal.ZERO))
 					gv.put("newRequirement", newRequirement);
 				gv.silenceListeners(false);
@@ -529,7 +529,7 @@ public class SupplierOrderPart
 							.divide(new BigDecimal(1000000), 2, RoundingMode.UP));
 					product.silenceListeners(false);
 				}
-				allProductsTable.natTable().refresh();
+				table.natTable().refresh();
 			}
 
 			@Override public void error(final String details)
@@ -540,7 +540,7 @@ public class SupplierOrderPart
 		ImmutableSet.of(AccountingDocument.FACTURA_NAME, AccountingDocument.BON_CONSUM_NAME, AccountingDocument.BON_CASA_NAME));
 	}
 
-	private class ProductStyleConfiguration extends AbstractRegistryConfiguration {
+	private class CustomStyleConfiguration extends AbstractRegistryConfiguration {
 		@Override
 		public void configureRegistry(final IConfigRegistry configRegistry) {
 			final Style leftAlignStyle = new Style();

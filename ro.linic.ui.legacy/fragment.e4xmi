@@ -27,6 +27,7 @@
     <elements xsi:type="commands:Command" xmi:id="_zYIDYCdCEfC8xrnX11KqgQ" elementId="ro.linic.ui.legacy.command.new_moqui_receipt" commandName="%command.commandname.2"/>
     <elements xsi:type="commands:Command" xmi:id="_VfxRoAcwEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.command.delete.approve_order" commandName="%label.delete"/>
     <elements xsi:type="commands:Command" xmi:id="_xpWtUAdCEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.command.order_products" commandName="%label.order"/>
+    <elements xsi:type="commands:Command" xmi:id="_QIYHUAsvEfGbksn8rH9E1A" elementId="ro.linic.ui.legacy.command.delete.supplier.orders" commandName="%label.delete"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_i7ppYMZ_Ee6UtK1nDebMVw" featurename="handlers" parentElementId="ro.linic.ui.base.application">
     <elements xsi:type="commands:Handler" xmi:id="_lNH8wMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.handler.inchideBonCommand" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.InchideBonHandler" command="_tmURwMZ-Ee6UtK1nDebMVw"/>
@@ -49,10 +50,11 @@
     <elements xsi:type="commands:Handler" xmi:id="_uOVzsMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.rneutru" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.RecenzieNeutruHandler" command="_bbFa8MZ_Ee6UtK1nDebMVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_wtf9wMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.rsad" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.RecenzieSadHandler" command="_dPbtcMZ_Ee6UtK1nDebMVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_zhB1UMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.xmltopdf" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.XmlToPdfHandler" command="_fGbrUMZ_Ee6UtK1nDebMVw"/>
-    <elements xsi:type="commands:Handler" xmi:id="_JC-SwOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.handler.delete.fromorder" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.EliminateFromOrderingHandler" command="_YBYLwOnYEe-hVvaptRHwRg"/>
+    <elements xsi:type="commands:Handler" xmi:id="_JC-SwOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.handler.delete.fromorder" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.EliminateFromRequirementsHandler" command="_YBYLwOnYEe-hVvaptRHwRg"/>
     <elements xsi:type="commands:Handler" xmi:id="_GJdi0CdAEfC8xrnX11KqgQ" elementId="ro.linic.ui.legacy.handler.new_moqui_receipt" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenNewMoquiReceiptHandler" command="_zYIDYCdCEfC8xrnX11KqgQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_alCiUAcwEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.handler.delete.fromorder.approve" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.EliminateFromApproveOrderHandler" command="_VfxRoAcwEfG-q5zKPT839w"/>
     <elements xsi:type="commands:Handler" xmi:id="_CcZMsAdDEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.handler.order_products" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OrderProductsHandler" command="_xpWtUAdCEfG-q5zKPT839w"/>
+    <elements xsi:type="commands:Handler" xmi:id="_VnTOIAsvEfGbksn8rH9E1A" elementId="ro.linic.ui.legacy.handler.delete.supplier.orders" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.EliminateFromOrdersHandler" command="_QIYHUAsvEfGbksn8rH9E1A"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_XoPUEMaCEe6UtK1nDebMVw" featurename="children" parentElementId="org.eclipse.ui.contexts.window">
     <elements xsi:type="commands:BindingContext" xmi:id="_dV2XIMaCEe6UtK1nDebMVw" elementId="linic_gest_client.bindingcontext.vanzari" name="In Vanzari Part"/>
@@ -123,7 +125,7 @@
       </children>
       <children xsi:type="basic_1:CompositePart" xmi:id="_UNgXkAZ3EfGnAPXIK_mrFw" elementId="ro.linic.ui.legacy.compositepart.0" toBeRendered="false" label="%part.label.9" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_32x32.png" closeable="true" selectedElement="_VqhIIAZ3EfGnAPXIK_mrFw">
         <children xsi:type="basic_1:PartStack" xmi:id="_VqhIIAZ3EfGnAPXIK_mrFw" elementId="ro.linic.ui.legacy.partstack.0" selectedElement="_a3vvAMccEe6dhubwzOpIzg">
-          <children xsi:type="basic_1:Part" xmi:id="_a3vvAMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.comenzi_furnizori" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SupplierOrderPart" label="%part.label.order.necesar" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_32x32.png">
+          <children xsi:type="basic_1:Part" xmi:id="_a3vvAMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.comenzi_furnizori" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.RequirementsPart" label="%part.label.order.necesar" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_32x32.png">
             <toolbar xmi:id="_si8yYOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.toolbar.0">
               <children xsi:type="menu:HandledToolItem" xmi:id="_wKYzIOnYEe-hVvaptRHwRg" elementId="ro.linic.ui.legacy.handledtoolitem.delete.fromorder" label="%label.delete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/delete_28x28.png" command="_YBYLwOnYEe-hVvaptRHwRg"/>
             </toolbar>
@@ -132,6 +134,11 @@
             <toolbar xmi:id="_HguZUAcvEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.toolbar.1">
               <children xsi:type="menu:HandledToolItem" xmi:id="_bloYcAc3EfG-q5zKPT839w" elementId="ro.linic.ui.legacy.handledtoolitem.comanda" label="%label.order" command="_xpWtUAdCEfG-q5zKPT839w"/>
               <children xsi:type="menu:HandledToolItem" xmi:id="_IpVnMAcvEfG-q5zKPT839w" elementId="ro.linic.ui.legacy.handledtoolitem.delete.fromorder.approve" label="%label.delete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/delete_28x28.png" command="_VfxRoAcwEfG-q5zKPT839w"/>
+            </toolbar>
+          </children>
+          <children xsi:type="basic_1:Part" xmi:id="_DP8ycAsmEfGbksn8rH9E1A" elementId="linic_gest_client.part.comenzi_furnizori.orders" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.SupplierOrdersPart" label="%part.label.order.order" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/ok_32x32.png">
+            <toolbar xmi:id="_dkNaUAsvEfGbksn8rH9E1A" elementId="ro.linic.ui.legacy.toolbar.2">
+              <children xsi:type="menu:HandledToolItem" xmi:id="_d-C2oAsvEfGbksn8rH9E1A" elementId="ro.linic.ui.legacy.handledtoolitem.delete.fromorder.approve" label="%label.delete" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/delete_28x28.png" command="_QIYHUAsvEfGbksn8rH9E1A"/>
             </toolbar>
           </children>
         </children>

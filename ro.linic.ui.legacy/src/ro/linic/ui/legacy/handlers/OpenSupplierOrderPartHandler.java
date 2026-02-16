@@ -11,7 +11,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 
 import ro.colibri.security.Permissions;
-import ro.linic.ui.legacy.parts.SupplierOrderPart;
+import ro.linic.ui.legacy.parts.RequirementsPart;
 import ro.linic.ui.legacy.session.ClientSession;
 
 public class OpenSupplierOrderPartHandler
@@ -28,7 +28,7 @@ public class OpenSupplierOrderPartHandler
 	@Execute
 	public void execute(final EPartService partService)
 	{
-		partService.showPart(SupplierOrderPart.PART_ID, PartState.ACTIVATE);
+		partService.showPart(RequirementsPart.PART_ID, PartState.ACTIVATE);
 	}
 	
 	@CanExecute

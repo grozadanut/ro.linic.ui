@@ -1,5 +1,6 @@
 package ro.linic.ui.legacy.dialogs;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -9,11 +10,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -28,8 +29,14 @@ import org.eclipse.swt.widgets.Shell;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.GlazedLists;
 import ro.colibri.entities.comercial.Product;
+import ro.colibri.util.PresentationUtils;
+import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.parts.ApproveOrderPart;
+import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.security.services.AuthenticationSession;
 
@@ -44,12 +51,14 @@ public class OrderProductsDialog extends TitleAreaDialog {
 
 	private AuthenticationSession authSession;
 	private UISynchronize sync;
+	private DataServices dataServices;
 
-	public OrderProductsDialog(final Shell parent, final AuthenticationSession authSession, final UISynchronize sync,
+	public OrderProductsDialog(final Shell parent, final AuthenticationSession authSession, final UISynchronize sync, final DataServices dataServices,
 			final List<GenericValue> requirements) {
 		super(parent);
 		this.authSession = authSession;
 		this.sync = sync;
+		this.dataServices = dataServices;
 		this.requirements = requirements;
 	}
 	
@@ -170,6 +179,31 @@ public class OrderProductsDialog extends TitleAreaDialog {
 		if (channel().isEmpty()) {
 			setErrorMessage(Messages.OrderProductsDialog_ChannelMissingError);
 			return;
+		}
+		
+		if (channel().get().getString("channelId").equalsIgnoreCase("print")) {
+			if (InfoDialog.open(getParentShell(), Messages.OrderProductsDialog_Title, 
+					requirements.stream()
+					.map(gv -> MessageFormat.format("{0} \t {1} {2}", 
+							gv.getString(Product.NAME_FIELD),
+							gv.getBigDecimal("quantityTotal"),
+							gv.getString(Product.UOM_FIELD)))
+					.collect(Collectors.joining(PresentationUtils.NEWLINE))) == Window.OK) {
+				
+				for (final GenericValue req : requirements) {
+					final Map<String, Object> body = Map.of("facilityId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName(),
+							"requirementTypeEnumId", "RqTpInventory",
+							"productId", req.getString(Product.ID_FIELD),
+							"description", supplier().get().getString("organizationName"),
+							"statusId", "RqmtStOrdered");
+					
+					RestCaller.put("/rest/s1/moqui-linic-legacy/requirements/status")
+					.internal(authSession.authentication())
+					.body(BodyProvider.of(HttpUtils.toJSON(body)))
+					.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
+					.ifPresent(r -> dataServices.holder(ApproveOrderPart.DATA_HOLDER).getData().remove(req));
+				}
+			}
 		}
 		
 		super.okPressed();
