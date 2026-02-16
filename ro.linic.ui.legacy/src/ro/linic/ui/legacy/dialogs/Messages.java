@@ -290,6 +290,11 @@ public class Messages extends NLS {
 	public static String ReceptieEFacturaDialog_InvoiceAlreadyReceivedError;
 	public static String AnafInvoiceLineTray_Disconnect;
 	public static String AnafInvoiceLineTray_IgnoreLine;
+	public static String OrderProductsDialog_Title;
+	public static String OrderProductsDialog_Supplier;
+	public static String OrderProductsDialog_Channel;
+	public static String OrderProductsDialog_SupplierMissingError;
+	public static String OrderProductsDialog_ChannelMissingError;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

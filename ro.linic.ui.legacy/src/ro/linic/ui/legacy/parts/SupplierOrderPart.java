@@ -188,6 +188,9 @@ public class SupplierOrderPart
 		RestCaller.get("/rest/s1/moqui-linic-legacy/suppliers")
 		.internal(authSession.authentication())
 		.async(t -> UIUtils.showException(t, sync))
+		.thenApply(suppliers -> suppliers.stream()
+				.sorted(Comparator.comparing(gv -> gv.getString("organizationName")))
+				.toList())
 		.thenAccept(allSuppliers::addAll);
 		
 		columns = buildColumns();

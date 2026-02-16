@@ -118,6 +118,16 @@ abstract class RestFluent implements BaseConfigurer {
 			return Optional.empty();
 		}
 	}
+	
+	@Override
+	public List<GenericValue> get(final Consumer<Throwable> exceptionHandler) {
+		try {
+			return async(exceptionHandler).get();
+		} catch (InterruptedException | ExecutionException e) {
+			exceptionHandler.accept(e);
+			return List.of();
+		}
+	}
 
 	protected abstract Builder buildMethod(Builder reqBuilder);
 }
