@@ -100,7 +100,10 @@ import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.InvocationResult.Problem;
+import ro.colibri.util.NumberUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.services.DataServices;
+import ro.linic.ui.base.services.GenericDataHolder;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpUtils;
@@ -204,6 +207,7 @@ public class ManagerPart implements IMouseAction
 	@Inject private EPartService partService;
 	@Inject private Logger log;
 	@Inject private AuthenticationSession authSession;
+	@Inject private DataServices dataServices;
 
 	public static ManagerPart loadDocInPart(final EPartService partService, final AccountingDocument doc)
 	{
@@ -1430,6 +1434,7 @@ public class ManagerPart implements IMouseAction
 			final AccountingDocument accDoc = result.extra(InvocationResult.ACCT_DOC_KEY);
 			updateDoc(accDoc);
 			updateProductSuppliers(p, op, accDoc);
+			deleteOrders(p, op);
 		}
 		return result;
 	}
@@ -1449,7 +1454,24 @@ public class ManagerPart implements IMouseAction
 								"price", op.getPretUnitarAchizitieFaraTVA()))))))
 				.async(t -> log.error(t));
 	}
-	
+
+	private void deleteOrders(final Optional<Product> p, final Operatiune op) {
+		if (p.isEmpty() || !TipOp.INTRARE.equals(op.getTipOp()) || !ClientSession.instance().getGestiune().equals(op.getGestiune()) ||
+				NumberUtils.smallerThanOrEqual(op.getCantitate(), BigDecimal.ZERO))
+			return;
+		
+		final GenericDataHolder ordersHolder = dataServices.holder(SupplierOrdersPart.DATA_HOLDER);
+		RestCaller.delete("/rest/s1/moqui-linic-legacy/requirements")
+		.internal(authSession.authentication())
+		.addUrlParam("requirementId", "*")
+		.addUrlParam("facilityId", ClientSession.instance().getGestiune().getImportName())
+		.addUrlParam("requirementTypeEnumId", "RqTpInventory")
+		.addUrlParam("statusId", "RqmtStOrdered")
+		.addUrlParam("productId", p.get().getId().toString())
+		.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
+		.ifPresent(result -> ordersHolder.getData().removeIf(gv -> gv.getInt(Product.ID_FIELD).equals(p.get().getId())));
+	}
+
 	private void transferOperations(final List<Operatiune> operations)
 	{
 		int gestiuneId;
