@@ -17,7 +17,7 @@ public class BetaTester {
 		return RestCaller.get("/rest/s1/mantle/my/preference")
 				.internal(authSession.authentication())
 				.addUrlParam("preferenceKey", BETA_TESTER_PREF_KEY)
-				.get(GenericValue.class, t -> log.error(t.getMessage(), t))
+				.sync(GenericValue.class, t -> log.error(t.getMessage(), t))
 				.map(gv -> gv.getBoolean("preferenceValue"))
 				.orElse(false);
 	}

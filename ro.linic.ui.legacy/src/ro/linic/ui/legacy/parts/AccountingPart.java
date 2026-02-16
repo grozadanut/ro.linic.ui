@@ -414,7 +414,7 @@ public class AccountingPart implements IMouseAction {
 							RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoiceLines")
 							.internal(authSession.authentication())
 							.addUrlParam("systemMessageId", selAnafInvoice.get().getString("id"))
-							.get(Result.class, t -> UIUtils.showException(t, sync))
+							.sync(Result.class, t -> UIUtils.showException(t, sync))
 							.get().resultList())
 					.open();
 			}

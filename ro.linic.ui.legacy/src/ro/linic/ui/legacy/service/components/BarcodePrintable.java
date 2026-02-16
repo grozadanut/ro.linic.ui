@@ -121,7 +121,7 @@ public class BarcodePrintable implements Serializable
 				.internal(ctx.get(AuthenticationSession.class).authentication())
 				.addUrlParam("quantity", "1")
 				.addUrlParam("productStoreId", PresentationUtils.safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getImportName))
-				.get(GenericValue.class, t -> log.error(t.getMessage(), t))
+				.sync(GenericValue.class, t -> log.error(t.getMessage(), t))
 				.map(gv -> NumberUtils.parse(gv.getString("price")))
 				.orElse(null);
 		

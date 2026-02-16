@@ -102,7 +102,7 @@ abstract class RestFluent implements BaseConfigurer {
 	}
 	
 	@Override
-	public <T> Optional<T> get(final Class<T> clazz, final Consumer<Throwable> exceptionHandler) {
+	public <T> Optional<T> sync(final Class<T> clazz, final Consumer<Throwable> exceptionHandler) {
 		try {
 			return Optional.ofNullable(asyncRaw(BodyHandlers.ofString())
 					.thenApply(HttpUtils::checkOk)
@@ -120,7 +120,7 @@ abstract class RestFluent implements BaseConfigurer {
 	}
 	
 	@Override
-	public List<GenericValue> get(final Consumer<Throwable> exceptionHandler) {
+	public List<GenericValue> sync(final Consumer<Throwable> exceptionHandler) {
 		try {
 			return async(exceptionHandler).get();
 		} catch (InterruptedException | ExecutionException e) {

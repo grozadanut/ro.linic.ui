@@ -305,7 +305,7 @@ public class SupplierOrderPart
 		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
 				.internal(authSession.authentication())
 				.body(BodyProvider.of(HttpUtils.toJSON(valuesToUpdate)))
-				.get(Result.class, t -> UIUtils.showException(t, sync))
+				.sync(Result.class, t -> UIUtils.showException(t, sync))
 				.isPresent();
 	}
 	
@@ -320,7 +320,7 @@ public class SupplierOrderPart
 		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/facility")
 				.internal(authSession.authentication())
 				.body(BodyProvider.of(HttpUtils.toJSON(valuesToUpdate)))
-				.get(Result.class, t -> UIUtils.showException(t, sync))
+				.sync(Result.class, t -> UIUtils.showException(t, sync))
 				.isPresent();
 	}
 	
@@ -342,7 +342,7 @@ public class SupplierOrderPart
 		RestCaller.post("/rest/s1/moqui-linic-legacy/requirements")
 				.internal(authSession.authentication())
 				.body(BodyProvider.of(HttpUtils.toJSON(body)))
-				.get(GenericValue.class, t -> UIUtils.showException(t, sync))
+				.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 				.ifPresent(reqId -> {
 					row.put("newRequirement", "");
 					row.put("requiredQuantityTotal", NumberUtils.add(row.getBigDecimal("requiredQuantityTotal"), quantity));

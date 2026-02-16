@@ -110,7 +110,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 	private void reloadPartners() {
 		allSuppliers.addAll(RestCaller.get("/rest/s1/moqui-linic-legacy/suppliers")
 				.internal(authSession.authentication())
-				.get(t -> UIUtils.showException(t, sync))
+				.sync(t -> UIUtils.showException(t, sync))
 				.stream()
 				.sorted(Comparator.comparing(gv -> gv.getString("organizationName")))
 				.toList());
@@ -128,7 +128,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 		allChannels.addAll(RestCaller.get("/rest/s1/moqui-linic-legacy/orderChannels")
 				.internal(authSession.authentication())
 				.addUrlParam("supplierId", supplier().get().getString("partyId"))
-				.get(t -> UIUtils.showException(t, sync)));
+				.sync(t -> UIUtils.showException(t, sync)));
 		channel.setItems(allChannels.stream().map(gv -> gv.getString("channelName")).toArray(String[]::new));
 		
 		if (allChannels.size() == 1)

@@ -44,7 +44,7 @@ public interface RestCaller {
 		 * @param exceptionHandler if any error occurs this will be called to handle the exception
 		 * @return the response deserialized from JSON or empty when error(blocking call)
 		 */
-		<T> Optional<T> get(Class<T> clazz, Consumer<Throwable> exceptionHandler);
+		<T> Optional<T> sync(Class<T> clazz, Consumer<Throwable> exceptionHandler);
 		/**
 		 * Convenience method to check the response and convert the returned JSON 
 		 * to a list of GenericValues. On any status other than 200 or any other error 
@@ -53,7 +53,7 @@ public interface RestCaller {
 		 * @param exceptionHandler if any error occurs this will be called to handle the exception
 		 * @return the response deserialized from JSON or empty when error(blocking call)
 		 */
-		List<GenericValue> get(Consumer<Throwable> exceptionHandler);
+		List<GenericValue> sync(Consumer<Throwable> exceptionHandler);
 	}
 	
 	interface PostConfigurer extends BaseConfigurer {

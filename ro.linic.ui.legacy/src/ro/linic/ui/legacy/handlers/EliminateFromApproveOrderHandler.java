@@ -48,7 +48,7 @@ public class EliminateFromApproveOrderHandler {
 					.addUrlParam("requirementTypeEnumId", "RqTpInventory")
 					.addUrlParam("statusId", "RqmtStCreated")
 					.addUrlParam("productId", gv.getString(Product.ID_FIELD))
-					.get(GenericValue.class, t -> UIUtils.showException(t, sync))
+					.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 					.ifPresent(result -> requirementsHolder.getData().remove(gv));
 		});
 	}

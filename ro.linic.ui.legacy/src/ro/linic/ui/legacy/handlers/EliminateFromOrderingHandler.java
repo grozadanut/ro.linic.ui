@@ -53,7 +53,7 @@ public class EliminateFromOrderingHandler {
 			final String pId = gv.getString(Product.ID_FIELD);
 			RestCaller.delete("/rest/s1/mantle/products/"+pId)
 					.internal(authSession.authentication())
-					.get(GenericValue.class, t -> UIUtils.showException(t, t.getMessage()));
+					.sync(GenericValue.class, t -> UIUtils.showException(t, t.getMessage()));
 		});
 		
 		dataServices.holder(SupplierOrderPart.DATA_HOLDER).remove(products);
