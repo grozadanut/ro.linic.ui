@@ -304,7 +304,7 @@ public class RequirementsPart
 		
 		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
 				.internal(authSession.authentication())
-				.body(BodyProvider.of(HttpUtils.toJSON(valuesToUpdate)))
+				.body(BodyProvider.of(HttpUtils.toJSON_Deprecated(valuesToUpdate)))
 				.sync(Result.class, t -> UIUtils.showException(t, sync))
 				.isPresent();
 	}
@@ -319,7 +319,7 @@ public class RequirementsPart
 		
 		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/facility")
 				.internal(authSession.authentication())
-				.body(BodyProvider.of(HttpUtils.toJSON(valuesToUpdate)))
+				.body(BodyProvider.of(HttpUtils.toJSON_Deprecated(valuesToUpdate)))
 				.sync(Result.class, t -> UIUtils.showException(t, sync))
 				.isPresent();
 	}
@@ -357,7 +357,7 @@ public class RequirementsPart
 									Product.NAME_FIELD, row.getString(Product.NAME_FIELD),
 									Product.UOM_FIELD, row.getString(Product.UOM_FIELD),
 									Product.LAST_BUYING_PRICE_FIELD, row.getBigDecimal(Product.LAST_BUYING_PRICE_FIELD),
-									Product.PRICE_FIELD, row.getString(Product.PRICE_FIELD),
+									Product.PRICE_FIELD, row.getBigDecimal(Product.PRICE_FIELD),
 									Product.FURNIZORI_FIELD, row.getString(Product.FURNIZORI_FIELD),
 									"quantityTotal", quantity)));
 				});

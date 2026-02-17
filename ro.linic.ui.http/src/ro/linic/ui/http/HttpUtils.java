@@ -29,9 +29,17 @@ public class HttpUtils {
 		}
 	}
 	
-	public static String toJSON(final List<GenericValue> items) {
+	public static String toJSON_Deprecated(final List<GenericValue> items) {
 		try {
 			return new ObjectMapper().writeValueAsString(new Body(items));
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static String toJSON(final List<GenericValue> items) {
+		try {
+			return new ObjectMapper().writeValueAsString(items);
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}

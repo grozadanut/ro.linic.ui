@@ -1447,7 +1447,7 @@ public class ManagerPart implements IMouseAction
 		final String organizationPartyId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
 		RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
 				.internal(authSession.authentication())
-				.body(BodyProvider.of(HttpUtils.toJSON(List.of(GenericValue.of("", "", 
+				.body(BodyProvider.of(HttpUtils.toJSON_Deprecated(List.of(GenericValue.of("", "", 
 						Map.of("organizationPartyId", organizationPartyId,
 								"productId", p.get().getId(),
 								"supplierId", accDoc.getPartner().getId(),
