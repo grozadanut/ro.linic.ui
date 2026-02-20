@@ -204,6 +204,8 @@ public class OrderProductsDialog extends TitleAreaDialog {
 			printRequirements();
 		else if (channel().get().getString("channelId").equalsIgnoreCase("transfer"))
 			createTransfer();
+		else if (channel().get().getString("channelId").equalsIgnoreCase("whatsapp"))
+			sendOrder();
 
 		super.okPressed();
 	}
@@ -257,8 +259,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 		final Map<String, Object> body = Map.of("facilityId", ClientSession.instance().getGestiune().getImportName(),
 				"channel", channel().get(),
 				"requirements", requirements,
-				"otherGestiuneId", otherGestiuneId,
-				"supplierId", supplier().get().getString("partyId"));
+				"otherGestiuneId", otherGestiuneId);
 		
 		RestCaller.post("/rest/s1/moqui-linic-legacy/order")
 		.internal(authSession.authentication())
@@ -274,6 +275,19 @@ public class OrderProductsDialog extends TitleAreaDialog {
 				showException(ex);
 			}
 		});
+	}
+	
+	private void sendOrder() {
+		final Map<String, Object> body = Map.of("facilityId", ClientSession.instance().getGestiune().getImportName(),
+				"channel", channel().get(),
+				"supplier", supplier().get(),
+				"requirements", requirements);
+		
+		RestCaller.post("/rest/s1/moqui-linic-legacy/order")
+		.internal(authSession.authentication())
+		.body(BodyProvider.of(HttpUtils.toJSON(body)))
+		.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
+		.ifPresent(r -> dataServices.holder(ApproveOrderPart.DATA_HOLDER).remove(requirements));
 	}
 
 	private Optional<GenericValue> supplier() {
