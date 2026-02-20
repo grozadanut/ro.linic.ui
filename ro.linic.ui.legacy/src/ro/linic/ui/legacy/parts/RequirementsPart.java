@@ -75,6 +75,7 @@ import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
+import ro.colibri.security.Permissions;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.wrappers.ProductProfitability;
 import ro.colibri.wrappers.RaionProfitability;
@@ -503,6 +504,9 @@ public class RequirementsPart
 	}
 
 	private void reloadDaysOfInventoryOutstanding() {
+		if (!ClientSession.instance().hasPermission(Permissions.SUPERADMIN_ROLE))
+			return;
+		
 		final BigDecimal tvaPercentPlusOne = new BigDecimal(BusinessDelegate.persistedProp(PersistedProp.TVA_PERCENT_KEY)
 				.getValueOr(PersistedProp.TVA_PERCENT_DEFAULT))
 				.add(BigDecimal.ONE);
