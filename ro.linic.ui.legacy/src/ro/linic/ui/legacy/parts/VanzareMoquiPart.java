@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -89,7 +90,11 @@ import ro.colibri.util.InvocationResult;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.dialogs.ConfirmDialog;
+import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.AdaugaPartnerDialog;
@@ -172,6 +177,8 @@ public class VanzareMoquiPart implements VanzareInterface
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
 	@Inject private IEclipseContext ctx;
+	@Inject private AuthenticationSession authSession;
+	@Inject private DataServices dataServices;
 
 	public static VanzareMoquiPart newPartForBon(final EPartService partService, final AccountingDocument bon)
 	{
@@ -992,6 +999,7 @@ public class VanzareMoquiPart implements VanzareInterface
 					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), ctx, bundle, log, tipInchidere));
 			if (wizardDialog.open() == Window.OK)
 			{
+				checkForOrders();
 				updateBonCasa(null, false);
 				// delivery clear
 				partner.setText(EMPTY_STRING);
@@ -1005,6 +1013,47 @@ public class VanzareMoquiPart implements VanzareInterface
 		}
 	}
 	
+	private void checkForOrders() {
+		final List<Operatiune> opsToOrder = bonCasa.getOperatiuni_Stream()
+				.filter(op -> {
+					final Optional<Product> product = allProductsTable.getSourceData().stream()
+							.filter(p -> globalIsMatch(p.getBarcode(), op.getBarcode(), TextFilterMethod.EQUALS)).findFirst();
+					return product.isPresent() && NumberUtils.smallerThan(product.get().stocAllGest(), BigDecimal.ZERO) &&
+							RequirementsPart.productSuppliersHolder(authSession, dataServices, sync, false).getData().stream()
+							.filter(p -> p.getInt(Product.ID_FIELD).equals(product.get().getId()))
+							.findFirst()
+							.filter(p -> p.getString(Product.FURNIZORI_FIELD).equalsIgnoreCase("DUNCA CONSTRUCT SRL"))
+							.isPresent();
+				})
+				.toList();
+		
+		if (!opsToOrder.isEmpty() && ConfirmDialog.open(Display.getCurrent().getActiveShell(),
+				ro.linic.ui.legacy.dialogs.Messages.OrderProductsDialog_Title,
+				MessageFormat.format(Messages.VanzareMoquiPart_ConfirmAutoOrder, 
+						opsToOrder.stream()
+						.map(op -> MessageFormat.format("{0} \t {1} {2}", 
+								op.getName(),
+								op.getCantitate(),
+								op.getUom()))
+						.collect(Collectors.joining(PresentationUtils.NEWLINE))))) {
+			opsToOrder.forEach(op -> {
+				final Optional<Product> product = allProductsTable.getSourceData().stream()
+						.filter(p -> globalIsMatch(p.getBarcode(), op.getBarcode(), TextFilterMethod.EQUALS)).findFirst();
+				final String facilityId = ClientSession.instance().getGestiune().getImportName();
+				final Map<String, Object> body = Map.of("facilityId", facilityId,
+						"requirementTypeEnumId", "RqTpInventory",
+						"statusId", "RqmtStCreated",
+						"productId", product.get().getId(),
+						"quantity", op.getCantitate());
+				
+				RestCaller.post("/rest/s1/moqui-linic-legacy/requirements")
+						.internal(authSession.authentication())
+						.body(BodyProvider.of(HttpUtils.toJSON(body)))
+						.sync(GenericValue.class, t -> UIUtils.showException(t, sync));
+			});
+		}
+	}
+
 	@Override
 	public Logger log()
 	{

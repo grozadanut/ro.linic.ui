@@ -40,6 +40,7 @@ import ro.colibri.entities.comercial.GrupaInteres;
 import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
+import ro.linic.ui.base.dialogs.InfoDialog;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.UIUtils;

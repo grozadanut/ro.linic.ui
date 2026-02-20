@@ -4,6 +4,7 @@ import static ro.colibri.util.PresentationUtils.SPACE;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
+import static ro.linic.ui.legacy.session.UIUtils.showException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -12,9 +13,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -94,10 +97,12 @@ import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.AllProductsNatTable;
+import ro.linic.ui.security.exception.AuthenticationException;
 import ro.linic.ui.security.services.AuthenticationSession;
 
 public class RequirementsPart
 {
+	private static final ILog logg = ILog.of(RequirementsPart.class);
 	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori"; //$NON-NLS-1$
 	
 	private static final String TABLE_STATE_PREFIX = "requirements.products_nt"; //$NON-NLS-1$
@@ -133,6 +138,32 @@ public class RequirementsPart
 		}
 		
 		stocColumns = stocBuilder.build();
+	}
+	
+	public static synchronized GenericDataHolder productSuppliersHolder(final AuthenticationSession authSession, final DataServices dataServices,
+			final UISynchronize sync, final boolean forceReload) {
+		final GenericDataHolder productSuppliersHolder = dataServices.holder(DATA_HOLDER);
+		if (forceReload)
+			productSuppliersHolder.clear();
+		
+		if (productSuppliersHolder.getData().isEmpty())
+			try {
+				RestCaller.get("/rest/s1/moqui-linic-legacy/products/suppliers")
+				.internal(authSession.authentication())
+				.addUrlParam("organizationPartyId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
+				.async(t -> UIUtils.showException(t, sync))
+				.thenApply(ps -> ps.stream().filter(gv -> gv.getString("preferredOrderEnumId") == null ||
+				Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
+				.thenAccept(productSuppliers -> productSuppliersHolder.update(productSuppliers, "productId", Product.ID_FIELD,
+						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock",
+								"quantityTotal", "quantityTotal")))
+				.get();
+			} catch (AuthenticationException | InterruptedException | ExecutionException ex) {
+				logg.error(ex.getMessage(), ex);
+				showException(ex);
+			}
+		
+		return productSuppliersHolder;
 	}
 	
 	private EventList<GenericValue> allSuppliers = GlazedLists.eventListOf();
@@ -347,11 +378,11 @@ public class RequirementsPart
 					row.put("newRequirement", "");
 					row.put("quantityTotal", NumberUtils.add(row.getBigDecimal("quantityTotal"), quantity));
 					// update ApproveOrderPart row
-					dataServices.holder(ApproveOrderPart.DATA_HOLDER).getData().stream()
+					dataServices.holder(ApproveRequirementsPart.DATA_HOLDER).getData().stream()
 					.filter(gv -> gv.getString(Product.ID_FIELD).equals(row.getString(Product.ID_FIELD)))
 					.findFirst()
 					.ifPresentOrElse(r -> r.put("quantityTotal", NumberUtils.add(r.getBigDecimal("quantityTotal"), quantity)),
-							() -> dataServices.holder(ApproveOrderPart.DATA_HOLDER).add(GenericValue.of("", Product.ID_FIELD, 
+							() -> dataServices.holder(ApproveRequirementsPart.DATA_HOLDER).add(GenericValue.of("", Product.ID_FIELD, 
 									Product.ID_FIELD, row.getString(Product.ID_FIELD),
 									Product.BARCODE_FIELD, row.getString(Product.BARCODE_FIELD),
 									Product.NAME_FIELD, row.getString(Product.NAME_FIELD),
@@ -411,24 +442,13 @@ public class RequirementsPart
 	
 	private void loadData(final boolean showConfirmation)
 	{
-		final GenericDataHolder productsHolder = dataServices.holder(DATA_HOLDER);
-		productsHolder.clear();
-		
-		RestCaller.get("/rest/s1/moqui-linic-legacy/products/suppliers")
-				.internal(authSession.authentication())
-				.addUrlParam("organizationPartyId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
-				.async(t -> UIUtils.showException(t, sync))
-				.thenApply(ps -> ps.stream().filter(gv -> gv.getString("preferredOrderEnumId") == null ||
-															Objects.equals(gv.getString("preferredOrderEnumId"), "SpoMain")).toList())
-				.thenAccept(productSuppliers -> productsHolder.update(productSuppliers, "productId", Product.ID_FIELD,
-						Map.of("productId", Product.ID_FIELD, "supplierName", Product.FURNIZORI_FIELD, "pareto", "pareto", "minimumStock", "minimumStock",
-								"quantityTotal", "quantityTotal")));
+		final GenericDataHolder productSuppliersHolder = productSuppliersHolder(authSession, dataServices, sync, true);
 		
 		BusinessDelegate.allProductsForOrdering(new AsyncLoadData<Product>()
 		{
 			@Override public void success(final ImmutableList<Product> data)
 			{
-				productsHolder.update(data.stream()
+				productSuppliersHolder.update(data.stream()
 						.map(p -> {
 							final GenericValue gv = GenericValue.of(Product.class.getName(), Product.ID_FIELD,
 									Map.of(Product.ID_FIELD, p.getId(),
@@ -445,7 +465,7 @@ public class RequirementsPart
 						Product.ID_FIELD);
 				
 				updateRecommendedOrder();
-				productsHolder.getData().sort(Comparator.comparing(gv -> ((GenericValue) gv).get("minimumStock") != null)
+				productSuppliersHolder.getData().sort(Comparator.comparing(gv -> ((GenericValue) gv).get("minimumStock") != null)
 						.thenComparing(gv -> ((GenericValue) gv).getBigDecimal("QTO_"+ClientSession.instance().getGestiune().getImportName())).reversed());
 				// need this fix because of the speed fix in GenericDataHolderImpl:
 				// source.silenceListeners(true); // speed fix

@@ -313,6 +313,7 @@ public class Messages extends NLS {
 	public static String VanzarePart_TransferMess;
 	public static String VanzarePart_TransferOther;
 	public static String VanzarePart_VAT;
+	public static String VanzareMoquiPart_ConfirmAutoOrder;
 	public static String VerifyOperationsPart_DelegateMissing;
 	public static String VerifyOperationsPart_DelegateMissingMess;
 	public static String VerifyOperationsPart_ErrorLoading;

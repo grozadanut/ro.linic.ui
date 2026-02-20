@@ -27,9 +27,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
@@ -55,6 +52,8 @@ import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.embeddable.Verificat;
@@ -66,8 +65,8 @@ import ro.colibri.entities.comercial.Partner;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.mappings.AccountingDocumentMapping;
 import ro.colibri.util.InvocationResult;
+import ro.linic.ui.base.dialogs.ConfirmDialog;
 import ro.linic.ui.legacy.components.AsyncLoadData;
-import ro.linic.ui.legacy.dialogs.ConfirmDialog;
 import ro.linic.ui.legacy.dialogs.ScheduleDialog;
 import ro.linic.ui.legacy.dialogs.SendEmailDialog;
 import ro.linic.ui.legacy.dialogs.VerifyDialog;

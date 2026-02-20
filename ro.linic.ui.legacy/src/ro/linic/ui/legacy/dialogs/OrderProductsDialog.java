@@ -41,12 +41,13 @@ import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.util.PresentationUtils;
+import ro.linic.ui.base.dialogs.InfoDialog;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
-import ro.linic.ui.legacy.parts.ApproveOrderPart;
+import ro.linic.ui.legacy.parts.ApproveRequirementsPart;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -229,7 +230,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 				.internal(authSession.authentication())
 				.body(BodyProvider.of(HttpUtils.toJSON(body)))
 				.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
-				.ifPresent(r -> dataServices.holder(ApproveOrderPart.DATA_HOLDER).getData().remove(req));
+				.ifPresent(r -> dataServices.holder(ApproveRequirementsPart.DATA_HOLDER).getData().remove(req));
 			}
 		}
 	}
@@ -266,7 +267,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 		.body(BodyProvider.of(HttpUtils.toJSON(body)))
 		.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 		.ifPresent(r -> {
-			dataServices.holder(ApproveOrderPart.DATA_HOLDER).remove(requirements);
+			dataServices.holder(ApproveRequirementsPart.DATA_HOLDER).remove(requirements);
 			try {
 				final long transferAccDocId = r.getLong("transferId");
 				JasperReportManager.instance(bundle, log).printReceptie(bundle, BusinessDelegate.reloadDoc(transferAccDocId));
@@ -287,7 +288,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 		.internal(authSession.authentication())
 		.body(BodyProvider.of(HttpUtils.toJSON(body)))
 		.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
-		.ifPresent(r -> dataServices.holder(ApproveOrderPart.DATA_HOLDER).remove(requirements));
+		.ifPresent(r -> dataServices.holder(ApproveRequirementsPart.DATA_HOLDER).remove(requirements));
 	}
 
 	private Optional<GenericValue> supplier() {

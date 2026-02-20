@@ -63,7 +63,7 @@ import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.AllProductsNatTable;
 import ro.linic.ui.security.services.AuthenticationSession;
 
-public class ApproveOrderPart {
+public class ApproveRequirementsPart {
 	public static final String PART_ID = "linic_gest_client.part.comenzi_furnizori_approve"; //$NON-NLS-1$
 	
 	private static final String TABLE_STATE_PREFIX = "supplier_order_approve.requirements_nt"; //$NON-NLS-1$

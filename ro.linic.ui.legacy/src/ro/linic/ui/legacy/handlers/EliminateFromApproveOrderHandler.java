@@ -23,7 +23,7 @@ import ro.linic.ui.base.services.Messages;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.http.RestCaller;
-import ro.linic.ui.legacy.parts.ApproveOrderPart;
+import ro.linic.ui.legacy.parts.ApproveRequirementsPart;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.security.services.AuthenticationSession;
@@ -39,7 +39,7 @@ public class EliminateFromApproveOrderHandler {
 						truncate(requirements.stream().map(gv -> gv.getString(Product.NAME_FIELD)).collect(Collectors.joining(LIST_SEPARATOR)), 2000))))
 			return;
 		
-		final GenericDataHolder requirementsHolder = dataServices.holder(ApproveOrderPart.DATA_HOLDER);
+		final GenericDataHolder requirementsHolder = dataServices.holder(ApproveRequirementsPart.DATA_HOLDER);
 		requirements.forEach(gv -> {
 			RestCaller.delete("/rest/s1/moqui-linic-legacy/requirements")
 					.internal(authSession.authentication())
