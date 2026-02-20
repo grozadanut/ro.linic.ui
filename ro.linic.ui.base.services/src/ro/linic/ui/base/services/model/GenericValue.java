@@ -162,11 +162,11 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	}
 	
 	public Integer getInt(final Object key) {
-		return get(key) instanceof Integer ? (Integer) get(key) : Integer.parseInt(getString(key));
+		return get(key) instanceof Integer ? (Integer) get(key) : NumberUtils.parseToInt(getString(key));
 	}
 	
 	public Long getLong(final Object key) {
-		return get(key) instanceof Long ? (Long) get(key) : Long.parseLong(getString(key));
+		return get(key) instanceof Long ? (Long) get(key) : NumberUtils.parseToLong(getString(key));
 	}
 	
 	public BigDecimal getBigDecimal(final Object key) {
