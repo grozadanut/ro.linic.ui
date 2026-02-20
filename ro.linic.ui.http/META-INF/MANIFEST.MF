@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Http Client
 Bundle-SymbolicName: ro.linic.ui.http
-Bundle-Version: 0.1.6
+Bundle-Version: 0.2.0
 Export-Package: ro.linic.ui.http,
  ro.linic.ui.http.pojo
 Require-Bundle: org.eclipse.osgi;bundle-version="3.19.0",
