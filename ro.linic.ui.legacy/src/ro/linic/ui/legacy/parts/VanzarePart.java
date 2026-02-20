@@ -30,7 +30,10 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -156,10 +159,16 @@ public class VanzarePart implements VanzareInterface
 	@Inject private Logger log;
 	@Inject IEclipseContext ctx;
 
-	public static VanzarePart newPartForBon(final EPartService partService, final AccountingDocument bon)
+	public static VanzarePart newPartForBon(final IEclipseContext ctx, final AccountingDocument bon)
 	{
-		final MPart createdPart = partService.showPart(partService.createPart(VanzarePart.PART_DESCRIPTOR_ID),
-				PartState.VISIBLE);
+		final EPartService partService = ctx.get(EPartService.class);
+		final EModelService modelService = ctx.get(EModelService.class);
+		final MApplication application = ctx.get(MApplication.class);
+		
+		final MPart part = partService.createPart(VanzarePart.PART_DESCRIPTOR_ID);
+		final MPartStack stack = (MPartStack) modelService.find("linic_gest_client.partstack.main", application);
+		stack.getChildren().add(part);
+		final MPart createdPart = partService.showPart(part, PartState.VISIBLE);
 
 		if (createdPart == null)
 			return null;
@@ -220,7 +229,7 @@ public class VanzarePart implements VanzareInterface
 				Boolean.TRUE.toString())))
 		{
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
-			BusinessDelegate.unfinishedBonuriCasa().forEach(unfinishedBon -> newPartForBon(partService, unfinishedBon));
+			BusinessDelegate.unfinishedBonuriCasa().forEach(unfinishedBon -> newPartForBon(ctx, unfinishedBon));
 		}
 
 		parent.setLayout(new GridLayout());

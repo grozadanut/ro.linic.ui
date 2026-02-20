@@ -34,7 +34,10 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
@@ -232,9 +235,15 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	@Inject private Logger log;
 	@Inject IEclipseContext ctx;
 
-	public static VanzareBarPart newPartForBon(final EPartService partService, final CloudReceipt bon) {
-		final MPart createdPart = partService.showPart(partService.createPart(VanzareBarPart.PART_DESCRIPTOR_ID),
-				PartState.VISIBLE);
+	public static VanzareBarPart newPartForBon(final IEclipseContext ctx, final CloudReceipt bon) {
+		final EPartService partService = ctx.get(EPartService.class);
+		final EModelService modelService = ctx.get(EModelService.class);
+		final MApplication application = ctx.get(MApplication.class);
+		
+		final MPart part = partService.createPart(VanzareBarPart.PART_DESCRIPTOR_ID);
+		final MPartStack stack = (MPartStack) modelService.find("linic_gest_client.partstack.main", application);
+		stack.getChildren().add(part);
+		final MPart createdPart = partService.showPart(part, PartState.VISIBLE);
 
 		if (createdPart == null)
 			return null;
@@ -277,7 +286,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			saveUserForOfflineLogin();
 			ClientSession.instance().getProperties().setProperty(INITIAL_PART_LOAD_PROP, Boolean.FALSE.toString());
 			receiptLoader.findUnclosed().stream().map(CloudReceipt.class::cast)
-			.forEach(unclosedReceipt -> newPartForBon(partService, unclosedReceipt));
+			.forEach(unclosedReceipt -> newPartForBon(ctx, unclosedReceipt));
 			reloadProduct(null, false);
 			LegacyReceiptLineUpdater.updateSyncLabel(receiptLineLoader);
 		}

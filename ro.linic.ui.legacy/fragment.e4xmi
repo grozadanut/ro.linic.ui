@@ -98,7 +98,7 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hvGTQMcaEe6dhubwzOpIzg" featurename="children" parentElementId="ro.linic.ui.base.trimmedwindow.linic">
-    <elements xsi:type="basic_1:PartStack" xmi:id="_qkaHEMcaEe6dhubwzOpIzg" elementId="linic_gest_client.partstack.sample" selectedElement="_HujtEMcbEe6dhubwzOpIzg">
+    <elements xsi:type="basic_1:PartStack" xmi:id="_qkaHEMcaEe6dhubwzOpIzg" elementId="linic_gest_client.partstack.main" selectedElement="_HujtEMcbEe6dhubwzOpIzg">
       <children xsi:type="basic_1:Part" xmi:id="_wkdlAMcaEe6dhubwzOpIzg" elementId="linic_gest_client.part.clasament" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.ClasamentPart" label="%part.label.1" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/clasament_16x16.png"/>
       <children xsi:type="basic_1:Part" xmi:id="_4dbsYMcaEe6dhubwzOpIzg" elementId="linic_gest_client.part.verify_operations" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VerifyOperationsPart" label="%part.label.2" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/verify_32x32.png"/>
       <children xsi:type="basic_1:Part" xmi:id="_HujtEMcbEe6dhubwzOpIzg" elementId="linic_gest_client.part.vanzari" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.VanzarePart" label="%part.label.3" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/cart_32x32.png" bindingContexts="_dV2XIMaCEe6UtK1nDebMVw">
