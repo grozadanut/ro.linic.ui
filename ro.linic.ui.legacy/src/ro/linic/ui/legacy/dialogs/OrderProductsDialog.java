@@ -42,6 +42,7 @@ import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.util.PresentationUtils;
 import ro.linic.ui.base.dialogs.InfoDialog;
+import ro.linic.ui.base.dialogs.SelectEntityDialog;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
@@ -247,7 +248,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 		{
 			final SelectEntityDialog<Gestiune> gestiuneDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
 					ro.linic.ui.legacy.parts.Messages.Transfer, ro.linic.ui.legacy.parts.Messages.ManagerPart_SelectInventory,
-					ro.linic.ui.legacy.parts.Messages.ManagerPart_Inventory, gestiuni, ro.linic.ui.legacy.parts.Messages.OK,
+					ro.linic.ui.legacy.parts.Messages.ManagerPart_Inventory, gestiuni, Gestiune::displayName, ro.linic.ui.legacy.parts.Messages.OK,
 					ro.linic.ui.legacy.parts.Messages.Cancel);
 			final int dialogResult = gestiuneDialog.open();
 

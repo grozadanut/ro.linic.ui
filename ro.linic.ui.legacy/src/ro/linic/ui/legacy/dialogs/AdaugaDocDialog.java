@@ -57,6 +57,7 @@ import ro.colibri.entities.comercial.Partner;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.PresentationUtils;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.Messages;
@@ -95,6 +96,7 @@ public class AdaugaDocDialog extends Window
 	private Partner selectedPartner;
 	private TipDoc selectedTipDoc;
 	private Consumer<Document> adaugaConsumer;
+	private GenericValue initialValues;
 
 	private UISynchronize sync;
 	private Logger log;
@@ -214,6 +216,8 @@ public class AdaugaDocDialog extends Window
 		adauga.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(adauga);
 		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(adauga);
+		
+		totalTva.setText(AccountingDocument.extractTvaAmount(parse(total.getText()), tvaExtractDivisor()).toString());
 	}
 
 	private void createDocComposite(final Composite contents)
@@ -257,22 +261,29 @@ public class AdaugaDocDialog extends Window
 		
 		gestiune = new Combo(docContainer, SWT.DROP_DOWN);
 		gestiune.setItems(allGestiuni.stream().map(Gestiune::getImportName).toArray(String[]::new));
-		gestiune.select(allGestiuni.indexOf(ClientSession.instance().getLoggedUser().getSelectedGestiune()));
 		UIUtils.setFont(gestiune);
 		GridDataFactory.fillDefaults().applyTo(gestiune);
+		if (initialValues != null && initialValues.getInt("gestiuneId") != null)
+			selectGest(initialValues.getInt("gestiuneId"));
+		else
+			selectGest(ClientSession.instance().getLoggedUser().getSelectedGestiune());
 		
 		doc = new Combo(docContainer, SWT.DROP_DOWN);
 		UIUtils.setFont(doc);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(doc);
 		updateDocTypes();
+		doc.setText(safeString(initialValues, gv -> gv.getString("doc")));
 		
 		nrDoc = new Text(docContainer, SWT.BORDER);
 		UIUtils.setFont(nrDoc);
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(nrDoc);
+		nrDoc.setText(safeString(initialValues, gv -> gv.getString("nrDoc")));
 		
 		dataDoc = new DateTime(docContainer, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
 		UIUtils.setFont(dataDoc);
 		GridDataFactory.fillDefaults().applyTo(dataDoc);
+		if (initialValues != null && initialValues.getLocalDate("dataDoc") != null)
+			insertDate(dataDoc, initialValues.getLocalDate("dataDoc"));
 		
 		scadenta = new DateTime(docContainer, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
 		UIUtils.setFont(scadenta);
@@ -311,10 +322,13 @@ public class AdaugaDocDialog extends Window
 		contBancar.setItems(allConturiBancare.stream().map(ContBancar::displayName).toArray(String[]::new));
 		UIUtils.setFont(contBancar);
 		GridDataFactory.swtDefaults().hint(InchideBonWizard.EDITABLE_TEXT_WIDTH, SWT.DEFAULT).applyTo(contBancar);
+		if (initialValues != null)
+			selectContBancar(initialValues.getInt("contBancarId"));
 		
 		total = new Text(docContainer, SWT.BORDER);
 		UIUtils.setFont(total);
 		GridDataFactory.fillDefaults().applyTo(total);
+		total.setText(safeString(initialValues, gv -> gv.getBigDecimal("total"), BigDecimal::toString));
 		
 		totalTva = new Text(docContainer, SWT.BORDER);
 		UIUtils.setFont(totalTva);
@@ -323,6 +337,7 @@ public class AdaugaDocDialog extends Window
 		name = new Text(docContainer, SWT.BORDER);
 		UIUtils.setFont(name);
 		GridDataFactory.fillDefaults().span(4, 1).applyTo(name);
+		name.setText(safeString(initialValues, gv -> gv.getString("name")));
 		
 		rpz = new Button(docContainer, SWT.CHECK);
 		rpz.setText(Messages.AdaugaDocDialog_RPZ);
@@ -471,6 +486,30 @@ public class AdaugaDocDialog extends Window
 	{
 		getParentShell().removeShellListener(parentShellListener);
 		return super.close();
+	}
+	
+	public void selectContBancar(final Integer contBancarId)
+	{
+		if (contBancarId != null)
+			contBancar.select(allConturiBancare.indexOf(allConturiBancare.stream().filter(c -> c.getId() == contBancarId).findFirst().get()));
+		else
+			contBancar.deselectAll();
+	}
+	
+	public void selectGest(final Integer gestiuneId)
+	{
+		if (gestiuneId != null)
+			gestiune.select(allGestiuni.indexOf(allGestiuni.stream().filter(g -> g.getId() == gestiuneId).findFirst().get()));
+		else
+			gestiune.deselectAll();
+	}
+	
+	private void selectGest(final Gestiune gest)
+	{
+		if (gest != null)
+			gestiune.select(allGestiuni.indexOf(gest));
+		else
+			gestiune.deselectAll();
 	}
 	
 	public void changedSelectedPartner(final Optional<Partner> partner)
@@ -647,5 +686,9 @@ public class AdaugaDocDialog extends Window
 			return tvaExtractDivisor;
 		}
 		return tvaExtractDivisor;
+	}
+
+	public void setInitialValues(final GenericValue initialValues) {
+		this.initialValues = initialValues;
 	}
 }

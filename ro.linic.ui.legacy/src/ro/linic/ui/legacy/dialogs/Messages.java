@@ -130,6 +130,7 @@ public class Messages extends NLS {
 	public static String ContBancarDialog_Name;
 	public static String ContBancarDialog_NameMandatory;
 	public static String ContBancarDialog_Title;
+	public static String ContBancar_SelectDescription;
 	public static String CurrentDay;
 	public static String CurrentMonth;
 	public static String CurrentYear;

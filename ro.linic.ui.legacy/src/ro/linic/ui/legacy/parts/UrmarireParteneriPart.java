@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +71,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
+import ro.colibri.base.IPresentable;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.AccountingDocument.BancaLoad;
@@ -88,12 +90,13 @@ import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.InvocationResult.Problem;
 import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.base.dialogs.SelectEntityDialog;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.components.AsyncLoadResult;
 import ro.linic.ui.legacy.dialogs.AdaugaDocDialog;
 import ro.linic.ui.legacy.dialogs.ConexiuniDialog;
-import ro.linic.ui.legacy.dialogs.SelectEntityDialog;
 import ro.linic.ui.legacy.parts.components.UrmarireParteneriExtraFilters;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -615,13 +618,7 @@ public class UrmarireParteneriPart implements IMouseAction
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				if (selectedPartner().isPresent() && selectedTipDoc().isPresent())
-				{
-					final Point adaugaLoc = localToDisplayLocation(adauga);
-					adaugaDocDialog = new AdaugaDocDialog(adauga.getShell(), sync, new Point(adaugaLoc.x, adaugaLoc.y-220), 
-							selectedPartner().get(), selectedTipDoc().get(), table::add, log);
-					adaugaDocDialog.open();
-				}
+				openAddAccDocDialog(null);
 			}
 		});
 		
@@ -763,7 +760,19 @@ public class UrmarireParteneriPart implements IMouseAction
 		});
 	}
 	
-	private void executaFiltrarea()
+	public void openAddAccDocDialog(final GenericValue initialValues)
+	{
+		if (selectedPartner().isPresent() && selectedTipDoc().isPresent())
+		{
+			final Point adaugaLoc = localToDisplayLocation(adauga);
+			adaugaDocDialog = new AdaugaDocDialog(adauga.getShell(), sync, new Point(adaugaLoc.x, adaugaLoc.y-220), 
+					selectedPartner().get(), selectedTipDoc().get(), table::add, log);
+			adaugaDocDialog.setInitialValues(initialValues);
+			adaugaDocDialog.open();
+		}
+	}
+	
+	public void executaFiltrarea()
 	{
 		cancelLoadJob();
 		executaFiltrarea.setEnabled(false);
@@ -1035,7 +1044,8 @@ public class UrmarireParteneriPart implements IMouseAction
 	private void printareRegBanca()
 	{
 		final SelectEntityDialog<ContBancar> regBancaDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-				RAP_REG_BANCA, Messages.UrmarireParteneriPart_SelectType, Messages.UrmarireParteneriPart_BankAcc, BusinessDelegate.allConturiBancare(), Messages.UrmarireParteneriPart_AllPeriod, Messages.UrmarireParteneriPart_Daily);
+				RAP_REG_BANCA, Messages.UrmarireParteneriPart_SelectType, Messages.UrmarireParteneriPart_BankAcc,
+				BusinessDelegate.allConturiBancare(), IPresentable::displayName, Messages.UrmarireParteneriPart_AllPeriod, Messages.UrmarireParteneriPart_Daily);
 		final int rapType = regBancaDialog.open();
 		final Integer contBancarId = regBancaDialog.selectedEntity().map(ContBancar::getId).orElse(null);
 		final ContBancar contBancar = regBancaDialog.selectedEntity().orElse(null);
@@ -1250,11 +1260,11 @@ public class UrmarireParteneriPart implements IMouseAction
 	
 	private String[] createOperatiiArray()
 	{
-		final String[] gestiuni = new String[5];
-		gestiuni[0] = INDIFERENT;
+		final String[] allOperatii = new String[5];
+		allOperatii[0] = INDIFERENT;
 		for (int i = 0; i < 4; i++)
-			gestiuni[i+1] = TipDoc.values()[i].toString();
-		return gestiuni;
+			allOperatii[i+1] = TipDoc.values()[i].toString();
+		return allOperatii;
 	}
 	
 	public void reloadPartners()
@@ -1264,6 +1274,38 @@ public class UrmarireParteneriPart implements IMouseAction
 		parteneri.setItems(allPartners.stream()
 				.map(Partner::getName)
 				.toArray(String[]::new));
+	}
+	
+	public void insertFrom(final LocalDate fromDate)
+	{
+		insertDate(from, fromDate);
+	}
+	
+	public void insertTo(final LocalDate toDate)
+	{
+		insertDate(to, toDate);
+	}
+	
+	public void selectPartner(final String partnerName)
+	{
+		if (isEmpty(partnerName)) {
+			parteneri.deselectAll();
+			return;
+		}
+		
+		final Optional<Partner> partnerFound = allPartners.stream().filter(p -> p.getName().equalsIgnoreCase(partnerName)).findFirst();
+		if (partnerFound.isPresent())
+			parteneri.select(allPartners.indexOf(partnerFound.get()));
+		else
+			parteneri.deselectAll();
+	}
+	
+	public void selectGest(final Integer gestiuneId)
+	{
+		if (gestiuneId != null)
+			gestiuni.select(allGestiuni.indexOf(allGestiuni.stream().filter(g -> g.getId() == gestiuneId).findFirst().get())+1);
+		else
+			gestiuni.deselectAll();
 	}
 	
 	private void selectGest(final Gestiune gest)
@@ -1299,6 +1341,11 @@ public class UrmarireParteneriPart implements IMouseAction
 			return Optional.empty();
 		
 		return Optional.of(rapoarte.getItem(index));
+	}
+	
+	public void selectTipDoc(final TipDoc tipDoc)
+	{
+		operatii.select(Arrays.asList(TipDoc.values()).indexOf(tipDoc)+1);
 	}
 	
 	private Optional<TipDoc> selectedTipDoc()

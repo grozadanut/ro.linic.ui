@@ -84,6 +84,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
+import ro.colibri.base.IPresentable;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Document.TipDoc;
@@ -102,6 +103,7 @@ import ro.colibri.util.InvocationResult;
 import ro.colibri.util.InvocationResult.Problem;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.dialogs.SelectEntityDialog;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.GenericDataHolder;
 import ro.linic.ui.base.services.model.GenericValue;
@@ -115,7 +117,6 @@ import ro.linic.ui.legacy.dialogs.ManagerIncarcaDocPopup;
 import ro.linic.ui.legacy.dialogs.PrintBarcodeDialog;
 import ro.linic.ui.legacy.dialogs.PrintOfertaDiscountDialog;
 import ro.linic.ui.legacy.dialogs.ScheduleDialog;
-import ro.linic.ui.legacy.dialogs.SelectEntityDialog;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -1407,7 +1408,7 @@ public class ManagerPart implements IMouseAction
 			else
 			{
 				final SelectEntityDialog<Gestiune> gestiuneDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-						Messages.Transfer, Messages.ManagerPart_SelectInventory, Messages.ManagerPart_Inventory, gestiuni, Messages.OK, Messages.Cancel);
+						Messages.Transfer, Messages.ManagerPart_SelectInventory, Messages.ManagerPart_Inventory, gestiuni, Gestiune::displayName, Messages.OK, Messages.Cancel);
 				final int dialogResult = gestiuneDialog.open();
 
 				if (dialogResult != 0)
@@ -1484,7 +1485,7 @@ public class ManagerPart implements IMouseAction
 		else
 		{
 			final SelectEntityDialog<Gestiune> gestiuneDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-					Messages.Transfer, Messages.ManagerPart_SelectInventory, Messages.ManagerPart_Inventory, gestiuni, Messages.OK, Messages.Cancel);
+					Messages.Transfer, Messages.ManagerPart_SelectInventory, Messages.ManagerPart_Inventory, gestiuni, IPresentable::displayName, Messages.OK, Messages.Cancel);
 			final int dialogResult = gestiuneDialog.open();
 			
 			if (dialogResult != 0)

@@ -277,4 +277,12 @@ public class FullFeaturedNatTable<T> {
 	public List<T> selection() {
 		return SelectionUtils.getSelectedRowObjects(this.selectionLayer, this.bodyDataProvider, false);
 	}
+	
+	public SelectionLayer selectionLayer() {
+		return this.selectionLayer;
+	}
+	
+	public ListDataProvider<T> bodyDataProvider() {
+		return this.bodyDataProvider;
+	}
 }

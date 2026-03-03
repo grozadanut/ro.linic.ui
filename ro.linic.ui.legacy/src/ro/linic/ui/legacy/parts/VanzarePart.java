@@ -68,6 +68,7 @@ import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import net.sf.jasperreports.engine.JRException;
+import ro.colibri.base.IPresentable;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.Operatiune;
@@ -80,11 +81,11 @@ import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.dialogs.SelectEntityDialog;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.AdaugaPartnerDialog;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.ScheduleDialog;
-import ro.linic.ui.legacy.dialogs.SelectEntityDialog;
 import ro.linic.ui.legacy.dialogs.TransferaSauNegativDialog;
 import ro.linic.ui.legacy.dialogs.TraseeDialog;
 import ro.linic.ui.legacy.dialogs.VanzariIncarcaDocDialog;
@@ -892,7 +893,7 @@ public class VanzarePart implements VanzareInterface
 		else
 		{
 			final SelectEntityDialog<Gestiune> gestiuneDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
-					Messages.Transfer, Messages.VanzarePart_SelectInventory, Messages.VanzarePart_Inventory, gestiuni, Messages.OK, Messages.Cancel);
+					Messages.Transfer, Messages.VanzarePart_SelectInventory, Messages.VanzarePart_Inventory, gestiuni, IPresentable::displayName, Messages.OK, Messages.Cancel);
 			final int dialogResult = gestiuneDialog.open();
 			
 			if (dialogResult != 0)

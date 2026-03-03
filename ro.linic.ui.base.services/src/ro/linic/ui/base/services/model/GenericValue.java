@@ -2,6 +2,8 @@ package ro.linic.ui.base.services.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +14,7 @@ import java.util.Set;
 
 import ro.flexbiz.util.commons.HeterogeneousDataComparator;
 import ro.flexbiz.util.commons.ListUtils;
+import ro.flexbiz.util.commons.LocalDateUtils;
 import ro.flexbiz.util.commons.NumberUtils;
 import ro.linic.ui.base.services.nattable.components.IdSupplier;
 
@@ -161,6 +164,10 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 		return Optional.ofNullable(get(key)).map(Object::toString).orElse(null);
 	}
 	
+	public GenericValue getChild(final Object key) {
+		return get(key) instanceof Map ? GenericValue.of(entityName, primaryKey, (Map<? extends String, ? extends Object>) get(key)) : GenericValue.of(entityName, primaryKey);
+	}
+	
 	public Integer getInt(final Object key) {
 		return get(key) instanceof Integer ? (Integer) get(key) : NumberUtils.parseToInt(getString(key));
 	}
@@ -175,6 +182,14 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	
 	public Boolean getBoolean(final Object key) {
 		return get(key) instanceof Boolean ? (Boolean) get(key) : Boolean.parseBoolean(getString(key));
+	}
+	
+	public LocalDate getLocalDate(final Object key) {
+		return get(key) instanceof LocalDate ? (LocalDate) get(key) : LocalDateUtils.parse(getString(key));
+	}
+	
+	public LocalTime getLocalTime(final Object key) {
+		return get(key) instanceof LocalTime ? (LocalTime) get(key) : LocalDateUtils.parseTime(getString(key));
 	}
 
 	@Override
@@ -260,7 +275,7 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 
 	@Override
 	public String toString() {
-		return "[" + entityName + ": " + valueMapInternal.toString() + "]";
+		return "[" + valueMapInternal.toString() + "]";
 	}
 	
 	@Override
@@ -291,14 +306,15 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
     }
 	
 	private int compareFields(final GenericValue that, final String name) {
-        final Comparable thisVal = (Comparable) this.valueMapInternal.get(name);
-        final Comparable thatVal = (Comparable) that.get(name);
-        // NOTE: nulls go earlier in the list
-        if (thisVal == null) {
-            return thatVal == null ? 0 : 1;
-        } else {
-            return (thatVal == null ? -1 : HeterogeneousDataComparator.INSTANCE.compare(thisVal, thatVal));
-        }
+		return HeterogeneousDataComparator.INSTANCE.compare(this.valueMapInternal.get(name), that.get(name));
+//        final Comparable thisVal = (Comparable) this.valueMapInternal.get(name);
+//        final Comparable thatVal = (Comparable) that.get(name);
+//        // NOTE: nulls go earlier in the list
+//        if (thisVal == null) {
+//            return thatVal == null ? 0 : 1;
+//        } else {
+//            return (thatVal == null ? -1 : HeterogeneousDataComparator.INSTANCE.compare(thisVal, thatVal));
+//        }
     }
 
     public boolean mapMatches(final Map<String, Object> theMap) {
