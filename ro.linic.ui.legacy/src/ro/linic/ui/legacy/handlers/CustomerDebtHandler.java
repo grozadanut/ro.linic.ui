@@ -1,8 +1,5 @@
 package ro.linic.ui.legacy.handlers;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -15,10 +12,13 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import ro.colibri.security.Permissions;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.wizards.CustomerDebtWizard;
 import ro.linic.ui.legacy.wizards.CustomerDebtWizardDialog;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class CustomerDebtHandler
 {
@@ -36,9 +36,9 @@ public class CustomerDebtHandler
 	}
 	
 	@Execute
-	public void execute(final EPartService partService)
+	public void execute(final EPartService partService, final AuthenticationSession authSession)
 	{
-		new CustomerDebtWizardDialog(Display.getCurrent().getActiveShell(), new CustomerDebtWizard(ctx, bundle, log)).open();
+		new CustomerDebtWizardDialog(Display.getCurrent().getActiveShell(), new CustomerDebtWizard(ctx, bundle, log, authSession)).open();
 	}
 	
 	@CanExecute

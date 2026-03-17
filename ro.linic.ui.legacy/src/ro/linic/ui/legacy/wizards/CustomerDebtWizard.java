@@ -12,9 +12,12 @@ import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.showException;
 
 import java.math.BigDecimal;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,20 +35,27 @@ import ro.colibri.entities.comercial.Document.TipDoc;
 import ro.colibri.entities.comercial.DocumentWithDiscount;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.ListUtils;
+import ro.colibri.util.NumberUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.services.ECRService;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class CustomerDebtWizard extends Wizard
 {
 	private CustomerDebtSelectPage one;
 	private CustomerDebtConfirmPage two;
 	
+	private AuthenticationSession authSession;
 	private UISynchronize sync;
 	private Bundle bundle;
 	private Logger log;
@@ -84,9 +94,10 @@ public class CustomerDebtWizard extends Wizard
 		}
 	}
 	
-	public CustomerDebtWizard(final IEclipseContext ctx, final Bundle bundle, final Logger log)
+	public CustomerDebtWizard(final IEclipseContext ctx, final Bundle bundle, final Logger log, final AuthenticationSession authSession)
 	{
 		super();
+		this.authSession = authSession;
 		this.sync = ctx.get(UISynchronize.class);
 		this.bundle = bundle;
 		this.log = log;
@@ -152,6 +163,46 @@ public class CustomerDebtWizard extends Wizard
 		{
 			log.error(ex);
 			showException(ex, "Documentele nu au putut fi printate!");
+		}
+		
+		try
+		{
+			// produse vandute in cealalta gestiune
+			final BigDecimal totalOtherGest = sourceDocs.stream()
+					.filter(AccountingDocument::isFullyCovered)
+					.flatMap(AccountingDocument::getOperatiuni_Stream)
+					.filter(op -> !op.getGestiune().equals(ClientSession.instance().getGestiune()))
+					.map(op -> NumberUtils.add(op.getValoareVanzareFaraTVA(), op.getValoareVanzareTVA()))
+					.reduce(BigDecimal::add)
+					.orElse(BigDecimal.ZERO);
+			if (greaterThan(totalOtherGest, BigDecimal.ZERO)) {
+				final Map<String, Object> body = Map.of("topic", "LegacyGeneral",
+						"showAlert", true,
+						"title", MessageFormat.format("Vanzari din cealalta gestiune fara transfer: {0} RON{1}{2}", displayBigDecimal(totalOtherGest),
+								NEWLINE,
+								sourceDocs.stream()
+								.filter(AccountingDocument::isFullyCovered)
+								.map(AccountingDocument::namestamp)
+								.collect(Collectors.joining(NEWLINE))),
+						"userIds", Set.of("100000"),
+						"persist", true);
+				
+				RestCaller.post("/rest/s1/moqui-linic-legacy/notification")
+				.internal(authSession.authentication())
+				.body(BodyProvider.of(HttpUtils.toJSON(body)))
+				.asyncRaw(BodyHandlers.ofString())
+				.thenApply(HttpUtils::checkOk)
+				.thenAccept(resp -> log.info(resp.body()))
+				.exceptionally(t -> {
+					log.error(t.getMessage(), t);
+					return null;
+				});
+			}
+		}
+		catch (final Exception ex)
+		{
+			log.error(ex);
+			showException(ex, "Notificarea nu a putut fi trimisa!");
 		}
 		
 		return true;
