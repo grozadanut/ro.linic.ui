@@ -135,6 +135,7 @@ public class LoginAddon {
 				.get();
 
 		for (final String forcedPlugin : forcedPlugins) {
+			// pluginName pluginVersion   NOT IMPLEMENTED: [company ID:[gestiune ID]] [userId]
 			final String pluginName = forcedPlugin.split(PresentationUtils.SPACE)[0];
 			final String pluginVersion = forcedPlugin.split(PresentationUtils.SPACE)[1];
 			final Version minForcedVersion = Version.parseVersion(pluginVersion);
