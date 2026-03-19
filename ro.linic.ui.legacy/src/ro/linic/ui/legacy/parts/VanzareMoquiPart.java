@@ -887,8 +887,7 @@ public class VanzareMoquiPart implements VanzareInterface
 			}
 			
 			if (product.isPresent())
-				addDiscountLine(product.get(), cantitate, overridePrice, 
-						((Operatiune) result.extra(InvocationResult.OPERATIONS_KEY)).getId());
+				addDiscountLine(product.get(), cantitate, overridePrice, null);
 		}
 	}
 
