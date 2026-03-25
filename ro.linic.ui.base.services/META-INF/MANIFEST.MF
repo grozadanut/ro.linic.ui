@@ -47,5 +47,5 @@ Require-Bundle: org.eclipse.nebula.widgets.nattable.core;bundle-version="2.3.0",
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.base.services
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Service-Component: OSGI-INF/ro.linic.ui.base.services.impl.DataServicesImpl.xml

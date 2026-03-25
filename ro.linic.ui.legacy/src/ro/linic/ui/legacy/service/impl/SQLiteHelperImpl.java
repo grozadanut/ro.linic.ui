@@ -18,11 +18,7 @@ import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Product;
@@ -31,6 +27,7 @@ import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.services.SQLiteHelper;
 import ro.linic.ui.pos.cloud.model.CloudReceipt;
 import ro.linic.ui.pos.cloud.model.CloudReceiptLine;
+import tools.jackson.core.type.TypeReference;
 
 @Component(property = org.osgi.framework.Constants.SERVICE_RANKING + "=1")
 public class SQLiteHelperImpl implements SQLiteHelper {
@@ -192,15 +189,13 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 	}
 	
 	@Override
-	public void insertProductInStatement(final Product model, final PreparedStatement pstmt) throws SQLException, JsonProcessingException {
-		final ObjectMapper objectMapper = new ObjectMapper();
-		
+	public void insertProductInStatement(final Product model, final PreparedStatement pstmt) throws SQLException {
     	pstmt.setLong(1, model.getId());
     	pstmt.setString(2, model.getType());
     	pstmt.setString(3, model.getTaxCode());
     	pstmt.setString(4, model.getDepartmentCode());
     	pstmt.setString(5, model.getSku());
-    	pstmt.setString(6, model.getBarcodes().isEmpty() ? null : objectMapper.writeValueAsString(model.getBarcodes()));
+    	pstmt.setString(6, model.getBarcodes().isEmpty() ? null : HttpUtils.jsonMapper.writeValueAsString(model.getBarcodes()));
         pstmt.setString(7, model.getName());
         pstmt.setString(8, model.getUom());
         pstmt.setBoolean(9, model.isStockable());
@@ -211,8 +206,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 	}
 	
 	@Override
-	public List<Product> readProducts(final ResultSet rs) throws SQLException, JsonMappingException, JsonProcessingException {
-		final ObjectMapper objectMapper = new ObjectMapper();
+	public List<Product> readProducts(final ResultSet rs) throws SQLException {
 		final List<Product> result = new ArrayList<>();
 		while (rs.next()) {
 			final Product p = new Product();
@@ -223,7 +217,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 			p.setSku(rs.getString(Product.SKU_FIELD));
 			final String dbBarcodes = rs.getString(Product.BARCODES_FIELD);
 			p.setBarcodes(isEmpty(dbBarcodes) ? new HashSet<String>() : 
-				objectMapper.readValue(dbBarcodes, new TypeReference<Set<String>>(){}));
+				HttpUtils.jsonMapper.readValue(dbBarcodes, new TypeReference<Set<String>>(){}));
 			p.setName(rs.getString(Product.NAME_FIELD));
 			p.setUom(rs.getString(Product.UOM_FIELD));
 			p.setStockable(rs.getBoolean(Product.IS_STOCKABLE_FIELD));

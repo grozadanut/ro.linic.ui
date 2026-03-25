@@ -25,9 +25,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import ca.odell.glazedlists.EventList;
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.pos.base.Messages;
@@ -36,6 +33,7 @@ import ro.linic.ui.pos.base.preferences.PreferenceKey;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
 import ro.linic.ui.pos.base.services.ProductDataUpdater;
 import ro.linic.ui.pos.base.services.SQLiteHelper;
+import tools.jackson.databind.ObjectMapper;
 
 @Component
 public class LocalProductDataUpdater implements ProductDataUpdater {
@@ -73,7 +71,7 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
             if (pstmt.executeUpdate() == 1)
             	dataHolder.add(p);
             return ValidationStatus.OK_STATUS;
-        } catch (final SQLException | JsonProcessingException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         } finally {
 			dbLock.writeLock().unlock();
@@ -145,7 +143,7 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
             .findFirst()
             .ifPresent(old -> dataHolder.replace(old, p));
             return ValidationStatus.OK_STATUS;
-        } catch (final SQLException | JsonProcessingException e) {
+        } catch (final SQLException e) {
         	throw new RuntimeException(e);
         } finally {
 			dbLock.writeLock().unlock();
@@ -268,7 +266,7 @@ public class LocalProductDataUpdater implements ProductDataUpdater {
 			}
         	
             return ValidationStatus.OK_STATUS;
-        } catch (final SQLException | JsonProcessingException e) {
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         } finally {
 			dbLock.writeLock().unlock();

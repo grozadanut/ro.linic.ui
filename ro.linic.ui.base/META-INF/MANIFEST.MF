@@ -30,7 +30,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.29.0",
  ro.linic.ui.base.services;bundle-version="0.1.5",
  org.eclipse.e4.ui.services;bundle-version="1.6.300",
  wrapped.ro.flexbiz.util.commons;bundle-version="1.0.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Import-Package: jakarta.annotation;version="[2.1.0,3.0.0]",
  jakarta.inject;version="[2.0.0,3.0.0]"

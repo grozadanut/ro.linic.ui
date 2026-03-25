@@ -32,5 +32,5 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.29.0",
 Bundle-Vendor: LINIC
 Automatic-Module-Name: ro.linic.ui.p2
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Service-Component: OSGI-INF/repositoryTracker_component.xml

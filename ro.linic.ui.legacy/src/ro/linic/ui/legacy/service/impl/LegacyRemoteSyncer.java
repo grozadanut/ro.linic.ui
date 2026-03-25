@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 

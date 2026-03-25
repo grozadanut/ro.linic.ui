@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;

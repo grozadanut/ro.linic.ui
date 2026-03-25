@@ -76,7 +76,6 @@ import org.eclipse.nebula.widgets.nattable.viewport.ViewportLayer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 
 import com.google.common.collect.ImmutableList;
 

@@ -43,7 +43,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/camel-xpath-4.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/camel-xslt-4.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/camel-yaml-io-4.6.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>

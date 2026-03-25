@@ -95,7 +95,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.jboss.weld.exceptions.IllegalArgumentException;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;

@@ -56,5 +56,5 @@ Bundle-ClassPath: .,
  libs/camel-xpath-4.6.0.jar,
  libs/camel-xslt-4.6.0.jar,
  libs/camel-yaml-io-4.6.0.jar
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Service-Component: OSGI-INF/ro.linic.ui.camel.core.service.impl.CamelApp.xml

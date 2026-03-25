@@ -18,16 +18,13 @@ import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
 import ro.linic.ui.pos.base.services.SQLiteHelper;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 @Component(property = org.osgi.framework.Constants.SERVICE_RANKING + "=0")
 public class SQLiteHelperImpl implements SQLiteHelper {
@@ -172,7 +169,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 	}
 	
 	@Override
-	public void insertProductInStatement(final Product model, final PreparedStatement pstmt) throws SQLException, JsonProcessingException {
+	public void insertProductInStatement(final Product model, final PreparedStatement pstmt) throws SQLException {
 		final ObjectMapper objectMapper = new ObjectMapper();
 		
     	pstmt.setLong(1, model.getId());
@@ -191,7 +188,7 @@ public class SQLiteHelperImpl implements SQLiteHelper {
 	}
 	
 	@Override
-	public List<Product> readProducts(final ResultSet rs) throws SQLException, JsonMappingException, JsonProcessingException {
+	public List<Product> readProducts(final ResultSet rs) throws SQLException {
 		final ObjectMapper objectMapper = new ObjectMapper();
 		final List<Product> result = new ArrayList<>();
 		while (rs.next()) {

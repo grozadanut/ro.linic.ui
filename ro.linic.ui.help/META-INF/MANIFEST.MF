@@ -6,6 +6,6 @@ Bundle-Version: 0.0.2
 Bundle-Vendor: LINIC
 Require-Bundle: ro.linic.ui.e4.help;bundle-version="0.0.1"
 Model-Fragment: fragment.e4xmi
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: ro.linic.ui.help
 Bundle-ActivationPolicy: lazy

@@ -6,8 +6,8 @@
  <packaging>pom</packaging>
 
  <properties>
-  <tycho.version>4.0.4</tycho.version>
-  <java.version>17</java.version>
+  <tycho.version>4.0.13</tycho.version>
+  <java.version>21</java.version>
   <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
  </properties>
@@ -68,7 +68,7 @@
     <version>${tycho.version}</version>
     <configuration>
 	<!-- Optional set the Java version you are using-->
-    <!-- <executionEnvironment>JavaSE-17</executionEnvironment> -->
+    <executionEnvironment>JavaSE-21</executionEnvironment>
 	<target>
       <file>../target-platform/target-platform.target</file>
     </target>

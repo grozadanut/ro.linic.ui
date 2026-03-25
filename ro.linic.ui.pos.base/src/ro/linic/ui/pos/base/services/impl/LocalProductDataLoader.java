@@ -21,8 +21,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.pos.base.model.Product;
 import ro.linic.ui.pos.base.preferences.PreferenceKey;
@@ -52,7 +50,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 		try (Statement stmt = localDatabase.getConnection(dbName).createStatement();
 				ResultSet rs = stmt.executeQuery(querySb.toString())) {
 			result = sqliteHelper.readProducts(rs);
-		} catch (final SQLException | JsonProcessingException e) {
+		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		} finally {
 			dbLock.readLock().unlock();
@@ -79,7 +77,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 		try (PreparedStatement stmt = localDatabase.getConnection(dbName).prepareStatement(querySb.toString())) {
 			final ResultSet rs = stmt.executeQuery();
 			result = sqliteHelper.readProducts(rs);
-		} catch (final SQLException | JsonProcessingException e) {
+		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		} finally {
 			dbLock.readLock().unlock();
@@ -136,7 +134,7 @@ public class LocalProductDataLoader implements ProductDataLoader {
 			stmt.setObject(2, "\""+code+"\"");
 			final ResultSet rs = stmt.executeQuery();
 			result = sqliteHelper.readProducts(rs);
-		} catch (final SQLException | JsonProcessingException e) {
+		} catch (final SQLException e) {
 			log.error(e.getMessage(), e);
 		} finally {
 			dbLock.readLock().unlock();

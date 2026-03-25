@@ -24,7 +24,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.29.0",
  com.opcoach.e4.preferences;bundle-version="1.3.2",
  ro.linic.ui.http,
  wrapped.ro.flexbiz.util.commons;bundle-version="1.0.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: ro.linic.ui.anaf.connector
 Model-Fragment: fragment.e4xmi
 Bundle-ActivationPolicy: lazy

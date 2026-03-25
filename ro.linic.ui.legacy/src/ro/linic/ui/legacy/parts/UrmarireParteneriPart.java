@@ -61,7 +61,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.jboss.weld.exceptions.UnsupportedOperationException;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;

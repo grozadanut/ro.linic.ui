@@ -24,7 +24,7 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.200.v20240
  org.eclipse.core.databinding.beans;bundle-version="1.10.200",
  org.eclipse.e4.ui.services;bundle-version="1.6.300",
  wrapped.ro.flexbiz.util.commons;bundle-version="1.0.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Automatic-Module-Name: ro.linic.ui.pos
 Model-Fragment: fragment.e4xmi
 Import-Package: jakarta.annotation;version="[2.1.0,3.0.0]",
