@@ -132,6 +132,7 @@ public class AccountingPart implements IMouseAction {
 			.add(receivedColumn).build();
 	private static final String REC_INV_DATA_HOLDER = "AccountingPart.anafEInvoices"; //$NON-NLS-1$
 
+	private Text tvaDePlata;
 	private Combo partner;
 	private Combo gestiune;
 	private Button maxim;
@@ -145,7 +146,6 @@ public class AccountingPart implements IMouseAction {
 	private FullFeaturedNatTable<GenericValue> recInvTable;
 	private SashForm verticalSash;
 
-	private Text tvaDePlata;
 	private Button printFisaParteneri;
 	private Button printAllDocs;
 	private Button printTvaDocs;
@@ -180,8 +180,17 @@ public class AccountingPart implements IMouseAction {
 		container.setLayout(new GridLayout(7, false));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
 
-		new Label(container, SWT.NONE);// layout
-		new Label(container, SWT.NONE);// layout
+		final Composite tvaCont = new Composite(container, SWT.NONE);
+		tvaCont.setLayout(new GridLayout(2, false));
+		GridDataFactory.fillDefaults().span(2, 1).applyTo(tvaCont);
+		
+		final Label tvaDePlataLabel = new Label(tvaCont, SWT.WRAP);
+		tvaDePlataLabel.setText(Messages.AccountingPart_PayableVAT);
+		UIUtils.setBoldBannerFont(tvaDePlataLabel);
+
+		tvaDePlata = new Text(tvaCont, SWT.READ_ONLY | SWT.SINGLE | SWT.BORDER);
+		UIUtils.setBoldBannerFont(tvaDePlata);
+		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(tvaDePlata);
 
 		maxim = new Button(container, SWT.PUSH);
 		maxim.setText(Messages.Max);
@@ -261,34 +270,22 @@ public class AccountingPart implements IMouseAction {
 
 	private void createResultArea(final Composite parent) {
 		final Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(2, false));
+		container.setLayout(new GridLayout(3, false));
 		GridDataFactory.fillDefaults().grab(true, false).span(7, 1).applyTo(container);
 
-		final Label tvaDePlataLabel = new Label(container, SWT.WRAP);
-		tvaDePlataLabel.setText(Messages.AccountingPart_PayableVAT);
-		UIUtils.setBoldBannerFont(tvaDePlataLabel);
-
-		tvaDePlata = new Text(container, SWT.READ_ONLY | SWT.SINGLE | SWT.BORDER);
-		UIUtils.setBoldBannerFont(tvaDePlata);
-		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(tvaDePlata);
-
-		final Composite buttonsCont = new Composite(container, SWT.NONE);
-		buttonsCont.setLayout(new GridLayout(3, false));
-		GridDataFactory.fillDefaults().grab(true, false).span(2, 1).applyTo(buttonsCont);
-
-		printFisaParteneri = new Button(buttonsCont, SWT.PUSH | SWT.WRAP);
+		printFisaParteneri = new Button(container, SWT.PUSH | SWT.WRAP);
 		printFisaParteneri.setText(RAP_FISA_PARTENERI_CONTA);
 		printFisaParteneri.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		printFisaParteneri.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(printFisaParteneri);
 
-		printAllDocs = new Button(buttonsCont, SWT.PUSH | SWT.WRAP);
+		printAllDocs = new Button(container, SWT.PUSH | SWT.WRAP);
 		printAllDocs.setText(RAP_ALL_DOCS);
 		printAllDocs.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		printAllDocs.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(printAllDocs);
 
-		printTvaDocs = new Button(buttonsCont, SWT.PUSH | SWT.WRAP);
+		printTvaDocs = new Button(container, SWT.PUSH | SWT.WRAP);
 		printTvaDocs.setText(RAP_TVA_DOCS);
 		printTvaDocs.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
 		printTvaDocs.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
@@ -299,7 +296,7 @@ public class AccountingPart implements IMouseAction {
 		final Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(layoutNoSpaces(new GridLayout(5, false)));
 		container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
-		GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 50).span(7, 1).applyTo(container);
+		GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 40).span(7, 1).applyTo(container);
 
 		receptie = new Button(container, SWT.PUSH);
 		receptie.setText(Messages.AccountingPart_Receive);
