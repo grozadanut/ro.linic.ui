@@ -41,6 +41,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -73,6 +74,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 
@@ -82,6 +84,7 @@ import com.google.common.collect.ImmutableSet;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.base.IPresentable;
 import ro.colibri.embeddable.Delegat;
@@ -305,8 +308,11 @@ public class ManagerPart implements IMouseAction
 	}
 	
 	@PostConstruct
-	public void createComposite(final Composite parent)
+	public void createComposite(final Composite parent, @Named(IServiceConstants.ACTIVE_SHELL) final Shell shell)
 	{
+		if (shell != null && ClientSession.PROVIDER_URL_VALUE.contains("localhost"))
+			shell.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+		
 		allGestiuni = BusinessDelegate.allGestiuni();
 		
 		final GridLayout parentLayout = new GridLayout(2, false);
