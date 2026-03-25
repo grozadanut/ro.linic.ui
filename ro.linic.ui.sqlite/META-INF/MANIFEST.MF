@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sqlite
 Bundle-SymbolicName: ro.linic.ui.sqlite
-Bundle-Version: 0.0.2
+Bundle-Version: 1.0.0
 Require-Bundle: ro.linic.ui.base.services;bundle-version="0.1.5",
  org.eclipse.osgi.services;bundle-version="3.12.0"
 Bundle-Vendor: LINIC
