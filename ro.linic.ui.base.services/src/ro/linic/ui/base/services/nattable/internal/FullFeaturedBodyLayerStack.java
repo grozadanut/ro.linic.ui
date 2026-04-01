@@ -21,7 +21,6 @@ import org.eclipse.nebula.widgets.nattable.group.ColumnGroupReorderLayer;
 import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.AbstractLayerTransform;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
-import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.layer.config.ColumnStyleChooserConfiguration;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
@@ -49,31 +48,28 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
     private GlazedListsEventLayer<T> glazedListsEventLayer;
     private final DataChangeLayer dataChangeLayer;
     
-    public FullFeaturedBodyLayerStack(final Class<T> modelClass, final EventList<T> eventList,
-            final IRowIdAccessor<T> rowIdAccessor, final List<Column> columns,
-            final IConfigRegistry configRegistry, final ColumnGroupModel columnGroupModel) {
-        this(modelClass, eventList, rowIdAccessor, columns, configRegistry,
-                columnGroupModel, true);
+    public FullFeaturedBodyLayerStack(final FluentTableConfigurer<T> configurer, final EventList<T> eventList,
+            final IRowIdAccessor<T> rowIdAccessor, final IConfigRegistry configRegistry, final ColumnGroupModel columnGroupModel) {
+        this(configurer, eventList, rowIdAccessor, configRegistry, columnGroupModel, true);
     }
 
-    public FullFeaturedBodyLayerStack(final Class<T> modelClass, final EventList<T> eventList,
-            final IRowIdAccessor<T> rowIdAccessor, final List<Column> columns,
-            final IConfigRegistry configRegistry, final ColumnGroupModel columnGroupModel,
+    public FullFeaturedBodyLayerStack(final FluentTableConfigurer<T> configurer, final EventList<T> eventList,
+            final IRowIdAccessor<T> rowIdAccessor, final IConfigRegistry configRegistry, final ColumnGroupModel columnGroupModel,
             final boolean useDefaultConfiguration) {
-    	final List<String> propertyNames = columns.stream().map(Column::property).collect(Collectors.toList());
+    	final List<String> propertyNames = configurer.getColumns().stream().map(Column::property).collect(Collectors.toList());
         columnPropertyAccessor = new GenericValueColumnAccessor<>(propertyNames);
         this.bodyDataProvider = new ListDataProvider<>(eventList, columnPropertyAccessor);
         this.bodyDataLayer = new DataLayer(this.bodyDataProvider);
         this.bodyDataLayer.setDefaultRowHeight(30);
-        this.bodyDataLayer.setConfigLabelAccumulator(new ColumnLabelAccumulator(bodyDataProvider));
-        for (int i = 0; i < columns.size(); i++)
-        	this.bodyDataLayer.setDefaultColumnWidthByPosition(i, columns.get(i).size());
+        this.bodyDataLayer.setConfigLabelAccumulator(new FullFeaturedLabelAccumulator<>(bodyDataProvider, configurer.getAllLabels(), configurer.getRowLabels()));
+        for (int i = 0; i < configurer.getColumns().size(); i++)
+        	this.bodyDataLayer.setDefaultColumnWidthByPosition(i, configurer.getColumns().get(i).size());
         // add a DataChangeLayer that temporarily tracks data changes without
         // updating the underlying data model
         // Note: we don't need the default configuration because the style is handled 
         // by our theme LinicThemeConfiguration and the CTRL+S and CTRL+D key bindings 
         // are global bindings in the file menu.
-        this.dataChangeLayer = new DataChangeLayer(bodyDataLayer, new IdIndexKeyHandler<>(bodyDataProvider, rowIdAccessor, modelClass),
+        this.dataChangeLayer = new DataChangeLayer(bodyDataLayer, new IdIndexKeyHandler<>(bodyDataProvider, rowIdAccessor, configurer.getModelClass()),
         		true, false, false);
         this.glazedListsEventLayer = new GlazedListsEventLayer<>(dataChangeLayer,
                 eventList);
@@ -98,7 +94,6 @@ public class FullFeaturedBodyLayerStack<T> extends AbstractLayerTransform {
             addConfiguration(new ColumnStyleChooserConfiguration(this,
                     this.selectionLayer));
         }
-
     }
 
     @Override

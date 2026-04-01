@@ -3,7 +3,6 @@ package ro.linic.ui.base.services.nattable;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
@@ -44,7 +43,6 @@ import org.eclipse.nebula.widgets.nattable.ui.menu.PopupMenuBuilder;
 import org.eclipse.nebula.widgets.nattable.util.GUIHelper;
 import org.eclipse.swt.widgets.Composite;
 
-import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.ObservableElementList;
@@ -70,33 +68,16 @@ public class FullFeaturedNatTable<T> {
 	public static final String BODY_DATA_PROVIDER_CONFIG_KEY = "bodyDataProvider"; //$NON-NLS-1$
 	public static final String CONFIG_REGISTRY_CONFIG_KEY = "configRegistry"; //$NON-NLS-1$
 
-	final private Class<T> modelClass;
-	final private List<Column> columns;
-	final private EventList<T> baseEventList;
 	private PropertyChangeListener propertyChangeListener;
 	private ListDataProvider<T> bodyDataProvider;
 	private SelectionLayer selectionLayer;
 	private NatTable natTable;
 	private FilterList<T> filterList;
 	
-	/**
-	 * These are for clients that require some data, such as the bodyDataProvider 
-	 * when configuring the extra layers. Register a known key here, such as 
-	 * BODY_DATA_PROVIDER_CONFIG_KEY and the passed function will be called 
-	 * when configuring NatTable with the required object passed(eg.: bodyDataProvider). 
-	 * Client should then return the IConfiguration they want to apply to the nattable 
-	 * or null to skip.<br>
-	 * For invalid keys or empty keys null is passed to the function.
-	 */
-	final private Map<String, List<Function<Object, IConfiguration>>> dynamicConfigs;
 	final private FluentTableConfigurer<T> configurer;
 	
 	public FullFeaturedNatTable(final FluentTableConfigurer<T> configurer) {
 		this.configurer = configurer;
-		this.modelClass = configurer.getModelClass();
-		this.columns = configurer.getColumns();
-		this.baseEventList = configurer.getSourceData();
-		this.dynamicConfigs = configurer.getDynamicConfigs();
 	}
 
 	public void postConstruct(final Composite parent) {
@@ -107,19 +88,19 @@ public class FullFeaturedNatTable<T> {
 		ObservableElementList<T> observableElementList;
 		SortedList<T> sortedList;
 		FilterList<T> filteredHeaderData;
-		this.baseEventList.getReadWriteLock().readLock().lock();
+		configurer.getSourceData().getReadWriteLock().readLock().lock();
 		try {
 			observableElementList = new ObservableElementList<>(
-					this.baseEventList, GlazedLists.beanConnector(modelClass));
+					configurer.getSourceData(), GlazedLists.beanConnector(configurer.getModelClass()));
 			filteredHeaderData = new FilterList<>(observableElementList);
 			filterList = new FilterList<>(filteredHeaderData);
 			sortedList = new SortedList<>(filterList, null);
 		} finally {
-			this.baseEventList.getReadWriteLock().readLock().unlock();
+			configurer.getSourceData().getReadWriteLock().readLock().unlock();
 		}
 
-		final FullFeaturedBodyLayerStack<T> bodyLayer = new FullFeaturedBodyLayerStack<>(modelClass,
-				sortedList, new DefaultRowIdAccessor<>(), columns, configRegistry, columnGroupModel);
+		final FullFeaturedBodyLayerStack<T> bodyLayer = new FullFeaturedBodyLayerStack<>(configurer,
+				sortedList, new DefaultRowIdAccessor<>(), configRegistry, columnGroupModel);
 
 		this.bodyDataProvider = bodyLayer.getBodyDataProvider();
 		this.propertyChangeListener = bodyLayer.getGlazedListEventsLayer();
@@ -154,7 +135,7 @@ public class FullFeaturedNatTable<T> {
 
 		// Column header
 		final FullFeaturedColumnHeaderLayerStack<T> columnHeaderLayer = new FullFeaturedColumnHeaderLayerStack<>(
-				sortedList, filteredHeaderData, this.columns, bodyLayer, selectionLayer,
+				sortedList, filteredHeaderData, configurer.getColumns(), bodyLayer, selectionLayer,
 				columnGroupModel, configRegistry);
 
 		// Row header
@@ -186,8 +167,8 @@ public class FullFeaturedNatTable<T> {
 		});
 		this.natTable.addConfiguration(new BodyMenuConfiguration(this.natTable));
 		this.natTable.addConfiguration(new SingleClickSortConfiguration());
-		this.natTable.addConfiguration(new CustomGeneralConfiguration<>(columns, bodyDataProvider, configurer.getClickConsumers()));
-		new FullFeaturedContentTooltip(this.natTable, columns);
+		this.natTable.addConfiguration(new CustomGeneralConfiguration<>(configurer.getColumns(), bodyDataProvider, configurer.getClickConsumers()));
+		new FullFeaturedContentTooltip(this.natTable, configurer.getColumns());
 
 		// Column chooser
 		final DisplayColumnChooserCommandHandler columnChooserCommandHandler = new DisplayColumnChooserCommandHandler(
@@ -203,7 +184,7 @@ public class FullFeaturedNatTable<T> {
 				.toList());
 
 		// Extra configuration
-		for (final Entry<String, List<Function<Object, IConfiguration>>> entry : dynamicConfigs.entrySet()) {
+		for (final Entry<String, List<Function<Object, IConfiguration>>> entry : configurer.getDynamicConfigs().entrySet()) {
 			final Object argument = switch (entry.getKey()) {
 			case BODY_DATA_PROVIDER_CONFIG_KEY -> bodyDataProvider;
 			case CONFIG_REGISTRY_CONFIG_KEY -> configRegistry;

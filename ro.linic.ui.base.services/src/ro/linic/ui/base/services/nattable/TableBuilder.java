@@ -4,6 +4,7 @@ import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -53,6 +54,13 @@ public interface TableBuilder {
 		 */
 		TableConfigurer<T> saveToDbHandler(Function<List<UpdateCommand>, Boolean> handler);
 		TableConfigurer<T> addClickListener(Column column, BiConsumer<T, Object> listener);
+		/**
+		 * Add labels to rows. Useful when adding specific styling to a row, for example.
+		 * 
+		 * @param allLabels that could be provided by the function
+		 * @param rowLabels for each row you can return multiple labels which will be added on top
+		 */
+		TableConfigurer<T> addLabels(final Set<String> allLabels, final Function<T, List<String>> rowLabels);
 		FullFeaturedNatTable<T> build(Composite parent);
 	}
 	

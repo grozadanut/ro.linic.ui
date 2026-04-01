@@ -32,7 +32,9 @@ import org.eclipse.nebula.widgets.nattable.layer.cell.ColumnLabelAccumulator;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionProvider;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer;
 import org.eclipse.nebula.widgets.nattable.selection.command.SelectRowsCommand;
+import org.eclipse.nebula.widgets.nattable.style.CellStyleAttributes;
 import org.eclipse.nebula.widgets.nattable.style.DisplayMode;
+import org.eclipse.nebula.widgets.nattable.style.Style;
 import org.eclipse.nebula.widgets.nattable.tooltip.NatTableContentTooltip;
 import org.eclipse.nebula.widgets.nattable.util.ObjectUtils;
 import org.eclipse.swt.SWT;
@@ -42,6 +44,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.osgi.framework.Bundle;
 
@@ -133,6 +136,20 @@ public class ReconciliationPart {
 		final EventList<GenericValue> data = dataServices.holder(DATA_HOLDER).getData();
 		tableLeft = TableBuilder.with(GenericValue.class, COLUMNS, data)
 				.addConfiguration(new LeftStyleConfiguration())
+				.addLabels(Set.of("GREEN_LABEL", "YELLOW_LABEL", "RED_LABEL"), gv -> {
+					switch (gv.getChild("result").getChild("match").getString("status") + "_" + gv.getChild("result").getString("status")) {
+					case "CONFIRMED_RECONCILED":
+						return List.of("GREEN_LABEL");
+					case "CONFIRMED_MISMATCH":
+						return List.of("RED_LABEL");
+					case "CONFIRMED_LEFT_ONLY":
+					case "PROBABLE_LEFT_ONLY":
+						return List.of("YELLOW_LABEL");
+
+					default:
+						return List.of();
+					}
+				})
 				.build(horizontalSash);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(tableLeft.natTable());
 		loadState(TABLE_LEFT_STATE_PREFIX, tableLeft.natTable(), part);
@@ -148,6 +165,20 @@ public class ReconciliationPart {
 		
 		tableRight = TableBuilder.with(GenericValue.class, COLUMNS, data)
 				.addConfiguration(new RightStyleConfiguration())
+				.addLabels(Set.of("GREEN_LABEL", "YELLOW_LABEL", "RED_LABEL"), gv -> {
+					switch (gv.getChild("result").getChild("match").getString("status") + "_" + gv.getChild("result").getString("status")) {
+					case "CONFIRMED_RECONCILED":
+						return List.of("GREEN_LABEL");
+					case "CONFIRMED_MISMATCH":
+						return List.of("RED_LABEL");
+					case "CONFIRMED_RIGHT_ONLY":
+					case "PROBABLE_RIGHT_ONLY":
+						return List.of("YELLOW_LABEL");
+
+					default:
+						return List.of();
+					}
+				})
 				.build(rightContainer);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(tableRight.natTable());
 		loadState(TABLE_RIGHT_STATE_PREFIX, tableRight.natTable(), part);
@@ -231,6 +262,17 @@ public class ReconciliationPart {
 	private class LeftStyleConfiguration extends AbstractRegistryConfiguration {
 		@Override
 		public void configureRegistry(final IConfigRegistry configRegistry) {
+			final Style greenStyle = new Style();
+			greenStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_GREEN));
+			final Style yellowStyle = new Style();
+			yellowStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+			final Style redStyle = new Style();
+			redStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, greenStyle, DisplayMode.NORMAL, "GREEN_LABEL");
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, yellowStyle, DisplayMode.NORMAL, "YELLOW_LABEL");
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, redStyle, DisplayMode.NORMAL, "RED_LABEL");
+			
 			// Display converters
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER,
 					new DefaultDisplayConverter() {
@@ -264,6 +306,17 @@ public class ReconciliationPart {
 	private class RightStyleConfiguration extends AbstractRegistryConfiguration {
 		@Override
 		public void configureRegistry(final IConfigRegistry configRegistry) {
+			final Style greenStyle = new Style();
+			greenStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_GREEN));
+			final Style yellowStyle = new Style();
+			yellowStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+			final Style redStyle = new Style();
+			redStyle.setAttributeValue(CellStyleAttributes.BACKGROUND_COLOR, Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+			
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, greenStyle, DisplayMode.NORMAL, "GREEN_LABEL");
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, yellowStyle, DisplayMode.NORMAL, "YELLOW_LABEL");
+			configRegistry.registerConfigAttribute(CellConfigAttributes.CELL_STYLE, redStyle, DisplayMode.NORMAL, "RED_LABEL");
+			
 			// Display converters
 			configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER,
 					new DefaultDisplayConverter() {

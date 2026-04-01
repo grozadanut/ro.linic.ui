@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -36,6 +37,8 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	private ESelectionService selectionService;
 	private MDirtyable dirtyable;
 	private Function<List<UpdateCommand>, Boolean> saveToDbHandler;
+	private Set<String> allLabels;
+    private Function<T, List<String>> rowLabels;
 	
 	public FluentTableConfigurer(final Class<T> modelClass, final List<Column> columns, final EventList<T> sourceData) {
 		this.modelClass = Objects.requireNonNull(modelClass);
@@ -103,6 +106,13 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 		this.saveToDbHandler = Objects.requireNonNull(saveToDbHandler);
 		return this;
 	}
+	
+	@Override
+	public TableConfigurer<T> addLabels(final Set<String> allLabels, final Function<T, List<String>> rowLabels) {
+		this.allLabels = allLabels;
+		this.rowLabels = rowLabels;
+		return this;
+	}
 
 	public Class<T> getModelClass() {
 		return modelClass;
@@ -138,5 +148,13 @@ public class FluentTableConfigurer<T> implements TableConfigurer<T> {
 	
 	public Map<Column, BiConsumer<T, Object>> getClickConsumers() {
 		return clickConsumers;
+	}
+	
+	public Set<String> getAllLabels() {
+		return allLabels;
+	}
+	
+	public Function<T, List<String>> getRowLabels() {
+		return rowLabels;
 	}
 }
