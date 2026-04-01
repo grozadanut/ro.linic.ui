@@ -296,6 +296,7 @@ public class Messages extends NLS {
 	public static String OrderProductsDialog_Channel;
 	public static String OrderProductsDialog_SupplierMissingError;
 	public static String OrderProductsDialog_ChannelMissingError;
+	public static String SmsQueryDialog_GenerateSms;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);

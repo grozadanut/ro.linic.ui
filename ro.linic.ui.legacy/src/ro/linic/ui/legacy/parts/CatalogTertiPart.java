@@ -2,18 +2,19 @@ package ro.linic.ui.legacy.parts;
 
 import static ro.colibri.util.NumberUtils.extractPercentage;
 import static ro.colibri.util.NumberUtils.parseToInt;
+import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-
+import org.eclipse.e4.core.di.extensions.OSGiBundle;
+import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -36,26 +37,38 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import ro.colibri.embeddable.Address;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.embeddable.FidelityCard;
 import ro.colibri.embeddable.PartnerGrupaInteresMappingId;
+import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.GrupaInteres;
 import ro.colibri.entities.comercial.Partner;
 import ro.colibri.entities.comercial.mappings.PartnerGrupaInteresMapping;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
+import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.base.dialogs.ConfirmDialog;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.GrupeInteresDialog;
+import ro.linic.ui.legacy.dialogs.SmsQueryDialog;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.PartnerNatTable;
 import ro.linic.ui.legacy.widgets.AddressWidget;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class CatalogTertiPart
 {
@@ -69,6 +82,7 @@ public class CatalogTertiPart
 	private Button sterge;
 	private Button refresh;
 	private Button grupeInteres;
+	private Button generateSms;
 	
 	private Text name;
 	private Text cui;
@@ -103,6 +117,9 @@ public class CatalogTertiPart
 	@Inject private MPart part;
 	@Inject private EPartService partService;
 	@Inject private UISynchronize sync;
+	@Inject @OSGiBundle private Bundle bundle;
+	@Inject private Logger log;
+	@Inject private AuthenticationSession auth;
 	
 	public static void openPart(final EPartService partService)
 	{
@@ -164,6 +181,13 @@ public class CatalogTertiPart
 		grupeInteres.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(grupeInteres);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(grupeInteres);
+		
+		generateSms = new Button(container, SWT.PUSH);
+		generateSms.setText(Messages.CatalogProdusePart_GenerateSms);
+		generateSms.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN));
+		generateSms.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBannerFont(generateSms);
+		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, true).applyTo(generateSms);
 	}
 
 	private void createSecondRow(final Composite parent)
@@ -568,6 +592,82 @@ public class CatalogTertiPart
 					fidelityNumber.setText(String.valueOf(BusinessDelegate.firstFreeNumber(Partner.class, FidelityCard.NUMBER_FIELD)));
 					part.setDirty(true);
 				}
+			}
+		});
+		
+		generateSms.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				if (table.selection().isEmpty())
+					return;
+				
+				final SmsQueryDialog dialog = new SmsQueryDialog(generateSms.getShell());
+				if (dialog.open() != Window.OK)
+					return;
+				
+				generateSms.setEnabled(false);
+				BusinessDelegate.rulajeParteneri(new AsyncLoadData<RulajPartener>() {
+					@Override
+					public void success(final ImmutableList<RulajPartener> data) {
+						generateSms.setEnabled(true);
+						final java.util.List<Long> partnerIds = table.selection().stream()
+								.map(Partner::getId)
+								.toList();
+
+						data.stream()
+						.filter(rp -> !isEmpty(rp.getPhoneNumber()))
+						.filter(rp -> NumberUtils.greaterThan(rp.getDiscAcum(), BigDecimal.ZERO))
+						.filter(rp -> partnerIds.contains(rp.getId()))
+						.forEach(rp -> {
+							final StringBuilder sb = new StringBuilder();
+							sb.append("Discount acumulat: "+PresentationUtils.displayBigDecimal(rp.getDiscAcum())+" RON").append(NEWLINE)
+							.append("Discount cheltuit: "+PresentationUtils.displayBigDecimal(rp.getDiscChelt())+" RON").append(NEWLINE)
+							.append("Showroom Colibri Marghita").append(PresentationUtils.NEWLINE);
+							
+							final GenericValue body = new GenericValue("", "");
+							body.put("text", sb.toString());
+							body.put("phoneNumbers", java.util.List.of(sanitizePhoneNumber(rp.getPhoneNumber())));
+							
+							if (ConfirmDialog.open(generateSms.getShell(), Messages.Confirm, 
+									"Catre "+rp.getName()+" "+sanitizePhoneNumber(rp.getPhoneNumber())+NEWLINE+NEWLINE+sb.toString())) {
+								RestCaller.post("/rest/s1/moqui-linic-legacy/sms")
+								.internal(auth.authentication())
+								.body(BodyProvider.of(body))
+								.sync(t -> UIUtils.showException(t, sync));
+							}
+						});
+					}
+
+					public static String sanitizePhoneNumber(final String phoneNumber) {
+						if (isEmpty(phoneNumber))
+							return PresentationUtils.EMPTY_STRING;
+
+						final String trimmed = phoneNumber.trim();
+						final boolean hasPlus = trimmed.startsWith("+");
+						final String digitsOnly = trimmed.replaceAll("\\D", "");
+
+						if (digitsOnly.isEmpty())
+							return phoneNumber;
+
+						if (hasPlus) {
+							return "+" + digitsOnly;
+						} else if (digitsOnly.startsWith("00")) {
+							return "+" + digitsOnly.substring(2);
+						} else if (digitsOnly.startsWith("0")) {
+							return "+40" + digitsOnly.substring(1);
+						} else {
+							return "+40" + digitsOnly;
+						}
+					}
+
+					@Override
+					public void error(final String details) {
+						generateSms.setEnabled(true);
+						MessageDialog.openError(Display.getCurrent().getActiveShell(),
+								"Error", details);
+					}
+				}, sync, dialog.getSelectedGestiune().map(Gestiune::getId).orElse(null),
+						null, dialog.getSelectedFrom(), dialog.getSelectedTo(), log);
 			}
 		});
 		

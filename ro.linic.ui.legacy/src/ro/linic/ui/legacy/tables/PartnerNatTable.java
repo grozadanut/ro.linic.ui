@@ -214,7 +214,7 @@ public class PartnerNatTable
 					{
 						return rowObject.hashCode();
 					}
-				}, false)); //single selection
+				}, true)); //multiple selection
 		
 		selectionLayer.addConfiguration(new RowOnlySelectionConfiguration());
 		table.addConfiguration(new RowOnlySelectionBindings());
