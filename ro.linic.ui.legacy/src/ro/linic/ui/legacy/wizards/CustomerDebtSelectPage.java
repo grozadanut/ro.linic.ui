@@ -60,6 +60,7 @@ public class CustomerDebtSelectPage extends WizardPage
 	private Text incasat;
 	private DateTime dataDoc;
 	private Button transformaInFactura;
+	private Button transformaInBC;
 	private Button addFidelityPoints;
 	private Combo contBancar;
 	private Button casaActiva;
@@ -157,9 +158,14 @@ public class CustomerDebtSelectPage extends WizardPage
 		refreshDiscCheltEnablement();
 		
 		new Label(container, SWT.NONE); // layout purposes
-		transformaInFactura = new Button(container, SWT.CHECK);
+		transformaInFactura = new Button(container, SWT.RADIO);
 		transformaInFactura.setText("Transforma in Factura");
 		UIUtils.setFont(transformaInFactura);
+		
+		new Label(container, SWT.NONE); // layout purposes
+		transformaInBC = new Button(container, SWT.RADIO);
+		transformaInBC.setText("Comaseaza in BC");
+		UIUtils.setFont(transformaInBC);
 		refreshTransformaFacturaEnablement();
 		
 		new Label(container, SWT.NONE); // layout purposes
@@ -251,6 +257,7 @@ public class CustomerDebtSelectPage extends WizardPage
 	private void refreshTransformaFacturaEnablement()
 	{
 		transformaInFactura.setEnabled(canTransformInFactura());
+		transformaInBC.setEnabled(canTransformInBC());
 	}
 	
 	private void refreshAddDiscountEnablement()
@@ -521,6 +528,11 @@ public class CustomerDebtSelectPage extends WizardPage
 		return transformaInFactura.getSelection();
 	}
 	
+	public boolean transformaInBC()
+	{
+		return transformaInBC.getSelection();
+	}
+	
 	public boolean addDiscount()
 	{
 		return addFidelityPoints.getSelection();
@@ -532,6 +544,22 @@ public class CustomerDebtSelectPage extends WizardPage
 	}
 	
 	public boolean canTransformInFactura()
+	{
+		if (table.selection().stream()
+				.filter(RulajPartener.class::isInstance)
+				.findAny()
+				.isPresent())
+			return false;
+		
+		return table.selection().stream()
+				.filter(AccountingDocument.class::isInstance)
+				.map(AccountingDocument.class::cast)
+				.filter(AccountingDocument::isUnofficialDoc)
+				.findAny()
+				.isPresent();
+	}
+	
+	public boolean canTransformInBC()
 	{
 		if (table.selection().stream()
 				.filter(RulajPartener.class::isInstance)

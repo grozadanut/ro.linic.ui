@@ -240,6 +240,7 @@ public class CustomerDebtWizard extends Wizard
 		
 		final InvocationResult result = BusinessDelegate.incaseaza(notFullyCoveredVanzari, partnerId, one.incasat(),
 				one.contBancar(), one.casaActiva(), persist, one.paidDocNr(), one.canTransformInFactura() && one.transformaInFactura(), 
+				one.canTransformInBC() && one.transformaInBC(),
 				one.canAddDiscount() && one.addDiscount(), one.discChelt(), one.dataDoc(), one.selectedTempDocIds());
 		
 		if (result.statusCanceled())

@@ -800,12 +800,12 @@ public class BusinessDelegate
 	
 	public static InvocationResult incaseaza(final ImmutableSet<Long> vanzareDocIds, final Long partnerId, final BigDecimal achitat,
 			final ContBancar contBancar, final boolean casaActiva, final boolean persist, final String paidDocNr,
-			final boolean transformaInFactura, final boolean addDiscountDoc, final BigDecimal discFolosit, final LocalDate dataDoc,
-			final ImmutableSet<Long> tempDocIds)
+			final boolean transformaInFactura, final boolean transformaInBC, final boolean addDiscountDoc, final BigDecimal discFolosit,
+			final LocalDate dataDoc, final ImmutableSet<Long> tempDocIds)
 	{
 		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);
 		return bean.incaseazaDocsOrPartner(vanzareDocIds, partnerId, achitat, contBancar, casaActiva, persist, paidDocNr,
-				transformaInFactura, addDiscountDoc, discFolosit, dataDoc, tempDocIds);
+				transformaInFactura, transformaInBC, addDiscountDoc, discFolosit, dataDoc, tempDocIds);
 	}
 	
 	public static InvocationResult platesteDoc(final Long accDocId, final BigDecimal achitat, final boolean regCasa, final ContBancar contBancar,
