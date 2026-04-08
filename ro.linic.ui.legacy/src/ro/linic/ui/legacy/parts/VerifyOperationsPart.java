@@ -16,6 +16,7 @@ import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -66,6 +67,7 @@ import ro.colibri.entities.comercial.mappings.AccountingDocumentMapping;
 import ro.colibri.util.InvocationResult;
 import ro.linic.ui.base.dialogs.ConfirmDialog;
 import ro.linic.ui.legacy.components.AsyncLoadData;
+import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.ScheduleDialog;
 import ro.linic.ui.legacy.dialogs.SendEmailDialog;
 import ro.linic.ui.legacy.dialogs.VerifyDialog;
@@ -76,6 +78,7 @@ import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.TreeOperationsNatTable;
 import ro.linic.ui.legacy.tables.TreeOperationsNatTable.SourceLoc;
 import ro.linic.ui.legacy.widgets.ExportButton;
+import ro.linic.ui.pos.base.services.ECRService;
 
 public class VerifyOperationsPart
 {
@@ -98,6 +101,7 @@ public class VerifyOperationsPart
 	@Inject private UISynchronize sync;
 	@Inject private EPartService partService;
 	@Inject private Logger log;
+	@Inject private ECRService ecrService;
 	
 	public static VerifyOperationsPart loadDoc(final EPartService partService, final AccountingDocument doc)
 	{
@@ -149,8 +153,17 @@ public class VerifyOperationsPart
 		intrariTable = new TreeOperationsNatTable(SourceLoc.VERIFY_OPERATIONS);
 		intrariTable.doubleClickAction((t, e) -> 
 		{
-			this.intrariTable.selectedAccDoc()
-			.ifPresent(selectedDoc -> ManagerPart.loadDocInPart(partService, selectedDoc));
+			final Optional<Operatiune> ecrReceiptsMismatch = intrariTable.selection().stream()
+					.filter(sel -> sel instanceof Operatiune && ((Operatiune) sel).getName().contains("RON NU ESTE EGAL CU VANZARILE DIN CALCULATOR"))
+					.filter(Objects::nonNull)
+					.findFirst()
+					.map(Operatiune.class::cast);
+			
+			if (ecrReceiptsMismatch.isPresent())
+				ManagerCasaDialog.reconcileReceipts(ecrService, ecrReceiptsMismatch.get().getDataOp().toLocalDate().atStartOfDay(), 
+						ecrReceiptsMismatch.get().getDataOp().toLocalDate().atTime(LocalTime.MAX));
+			else
+				this.intrariTable.selectedAccDoc().ifPresent(selectedDoc -> ManagerPart.loadDocInPart(partService, selectedDoc));
 		});
 		intrariTable.setVerifyConsumer(rowObj -> verifyPressed(rowObj, intrariTable));
 		intrariTable.postConstruct(container);

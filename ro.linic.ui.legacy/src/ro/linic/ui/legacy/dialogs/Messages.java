@@ -11,6 +11,7 @@ public class Messages extends NLS {
 	public static String ManagerCasaDialog_ReportD;
 	public static String ManagerCasaDialog_ReportExported;
 	public static String ManagerCasaDialog_ReportMF;
+	public static String ManagerCasaDialog_ReconcileReceipts;
 	public static String ManagerCasaDialog_ReportX;
 	public static String ManagerCasaDialog_ReportZ;
 	public static String ManagerCasaDialog_Success;

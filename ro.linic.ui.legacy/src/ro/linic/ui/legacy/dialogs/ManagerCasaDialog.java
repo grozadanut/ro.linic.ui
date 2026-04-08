@@ -12,10 +12,10 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -33,26 +33,45 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import ro.linic.ui.base.dialogs.InfoDialog;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.pos.base.services.ECRDriver.Result;
 import ro.linic.ui.pos.base.services.ECRService;
 
 public class ManagerCasaDialog extends Dialog
 {
+	private static final ILog log = ILog.of(ManagerCasaDialog.class);
+	
+	public static void reconcileReceipts(final ECRService ecrService, final LocalDateTime reportStart, final LocalDateTime reportEnd) {
+		final CompletableFuture<Result> result = ecrService.readReceipts(reportStart, reportEnd);
+		try
+		{
+			new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, new ReconcileResult(result));
+		}
+		catch (final InvocationTargetException ex)
+		{
+			log.error(ex.getMessage(), ex);
+			showException(ex);
+		}
+		catch (final InterruptedException ex)
+		{
+			log.error(ex.getMessage(), ex);
+		}
+	}
+	
 	private Button anulareBonFiscal;
 	private Button raportX;
 	private Button raportD;
 	private Button raportZ;
 	private Button raportMF;
+	private Button reconcileReceipts;
 	private DateTime raportMFPeriod;
 	
-	private Logger log;
 	private ECRService ecrService;
 	
-	public ManagerCasaDialog(final Shell parent, final Logger log, final IEclipseContext ctx)
+	public ManagerCasaDialog(final Shell parent, final IEclipseContext ctx)
 	{
 		super(parent);
-		this.log = log;
 		this.ecrService = ctx.get(ECRService.class);
 	}
 	
@@ -97,6 +116,13 @@ public class ManagerCasaDialog extends Dialog
 		raportMF.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		raportMF.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(raportMF);
+		
+		reconcileReceipts = new Button(contents, SWT.PUSH);
+		reconcileReceipts.setText(Messages.ManagerCasaDialog_ReconcileReceipts);
+		reconcileReceipts.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		reconcileReceipts.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+		reconcileReceipts.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBoldBannerFont(reconcileReceipts);
 		
 		raportMFPeriod = new DateTime(contents, SWT.CALENDAR | SWT.CALENDAR_WEEKNUMBERS);
 		
@@ -161,15 +187,28 @@ public class ManagerCasaDialog extends Dialog
 					}
 					catch (final InvocationTargetException e1)
 					{
-						log.error(e1);
+						log.error(e1.getMessage(), e1);
 						showException(e1);
 					}
 					catch (final InterruptedException e1)
 					{
-						log.error(e1);
+						log.error(e1.getMessage(), e1);
 					}
 					okPressed();
 				}
+			}
+		});
+		
+		reconcileReceipts.addSelectionListener(new SelectionAdapter()
+		{
+			@Override public void widgetSelected(final SelectionEvent e)
+			{
+				final LocalDate reportDate = extractLocalDate(raportMFPeriod);
+				
+				final LocalDateTime startDateTime = reportDate.atStartOfDay();
+				final LocalDateTime endDateTime = reportDate.atTime(LocalTime.MAX);
+				reconcileReceipts(ecrService, startDateTime, endDateTime);
+				okPressed();
 			}
 		});
 	}
@@ -202,7 +241,7 @@ public class ManagerCasaDialog extends Dialog
 			try {
 				resultCode = result.get();
 			} catch (InterruptedException | ExecutionException e) {
-				log.warn(e);
+				log.warn(e.getMessage(), e);
 				return;
 			}
 			Display.getDefault().asyncExec(new Runnable()
@@ -211,6 +250,41 @@ public class ManagerCasaDialog extends Dialog
 				{
 					if (resultCode.isOk())
 						MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Success, Messages.ManagerCasaDialog_ReportExported);
+					else
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Error, NLS.bind(Messages.ManagerCasaDialog_ErrorCode, resultCode.error()));
+				}
+			});
+		}
+	}
+	
+	private static class ReconcileResult implements IRunnableWithProgress
+	{
+		private CompletableFuture<Result> result;
+		
+		public ReconcileResult(final CompletableFuture<Result> result)
+		{
+			this.result = result;
+		}
+
+		@Override public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+		{
+			final SubMonitor sub = SubMonitor.convert(monitor, IProgressMonitor.UNKNOWN);
+			sub.beginTask(Messages.ManagerCasaDialog_ReconcileReceipts, IProgressMonitor.UNKNOWN);
+
+			Result resultCode;
+			try {
+				resultCode = result.get();
+			} catch (InterruptedException | ExecutionException e) {
+				log.warn(e.getMessage(), e);
+				return;
+			}
+			Display.getDefault().asyncExec(new Runnable()
+			{
+				@Override public void run()
+				{
+					if (resultCode.isOk())
+						InfoDialog.open(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Success, 
+								resultCode.info().substring(resultCode.info().indexOf("\n")+1));
 					else
 						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Error, NLS.bind(Messages.ManagerCasaDialog_ErrorCode, resultCode.error()));
 				}

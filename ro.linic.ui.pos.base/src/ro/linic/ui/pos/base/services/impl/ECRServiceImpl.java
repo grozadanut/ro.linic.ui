@@ -87,6 +87,13 @@ public class ECRServiceImpl implements ECRService {
 	}
 	
 	@Override
+	public CompletableFuture<Result> readReceipts(final LocalDateTime reportStart, final LocalDateTime reportEnd) {
+		return findDriver()
+				.map(driver -> driver.readReceipts(reportStart, reportEnd))
+				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
+	}
+	
+	@Override
 	public void cancelReceipt() {
 		findDriver().ifPresent(ECRDriver::cancelReceipt);
 	}

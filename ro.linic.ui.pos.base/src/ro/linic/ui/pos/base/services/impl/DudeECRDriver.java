@@ -4,7 +4,6 @@ import static ro.flexbiz.util.commons.LocalDateUtils.isInDst;
 import static ro.flexbiz.util.commons.NumberUtils.smallerThan;
 import static ro.flexbiz.util.commons.NumberUtils.truncate;
 import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
-import static ro.flexbiz.util.commons.PresentationUtils.LIST_SEPARATOR;
 import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
 import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.flexbiz.util.commons.StringUtils.truncate;
@@ -220,6 +219,20 @@ public class DudeECRDriver implements ECRDriver {
 		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
 	}
 	
+	@Override
+	public CompletableFuture<Result> readReceipts(final LocalDateTime reportStart, final LocalDateTime reportEnd) {
+		// DD-MM-YY hh:mm:ss DST
+		final StringBuilder ecrCommands = new StringBuilder();
+
+		final String dstStart = isInDst(reportStart, "Europe/Bucharest") ? " DST" : EMPTY_STRING; //$NON-NLS-2$
+		final String dstEnd = isInDst(reportEnd, "Europe/Bucharest") ? " DST" : EMPTY_STRING; //$NON-NLS-2$
+
+		ecrCommands.append(MessageFormat.format("receipts&{0}&{1}",  //$NON-NLS-1$
+				reportStart.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)) + dstStart,
+				reportEnd.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)) + dstEnd));
+		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
+	}
+	
 	private Optional<Path> sendToEcr(final StringBuilder ecrCommands)
 	{
 		try
@@ -346,13 +359,14 @@ public class DudeECRDriver implements ECRDriver {
 			
 			try (Stream<String> resultLines = Files.lines(resultPath.get()))
 			{
-				final String resultCode = resultLines.collect(Collectors.joining(LIST_SEPARATOR));
-				if (!resultCode.trim().startsWith("0:")) //$NON-NLS-1$
-					return Result.error(resultCode);
+				final String result = resultLines.collect(Collectors.joining(NEWLINE));
+				if (!result.trim().startsWith("0:")) //$NON-NLS-1$
+					return Result.error(result);
 				else
 				{
-					Files.deleteIfExists(resultPath.get());
-					return Result.ok();
+					if (result.lines().count() <= 1)
+						Files.deleteIfExists(resultPath.get());
+					return Result.ok(result);
 				}
 			}
 			catch (final IOException e)

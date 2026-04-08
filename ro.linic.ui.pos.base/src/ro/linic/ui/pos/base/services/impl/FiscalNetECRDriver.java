@@ -223,6 +223,11 @@ public class FiscalNetECRDriver implements ECRDriver {
 				chosenDirectory));
 		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
 	}
+	
+	@Override
+	public CompletableFuture<Result> readReceipts(final LocalDateTime reportStart, final LocalDateTime reportEnd) {
+		throw new RuntimeException("Not implemented!");
+	}
 
 	@Override
 	public void cancelReceipt() {

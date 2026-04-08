@@ -26,6 +26,14 @@ public interface ECRService {
 	 */
 	public CompletableFuture<Result> reportMF(LocalDateTime reportStart, LocalDateTime reportEnd, final String chosenDirectory);
 	public void cancelReceipt();
+	/**
+	 * Read Fiscal Receipts from the printer.
+	 * 
+	 * @param reportStart the start of the period you want to read receipts
+	 * @param reportEnd the end of the period you want to read receipts
+	 * @return the result code
+	 */
+	public CompletableFuture<Result> readReceipts(LocalDateTime reportStart, LocalDateTime reportEnd);
 	
 	default CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType) {
 		return printReceipt(receipt, paymentType, Optional.empty());

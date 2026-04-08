@@ -576,7 +576,7 @@ public class VanzarePart implements VanzareInterface
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				new ManagerCasaDialog(Display.getCurrent().getActiveShell(), log, ctx).open();
+				new ManagerCasaDialog(Display.getCurrent().getActiveShell(), ctx).open();
 			}
 		});
 		

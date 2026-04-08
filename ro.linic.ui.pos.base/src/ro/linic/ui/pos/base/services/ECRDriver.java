@@ -1,5 +1,7 @@
 package ro.linic.ui.pos.base.services;
 
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -29,34 +31,52 @@ public interface ECRDriver {
 	 * @return the path of the file that shows the result of the execution
 	 */
 	public CompletableFuture<Result> reportMF(LocalDateTime reportStart, LocalDateTime reportEnd, final String chosenDirectory);
+	/**
+	 * Read Fiscal Receipts from the printer.
+	 * 
+	 * @param reportStart the start of the period you want to read receipts
+	 * @param reportEnd the end of the period you want to read receipts
+	 * @return the result code
+	 */
+	public CompletableFuture<Result> readReceipts(LocalDateTime reportStart, LocalDateTime reportEnd);
 	public void cancelReceipt();
 	
 	public static class Result {
 		private final String error;
+		private final String info;
 		
 		public static Result ok() {
-			return new Result(null);
+			return new Result(null, "");
+		}
+		
+		public static Result ok(final String info) {
+			return new Result(null, info);
 		}
 		
 		public static Result error(final String error) {
-			return new Result(error);
+			return new Result(error, "");
 		}
 
-		private Result(final String error) {
+		private Result(final String error, final String info) {
 			this.error = error;
+			this.info = info;
 		}
 		
 		public boolean isOk() {
-			return error == null;
+			return isEmpty(error);
 		}
 		
 		public String error() {
 			return error;
 		}
+		
+		public String info() {
+			return info;
+		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(error);
+			return Objects.hash(error, info);
 		}
 
 		@Override
@@ -68,12 +88,12 @@ public interface ECRDriver {
 			if (getClass() != obj.getClass())
 				return false;
 			final Result other = (Result) obj;
-			return Objects.equals(error, other.error);
+			return Objects.equals(error, other.error) && Objects.equals(info, other.info);
 		}
 
 		@Override
 		public String toString() {
-			return "Result [error=" + error + "]";
+			return "Result [error=" + error + ", info=" + info + "]";
 		}
 	}
 }
