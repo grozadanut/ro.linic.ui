@@ -16,7 +16,6 @@ import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.PersistState;
@@ -102,6 +102,7 @@ public class VerifyOperationsPart
 	@Inject private EPartService partService;
 	@Inject private Logger log;
 	@Inject private ECRService ecrService;
+	@Inject IEclipseContext ctx;
 	
 	public static VerifyOperationsPart loadDoc(final EPartService partService, final AccountingDocument doc)
 	{
@@ -160,8 +161,7 @@ public class VerifyOperationsPart
 					.map(Operatiune.class::cast);
 			
 			if (ecrReceiptsMismatch.isPresent())
-				ManagerCasaDialog.reconcileReceipts(ecrService, ecrReceiptsMismatch.get().getDataOp().toLocalDate().atStartOfDay(), 
-						ecrReceiptsMismatch.get().getDataOp().toLocalDate().atTime(LocalTime.MAX));
+				ManagerCasaDialog.reconcileReceipts(ctx, ecrReceiptsMismatch.get().getDataOp().toLocalDate());
 			else
 				this.intrariTable.selectedAccDoc().ifPresent(selectedDoc -> ManagerPart.loadDocInPart(partService, selectedDoc));
 		});

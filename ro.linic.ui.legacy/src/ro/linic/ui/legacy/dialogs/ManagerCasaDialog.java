@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -16,6 +17,9 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -33,20 +37,26 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-import ro.linic.ui.base.dialogs.InfoDialog;
+import ro.linic.ui.base.services.DataServices;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
+import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.parts.ReconciliationPart;
+import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.pos.base.services.ECRDriver.Result;
 import ro.linic.ui.pos.base.services.ECRService;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class ManagerCasaDialog extends Dialog
 {
 	private static final ILog log = ILog.of(ManagerCasaDialog.class);
 	
-	public static void reconcileReceipts(final ECRService ecrService, final LocalDateTime reportStart, final LocalDateTime reportEnd) {
-		final CompletableFuture<Result> result = ecrService.readReceipts(reportStart, reportEnd);
+	public static void reconcileReceipts(final IEclipseContext ctx, final LocalDate reportDate) {
+		final CompletableFuture<Result> result = ctx.get(ECRService.class).readReceipts(reportDate.atStartOfDay(), reportDate.atTime(LocalTime.MAX));
 		try
 		{
-			new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, new ReconcileResult(result));
+			new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, new ReconcileResult(ctx, reportDate, result));
 		}
 		catch (final InvocationTargetException ex)
 		{
@@ -67,11 +77,13 @@ public class ManagerCasaDialog extends Dialog
 	private Button reconcileReceipts;
 	private DateTime raportMFPeriod;
 	
+	private IEclipseContext ctx;
 	private ECRService ecrService;
 	
 	public ManagerCasaDialog(final Shell parent, final IEclipseContext ctx)
 	{
 		super(parent);
+		this.ctx = ctx;
 		this.ecrService = ctx.get(ECRService.class);
 	}
 	
@@ -204,10 +216,7 @@ public class ManagerCasaDialog extends Dialog
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				final LocalDate reportDate = extractLocalDate(raportMFPeriod);
-				
-				final LocalDateTime startDateTime = reportDate.atStartOfDay();
-				final LocalDateTime endDateTime = reportDate.atTime(LocalTime.MAX);
-				reconcileReceipts(ecrService, startDateTime, endDateTime);
+				reconcileReceipts(ctx, reportDate);
 				okPressed();
 			}
 		});
@@ -259,10 +268,14 @@ public class ManagerCasaDialog extends Dialog
 	
 	private static class ReconcileResult implements IRunnableWithProgress
 	{
+		private IEclipseContext ctx;
 		private CompletableFuture<Result> result;
+		private LocalDate date;
 		
-		public ReconcileResult(final CompletableFuture<Result> result)
+		public ReconcileResult(final IEclipseContext ctx,  final LocalDate date, final CompletableFuture<Result> result)
 		{
+			this.ctx = ctx;
+			this.date = date;
 			this.result = result;
 		}
 
@@ -283,12 +296,23 @@ public class ManagerCasaDialog extends Dialog
 				@Override public void run()
 				{
 					if (resultCode.isOk())
-						InfoDialog.open(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Success, 
-								resultCode.info().substring(resultCode.info().indexOf("\n")+1));
+						reconcile(resultCode.info().substring(resultCode.info().indexOf("\n")+1));
 					else
 						MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerCasaDialog_Error, NLS.bind(Messages.ManagerCasaDialog_ErrorCode, resultCode.error()));
 				}
 			});
+		}
+		
+		private void reconcile(final String receipts) {
+			final Map<String, Object> body = Map.of("gestiuneId", ClientSession.instance().getGestiune().getId(),
+					"date", date,
+					"receipts", receipts);
+
+			RestCaller.post("/rest/s1/moqui-linic-legacy/reconcile/receipts").internal(ctx.get(AuthenticationSession.class).authentication())
+					.body(BodyProvider.of(HttpUtils.toJSON(body)))
+					.async(t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
+					.thenAccept(result -> ctx.get(DataServices.class).holder(ReconciliationPart.DATA_HOLDER).setData(result.stream().toList()))
+					.thenRun(() -> ctx.get(UISynchronize.class).asyncExec(() -> ctx.get(EPartService.class).showPart(ReconciliationPart.PART_ID, PartState.ACTIVATE)));
 		}
 	}
 }
