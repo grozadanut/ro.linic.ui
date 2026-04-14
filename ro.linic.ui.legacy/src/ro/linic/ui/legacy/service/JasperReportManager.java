@@ -153,15 +153,22 @@ public class JasperReportManager
 	
 	private static String buildDetails(final InvocationResult firmaDetails)
 	{
+		final String specificIban = BusinessDelegate.persistedProp(PersistedProp.FIRMA_MAIN_BANK_ACC_KEY + ClientSession.instance().getGestiune().getImportName()).getValue();
+		
 		final StringBuilder sb = new StringBuilder();
 		sb.append("CIF: ").append(firmaDetails.extraString(PersistedProp.FIRMA_CUI_KEY)).append(NEWLINE);
 		sb.append("Reg Com: ").append(firmaDetails.extraString(PersistedProp.FIRMA_REG_COM_KEY)).append(NEWLINE);
 		sb.append("Cap soc: ").append(firmaDetails.extraString(PersistedProp.FIRMA_CAP_SOCIAL_KEY)).append(NEWLINE);
 		sb.append("Adresa: ").append(firmaDetails.extraString(PersistedProp.FIRMA_ADDRESS_KEY)).append(NEWLINE);
-		sb.append("Banca: ").append(firmaDetails.extraString(PersistedProp.FIRMA_MAIN_BANK_KEY)).append(NEWLINE);
-		sb.append("Cont: ").append(firmaDetails.extraString(PersistedProp.FIRMA_MAIN_BANK_ACC_KEY)).append(NEWLINE);
-		sb.append("Banca: ").append(firmaDetails.extraString(PersistedProp.FIRMA_SECONDARY_BANK_KEY)).append(NEWLINE);
-		sb.append("Cont: ").append(firmaDetails.extraString(PersistedProp.FIRMA_SECONDARY_BANK_ACC_KEY)).append(NEWLINE);
+		if (!isEmpty(specificIban))
+			sb.append(specificIban).append(NEWLINE);
+		else
+		{
+			sb.append("Banca: ").append(firmaDetails.extraString(PersistedProp.FIRMA_MAIN_BANK_KEY)).append(NEWLINE);
+			sb.append("Cont: ").append(firmaDetails.extraString(PersistedProp.FIRMA_MAIN_BANK_ACC_KEY)).append(NEWLINE);
+			sb.append("Banca: ").append(firmaDetails.extraString(PersistedProp.FIRMA_SECONDARY_BANK_KEY)).append(NEWLINE);
+			sb.append("Cont: ").append(firmaDetails.extraString(PersistedProp.FIRMA_SECONDARY_BANK_ACC_KEY)).append(NEWLINE);
+		}
 		sb.append("Tel: ").append(firmaDetails.extraString(PersistedProp.FIRMA_PHONE_KEY)).append(NEWLINE);
 		sb.append("Email: ").append(firmaDetails.extraString(PersistedProp.FIRMA_EMAIL_KEY)).append(NEWLINE);
 		sb.append("Website: ").append(firmaDetails.extraString(PersistedProp.FIRMA_WEBSITE_KEY));
