@@ -95,29 +95,36 @@
  </build>
   <modules>
    <module>releng-updatesite</module>
-   <module>ro.linic.ui.base.feature</module>
+   
    <module>ro.linic.ui.base</module>
    <module>ro.linic.ui.base.services</module>
-   <module>ro.linic.ui.anaf.connector</module>
-   <module>ro.linic.ui.anaf.connector.feature</module>
-   <module>ro.linic.ui.legacy</module>
-   <module>ro.linic.ui.legacy.feature</module>
-   <module>ro.linic.ui.http</module>
-   <module>ro.linic.ui.p2</module>
-   <module>ro.linic.ui.pos.feature</module>
-   <module>ro.linic.ui.pos.base</module>
-   <module>ro.linic.ui.pos.base.tests</module>
-   <module>ro.linic.ui.pos</module>
-   <module>ro.linic.ui.pos.cloud</module>
-   <module>ro.linic.ui.pos.local</module>
-   <module>ro.linic.ui.workbench</module>
-   <module>ro.linic.ui.security</module>
-   <module>ro.linic.ui.help</module>
    <module>ro.linic.ui.e4.help</module>
-   <module>ro.linic.ui.sqlite</module>
+   <module>ro.linic.ui.help</module>
+   <module>ro.linic.ui.http</module>
    <module>ro.linic.ui.jface.localization</module>
    <module>ro.linic.ui.nattable.localization</module>
+   <module>ro.linic.ui.p2</module>
+   <module>ro.linic.ui.security</module>
+   <module>ro.linic.ui.workbench</module>
+   <module>ro.linic.ui.base.feature</module>
+   
+   <module>ro.linic.ui.anaf.connector</module>
+   <module>ro.linic.ui.anaf.connector.feature</module>
+   
    <module>ro.linic.ui.camel.core</module>
+   <module>ro.linic.ui.legacy</module>
+   <module>ro.linic.ui.pos.cloud</module>
+   <module>ro.linic.ui.legacy.feature</module>
+   
+   <module>ro.linic.ui.pos</module>
+   <module>ro.linic.ui.pos.base</module>
+   <module>ro.linic.ui.pos.base.tests</module>
+   <module>ro.linic.ui.pos.local</module>
+   <module>ro.linic.ui.sqlite</module>
+   <module>ro.linic.ui.pos.feature</module>
+   
+   <module>ro.linic.ui.pos.driver.zfplab</module>
+   <module>ro.linic.ui.pos.driver.zfplab.feature</module>
  </modules>
  
  <profiles>
