@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.equinox.preferences.preferences">
+      <initializer
+            class="ro.linic.ui.pos.driver.zfplab.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">
+      <preferenceStoreProvider
+            class="bundleclass://ro.linic.ui.pos.driver.zfplab/ro.linic.ui.pos.driver.zfplab.preferences.PreferenceStoreProvider"
+            pluginId="ro.linic.ui.pos.driver.zfplab">
+      </preferenceStoreProvider>
+   </extension>
+   <extension
+         point="com.opcoach.e4.preferences.e4PreferencePages">
+      <page
+            category="ro.linic.ui.pos.base.preference.ecrpage"
+            class="ro.linic.ui.pos.driver.zfplab.preferences.ZFPECRDriverPage"
+            id="ro.linic.ui.pos.driver.zfplab.page"
+            name="%page.name.zfp">
+      </page>
+   </extension>
+
+</plugin>

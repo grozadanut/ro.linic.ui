@@ -16,7 +16,8 @@ public class ECRDriverPage extends FieldEditorPreferencePage {
 	protected void createFieldEditors() {
 		addField(new ComboFieldEditor(PreferenceKey.ECR_MODEL, Messages.ECRDriverPage_Driver, 
 				new String[][]{{ECRDriver.ECR_MODEL_DATECS, ECRDriver.ECR_MODEL_DATECS},
-					{ECRDriver.ECR_MODEL_PARTNER, ECRDriver.ECR_MODEL_PARTNER}},
+					{ECRDriver.ECR_MODEL_PARTNER, ECRDriver.ECR_MODEL_PARTNER},
+					{ECRDriver.ECR_MODEL_TREMOL, ECRDriver.ECR_MODEL_TREMOL}},
 				getFieldEditorParent()));
 	}
 }

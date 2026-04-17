@@ -21,4 +21,12 @@
          id="ro.linic.ui.legacy"
          version="0.0.0"/>
 
+   <plugin
+         id="ro.linic.ui.camel.core"
+         version="0.0.0"/>
+
+   <plugin
+         id="ro.linic.ui.pos.cloud"
+         version="0.0.0"/>
+
 </feature>

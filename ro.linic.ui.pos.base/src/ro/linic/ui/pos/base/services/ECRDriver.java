@@ -15,6 +15,7 @@ import ro.linic.ui.pos.base.model.Receipt;
 public interface ECRDriver {
 	public static final String ECR_MODEL_DATECS = "Datecs";
 	public static final String ECR_MODEL_PARTNER = "Partner";
+	public static final String ECR_MODEL_TREMOL = "Tremol";
 	
 	boolean isECRSupported(String ecrModel);
 	CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId);
