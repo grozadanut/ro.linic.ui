@@ -55,6 +55,7 @@ import ro.colibri.entities.comercial.LobImage;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.StringUtils;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.GenericDataHolder;
 import ro.linic.ui.base.services.model.GenericValue;
@@ -571,8 +572,9 @@ public class CatalogProdusePart
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
 				final String baseUrl = ro.linic.ui.base.services.util.UIUtils.moquiBaseUrl();
-				table.selection().forEach(p -> 
-				ro.linic.ui.base.services.util.UIUtils.openUrl(baseUrl+"/qapps/PopcAdmin/Catalog/Product/EditPrices?productId="+p.getId()));
+				if (StringUtils.notEmpty(baseUrl))
+					table.selection().forEach(p -> 
+					ro.linic.ui.base.services.util.UIUtils.openUrl(baseUrl+"/qapps/PopcAdmin/Catalog/Product/EditPrices?productId="+p.getId()));
 			}
 		});
 		

@@ -359,7 +359,8 @@ public class UIUtils {
 	
 	public static String moquiBaseUrl() {
 		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
-		return prefs.get(PreferenceKey.SERVER_BASE_URL, PreferenceKey.SERVER_BASE_URL_DEF);
+		return safeString(prefs.get(PreferenceKey.SERVER_BASE_URL, System.getProperty(PreferenceKey.SERVER_BASE_URL)),
+				System.getenv(PreferenceKey.SERVER_BASE_URL));
 	}
 	
 	public static String bundleNicenames() {

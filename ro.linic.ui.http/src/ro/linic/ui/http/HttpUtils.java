@@ -1,5 +1,7 @@
 package ro.linic.ui.http;
 
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
+
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +25,14 @@ public class HttpUtils {
     }
 	
 	public static <C> C fromJSON(final String json, final Class<C> clazz) {
+		if (isEmpty(json))
+			return null;
 		return jsonMapper.readValue(json, clazz);
 	}
 
 	public static List<GenericValue> fromJSON(final String json) {
+		if (isEmpty(json))
+			return List.of();
 		return jsonMapper.readValue(json, Result.class).resultList();
 	}
 	

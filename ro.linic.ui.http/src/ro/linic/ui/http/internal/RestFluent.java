@@ -1,5 +1,7 @@
 package ro.linic.ui.http.internal;
 
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -29,6 +31,7 @@ import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.http.HttpHeaders;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller.BaseConfigurer;
+import ro.linic.ui.http.pojo.StubResponse;
 import ro.linic.ui.security.model.Authentication;
 
 abstract class RestFluent implements BaseConfigurer {
@@ -81,6 +84,10 @@ abstract class RestFluent implements BaseConfigurer {
 		        .build();
 		
 		final String serverUrl = internal ? UIUtils.moquiBaseUrl() : "";
+		
+		if (internal && isEmpty(serverUrl))
+			return CompletableFuture.completedFuture(new StubResponse<>(200, null));
+
 		final Builder reqBuilder = HttpRequest.newBuilder()
 		.uri(URI.create(serverUrl + url + ParameterStringBuilder.getParamsString(urlParams)));
 		headers.entrySet().forEach(h -> reqBuilder.header(h.getKey(), h.getValue()));
