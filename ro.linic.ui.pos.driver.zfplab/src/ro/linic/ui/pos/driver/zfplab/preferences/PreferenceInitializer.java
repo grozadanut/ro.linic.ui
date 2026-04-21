@@ -21,6 +21,10 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			node.put(PreferenceKey.SERVER_ADDRESS, PreferenceKey.SERVER_ADDRESS_DEF);
 			node.putInt(PreferenceKey.ECR_PORT, PreferenceKey.ECR_PORT_DEF);
 			node.put(PreferenceKey.ECR_PASSWORD, PreferenceKey.ECR_PASSWORD_DEF);
+			node.putDouble(PreferenceKey.OPERATOR, PreferenceKey.OPERATOR_DEF);
+			node.put(PreferenceKey.OPERATOR_PASSWORD, PreferenceKey.OPERATOR_PASSWORD_DEF);
+			node.put(PreferenceKey.ECR_DEPT, PreferenceKey.ECR_DEPT_DEF);
+			node.putBoolean(PreferenceKey.REPORT_Z_AND_D, PreferenceKey.REPORT_Z_AND_D_DEF);
 			
 			try {
 				node.flush();

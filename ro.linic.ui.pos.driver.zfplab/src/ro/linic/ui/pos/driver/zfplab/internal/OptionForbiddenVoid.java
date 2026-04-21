@@ -1,11 +1,11 @@
 package ro.linic.ui.pos.driver.zfplab.internal;
 
-public enum OptionPrint {
-	No("0"), Yes("1");
+public enum OptionForbiddenVoid {
+	allowed("0"), forbidden("1");
 
 	private final String value;
 
-	private OptionPrint(final String value) {
+	private OptionForbiddenVoid(final String value) {
 		this.value = value;
 	}
 

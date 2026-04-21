@@ -2,7 +2,7 @@ package ro.linic.ui.pos.driver.zfplab.internal;
 
 public class StatusRes {
    /**
-    *FM Read only  ( ST3.0 or ST3.1 or ST3.2 )
+    *FM Read only
     */
     public boolean FM_Read_only;
     public boolean getFM_Read_only() {
@@ -321,6 +321,17 @@ public class StatusRes {
     }
 
    /**
+    *Missing external display
+    */
+    public boolean Missing_external_display;
+    public boolean getMissing_external_display() {
+       return Missing_external_display;
+    }
+    protected void setMissing_external_display(final boolean value) {
+       Missing_external_display = value;
+    }
+
+   /**
     *Drawer: automatic opening
     */
     public boolean Drawer_automatic_opening;
@@ -395,5 +406,16 @@ public class StatusRes {
     }
     protected void setWrong_SD_card(final boolean value) {
        Wrong_SD_card = value;
+    }
+
+   /**
+    *Near Paper end
+    */
+    public boolean Near_Paper_end;
+    public boolean getNear_Paper_end() {
+       return Near_Paper_end;
+    }
+    protected void setNear_Paper_end(final boolean value) {
+       Near_Paper_end = value;
     }
 }

@@ -1,123 +1,123 @@
 package ro.linic.ui.pos.driver.zfplab.internal;
 public class DailyPORes {
    /**
-    *1..11 symbols for the accumulated amount by payment type 0
+    *Up to 11 symbols for the accumulated amount by payment type 0
     */
-    public Double AmntPmnt0;
-    public Double getAmntPmnt0() {
-       return AmntPmnt0;
+    public Double AmountPayment0;
+    public Double getAmountPayment0() {
+       return AmountPayment0;
     }
-    protected void setAmntPmnt0(final Double value) {
-       AmntPmnt0 = value;
+    protected void setAmountPayment0(final Double value) {
+       AmountPayment0 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 1
+    *Up to 11 symbols for the accumulated amount by payment type 1
     */
-    public Double AmntPmnt1;
-    public Double getAmntPmnt1() {
-       return AmntPmnt1;
+    public Double AmountPayment1;
+    public Double getAmountPayment1() {
+       return AmountPayment1;
     }
-    protected void setAmntPmnt1(final Double value) {
-       AmntPmnt1 = value;
+    protected void setAmountPayment1(final Double value) {
+       AmountPayment1 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 2
+    *Up to 11 symbols for the accumulated amount by payment type 2
     */
-    public Double AmntPmnt2;
-    public Double getAmntPmnt2() {
-       return AmntPmnt2;
+    public Double AmountPayment2;
+    public Double getAmountPayment2() {
+       return AmountPayment2;
     }
-    protected void setAmntPmnt2(final Double value) {
-       AmntPmnt2 = value;
+    protected void setAmountPayment2(final Double value) {
+       AmountPayment2 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 3
+    *Up to 11 symbols for the accumulated amount by payment type 3
     */
-    public Double AmntPmnt3;
-    public Double getAmntPmnt3() {
-       return AmntPmnt3;
+    public Double AmountPayment3;
+    public Double getAmountPayment3() {
+       return AmountPayment3;
     }
-    protected void setAmntPmnt3(final Double value) {
-       AmntPmnt3 = value;
+    protected void setAmountPayment3(final Double value) {
+       AmountPayment3 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 4
+    *Up to 11 symbols for the accumulated amount by payment type 4
     */
-    public Double AmntPmnt4;
-    public Double getAmntPmnt4() {
-       return AmntPmnt4;
+    public Double AmountPayment4;
+    public Double getAmountPayment4() {
+       return AmountPayment4;
     }
-    protected void setAmntPmnt4(final Double value) {
-       AmntPmnt4 = value;
+    protected void setAmountPayment4(final Double value) {
+       AmountPayment4 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 5
+    *Up to 11 symbols for the accumulated amount by payment type 5
     */
-    public Double AmntPmnt5;
-    public Double getAmntPmnt5() {
-       return AmntPmnt5;
+    public Double AmountPayment5;
+    public Double getAmountPayment5() {
+       return AmountPayment5;
     }
-    protected void setAmntPmnt5(final Double value) {
-       AmntPmnt5 = value;
+    protected void setAmountPayment5(final Double value) {
+       AmountPayment5 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 6
+    *Up to 11 symbols for the accumulated amount by payment type 6
     */
-    public Double AmntPmnt6;
-    public Double getAmntPmnt6() {
-       return AmntPmnt6;
+    public Double AmountPayment6;
+    public Double getAmountPayment6() {
+       return AmountPayment6;
     }
-    protected void setAmntPmnt6(final Double value) {
-       AmntPmnt6 = value;
+    protected void setAmountPayment6(final Double value) {
+       AmountPayment6 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 7
+    *Up to 11 symbols for the accumulated amount by payment type 7
     */
-    public Double AmntPmnt7;
-    public Double getAmntPmnt7() {
-       return AmntPmnt7;
+    public Double AmountPayment7;
+    public Double getAmountPayment7() {
+       return AmountPayment7;
     }
-    protected void setAmntPmnt7(final Double value) {
-       AmntPmnt7 = value;
+    protected void setAmountPayment7(final Double value) {
+       AmountPayment7 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 8
+    *Up to 11 symbols for the accumulated amount by payment type 8
     */
-    public Double AmntPmnt8;
-    public Double getAmntPmnt8() {
-       return AmntPmnt8;
+    public Double AmountPayment8;
+    public Double getAmountPayment8() {
+       return AmountPayment8;
     }
-    protected void setAmntPmnt8(final Double value) {
-       AmntPmnt8 = value;
+    protected void setAmountPayment8(final Double value) {
+       AmountPayment8 = value;
     }
 
    /**
-    *1..11 symbols for the accumulated amount by payment type 9
+    *Up to 11 symbols for the accumulated amount by payment type 9
     */
-    public Double AmntPmnt9;
-    public Double getAmntPmnt9() {
-       return AmntPmnt9;
+    public Double AmountPayment9;
+    public Double getAmountPayment9() {
+       return AmountPayment9;
     }
-    protected void setAmntPmnt9(final Double value) {
-       AmntPmnt9 = value;
+    protected void setAmountPayment9(final Double value) {
+       AmountPayment9 = value;
     }
 
    /**
-    *1..5 symbols for the total number of operations
+    *Up to 5 symbols for the total number of operations
     */
-    public Double NoPO;
-    public Double getNoPO() {
-       return NoPO;
+    public Double NumPO;
+    public Double getNumPO() {
+       return NumPO;
     }
-    protected void setNoPO(final Double value) {
-       NoPO = value;
+    protected void setNumPO(final Double value) {
+       NumPO = value;
     }
 }

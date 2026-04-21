@@ -185,7 +185,7 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	}
 	
 	public LocalDate getLocalDate(final Object key) {
-		return get(key) instanceof LocalDate ? (LocalDate) get(key) : LocalDateUtils.parse(getString(key));
+		return get(key) instanceof LocalDate ? (LocalDate) get(key) : LocalDateUtils.parseDate(getString(key));
 	}
 	
 	public LocalTime getLocalTime(final Object key) {

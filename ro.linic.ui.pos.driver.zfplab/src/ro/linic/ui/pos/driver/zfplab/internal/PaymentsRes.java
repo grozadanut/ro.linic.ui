@@ -113,11 +113,11 @@ public class PaymentsRes {
    /**
     *10 symbols for exchange rate of payment type 9 in format: ####.#####
     */
-    public Double ExRate;
-    public Double getExRate() {
-       return ExRate;
+    public Double ExchangeRate;
+    public Double getExchangeRate() {
+       return ExchangeRate;
     }
-    protected void setExRate(final Double value) {
-       ExRate = value;
+    protected void setExchangeRate(final Double value) {
+       ExchangeRate = value;
     }
 }

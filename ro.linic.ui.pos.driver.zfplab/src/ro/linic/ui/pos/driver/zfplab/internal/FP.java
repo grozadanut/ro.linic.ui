@@ -14,42 +14,16 @@ import TremolZFP.FPcore;
 
 public class FP extends FPcore {
      public FP(){
-        this.setVersionDef(1807101103);
+        this.setVersionDef(1910241630);
     }
 
     /**
-     *Stores in the memory the graphic file under stated number. Prints information about loaded in the printer graphic files.
-     * @param  logoNumber
-     *         1 character value from '0' to '9' setting the number where the 
-     * logo will be saved.
+     *Provides information about the amounts on hand by type of payment.
+     * @return DailyAvailableAmountsRes
      * @throws java.lang.Exception
      */
-     public void ProgLogoNo(final String logoNumber) throws Exception {
-             Do("ProgLogoNo", "LogoNumber", logoNumber);
-     }
-
-    /**
-     *Storage a detailed FM report by initial and end date.
-     * @param  startDate
-     *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
-     *         6 symbols for final date in the DDMMYY format
-     * @param  optionStorage
-     *         1 symbol for destination: 
-     *  - '2' - Storage in External USB Flash memory. 
-     *  - '4' - Storage in External SD card memory
-     * @throws java.lang.Exception
-     */
-     public void StorageDetFMdailyReportByDate(final Date startDate, final Date endDate, final OptionStorage optionStorage) throws Exception {
-             Do("StorageDetFMdailyReportByDate", "StartDate", startDate, "EndDate", endDate, "OptionStorage", optionStorage);
-     }
-
-    /**
-     *Print all special FM events report.
-     * @throws java.lang.Exception
-     */
-     public void PrintSpecFMreport() throws Exception {
-             Do("PrintSpecFMreport");
+     public DailyAvailableAmountsRes ReadDailyAvailableAmounts() throws Exception {
+             return CreateRes(Do("ReadDailyAvailableAmounts"), DailyAvailableAmountsRes.class);
      }
 
     /**
@@ -65,27 +39,121 @@ public class FP extends FPcore {
      }
 
     /**
-     *Read the total number of customers, discounts, additions, corrections and accumulated amounts by specified operator.
-     * @param  opNo
-     *         Symbol from 1 to 20in format corresponding to operator's 
-     * number
-     * @return GeneralOperRes
+     *Provides information about the current (the last value stored into the FM) decimal point format.
+     * @return OptionDecimalPointPosition
      * @throws java.lang.Exception
      */
-     public GeneralOperRes ReadGeneralOper(final Double opNo) throws Exception {
-             return CreateRes(Do("ReadGeneralOper", "OpNo", opNo), GeneralOperRes.class);
+     public OptionDecimalPointPosition ReadDecimalPoint() throws Exception {
+             return CreateRes(Do("ReadDecimalPoint"), OptionDecimalPointPosition.class);
      }
 
     /**
-     *Print a detailed FM report by initial and end FM report number.
-     * @param  startNo
-     *         4 symbols for the initial report number included in report, format ####
-     * @param  endNo
-     *         4 symbols for the final report number included in report, format ####
+     *Programs the number of POS, printing of logo, Cash drawer opening, display mode, cutting permission. Changes in USBHost parameter will power off the printer.
+     * @param  pOSNum
+     *         4 symbols for number of POS in format ####
+     * @param  optionPrintLogo
+     *         1 symbol of value: 
+     *  - '1' - Yes 
+     *  - '0' - No
+     * @param  optionAutoOpenDrawer
+     *         1 symbol of value: 
+     *  - '1' - Yes 
+     *  - '0' - No
+     * @param  optionAutoCut
+     *         1 symbol of value: 
+     *  - '1' - Yes 
+     *  - '0' - No
+     * @param  optionExternalDispManagement
+     *         1 symbol of value: 
+     *  - '1' - Manuel 
+     *  - '0' - Auto
+     * @param  optionEnableCurrency
+     *         1 symbol of value: 
+     *  - '1' - Yes 
+     *  - '0' - No
+     * @param  optionUSBHost
+     *         1 symbol, FP Only, with value: 
+     *  - '0' - No 
+     *  - '1' - Yes
      * @throws java.lang.Exception
      */
-     public void PrintDetFMdailyReportByZNo(final Double startNo, final Double endNo) throws Exception {
-             Do("PrintDetFMdailyReportByZNo", "StartNo", startNo, "EndNo", endNo);
+     public void ProgParameters(final Double pOSNum, final OptionPrintLogo optionPrintLogo, final OptionAutoOpenDrawer optionAutoOpenDrawer, final OptionAutoCut optionAutoCut, final OptionExternalDispManagement optionExternalDispManagement, final OptionEnableCurrency optionEnableCurrency, final OptionUSBHost optionUSBHost) throws Exception {
+             Do("ProgParameters", "POSNum", pOSNum, "OptionPrintLogo", optionPrintLogo, "OptionAutoOpenDrawer", optionAutoOpenDrawer, "OptionAutoCut", optionAutoCut, "OptionExternalDispManagement", optionExternalDispManagement, "OptionEnableCurrency", optionEnableCurrency, "OptionUSBHost", optionUSBHost);
+     }
+
+    /**
+     *Program device's Bluetooth module to be enabled or disabled.
+     * @param  optionBTstatus
+     *         1 symbol with value: 
+     *  - '0' - Disabled 
+     *  - '1' - Enabled
+     * @throws java.lang.Exception
+     */
+     public void SetBluetoothStatus(final OptionBTstatus optionBTstatus) throws Exception {
+             Do("SetBluetoothStatus", "OptionBTstatus", optionBTstatus);
+     }
+
+    /**
+     *Provides information about device's idle timeout. This timeout is seconds in which the connection will be closed when there is an inactivity. This information is available if the device has LAN or WiFi. Maximal value - 7200, minimal value 1. 0 is for never close the connection.
+     * @return Double
+     * @throws java.lang.Exception
+     */
+     public Double ReadIdleTimeout() throws Exception {
+             return CreateRes(Do("ReadIdleTimeout"), Double.class);
+     }
+
+    /**
+     *Start WiFi test on the device and print out the result
+     * @throws java.lang.Exception
+     */
+     public void StartWiFiTest() throws Exception {
+             Do("StartWiFiTest");
+     }
+
+    /**
+     *Registers the correction article with specified name, price, quantity, VAT class and discount/addition on the transaction.
+     * @param  namePLU
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @param  price
+     *         1 to 10 symbols for article's price
+     * @param  quantity
+     *         1 to 10 symbols for quantity
+     * @param  discAddP
+     *         1 to 7 for percentage of discount/addition
+     * @param  discAddV
+     *         1 to 8 for value of discount/addition
+     * @param  discNamed
+     *         1 to 8 symbols for value of named discount
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  namePLUextension
+     *         12 symbols for extension of the PLU Name: FP Only
+     * @param  additionalNamePLU
+     *         108 symbols for additional PLU name
+     * @throws java.lang.Exception
+     */
+     public void StornoPLU(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("StornoPLU", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     }
+
+    /**
+     *Provides information for the programmed data, the turnover from the stated department number
+     * @param  depNum
+     *         2 symbols for deparment number in format: ##
+     * @return DepartmentRes
+     * @throws java.lang.Exception
+     */
+     public DepartmentRes ReadDepartment(final Double depNum) throws Exception {
+             return CreateRes(Do("ReadDepartment", "DepNum", depNum), DepartmentRes.class);
      }
 
     /**
@@ -98,71 +166,151 @@ public class FP extends FPcore {
      }
 
     /**
-     *Print a copy of the last receipt document issued
+     *Read Electronic Journal Report from receipt number to receipt number.
+     * @param  startNum
+     *         6 symbols for initial receipt number included in report in format ######.
+     * @param  endNum
+     *         6 symbols for final receipt number included in report in format ######.
      * @throws java.lang.Exception
      */
-     public void PrintDuplicate() throws Exception {
-             Do("PrintDuplicate");
+     public void ReadEJByReceiptNum(final Double startNum, final Double endNum) throws Exception {
+             Do("ReadEJByReceiptNum", "StartNum", startNum, "EndNum", endNum);
      }
 
     /**
-     *Opens a special Customer fiscal receipt document assigned to the specified operator and Customer data with postponed printing.
+     *Print all special FM events report.
+     * @throws java.lang.Exception
+     */
+     public void PrintSpecialEventsFMReport() throws Exception {
+             Do("PrintSpecialEventsFMReport");
+     }
+
+    /**
+     *Provides information about the accumulated amounts from sale of foreign currency, currency purchase and commissions for operator.
      * @param  operNum
-     *         Symbol from 1 to 20corresponding to operator's number
-     * @param  operPass
-     *         4 symbols for operator's password
-     * @param  customerVATNo
-     *         15 ASCII symbols text for Customer VAT number
-     * @param  invRecipient
-     *         30 ASCII symbols for Recipient name
-     * @param  invFree1
-     *         20 ASCII symbols for free text line
-     * @param  invFree2
-     *         20 ASCII symbols for free text line
-     * @param  invFree3
-     *         20 ASCII symbols for free text line
-     * @param  invFree4
-     *         20 ASCII symbols for free text line
-     * @param  address
-     *         30 symbols for Address
+     *         Symbol from '1' to '20' corresponding to 
+     * operator's number
+     * @return CurrencyAmountsByOperatorRes
      * @throws java.lang.Exception
      */
-     public void OpenSpecialFiscDocumentPostponedPrn(final Double operNum, final String operPass, final String customerVATNo, final String invRecipient, final String invFree1, final String invFree2, final String invFree3, final String invFree4, final String address) throws Exception {
-             Do("OpenSpecialFiscDocumentPostponedPrn", "OperNum", operNum, "OperPass", operPass, "CustomerVATNo", customerVATNo, "InvRecipient", invRecipient, "InvFree1", invFree1, "InvFree2", invFree2, "InvFree3", invFree3, "InvFree4", invFree4, "Address", address);
+     public CurrencyAmountsByOperatorRes ReadCurrencyAmountsByOperator(final String operNum) throws Exception {
+             return CreateRes(Do("ReadCurrencyAmountsByOperator", "OperNum", operNum), CurrencyAmountsByOperatorRes.class);
      }
 
     /**
-     *Read the service contract expired warning message text.
+     *Programs the general data for a certain article in the internal database. The price may have variable length, while the name field is fixed.
+     * @param  pLUNum
+     *         5 symbols for article number in format: #####
+     * @param  name
+     *         34 symbols for article name; Symbol for LF=7Ch - '|'; separator for 
+     * MU=80h or 60h followed up to 3 symbols for unit.
+     * @param  price
+     *         1 to 10 symbols for article price
+     * @param  optionPrice
+     *         1 byte for Price flag with next value: 
+     *  - '0'- Free price is disable valid only programmed price 
+     *  - '1'- Free price is enable 
+     *  - '2'- Limited price
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @param  belongToDepNum
+     *         BelongToDepNo + 80h. 1 symbol for article department attachment, 
+     * formed in the following manner: example: Dep01 = 81h, Dep02 =
+     * @param  alteTaxNum
+     *         Up to 11 symbols for Alte Tax number
+     * @param  alteTaxValue
+     *         Up to 11 symbols for Alte tax value
+     * @param  optionTransaction
+     *         1 symbol with value: 
+     *  - '1' - Active Single transaction in receipt 
+     *  - '0' - Inactive default value 
+     * Note: this parameter is not obligatory
+     * @throws java.lang.Exception
+     */
+     public void ProgPLUgeneral(final Double pLUNum, final String name, final Double price, final OptionPrice optionPrice, final OptionVATClass optionVATClass, final int belongToDepNum, final Double alteTaxNum, final Double alteTaxValue, final OptionTransaction optionTransaction) throws Exception {
+             Do("ProgPLUgeneral", "PLUNum", pLUNum, "Name", name, "Price", price, "OptionPrice", optionPrice, "OptionVATClass", optionVATClass, "BelongToDepNum", belongToDepNum, "AlteTaxNum", alteTaxNum, "AlteTaxValue", alteTaxValue, "OptionTransaction", optionTransaction);
+     }
+
+    /**
+     *After every change on Idle timeout, LAN/WiFi usage, LAN/WiFi TCP password or TCP auto start networks settings this Save command needs to be execute.
+     * @throws java.lang.Exception
+     */
+     public void SaveZFPNetworkSettings() throws Exception {
+             Do("SaveZFPNetworkSettings");
+     }
+
+    /**
+     *Program the owner's VAT number and VAT registration type.
      * @param  password
-     *         6 symbols for service passowrd 
-     * '3' '3' - for warning message
-     * @return ServiceWarningMessageRes
+     *         6-symbol string
+     * @param  ownerVATNum
+     *         15 symbols for VAT number
+     * @param  optionTypeVATregistration
+     *         1 symbol for type of owner's VAT registration: 
+     *  - '1' - Yes 
+     *  - '0' - No
      * @throws java.lang.Exception
      */
-     public ServiceWarningMessageRes ReadServiceWarningMessage(final String password) throws Exception {
-             return CreateRes(Do("ReadServiceWarningMessage", "Password", password), ServiceWarningMessageRes.class);
+     public void ProgCustomerVATNum(final String password, final String ownerVATNum, final OptionTypeVATregistration optionTypeVATregistration) throws Exception {
+             Do("ProgCustomerVATNum", "Password", password, "OwnerVATNum", ownerVATNum, "OptionTypeVATregistration", optionTypeVATregistration);
      }
 
     /**
-     *Prints a detailed FM report by initial and end date.
-     * @param  startDate
-     *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
-     *         6 symbols for final date in the DDMMYY format
+     *Store Electronic Journal Report from receipt number to receipt number to External USB Flash memory, External SD card or Print.
+     * @param  optionReportStorage
+     *         2 symbols for destination: 
+     *  - 'J1' - Printing  
+     *  - 'J2' - Storage in External USB Flash memory. 
+     *  - 'J4' - Storage in External SD card memory
+     * @param  startNum
+     *         6 symbols for initial receipt number in format ###### 
+     * included in report.
+     * @param  endNum
+     *         6 symbolsfor final receipt number included in format ###### 
+     * in report.
      * @throws java.lang.Exception
      */
-     public void PrintDetFMdailyReportByDate(final Date startDate, final Date endDate) throws Exception {
-             Do("PrintDetFMdailyReportByDate", "StartDate", startDate, "EndDate", endDate);
+     public void PrintOrStoreEJByReceiptNum(final OptionReportStorage optionReportStorage, final Double startNum, final Double endNum) throws Exception {
+             Do("PrintOrStoreEJByReceiptNum", "OptionReportStorage", optionReportStorage, "StartNum", startNum, "EndNum", endNum);
+     }
+
+    /**
+     *Percent or value discount/addition over sum of transaction or over subtotal sum depends on parameter "OptionType".
+     * @param  optionType
+     *         1 symbol with value  
+     * - '2' - Defined from the device  
+     * - '1' - Over subtotal 
+     * - '0' - Over transaction sum
+     * @param  optionDisplay
+     *         1 symbol with value: 
+     *  - '1' - Yes 
+     *  - '0' - No
+     * @param  discAddV
+     *         1 to 10 symbols for the value of the discount/addition. 
+     * Use minus sign '-' for discount
+     * @param  discAddP
+     *         1 to 7 symbols for the percentage value of the 
+     * discount/addition. Use minus sign '-' for discount
+     * @return Double
+     * @throws java.lang.Exception
+     */
+     public Double PrintDiscountOrAddition(final OptionType optionType, final OptionDisplay optionDisplay, final Double discAddV, final Double discAddP) throws Exception {
+             return CreateRes(Do("PrintDiscountOrAddition", "OptionType", optionType, "OptionDisplay", optionDisplay, "DiscAddV", discAddV, "DiscAddP", discAddP), Double.class);
      }
 
     /**
      *Stores the VAT registration and Fiscal Memory number into the operative memory.
      * @param  password
-     *         6-symbol string 
-     * '1' One symbol is compulsory 1
-     * @param  vATNo
+     *         6-symbols string
+     * @param  vATNum
      *         15 symbols VAT registration number
-     * @param  fMNo
+     * @param  fMNum
      *         10 symbols Fiscal Memory serial number
      * @param  optionTypeVATregistration
      *         1 symbol for type of owner's VAT registration: 
@@ -170,17 +318,21 @@ public class FP extends FPcore {
      *  - '0' - No
      * @throws java.lang.Exception
      */
-     public void SetFiscalNumbers(final String password, final String vATNo, final String fMNo, final OptionTypeVATregistration optionTypeVATregistration) throws Exception {
-             Do("SetFiscalNumbers", "Password", password, "VATNo", vATNo, "FMNo", fMNo, "OptionTypeVATregistration", optionTypeVATregistration);
+     public void SetFiscalNum(final String password, final String vATNum, final String fMNum, final OptionTypeVATregistration optionTypeVATregistration) throws Exception {
+             Do("SetFiscalNum", "Password", password, "VATNum", vATNum, "FMNum", fMNum, "OptionTypeVATregistration", optionTypeVATregistration);
      }
 
     /**
-     *Provides information about the amounts on hand by type of payment.
-     * @return VatGrAmountsRes
+     *Store whole Electronic Journal report to External USB Flash memory, External SD card or Print.
+     * @param  optionReportStorage
+     *         2 symbols for destination: 
+     *  - 'J1' - Printing  
+     *  - 'J2' - Storage in External USB Flash memory. 
+     *  - 'J4' - Storage in External SD card memory
      * @throws java.lang.Exception
      */
-     public VatGrAmountsRes ReadVatGrAmounts() throws Exception {
-             return CreateRes(Do("ReadVatGrAmounts"), VatGrAmountsRes.class);
+     public void PrintOrStoreEJ(final OptionReportStorage optionReportStorage) throws Exception {
+             Do("PrintOrStoreEJ", "OptionReportStorage", optionReportStorage);
      }
 
     /**
@@ -196,14 +348,6 @@ public class FP extends FPcore {
      }
 
     /**
-     *Cancel the opened fiscal receipt.
-     * @throws java.lang.Exception
-     */
-     public void CancelFiscReceipt() throws Exception {
-             Do("CancelFiscReceipt");
-     }
-
-    /**
      *Restore previous header if current header is not saved into fiscal memory.
      * @throws java.lang.Exception
      */
@@ -212,7 +356,7 @@ public class FP extends FPcore {
      }
 
     /**
-     *Opens the cash drawer
+     *Opens cash drawer
      * @throws java.lang.Exception
      */
      public void CashDrawerOpen() throws Exception {
@@ -220,14 +364,57 @@ public class FP extends FPcore {
      }
 
     /**
-     *Sets the number of logo file, which is active and will be printed as logo in the receipt header. Prints Information about active number.
-     * @param  logoFileNumber
-     *         1 character value from '0' to '9' or '?'. The number sets the active file, and 
-     * the '?' invokes only printing of information
+     *Program device's TCP password. To apply use - SaveZFPNetworkSettings()
+     * @param  password
+     *         20 symbols for TCP password
      * @throws java.lang.Exception
      */
-     public void SetActiveLogoNo(final String logoFileNumber) throws Exception {
-             Do("SetActiveLogoNo", "LogoFileNumber", logoFileNumber);
+     public void SetTCPpassword(final String password) throws Exception {
+             Do("SetTCPpassword", "Password", password);
+     }
+
+    /**
+     *Shows a 40-symbol text in the two display lines.
+     * @param  text
+     *         40 symbols text
+     * @throws java.lang.Exception
+     */
+     public void DisplayTextLines1and2(final String text) throws Exception {
+             Do("DisplayTextLines1and2", "Text", text);
+     }
+
+    /**
+     *Read Electronic Journal Report from report number to report number.
+     * @param  startNum
+     *         4 symbols for initial number report in format ####
+     * @param  endNum
+     *         4 symbols for final number report in format ####
+     * @throws java.lang.Exception
+     */
+     public void ReadEJByZReportNum(final Double startNum, final Double endNum) throws Exception {
+             Do("ReadEJByZReportNum", "StartNum", startNum, "EndNum", endNum);
+     }
+
+    /**
+     *Registers the sale or correction of a specified quantity of an article of the internal database of the FD.
+     * @param  optionSign
+     *         1 symbol with optional value: 
+     *  - '+' - Sale 
+     *  - '-' - Correction
+     * @param  pLUNum
+     *         5 symbols for number of article of FPR's db in format: #####
+     * @param  quantity
+     *         1 to 10 symbols for article's quantity sold
+     * @param  discAddP
+     *         1 to 7 for percentage of discount/addition
+     * @param  discAddV
+     *         1 to 8 symbols for value of discount/addition
+     * @param  discNamed
+     *         1 to 8 symbols for value of named discount
+     * @throws java.lang.Exception
+     */
+     public void SellPLUFromFD_DB(final OptionSign optionSign, final Double pLUNum, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed) throws Exception {
+             Do("SellPLUFromFD_DB", "OptionSign", optionSign, "PLUNum", pLUNum, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed);
      }
 
     /**
@@ -240,7 +427,7 @@ public class FP extends FPcore {
      }
 
     /**
-     *Registers the payment in the receipt with specified type of payment and exact amount (if the payment type is 1-9 the amount of change due is not obligatory.)
+     *Register the payment in the receipt with specified type of payment and exact amount received.
      * @param  optionPaymentType
      *         1 symbol for payment type: 
      *  - '0' - Payment 0 
@@ -260,66 +447,67 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides information about the RA by type of payment as well as the total number of operations by specified operator.
-     * @param  opNo
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @return OperRARes
+     *Read the number of the remaining free records for Z-report in the Fiscal Memory.
+     * @return String
      * @throws java.lang.Exception
      */
-     public OperRARes ReadOperRA(final Double opNo) throws Exception {
-             return CreateRes(Do("ReadOperRA", "OpNo", opNo), OperRARes.class);
+     public String ReadFMfreeRecords() throws Exception {
+             return CreateRes(Do("ReadFMfreeRecords"), String.class);
      }
 
     /**
-     *Store a brief FM report by initial and end FM report number.
-     * @param  startNo
-     *         4 symbols for the initial FM report number included in report, format ####
-     * @param  endNo
-     *         4 symbols for the final FM report number included in report, format ####
-     * @param  optionStorage
-     *         1 symbol for destination: 
-     *  - '2' - Storage in External USB Flash memory. 
-     *  - '4' - Storage in External SD card memory
+     *Cancel the opened fiscal receipt.
      * @throws java.lang.Exception
      */
-     public void StoreBriefFMdailyReportByZNo(final Double startNo, final Double endNo, final OptionStorage optionStorage) throws Exception {
-             Do("StoreBriefFMdailyReportByZNo", "StartNo", startNo, "EndNo", endNo, "OptionStorage", optionStorage);
+     public void CancelReceipt() throws Exception {
+             Do("CancelReceipt");
      }
 
     /**
-     *Provides information about the amounts returned as change by different payment types for the specified operator.
-     * @param  opNo
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @return OperCountersRes
+     *Register the sell (for correction use minus sign in the price field) of article belonging to department with specified name, price, quantity and/or discount/addition on the transaction. The VAT of article got from department to which article belongs.
+     * @param  namePLU
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  price
+     *         1 to 10 symbols for article's price
+     * @param  quantity
+     *         1 to 10 symbols for quantity
+     * @param  discAddP
+     *         1 to 7 for percentage of discount/addition
+     * @param  discAddV
+     *         1 to 8 for value of discount/addition
+     * @param  discNamed
+     *         1 to 8 symbols for value of named discount
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  depNum
+     *         1 symbol for article department attachment, 
+     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
+     * Dep19 = 93h
+     * @param  namePLUextension
+     *         12 symbols for extension of the PLU Name: FP Only
+     * @param  additionalNamePLU
+     *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public OperCountersRes ReadOperCounters(final Double opNo) throws Exception {
-             return CreateRes(Do("ReadOperCounters", "OpNo", opNo), OperCountersRes.class);
+     public void SellPLUfromDep(final String namePLU, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final int depNum, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellPLUfromDep", "NamePLU", namePLU, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "DepNum", depNum, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
      }
 
     /**
-     *Printing Electronic Journal Report from Start Date to End Date.
-     * @param  optionRepStorage
-     *         2 symbols for destination: 
-     *  - 'J1' - Printing  
-     *  - 'J2' - Storage in External USB Flash memory. 
-     *  - 'J4' - Storage in External SD card memory 
-     * 'D' 1 symbol 'D'
-     * @param  startDate
-     *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
-     *         6 symbols for final date in the DDMMYY format
+     *Program device's Bluetooth password.
+     * @param  password
+     *         8 symbols for device's Bluetooth password
      * @throws java.lang.Exception
      */
-     public void PrintEJreportByDate(final OptionRepStorage optionRepStorage, final Date startDate, final Date endDate) throws Exception {
-             Do("PrintEJreportByDate", "OptionRepStorage", optionRepStorage, "StartDate", startDate, "EndDate", endDate);
+     public void SetBluetoothPassword(final String password) throws Exception {
+             Do("SetBluetoothPassword", "Password", password);
      }
 
     /**
      *Programs the operator's name and password.
      * @param  number
-     *         2 Symbol from 1 to 20 with leading zeroes in format: ## 
-     * corresponding to the operator's number
+     *         Symbols from '1' to '20' corresponding to operator's number
      * @param  name
      *         20 symbols for operator's name
      * @param  password
@@ -328,6 +516,31 @@ public class FP extends FPcore {
      */
      public void ProgOperator(final Double number, final String name, final String password) throws Exception {
              Do("ProgOperator", "Number", number, "Name", name, "Password", password);
+     }
+
+    /**
+     *Provides information about device's Subnet mask.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadTCP_SubnetMask() throws Exception {
+             return CreateRes(Do("ReadTCP_SubnetMask"), String.class);
+     }
+
+    /**
+     *Storage a detailed FM report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
+     * @param  optionStorage
+     *         1 symbol for destination: 
+     *  - '2' - Storage in External USB Flash memory. 
+     *  - '4' - Storage in External SD card memory
+     * @throws java.lang.Exception
+     */
+     public void StoreDetailedFMReportByZNum(final Double startNum, final Double endNum, final OptionStorage optionStorage) throws Exception {
+             Do("StoreDetailedFMReportByZNum", "StartNum", startNum, "EndNum", endNum, "OptionStorage", optionStorage);
      }
 
     /**
@@ -340,246 +553,73 @@ public class FP extends FPcore {
      }
 
     /**
-     *Read the the number of the duplicates which can be printed after invoice receipt.
+     *Program device's GPRS user name. To apply use - SaveNetworInterfaceSettings()
+     * @param  userName
+     *         32 symbols for device's GPRS user name
+     * @throws java.lang.Exception
+     */
+     public void SetGPRSUserName(final String userName) throws Exception {
+             Do("SetGPRSUserName", "UserName", userName);
+     }
+
+    /**
+     *The device scan and print out the list of available WiFi networks.
+     * @throws java.lang.Exception
+     */
+     public void PrintWIFINetworks() throws Exception {
+             Do("PrintWIFINetworks");
+     }
+
+    /**
+     *Provides information about device's GRPS APN.
      * @return String
      * @throws java.lang.Exception
      */
-     public String ReadDuplicatesNumber() throws Exception {
-             return CreateRes(Do("ReadDuplicatesNumber"), String.class);
+     public String ReadGPRS_APN() throws Exception {
+             return CreateRes(Do("ReadGPRS_APN"), String.class);
      }
 
     /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
-     * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
-     * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values: 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
-     *  - 'F' - Alte taxe
-     * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
-     * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * '&' 1 symbol '&' indicating the presence of departament
-     * @param  depNo
-     *         1 symbol for article department attachment, 
-     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
-     * Dep19 = 93h 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
-     * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
-     * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
-     * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
-     * @param  namePLUextension
-     *         12 symbols for extension of the PLU Name: FP Only
-     * @param  additionalNamePLU
-     *         108 symbols for additional PLU name
+     *Provides information about the quantity registers of the specified article.
+     * @param  pLUNum
+     *         5 symbols for article number with leading zeroes in format: #####
+     * @return PLUqtyRes
      * @throws java.lang.Exception
      */
-     public void SaleOrCorrectionPLUwithVATdefinitionBelongingToDEP_1(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final int depNo, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("SaleOrCorrectionPLUwithVATdefinitionBelongingToDEP_1", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DepNo", depNo, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     public PLUqtyRes ReadPLUqty(final Double pLUNum) throws Exception {
+             return CreateRes(Do("ReadPLUqty", "PLUNum", pLUNum), PLUqtyRes.class);
      }
 
     /**
-     *Provide information about the display greeting message.
-     * @return String
-     * @throws java.lang.Exception
-     */
-     public String ReadDisplayGreeting() throws Exception {
-             return CreateRes(Do("ReadDisplayGreeting"), String.class);
-     }
-
-    /**
-     *Programs internal database items.
-     * @param  pLUNo
-     *         5 symbols for article number in format: #####
-     * @param  name
-     *         34 symbols for article name; Symbol for LF=7Ch - '|'; separator for 
-     * MU=80h or 60h followed up to 3 symbols for unit.
-     * @param  price
-     *         1 to 10 symbols for article price
-     * @param  optionPrice
-     *         1 byte for Price flag with next value: 
-     *  - '0'- Free price is disable /valid only programmed price/ 
-     *  - '1'- Free price is enable 
-     *  - '2'- Limited price
-     * @param  optionVATClass
-     *         1 symbol for article VAT class: 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
-     *  - 'F' - Alte taxe
-     * @param  belongToDepNo
-     *         BelongToDepNo + 80h. 1 symbol for article department attachment, 
-     * formed in the following manner: example: Dep01 = 81h, Dep02 = 
-     * 82h … Dep19 = 93h
-     * @param  alteTaxNum
-     *         1..11 symbol for Alte Tax number
-     * @param  alteTaxValue
-     *         1..11 symbols for Alte tax value
-     * @param  optionTransaction
-     *         1 symbol with value: 
-     *  - '1' - Active Single transaction in receipt 
-     *  - '0' - Inactive /default value/  
-     * Note: this parameter is not obligatory
-     * @throws java.lang.Exception
-     */
-     public void ProgPLU1(final Double pLUNo, final String name, final Double price, final OptionPrice optionPrice, final OptionVATClass optionVATClass, final int belongToDepNo, final Double alteTaxNum, final Double alteTaxValue, final OptionTransaction optionTransaction) throws Exception {
-             Do("ProgPLU1", "PLUNo", pLUNo, "Name", name, "Price", price, "OptionPrice", optionPrice, "OptionVATClass", optionVATClass, "BelongToDepNo", belongToDepNo, "AlteTaxNum", alteTaxNum, "AlteTaxValue", alteTaxValue, "OptionTransaction", optionTransaction);
-     }
-
-    /**
-     *Shows a 20-symbol text in the lower display line.
-     * @param  text
-     *         20 symbols text
-     * @throws java.lang.Exception
-     */
-     public void DisplayText2(final String text) throws Exception {
-             Do("DisplayText2", "Text", text);
-     }
-
-    /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
-     * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
-     * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
-     * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * '&' 1 symbol '&' indicating the presence of departament
-     * @param  depNo
-     *         1 symbol for article department attachment, 
-     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
-     * Dep19 = 93h 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
-     * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
-     * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount  
-     * 
-     * 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
-     * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
-     * @param  namePLUextension
-     *         12 symbols for extension of the PLU Name: FP Only
-     * @param  additionalNamePLU
-     *         108 symbols for additional PLU name
-     * @throws java.lang.Exception
-     */
-     public void SaleOrCorrectionPLUBelongingToDEP_1(final String namePLU, final Double price, final Double quantity, final int depNo, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("SaleOrCorrectionPLUBelongingToDEP_1", "NamePLU", namePLU, "Price", price, "Quantity", quantity, "DepNo", depNo, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
-     }
-
-    /**
-     *Opens a fiscal receipt assigned to the specified operator
+     *Registers cash received on account or paid out.
      * @param  operNum
-     *         Symbols from 1 to 20 corresponding to operator's number
+     *         Symbol from 1 to 20 corresponding to the operator's number
      * @param  operPass
      *         4 symbols for operator's password
+     * @param  amount
+     *         1 to 10 symbols for the amount lodged/withdrawn
+     * @param  text
+     *         Text - TextLength-2 symbols length
      * @throws java.lang.Exception
      */
-     public void OpenFiscReceipt(final Double operNum, final String operPass) throws Exception {
-             Do("OpenFiscReceipt", "OperNum", operNum, "OperPass", operPass);
+     public void ReceivedOnAccount_PaidOut(final Double operNum, final String operPass, final Double amount, final String text) throws Exception {
+             Do("ReceivedOnAccount_PaidOut", "OperNum", operNum, "OperPass", operPass, "Amount", amount, "Text", text);
      }
 
     /**
-     *Percent or value discount/addition over sum of transaction or over subtotal sum depended from byte "type".
-     * @param  optionType
-     *         1 symbol with value  
-     * - '2' - Defined from the device  
-     * - '1' - Over subtotal 
-     * - '0' - Over transaction sum
-     * @param  optionDisplay
-     *         1 symbol with value: 
-     *  - '1' - Yes 
-     *  - '0' - No 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
-     * @param  discAddV
-     *         1 to 10 symbols for the value of the discount/addition. 
-     * Use minus sign '-' for discount 
-     * ',' 1 symbol ',' indicating the presence of percent discount/addition field
-     * @param  discAddP
-     *         2 to 7 symbols for the percentage value of the 
-     * discount/addition. Use minus sign '-' for discount
-     * @return Double
+     *Storage a detailed FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
+     * @param  optionStorage
+     *         1 symbol for destination: 
+     *  - '2' - Storage in External USB Flash memory. 
+     *  - '4' - Storage in External SD card memory
      * @throws java.lang.Exception
      */
-     public Double DiscountAddition(final OptionType optionType, final OptionDisplay optionDisplay, final Double discAddV, final Double discAddP) throws Exception {
-             return CreateRes(Do("DiscountAddition", "OptionType", optionType, "OptionDisplay", optionDisplay, "DiscAddV", discAddV, "DiscAddP", discAddP), Double.class);
-     }
-
-    /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
-     * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
-     * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
-     * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * '&' 1 symbol '&' indicating the presence of departament
-     * @param  depNo
-     *         1 symbol for article department attachment, 
-     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
-     * Dep19 = 93h 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
-     * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
-     * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
-     * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
-     * @param  namePLUextension
-     *         12 symbols for extension of the PLU Name: FP Only
-     * @param  additionalNamePLU
-     *         108 symbols for additional PLU name
-     * @throws java.lang.Exception
-     */
-     public void StornoPLUBelongingToDEP_1(final String namePLU, final Double price, final Double quantity, final int depNo, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("StornoPLUBelongingToDEP_1", "NamePLU", namePLU, "Price", price, "Quantity", quantity, "DepNo", depNo, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
-     }
-
-    /**
-     *Stores the Manufacturing number into the operative memory.
-     * @param  password
-     *         6-symbol string
-     * @param  serialNo
-     *         8 symbol Manufacturing number
-     * @throws java.lang.Exception
-     */
-     public void SetSerialNo(final String password, final String serialNo) throws Exception {
-             Do("SetSerialNo", "Password", password, "SerialNo", serialNo);
+     public void StoreDetailedFMReportByDate(final Date startDate, final Date endDate, final OptionStorage optionStorage) throws Exception {
+             Do("StoreDetailedFMReportByDate", "StartDate", startDate, "EndDate", endDate, "OptionStorage", optionStorage);
      }
 
     /**
@@ -594,174 +634,70 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides information about the manufactoring number of the fiscal device.
-     * @return String
+     *Storage a detailed FM report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
      * @throws java.lang.Exception
      */
-     public String ReadSerialNo() throws Exception {
-             return CreateRes(Do("ReadSerialNo"), String.class);
+     public void ReadDetailedFMReportByZNum(final Double startNum, final Double endNum) throws Exception {
+             Do("ReadDetailedFMReportByZNum", "StartNum", startNum, "EndNum", endNum);
      }
 
     /**
-     *Read the PLU Category code.
-     * @param  pLUNo
-     *         5 symbols for article number with leading zeroes in format: #####
-     * @return PLU5Res
+     *Providing information about if the device's Bluetooth module is enabled or disabled.
+     * @return OptionBTstatus
      * @throws java.lang.Exception
      */
-     public PLU5Res ReadPLU5(final Double pLUNo) throws Exception {
-             return CreateRes(Do("ReadPLU5", "PLUNo", pLUNo), PLU5Res.class);
+     public OptionBTstatus ReadBluetoothStatus() throws Exception {
+             return CreateRes(Do("ReadBluetoothStatus"), OptionBTstatus.class);
      }
 
     /**
-     *Provides information about the amounts received from sales by type of payment.
-     * @return DailyRecAmountsRes
+     *Stores in the memory the graphic file under stated number. Prints information about loaded in the printer graphic files.
+     * @param  logoNum
+     *         1 character value from '0' to '9' setting the number where the 
+     * logo will be saved.
      * @throws java.lang.Exception
      */
-     public DailyRecAmountsRes ReadDailyRecAmounts() throws Exception {
-             return CreateRes(Do("ReadDailyRecAmounts"), DailyRecAmountsRes.class);
+     public void ProgLogoNum(final String logoNum) throws Exception {
+             Do("ProgLogoNum", "LogoNum", logoNum);
      }
 
     /**
-     *Read the current status of the receipt.
-     * @return CurrentRecInfoRes
+     *Program device's TCP WiFi password where it will be connected. To apply use - SaveNetworInterfaceSettings()
+     * @param  wiFiPassword
+     *         64 symbols for the device's WiFi password
      * @throws java.lang.Exception
      */
-     public CurrentRecInfoRes ReadCurrentRecInfo() throws Exception {
-             return CreateRes(Do("ReadCurrentRecInfo"), CurrentRecInfoRes.class);
-     }
-
-    /**
-     *Reading Electronic Journal Report from report number to report number.
-     * @param  startNo
-     *         4 symbols for initial number report in format ####
-     * @param  endNo
-     *         4 symbols for final number report in format ####
-     * @throws java.lang.Exception
-     */
-     public void ReadEJreportZreportNo(final Double startNo, final Double endNo) throws Exception {
-             Do("ReadEJreportZreportNo", "StartNo", startNo, "EndNo", endNo);
-     }
-
-    /**
-     *Programs the customer DB for special customer receipt issuing.
-     * @param  number
-     *         3 symbols for customer number in order in format ###
-     * @param  vatNo
-     *         15 symbols for customer VAT registration number
-     * @param  name
-     *         30 symbols for customer name
-     * @param  addr
-     *         30 symbols for customer address
-     * @param  freeLine1
-     *         20 ASCII symbols for customer data
-     * @param  freeLine2
-     *         20 ASCII symbols for customer data
-     * @param  freeLine3
-     *         20 ASCII symbols for customer data
-     * @param  freeLine4
-     *         20 ASCII symbols for customer data
-     * @throws java.lang.Exception
-     */
-     public void ProgCustomerData(final Double number, final String vatNo, final String name, final String addr, final String freeLine1, final String freeLine2, final String freeLine3, final String freeLine4) throws Exception {
-             Do("ProgCustomerData", "Number", number, "VatNo", vatNo, "Name", name, "Addr", addr, "FreeLine1", freeLine1, "FreeLine2", freeLine2, "FreeLine3", freeLine3, "FreeLine4", freeLine4);
-     }
-
-    /**
-     *Provides information about the current (the last value stored into the FM) decimal point format.
-     * @return DecPoint
-     * @throws java.lang.Exception
-     */
-     public DecPoint ReadDecPoint() throws Exception {
-             return CreateRes(Do("ReadDecPoint"), DecPoint.class);
-     }
-
-    /**
-     *Programs the PLU Category for a certain article (item) from the internal database.
-     * @param  pLUNo
-     *         5 symbols for article number in format: #####
-     * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.##
-     * @throws java.lang.Exception
-     */
-     public void ProgPLU5(final Double pLUNo, final Double category) throws Exception {
-             Do("ProgPLU5", "PLUNo", pLUNo, "Category", category);
-     }
-
-    /**
-     *Opens a non-fiscal receipt assigned to the specified operator
-     * @param  number
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @param  password
-     *         4 symbols for operator's password
-     * @throws java.lang.Exception
-     */
-     public void OpenNonFiscReceiptPostponedPrn(final Double number, final String password) throws Exception {
-             Do("OpenNonFiscReceiptPostponedPrn", "Number", number, "Password", password);
-     }
-
-    /**
-     *Provides information about the current tax rates (the last values stored into the FM).
-     * @return VATratesRes
-     * @throws java.lang.Exception
-     */
-     public VATratesRes ReadVATrates() throws Exception {
-             return CreateRes(Do("ReadVATrates"), VATratesRes.class);
-     }
-
-    /**
-     *Opens a fiscal receipt assigned to the specified operator with buffered printing
-     * @param  operNum
-     *         Symbols from 1 to 20 corresponding to operator's number
-     * @param  operPass
-     *         4 symbols for operator's password
-     * @throws java.lang.Exception
-     */
-     public void OpenFiscReceiptBufferedPrn(final Double operNum, final String operPass) throws Exception {
-             Do("OpenFiscReceiptBufferedPrn", "OperNum", operNum, "OperPass", operPass);
-     }
-
-    /**
-     *Provides information about the PO by type of payment as well as the total number of operations by specified operator
-     * @param  opNo
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @return OperPORes
-     * @throws java.lang.Exception
-     */
-     public OperPORes ReadOperPO(final Double opNo) throws Exception {
-             return CreateRes(Do("ReadOperPO", "OpNo", opNo), OperPORes.class);
-     }
-
-    /**
-     *Reading Electronic Journal Report from Start Date to End Date.
-     * @param  startDate
-     *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
-     *         6 symbols for final date in the DDMMYY format
-     * @throws java.lang.Exception
-     */
-     public void ReadEJreportByDate(final Date startDate, final Date endDate) throws Exception {
-             Do("ReadEJreportByDate", "StartDate", startDate, "EndDate", endDate);
+     public void SetTCPWiFiPassword(final String wiFiPassword) throws Exception {
+             Do("SetTCPWiFiPassword", "WiFiPassword", wiFiPassword);
      }
 
     /**
      *Set service contract disable
      * @param  password
-     *         6 symbols for service password 
-     * '2' '2' - for disable service contract function
+     *         6 symbols for service password
      * @throws java.lang.Exception
      */
-     public void DisableContractFunction(final String password) throws Exception {
-             Do("DisableContractFunction", "Password", password);
+     public void DisbleServiceContract(final String password) throws Exception {
+             Do("DisbleServiceContract", "Password", password);
      }
 
     /**
-     *Opens a special Customer fiscal receipt document assigned to the specified operator and Customer data.
-     * @param  number
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @param  password
+     *Opens a special Customer fiscal receipt document assigned to the specified operator, Customer data and print type depends on CustomerReceiptPrintType parameter.
+     * @param  operNum
+     *         Symbol from 1 to 20 corresponding to operator's 
+     * number
+     * @param  operPass
      *         4 symbols for operator's password
-     * @param  customerVATNo
+     * @param  optionCustomerReceiptPrintType
+     *         1 symbol with value: 
+     *  - '1' - Step by step printing 
+     *  - '3' - Postponed printing 
+     *  - '5' - Buffered printing
+     * @param  customerVATNum
      *         15 ASCII symbols text for Customer VAT number
      * @param  invRecipient
      *         30 ASCII symbols for Recipient name
@@ -777,8 +713,217 @@ public class FP extends FPcore {
      *         30 ASCII symbols for customer address
      * @throws java.lang.Exception
      */
-     public void OpenSpecialFiscDocument(final Double number, final String password, final String customerVATNo, final String invRecipient, final String invFree1, final String invFree2, final String invFree3, final String invFree4, final String address) throws Exception {
-             Do("OpenSpecialFiscDocument", "Number", number, "Password", password, "CustomerVATNo", customerVATNo, "InvRecipient", invRecipient, "InvFree1", invFree1, "InvFree2", invFree2, "InvFree3", invFree3, "InvFree4", invFree4, "Address", address);
+     public void OpenSpecialDocumentReceipt(final Double operNum, final String operPass, final OptionCustomerReceiptPrintType optionCustomerReceiptPrintType, final String customerVATNum, final String invRecipient, final String invFree1, final String invFree2, final String invFree3, final String invFree4, final String address) throws Exception {
+             Do("OpenSpecialDocumentReceipt", "OperNum", operNum, "OperPass", operPass, "OptionCustomerReceiptPrintType", optionCustomerReceiptPrintType, "CustomerVATNum", customerVATNum, "InvRecipient", invRecipient, "InvFree1", invFree1, "InvFree2", invFree2, "InvFree3", invFree3, "InvFree4", invFree4, "Address", address);
+     }
+
+    /**
+     *Program device's autostart TCP conection in sale/line mode. To apply use - SaveZFPNetworkSettings()
+     * @param  optionTCPAutoStart
+     *         1 symbol with value: 
+     *  - '0' - Disable 
+     *  - '1' - Enable
+     * @throws java.lang.Exception
+     */
+     public void SetTCPAutoStartFlag(final OptionTCPAutoStart optionTCPAutoStart) throws Exception {
+             Do("SetTCPAutoStartFlag", "OptionTCPAutoStart", optionTCPAutoStart);
+     }
+
+    /**
+     *Opens a fiscal receipt assigned to the specified operator for Currency Sale transaction.
+     * @param  operNum
+     *         Symbols from 1 to 20 corresponding to operator's number
+     * @param  operPass
+     *         4 symbols for operator's password
+     * @param  optionCurrencySaleRcpPrintType
+     *         1 symbol with value 
+     *  - '0' - Step by step printing 
+     *  - '2' - Postponed printing
+     * @param  text1
+     *         26 symbols free text for header line 1 in the receipt
+     * @param  text2
+     *         26 symbols free text for header line 2 in the receipt
+     * @param  text3
+     *         26 symbols free text for header line 3 in the receipt
+     * @param  text4
+     *         26 symbols free text for header line 4 in the receipt
+     * @param  text5
+     *         26 symbols free text for header line 5 in the receipt
+     * @param  text6
+     *         26 symbols free text for header line 6 in the receipt
+     * @throws java.lang.Exception
+     */
+     public void OpenCurrencySaleReceipt(final Double operNum, final String operPass, final OptionCurrencySaleRcpPrintType optionCurrencySaleRcpPrintType, final String text1, final String text2, final String text3, final String text4, final String text5, final String text6) throws Exception {
+             Do("OpenCurrencySaleReceipt", "OperNum", operNum, "OperPass", operPass, "OptionCurrencySaleRcpPrintType", optionCurrencySaleRcpPrintType, "Text1", text1, "Text2", text2, "Text3", text3, "Text4", text4, "Text5", text5, "Text6", text6);
+     }
+
+    /**
+     *Program device's TCP network DNS address. To apply use - SaveNetworInterfaceSettings()
+     * @param  deviceDNS
+     *         15 symbols for the device's DNS address
+     * @throws java.lang.Exception
+     */
+     public void SetTCP_DNSaddress(final String deviceDNS) throws Exception {
+             Do("SetTCP_DNSaddress", "DeviceDNS", deviceDNS);
+     }
+
+    /**
+     *Programs the customer DB for special customer receipt issuing.
+     * @param  customerNum
+     *         3 symbols for customer number in order in format ###
+     * @param  vATNumber
+     *         15 symbols for customer VAT registration number
+     * @param  customerCompanyName
+     *         30 symbols for customer name
+     * @param  address
+     *         30 symbols for address on customer
+     * @param  freeLine1
+     *         20 ASCII symbols for customer data
+     * @param  freeLine2
+     *         20 ASCII symbols for customer data
+     * @param  freeLine3
+     *         20 ASCII symbols for customer data
+     * @param  freeLine4
+     *         20 ASCII symbols for customer data
+     * @throws java.lang.Exception
+     */
+     public void ProgCustomerData(final Double customerNum, final String vATNumber, final String customerCompanyName, final String address, final String freeLine1, final String freeLine2, final String freeLine3, final String freeLine4) throws Exception {
+             Do("ProgCustomerData", "CustomerNum", customerNum, "VATNumber", vATNumber, "CustomerCompanyName", customerCompanyName, "Address", address, "FreeLine1", freeLine1, "FreeLine2", freeLine2, "FreeLine3", freeLine3, "FreeLine4", freeLine4);
+     }
+
+    /**
+     *Register the sell (for correction use minus sign in the price field) of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
+     * @param  namePLU
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values: 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @param  price
+     *         1 to 10 symbols for article's price
+     * @param  quantity
+     *         1 to 10 symbols for quantity
+     * @param  discAddP
+     *         1 to 7 for percentage of discount/addition
+     * @param  discAddV
+     *         1 to 8 for value of discount/addition
+     * @param  discNamed
+     *         1 to 8 symbols for value of named discount
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  namePLUextension
+     *         12 symbols for extension of the PLU Name: FP Only
+     * @param  additionalNamePLU
+     *         108 symbols for additional PLU name
+     * @throws java.lang.Exception
+     */
+     public void SellPLUwithSpecifiedVAT(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellPLUwithSpecifiedVAT", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     }
+
+    /**
+     *Provide information about first located Z report, having the same date or the date after the input date
+     * @param  dateFrom
+     *         6 symbols for specified date in format "DDMMYY"
+     * @return Double
+     * @throws java.lang.Exception
+     */
+     public Double ReadFirstZReportNumFromDate(final Date dateFrom) throws Exception {
+             return CreateRes(Do("ReadFirstZReportNumFromDate", "DateFrom", dateFrom), Double.class);
+     }
+
+    /**
+     *Print a brief FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
+     * @throws java.lang.Exception
+     */
+     public void PrintBriefFMReportByDate(final Date startDate, final Date endDate) throws Exception {
+             Do("PrintBriefFMReportByDate", "StartDate", startDate, "EndDate", endDate);
+     }
+
+    /**
+     *Shows a 20-symbol text in the upper display line.
+     * @param  text
+     *         20 symbols text
+     * @throws java.lang.Exception
+     */
+     public void DisplayTextLine1(final String text) throws Exception {
+             Do("DisplayTextLine1", "Text", text);
+     }
+
+    /**
+     *Provides information about the current VAT rates (the last value stored in FM).
+     * @return VATratesRes
+     * @throws java.lang.Exception
+     */
+     public VATratesRes ReadVATrates() throws Exception {
+             return CreateRes(Do("ReadVATrates"), VATratesRes.class);
+     }
+
+    /**
+     *Read the programmed service contract warning message text.
+     * @param  password
+     *         6 symbols for service password
+     * @return ServiceWarningMessagesRes
+     * @throws java.lang.Exception
+     */
+     public ServiceWarningMessagesRes ReadServiceWarningMessages(final String password) throws Exception {
+             return CreateRes(Do("ReadServiceWarningMessages", "Password", password), ServiceWarningMessagesRes.class);
+     }
+
+    /**
+     *Provides information about the amounts received from sales by type of payment.
+     * @return DailyReceivedSalesAmountsRes
+     * @throws java.lang.Exception
+     */
+     public DailyReceivedSalesAmountsRes ReadDailyReceivedSalesAmounts() throws Exception {
+             return CreateRes(Do("ReadDailyReceivedSalesAmounts"), DailyReceivedSalesAmountsRes.class);
+     }
+
+    /**
+     *Provides information about the number of the last issued receipt.
+     * @return LastAndTotalReceiptNumRes
+     * @throws java.lang.Exception
+     */
+     public LastAndTotalReceiptNumRes ReadLastAndTotalReceiptNum() throws Exception {
+             return CreateRes(Do("ReadLastAndTotalReceiptNum"), LastAndTotalReceiptNumRes.class);
+     }
+
+    /**
+     *Selects the active communication module - LAN or WiFi. This option can be set only if the device has both modules at the same time. To apply use - SaveZFPNetworkSettings()
+     * @param  optionActiveModule
+     *         1 symbol with value: 
+     *  - '1' - LAN module 
+     *  - '2' - WiFi module
+     * @throws java.lang.Exception
+     */
+     public void SetTCPactiveModule(final OptionActiveModule optionActiveModule) throws Exception {
+             Do("SetTCPactiveModule", "OptionActiveModule", optionActiveModule);
+     }
+
+    /**
+     *Programs available quantity and Quantiy type for a certain article in the internal database.
+     * @param  pLUNum
+     *         5 symbols for article number in format: #####
+     * @param  availableQuantity
+     *         Up to 11 symbols for quantity in stock
+     * @param  optionQuantityType
+     *         1 symbol for Quantity flag with next value:  
+     *  - '0'- Availability of PLU stock is not monitored  
+     *  - '1'- Disable negative quantity  
+     *  - '2'- Enable negative quantity
+     * @throws java.lang.Exception
+     */
+     public void ProgPLUqty(final Double pLUNum, final Double availableQuantity, final OptionQuantityType optionQuantityType) throws Exception {
+             Do("ProgPLUqty", "PLUNum", pLUNum, "AvailableQuantity", availableQuantity, "OptionQuantityType", optionQuantityType);
      }
 
     /**
@@ -790,57 +935,140 @@ public class FP extends FPcore {
      }
 
     /**
-     *Reads the customer DB
-     * @param  customerNum
-     *         3 symbols for customer number in order in format ###
-     * @return ClientDataRes
-     * @throws java.lang.Exception
-     */
-     public ClientDataRes ReadClientData(final Double customerNum) throws Exception {
-             return CreateRes(Do("ReadClientData", "CustomerNum", customerNum), ClientDataRes.class);
-     }
-
-    /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
+     *Register the sell (for correction use minus sign in the price field) of article with specified VAT. If department is present the relevant accumulations are perfomed in its registers.
      * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
      * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values: 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
      *  - 'F' - Alte taxe
      * @param  price
-     *         1 to 10 symbols for article's price   
-     * 
-     * 
-     * '*' 1 symbol '*' indicating the presence of quantity field
+     *         1 to 10 symbols for article's price
      * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
+     *         3 to 10 symbols for quantity in format fractional format (e.g. 1/3)
      * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
+     *         1 to 7 for percentage of discount/addition
      * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
+     *         1 to 8 for value of discount/addition
      * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
+     *         1 to 8 symbols for value of named discount
      * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
+     *         Up to 7 symbols for PLU Category code in format ####.##
      * @param  namePLUextension
      *         12 symbols for extension of the PLU Name: FP Only
      * @param  additionalNamePLU
      *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public void SaleOrCorrectionPLUwithVATdefenition_(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("SaleOrCorrectionPLUwithVATdefenition_", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     public void SellFractQtyPLUwithSpecifiedVAT(final String namePLU, final OptionVATClass optionVATClass, final Double price, final String quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellFractQtyPLUwithSpecifiedVAT", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     }
+
+    /**
+     *Provides information about the manufactoring number of the fiscal device.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadSerialNum() throws Exception {
+             return CreateRes(Do("ReadSerialNum"), String.class);
+     }
+
+    /**
+     *Program device's GPRS APN. To apply use - SaveNetworInterfaceSettings()
+     * @param  name
+     *         32 symbols for device's GPRS APN
+     * @throws java.lang.Exception
+     */
+     public void SetGPRS_APN(final String name) throws Exception {
+             Do("SetGPRS_APN", "Name", name);
+     }
+
+    /**
+     *Provides information about the fiscal receipt counters for Currency Exchange Offices
+     * @return LastCurrencyReceiptNumRes
+     * @throws java.lang.Exception
+     */
+     public LastCurrencyReceiptNumRes ReadLastCurrencyReceiptNum() throws Exception {
+             return CreateRes(Do("ReadLastCurrencyReceiptNum"), LastCurrencyReceiptNumRes.class);
+     }
+
+    /**
+     *Read the PO by type of payment and the total number of operations by specified operator
+     * @param  operNum
+     *         Symbols from 1 to 20 corresponding to operator's number
+     * @return DailyPObyOperatorRes
+     * @throws java.lang.Exception
+     */
+     public DailyPObyOperatorRes ReadDailyPObyOperator(final Double operNum) throws Exception {
+             return CreateRes(Do("ReadDailyPObyOperator", "OperNum", operNum), DailyPObyOperatorRes.class);
+     }
+
+    /**
+     *Provide information about the owner's VAT number and VAT registration type
+     * @return CustomerVATNumRes
+     * @throws java.lang.Exception
+     */
+     public CustomerVATNumRes ReadCustomerVATNum() throws Exception {
+             return CreateRes(Do("ReadCustomerVATNum"), CustomerVATNumRes.class);
+     }
+
+    /**
+     *Providing information about device's GPRS user name.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadGPRSUserName() throws Exception {
+             return CreateRes(Do("ReadGPRSUserName"), String.class);
+     }
+
+    /**
+     *Stores the Manufacturing number into the operative memory.
+     * @param  password
+     *         6-symbols string
+     * @param  serialNum
+     *         8 symbol Manufacturing number
+     * @throws java.lang.Exception
+     */
+     public void SetSerialNum(final String password, final String serialNum) throws Exception {
+             Do("SetSerialNum", "Password", password, "SerialNum", serialNum);
+     }
+
+    /**
+     *Print a detailed FM payment report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
+     * @throws java.lang.Exception
+     */
+     public void PrintDetailedFMPaymentsReportByZNum(final Double startNum, final Double endNum) throws Exception {
+             Do("PrintDetailedFMPaymentsReportByZNum", "StartNum", startNum, "EndNum", endNum);
+     }
+
+    /**
+     *Program the price for a certain article (item) from the internal database.
+     * @param  pLUNum
+     *         5 symbols for article number in format: #####
+     * @param  price
+     *         Up to 10 symbols for article price
+     * @param  optionPrice
+     *         1 byte for Price flag with next value: 
+     *  - '0'- Free price is disable valid only programmed price 
+     *  - '1'- Free price is enable 
+     *  - '2'- Limited price
+     * @param  alteTaxNum
+     *         Up to 11 symbols for Alte Tax number
+     * @param  alteTaxValue
+     *         Up to 11 symbols for Alte tax value
+     * @throws java.lang.Exception
+     */
+     public void ProgPLUprice(final Double pLUNum, final Double price, final OptionPrice optionPrice, final Double alteTaxNum, final Double alteTaxValue) throws Exception {
+             Do("ProgPLUprice", "PLUNum", pLUNum, "Price", price, "OptionPrice", optionPrice, "AlteTaxNum", alteTaxNum, "AlteTaxValue", alteTaxValue);
      }
 
     /**
@@ -854,6 +1082,55 @@ public class FP extends FPcore {
      */
      public byte[] RawRead(final Double count, final String endChar) throws Exception {
              return CreateRes(Do("RawRead", "Count", count, "EndChar", endChar), byte[].class);
+     }
+
+    /**
+     *Registers the correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
+     * @param  namePLU
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @param  price
+     *         1 to 10 symbols for article's price
+     * @param  quantity
+     *         1 to 10 symbols for quantity
+     * @param  discAddP
+     *         2 to 7 for percentage of discount/addition
+     * @param  discAddV
+     *         2 to 8 for value of discount/addition
+     * @param  discNamed
+     *         2 to 8 symbols for value of named discount
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  depNum
+     *         1 symbol for article department attachment, 
+     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
+     * Dep19 = 93h
+     * @param  namePLUextension
+     *         12 symbols for extension of the PLU Name: FP Only
+     * @param  additionalNamePLU
+     *         108 symbols for additional PLU name
+     * @throws java.lang.Exception
+     */
+     public void StornoPLUwithSpecifiedVATfromDep(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final int depNum, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("StornoPLUwithSpecifiedVATfromDep", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "DepNum", depNum, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     }
+
+    /**
+     *Program device's TCP WiFi network name where it will be connected. To apply use - SaveNetworInterfaceSettings()
+     * @param  wiFiNetworkName
+     *         32 symbols for the device's WiFi ssid network name
+     * @throws java.lang.Exception
+     */
+     public void SetTCPWiFiNetworkName(final String wiFiNetworkName) throws Exception {
+             Do("SetTCPWiFiNetworkName", "WiFiNetworkName", wiFiNetworkName);
      }
 
     /**
@@ -877,14 +1154,23 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides information about the registers of the specified article.
-     * @param  pLUNo
-     *         5 symbols for article number with leading zeroes in format: #####
-     * @return PLU2Res
+     *Closes the non-fiscal receipt.
      * @throws java.lang.Exception
      */
-     public PLU2Res ReadPLU2(final Double pLUNo) throws Exception {
-             return CreateRes(Do("ReadPLU2", "PLUNo", pLUNo), PLU2Res.class);
+     public void CloseNonFiscalReceipt() throws Exception {
+             Do("CloseNonFiscalReceipt");
+     }
+
+    /**
+     *Print a brief payment FM report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
+     * @throws java.lang.Exception
+     */
+     public void PrintBriefFMPaymentsReportByZNum(final Double startNum, final Double endNum) throws Exception {
+             Do("PrintBriefFMPaymentsReportByZNum", "StartNum", startNum, "EndNum", endNum);
      }
 
     /**
@@ -906,97 +1192,59 @@ public class FP extends FPcore {
      }
 
     /**
-     *Prints the special FM events report by initial and end date.
-     * @param  startDate
+     *Store Electronic Journal Report from report from date to date to External USB Flash memory, External SD card or Print.
+     * @param  optionReportStorage
+     *         2 symbols for destination: 
+     *  - 'J1' - Printing  
+     *  - 'J2' - Storage in External USB Flash memory. 
+     *  - 'J4' - Storage in External SD card memory
+     * @param  startRepFromDate
      *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
+     * @param  endRepFromDate
      *         6 symbols for final date in the DDMMYY format
      * @throws java.lang.Exception
      */
-     public void PrintSpecFMreportByDate(final Date startDate, final Date endDate) throws Exception {
-             Do("PrintSpecFMreportByDate", "StartDate", startDate, "EndDate", endDate);
+     public void PrintOrStoreEJByDate(final OptionReportStorage optionReportStorage, final Date startRepFromDate, final Date endRepFromDate) throws Exception {
+             Do("PrintOrStoreEJByDate", "OptionReportStorage", optionReportStorage, "StartRepFromDate", startRepFromDate, "EndRepFromDate", endRepFromDate);
      }
 
     /**
-     *Storage of receipts xml files by Z-report number to USB Flash memory or SD card memory.
-     * @param  optionRcpXmlStorage
-     *         2 symbols for destination: 
-     * - 'Jx' - Storage in External USB Flash memory. 
-     * - 'JX' - Storage in External SD card memory 
-     * 'Z' 1 symbol 'Z'
-     * @param  startNo
-     *         4 symbols for initial number report in format ####
-     * @param  endNo
-     *         4 symbols for final number report in format ####
-     * @throws java.lang.Exception
-     */
-     public void ExportEJreportZreportNo(final OptionRcpXmlStorage optionRcpXmlStorage, final Double startNo, final Double endNo) throws Exception {
-             Do("ExportEJreportZreportNo", "OptionRcpXmlStorage", optionRcpXmlStorage, "StartNo", startNo, "EndNo", endNo);
-     }
-
-    /**
-     *Program the owner's VAT number.
-     * @param  password
-     *         6-symbol string
-     * @param  ownerVATNo
-     *         15 symbols for VAT number
-     * @param  optionTypeVATregistration
-     *         1 symbol for type of owner's VAT registration: 
+     *Calculates the subtotal amount for the specified VAT, with printing and display visualization options. Provides information about values of the calculated amounts. If a percent or value discount/addition has been specified the subtotal and the discount/addition value will be printed regardless the parameter for printing.
+     * @param  optionPrinting
+     *         1 symbol with value: 
      *  - '1' - Yes 
      *  - '0' - No
+     * @param  optionDisplay
+     *         1 symbol with value: 
+     *  - '1' - Yes 
+     *  - '0' - No
+     * @param  discAddV
+     *         1 to 10 symbols for the value of the 
+     * discount/addition
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @return Double
      * @throws java.lang.Exception
      */
-     public void ProgCustomerVATNo(final String password, final String ownerVATNo, final OptionTypeVATregistration optionTypeVATregistration) throws Exception {
-             Do("ProgCustomerVATNo", "Password", password, "OwnerVATNo", ownerVATNo, "OptionTypeVATregistration", optionTypeVATregistration);
-     }
-
-    /**
-     *Print a brief payment FM report by initial and end FM report number.
-     * @param  startNo
-     *         4 symbols for the initial FM report number included in report, format ####
-     * @param  endNo
-     *         4 symbols for the final FM report number included in report, format ####
-     * @throws java.lang.Exception
-     */
-     public void PrintBriefFMdailyPaymReportByZNo(final Double startNo, final Double endNo) throws Exception {
-             Do("PrintBriefFMdailyPaymReportByZNo", "StartNo", startNo, "EndNo", endNo);
-     }
-
-    /**
-     *Provides information about the registers of the specified article.
-     * @param  pLUNo
-     *         5 symbols for article number with leading zeroes in format: #####
-     * @return PLU1Res
-     * @throws java.lang.Exception
-     */
-     public PLU1Res ReadPLU1(final Double pLUNo) throws Exception {
-             return CreateRes(Do("ReadPLU1", "PLUNo", pLUNo), PLU1Res.class);
+     public Double SubtotalWithSpecifiedVAT(final OptionPrinting optionPrinting, final OptionDisplay optionDisplay, final Double discAddV, final OptionVATClass optionVATClass) throws Exception {
+             return CreateRes(Do("SubtotalWithSpecifiedVAT", "OptionPrinting", optionPrinting, "OptionDisplay", optionDisplay, "DiscAddV", discAddV, "OptionVATClass", optionVATClass), Double.class);
      }
 
     /**
      *Read the the service contract expiry date.
      * @param  password
-     *         6 symbols for service passowrd 
-     * '1' '1' - for date
-     * @return Date
+     *         6 symbols for service password
+     * @return ServiceContractDateRes
      * @throws java.lang.Exception
      */
-     public Date ReadServiceContractDate(final String password) throws Exception {
-             return CreateRes(Do("ReadServiceContractDate", "Password", password), Date.class);
-     }
-
-    /**
-     *Stores a block containing the number format into the fiscal memory. Prints the current status on the printer.
-     * @param  password
-     *         6-symbol string
-     * @param  optionDecimalPointPosition
-     *         1 symbol with values: 
-     *  - '0'- whole numbers 
-     *  - '2' - fractions
-     * @throws java.lang.Exception
-     */
-     public void ProgDecPointPosition(final String password, final OptionDecimalPointPosition optionDecimalPointPosition) throws Exception {
-             Do("ProgDecPointPosition", "Password", password, "OptionDecimalPointPosition", optionDecimalPointPosition);
+     public ServiceContractDateRes ReadServiceContractDate(final String password) throws Exception {
+             return CreateRes(Do("ReadServiceContractDate", "Password", password), ServiceContractDateRes.class);
      }
 
     /**
@@ -1008,10 +1256,17 @@ public class FP extends FPcore {
      }
 
     /**
+     *Closes the opened fiscal receipt.
+     * @throws java.lang.Exception
+     */
+     public void CloseReceipt() throws Exception {
+             Do("CloseReceipt");
+     }
+
+    /**
      *Program the service contract expiry date.
      * @param  password
-     *         6 symbols for service password 
-     * '1' '1' - for date
+     *         6 symbols for service password
      * @param  expiryDate
      *         10 symbols for expiry date of service contract
      * @throws java.lang.Exception
@@ -1021,66 +1276,52 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provide information about first found Z report, having the same date or date after than the input date
-     * @param  date
-     *         6 symbols for specified date in format "DDMMYY"
-     * @return Double
+     *Register the sell (for correction use minus sign in the price field) of article  with specified department. If VAT is present the relevant accumulations are perfomed in its  registers.
+     * @param  namePLU
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  depNum
+     *         1 symbol for article department 
+     * attachment, formed in the following manner; example: Dep01 = 81h, Dep02 
+     * = 82h … Dep19 = 93h
+     * @param  price
+     *         1 to 10 symbols for article's price
+     * @param  quantity
+     *         1 to 10 symbols for quantity
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @param  discAddP
+     *         1 to 7 symbols for percentage of 
+     * discount/addition
+     * @param  discAddV
+     *         1 to 8 for value of discount/addition
+     * @param  category
+     *         1..7 symbols for PLU Category code in format ####.##
+     * @param  discNamed
+     *         2 to 8 symbols for value of named discount
+     * @param  namePLUextension
+     *         12 symbols for extension of the PLU Name: FP Only
+     * @param  additionalNamePLU
+     *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public Double ReadZreportNoFromDate1(final Date date) throws Exception {
-             return CreateRes(Do("ReadZreportNoFromDate1", "Date", date), Double.class);
+     public void SellPLUfromDep_(final String namePLU, final int depNum, final Double price, final Double quantity, final OptionVATClass optionVATClass, final Double discAddP, final Double discAddV, final Double category, final Double discNamed, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellPLUfromDep_", "NamePLU", namePLU, "DepNum", depNum, "Price", price, "Quantity", quantity, "OptionVATClass", optionVATClass, "DiscAddP", discAddP, "DiscAddV", discAddV, "Category", category, "DiscNamed", discNamed, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
      }
 
     /**
-     *Program the contents of customer receipt name message.
-     * @param  custRecName
-     *         TextLength symbols for customer receipt name
+     *Provides information about device's Bluetooth password.
+     * @return String
      * @throws java.lang.Exception
      */
-     public void ProgCustomerRcpNameMessage(final String custRecName) throws Exception {
-             Do("ProgCustomerRcpNameMessage", "CustRecName", custRecName);
-     }
-
-    /**
-     *Opens a non-fiscal receipt assigned to the specified operator
-     * @param  number
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @param  password
-     *         4 symbols for operator's password
-     * @throws java.lang.Exception
-     */
-     public void OpenNonFiscReceipt(final Double number, final String password) throws Exception {
-             Do("OpenNonFiscReceipt", "Number", number, "Password", password);
-     }
-
-    /**
-     *Storage a detailed FM report by initial and end FM report number.
-     * @param  startNo
-     *         4 symbols for the initial report number included in report,  
-     * format: ####
-     * @param  endNo
-     *         4 symbols for the final report number included in report,  
-     * format: ####
-     * @param  optionStorage
-     *         1 symbol for destination: 
-     *  - '2' - Storage in External USB Flash memory. 
-     *  - '4' - Storage in External SD card memory
-     * @throws java.lang.Exception
-     */
-     public void StorageDetFMdailyReportByZNo(final String startNo, final String endNo, final OptionStorage optionStorage) throws Exception {
-             Do("StorageDetFMdailyReportByZNo", "StartNo", startNo, "EndNo", endNo, "OptionStorage", optionStorage);
-     }
-
-    /**
-     *Print a brief payment FM report by initial and end date.
-     * @param  startDate
-     *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
-     *         6 symbols for final date in the DDMMYY format
-     * @throws java.lang.Exception
-     */
-     public void PrintBriefFMdailyPaymReportByDate(final Date startDate, final Date endDate) throws Exception {
-             Do("PrintBriefFMdailyPaymReportByDate", "StartDate", startDate, "EndDate", endDate);
+     public String ReadBluetoothPassword() throws Exception {
+             return CreateRes(Do("ReadBluetoothPassword"), String.class);
      }
 
     /**
@@ -1107,6 +1348,37 @@ public class FP extends FPcore {
      }
 
     /**
+     *Prints departments report
+     * @param  optionZeroing
+     *         with following values: 
+     *  - 'Z' -Zeroing 
+     *  - 'X' - Not zeroing
+     * @throws java.lang.Exception
+     */
+     public void PrintDepartmentReport(final OptionZeroing optionZeroing) throws Exception {
+             Do("PrintDepartmentReport", "OptionZeroing", optionZeroing);
+     }
+
+    /**
+     *Provides information about which module the device is in use: LAN or WiFi module. This information can be provided if the device has mounted both modules.
+     * @return OptionUsedModule
+     * @throws java.lang.Exception
+     */
+     public OptionUsedModule ReadTCPusedModule() throws Exception {
+             return CreateRes(Do("ReadTCPusedModule"), OptionUsedModule.class);
+     }
+
+    /**
+     *Shows a 20-symbol text in the lower display line.
+     * @param  text
+     *         20 symbols text
+     * @throws java.lang.Exception
+     */
+     public void DisplayTextLine2(final String text) throws Exception {
+             Do("DisplayTextLine2", "Text", text);
+     }
+
+    /**
      *Provides information about the current reading of the daily-report- with-zeroing counter, the number of the last block stored in FM, the number of EJ and the date and time of the last block storage in the FM.
      * @return DailyCountersRes
      * @throws java.lang.Exception
@@ -1116,94 +1388,35 @@ public class FP extends FPcore {
      }
 
     /**
-     *Program the price for a certain article (item) from the internal database.
-     * @param  pLUNo
-     *         5 symbols for article number in format: #####
-     * @param  price
-     *         1 to 10 symbols for article price
-     * @param  optionPrice
-     *         1 byte for Price flag with next value: 
-     *  - '0'- Free price is disable /valid only programmed price/ 
-     *  - '1'- Free price is enable 
-     *  - '2'- Limited price
-     * @param  alteTaxNum
-     *         1..11 symbol for Alte Tax number
-     * @param  alteTaxValue
-     *         1..11 symbols for Alte tax value
+     *Print a detailed FM report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
      * @throws java.lang.Exception
      */
-     public void ProgPLU4(final Double pLUNo, final Double price, final OptionPrice optionPrice, final Double alteTaxNum, final Double alteTaxValue) throws Exception {
-             Do("ProgPLU4", "PLUNo", pLUNo, "Price", price, "OptionPrice", optionPrice, "AlteTaxNum", alteTaxNum, "AlteTaxValue", alteTaxValue);
+     public void PrintDetailedFMReportByZNum(final Double startNum, final Double endNum) throws Exception {
+             Do("PrintDetailedFMReportByZNum", "StartNum", startNum, "EndNum", endNum);
      }
 
     /**
-     *Prints departments report
-     * @param  optionZeroing
-     *         with following values: 
-     *  - 'Z' -Zeroing 
-     *  - 'X' - Not zeroing
+     *Store a brief FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
+     * @param  optionStorage
+     *         1 symbol for destination: 
+     *  - '2' - Storage in External USB Flash memory. 
+     *  - '4' - Storage in External SD card memory
      * @throws java.lang.Exception
      */
-     public void PrintDepReport(final OptionZeroing optionZeroing) throws Exception {
-             Do("PrintDepReport", "OptionZeroing", optionZeroing);
+     public void StoreBriefFMReportByDate(final Date startDate, final Date endDate, final OptionStorage optionStorage) throws Exception {
+             Do("StoreBriefFMReportByDate", "StartDate", startDate, "EndDate", endDate, "OptionStorage", optionStorage);
      }
 
     /**
-     *Provides information about the number of customers (number of fiscal receipt issued), number of discounts, additions and corrections made and the accumulated amounts.
-     * @return GeneralDailyRes
-     * @throws java.lang.Exception
-     */
-     public GeneralDailyRes ReadGeneralDaily() throws Exception {
-             return CreateRes(Do("ReadGeneralDaily"), GeneralDailyRes.class);
-     }
-
-    /**
-     *Provide information about last found Z report, having the same date or date before than the input date
-     * @param  date
-     *         6 symbols for specified date in format "DDMMYY"
-     * @return Double
-     * @throws java.lang.Exception
-     */
-     public Double ReadZreportNoFromDate2(final Date date) throws Exception {
-             return CreateRes(Do("ReadZreportNoFromDate2", "Date", date), Double.class);
-     }
-
-    /**
-     *Set data for the stated department number from the internal FPR database. Parameters Price, OptionDepPrice, AdditionalName and Category are not obligatory and require the previous not obligatory parameter.
-     * @param  number
-     *         2 symbols department number in format: ##
-     * @param  name
-     *         20 characters department name
-     * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values:" 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
-     *  - 'F' - Alte taxe
-     * @param  price
-     *         Up 10 symbols for department price
-     * @param  optionDepPrice
-     *         1 symbol for Department flags with next value: 
-     *  - '0' - Free price disabled  
-     *  - '1' - Free price enabled  
-     *  - '2' - Limited price 
-     *  - '4' - Free price disabled for single transaction 
-     *  - '5' - Free price enabled for single transaction 
-     *  - '6' - Limited price for single transaction
-     * @param  additionalName
-     *         14 characters additional department name
-     * @param  category
-     *         From 1 to 7 symbols for categoryin format: ####.##
-     * @throws java.lang.Exception
-     */
-     public void ProgDep(final Double number, final String name, final OptionVATClass optionVATClass, final Double price, final OptionDepPrice optionDepPrice, final String additionalName, final Double category) throws Exception {
-             Do("ProgDep", "Number", number, "Name", name, "OptionVATClass", optionVATClass, "Price", price, "OptionDepPrice", optionDepPrice, "AdditionalName", additionalName, "Category", category);
-     }
-
-    /**
-     *Print operative header buffer and FM header buffer.
+     *Print current headers and Fiscal Memory operative header
      * @throws java.lang.Exception
      */
      public void PrintCurrentHeader() throws Exception {
@@ -1221,15 +1434,6 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provide information about the VAT number.
-     * @return CustomerVATNoRes
-     * @throws java.lang.Exception
-     */
-     public CustomerVATNoRes ReadCustomerVATNo() throws Exception {
-             return CreateRes(Do("ReadCustomerVATNo"), CustomerVATNoRes.class);
-     }
-
-    /**
      *Programs the PLU Category for a certain article (item) from the internal database.
      * @param  password
      *         6 symbols for password
@@ -1240,30 +1444,9 @@ public class FP extends FPcore {
      }
 
     /**
-     *Printing Electronic Journal Report from receipt number to receipt number.
-     * @param  optionRepStorage
-     *         2 symbols for destination: 
-     *  - 'J1' - Printing  
-     *  - 'J2' - Storage in External USB Flash memory. 
-     *  - 'J4' - Storage in External SD card memory 
-     * 'N' 1 symbol 'N'
-     * @param  startNo
-     *         5 symbols for initial receipt number included in report, format 
-     * #####
-     * @param  endNo
-     *         5 symbols for final receipt number included in report, format 
-     * #####
-     * @throws java.lang.Exception
-     */
-     public void PrintEJreportByRecNo(final OptionRepStorage optionRepStorage, final String startNo, final String endNo) throws Exception {
-             Do("PrintEJreportByRecNo", "OptionRepStorage", optionRepStorage, "StartNo", startNo, "EndNo", endNo);
-     }
-
-    /**
-     *Store VAT and Fiscal Memory numbers into the Fiscal memory.
+     *Confirm VAT number, type of VAT registration and Fiscal Memory number into the operative memory.
      * @param  password
-     *         6-symbols string 
-     * '2' One symbol for option
+     *         6-symbols string
      * @throws java.lang.Exception
      */
      public void ConfirmFiscalization(final String password) throws Exception {
@@ -1271,32 +1454,24 @@ public class FP extends FPcore {
      }
 
     /**
-     *Calculates the subtotal amount with printing and display visualization options. Provides information about values of the calculated amounts. If a percent or value discount/addition has been specified the subtotal and the discount/addition value will be printed regardless the parameter for printing.
-     * @param  optionPrint
-     *         1 symbol with value: 
-     *  - '1' - Yes 
-     *  - '0' - No
-     * @param  optionDisplay
-     *         1 symbol with value: 
-     *  - '1' - Yes 
-     *  - '0' - No 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
-     * @param  discAddV
-     *         1 to 10 symbols for the value of the 
-     * discount/addition
-     * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values:" 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
-     *  - 'F' - Alte taxe
-     * @return Double
+     *Store the header into fiscal memory.
+     * @param  password
+     *         6-symbols string
      * @throws java.lang.Exception
      */
-     public Double SubtotalWithSpecifiedVAT_(final OptionPrint optionPrint, final OptionDisplay optionDisplay, final Double discAddV, final OptionVATClass optionVATClass) throws Exception {
-             return CreateRes(Do("SubtotalWithSpecifiedVAT_", "OptionPrint", optionPrint, "OptionDisplay", optionDisplay, "DiscAddV", discAddV, "OptionVATClass", optionVATClass), Double.class);
+     public void StoreCurrentHeaderInFM(final String password) throws Exception {
+             Do("StoreCurrentHeaderInFM", "Password", password);
+     }
+
+    /**
+     *Read the RA by type of payment and the total number of operations by specified operator.
+     * @param  operNum
+     *         Symbols from 1 to 20corresponding to operator's number
+     * @return DailyRAbyOperatorRes
+     * @throws java.lang.Exception
+     */
+     public DailyRAbyOperatorRes ReadDailyRAbyOperator(final Double operNum) throws Exception {
+             return CreateRes(Do("ReadDailyRAbyOperator", "OperNum", operNum), DailyRAbyOperatorRes.class);
      }
 
     /**
@@ -1306,6 +1481,15 @@ public class FP extends FPcore {
      */
      public Double ReadOdometer() throws Exception {
              return CreateRes(Do("ReadOdometer"), Double.class);
+     }
+
+    /**
+     *Read the the number of the duplicates which can be printed after invoice receipt.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadDuplicateInvoiceNumber() throws Exception {
+             return CreateRes(Do("ReadDuplicateInvoiceNumber"), String.class);
      }
 
     /**
@@ -1319,24 +1503,18 @@ public class FP extends FPcore {
      }
 
     /**
-     *Program the service contract expired warning message text.
-     * @param  password
-     *         6 symbols for service password 
-     * '3' '3' - for warning message
-     * @param  line1
-     *         TextLength symbols for warning message of line 1
-     * @param  line2
-     *         TextLength symbols for warning message of line 2
-     * @param  line3
-     *         TextLength symbols for warning message of line 3
+     *Provides information about the category of the specified article.
+     * @param  pLUNum
+     *         5 symbols for article number with leading zeroes in format: #####
+     * @return PLUcategoryRes
      * @throws java.lang.Exception
      */
-     public void ProgContractWarningMessage(final String password, final String line1, final String line2, final String line3) throws Exception {
-             Do("ProgContractWarningMessage", "Password", password, "Line1", line1, "Line2", line2, "Line3", line3);
+     public PLUcategoryRes ReadPLUcategory(final Double pLUNum) throws Exception {
+             return CreateRes(Do("ReadPLUcategory", "PLUNum", pLUNum), PLUcategoryRes.class);
      }
 
     /**
-     *Provide information about the contents of the line.
+     *Provides the content of the header lines.
      * @param  optionHeaderLine
      *         1 byte with value: 
      *  - '1' - Header 1 
@@ -1355,160 +1533,205 @@ public class FP extends FPcore {
      }
 
     /**
-     *Program the contents of a Display Greeting message.
-     * @param  displayGreetingText
-     *         20 symbols for display greeting message
+     *Read the VAT registration and Fiscal Memory numbers.
+     * @return VATNumRes
      * @throws java.lang.Exception
      */
-     public void ProgDisplayGreeting(final String displayGreetingText) throws Exception {
-             Do("ProgDisplayGreeting", "DisplayGreetingText", displayGreetingText);
+     public VATNumRes ReadVATNum() throws Exception {
+             return CreateRes(Do("ReadVATNum"), VATNumRes.class);
      }
 
     /**
-     *Read the number of the remaining free records for Z-report in the Fiscal Memory.
-     * @return String
+     *Start paper cutter. The command works only in fiscal printer devices.
      * @throws java.lang.Exception
      */
-     public String ReadFMfreeDailyRecords() throws Exception {
-             return CreateRes(Do("ReadFMfreeDailyRecords"), String.class);
+     public void CutPaper() throws Exception {
+             Do("CutPaper");
      }
 
     /**
-     *Provides information for the programmed data, the turnover from the stated department number
-     * @param  number
-     *         2 symbols for deparment number in format: ##
-     * @return DepRes
+     *Program device's GPRS password. To apply use - SaveNetworInterfaceSettings()
+     * @param  password
+     *         32 symbols for device's GPRS password
      * @throws java.lang.Exception
      */
-     public DepRes ReadDep(final Double number) throws Exception {
-             return CreateRes(Do("ReadDep", "Number", number), DepRes.class);
+     public void SetGPRSpassword(final String password) throws Exception {
+             Do("SetGPRSpassword", "Password", password);
      }
 
     /**
-     *Prints an operator's report for a specified operator (0 = all operators) with or without zeroing ('Z' or 'X'). When a 'Z' value is specified the report should include all operators.
-     * @param  optionZeroing
-     *         with following values: 
-     *  - 'Z' -Zeroing 
-     *  - 'X' - Not zeroing
-     * @param  number
-     *         Symbols from 0 to 20 corresponding to operator's number (0 = all 
-     * operators)
+     *Provides information about the accumulated amount by VAT class.
+     * @return DailyAmountsByVATRes
      * @throws java.lang.Exception
      */
-     public void PrintOperReport(final OptionZeroing optionZeroing, final Double number) throws Exception {
-             Do("PrintOperReport", "OptionZeroing", optionZeroing, "Number", number);
+     public DailyAmountsByVATRes ReadDailyAmountsByVAT() throws Exception {
+             return CreateRes(Do("ReadDailyAmountsByVAT"), DailyAmountsByVATRes.class);
      }
 
     /**
-     *Read the date and number of the last Z-report and the last RAM reset event.
-     * @return LastDailyRepDateRes
+     *Program the Barcode number for a certain article (item) from the internal database.
+     * @param  pLUNum
+     *         5 symbols for article number in format: #####
+     * @param  barcode
+     *         13 symbols for barcode
      * @throws java.lang.Exception
      */
-     public LastDailyRepDateRes ReadLastDailyRepDate() throws Exception {
-             return CreateRes(Do("ReadLastDailyRepDate"), LastDailyRepDateRes.class);
+     public void ProgPLUbarcode(final Double pLUNum, final String barcode) throws Exception {
+             Do("ProgPLUbarcode", "PLUNum", pLUNum, "Barcode", barcode);
      }
 
     /**
-     *Opens a fiscal receipt assigned to the specified operator with postponed printing.
-     * @param  operNum
-     *         Symbols from 1 to 20 corresponding to operator's 
-     * number
-     * @param  operPass
-     *         4 symbols for operator's password
+     *Prints a detailed FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
      * @throws java.lang.Exception
      */
-     public void OpenFiscReceiptPostponedPrn(final Double operNum, final String operPass) throws Exception {
-             Do("OpenFiscReceiptPostponedPrn", "OperNum", operNum, "OperPass", operPass);
+     public void PrintDetailedFMReportByDate(final Date startDate, final Date endDate) throws Exception {
+             Do("PrintDetailedFMReportByDate", "StartDate", startDate, "EndDate", endDate);
      }
 
     /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction. The VAT Class field is not obligatory. If it is not present the sale is associated to VAT Class of department belonging.
+     *Store a brief FM report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
+     * @throws java.lang.Exception
+     */
+     public void ReadBriefFMReportByNum(final Double startNum, final Double endNum) throws Exception {
+             Do("ReadBriefFMReportByNum", "StartNum", startNum, "EndNum", endNum);
+     }
+
+    /**
+     *Register the sell (for correction use minus sign in the price field) of article with specified VAT. If department is present the relevant accumulations are perfomed in its registers.
      * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h 
-     * or 60h followed up to 3 symbols for unit
-     * @param  depNo
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @param  price
+     *         1 to 10 symbols for article's price
+     * @param  quantity
+     *         3 to 10 symbols for quantity in format fractional format (e.g. 1/3)
+     * @param  discAddP
+     *         1 to 7 for percentage of discount/addition
+     * @param  discAddV
+     *         1 to 8 for value of discount/addition
+     * @param  discNamed
+     *         1 to 8 symbols for value of named discount
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  depNum
      *         1 symbol for article department attachment, 
      * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
      * Dep19 = 93h
-     * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
-     * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * '&' 1 symbol '&' indicating the VAT class field
-     * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values:" 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
-     *  - 'F' - Alte taxe 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
-     * @param  discAddP
-     *         2 to 7 symbols for percentage of 
-     * discount/addition  
-     * ':' 1 symbol ':' indicating the of value discount/addition field
-     * @param  discAddV
-     *         2..8 for value of discount/addition  
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
-     * @param  category
-     *         1..7 symbols for PLU Category code in format ####.## 
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '!' 1 symbol with value '!'
      * @param  namePLUextension
      *         12 symbols for extension of the PLU Name: FP Only
      * @param  additionalNamePLU
      *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public void SaleOrCorrectionPLUwithDEPdefinitionBelongingToVAT_4(final String namePLU, final int depNo, final Double price, final Double quantity, final OptionVATClass optionVATClass, final Double discAddP, final Double discAddV, final Double category, final Double discNamed, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("SaleOrCorrectionPLUwithDEPdefinitionBelongingToVAT_4", "NamePLU", namePLU, "DepNo", depNo, "Price", price, "Quantity", quantity, "OptionVATClass", optionVATClass, "DiscAddP", discAddP, "DiscAddV", discAddV, "Category", category, "DiscNamed", discNamed, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     public void SellFractQtyPLUwithSpecifiedVATfromDep(final String namePLU, final OptionVATClass optionVATClass, final Double price, final String quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final int depNum, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellFractQtyPLUwithSpecifiedVATfromDep", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "DepNum", depNum, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
      }
 
     /**
-     *Closes the non-fiscal receipt.
-     * @throws java.lang.Exception
-     */
-     public void CloseNonFiscReceipt() throws Exception {
-             Do("CloseNonFiscReceipt");
-     }
-
-    /**
-     *Reading Electronic Journal Report from receipt number to receipt number.
-     * @param  startNo
-     *         5 symbols for initial receipt number included in report, format #####
-     * @param  endNo
-     *         5 symbols for final receipt number included in report, format #####
-     * @throws java.lang.Exception
-     */
-     public void ReadEJreportByRecNo(final Double startNo, final Double endNo) throws Exception {
-             Do("ReadEJreportByRecNo", "StartNo", startNo, "EndNo", endNo);
-     }
-
-    /**
-     *Print the special FM events report by initial and end FM report number.
-     * @param  startNo
-     *         4 symbols for the initial report number included in report, format ####
-     * @param  endNo
-     *         4 symbols for the final report number included in report, format ####
-     * @throws java.lang.Exception
-     */
-     public void PrintSpecFMreportByReportNo(final Double startNo, final Double endNo) throws Exception {
-             Do("PrintSpecFMreportByReportNo", "StartNo", startNo, "EndNo", endNo);
-     }
-
-    /**
-     *Provides information about the registers of the specified article.
-     * @param  pLUNo
+     *Provides information about the general registers of the specified.
+     * @param  pLUNum
      *         5 symbols for article number with leading zeroes in format: #####
-     * @return PLU3Res
+     * @return PLUgeneralRes
      * @throws java.lang.Exception
      */
-     public PLU3Res ReadPLU3(final Double pLUNo) throws Exception {
-             return CreateRes(Do("ReadPLU3", "PLUNo", pLUNo), PLU3Res.class);
+     public PLUgeneralRes ReadPLUgeneral(final Double pLUNum) throws Exception {
+             return CreateRes(Do("ReadPLUgeneral", "PLUNum", pLUNum), PLUgeneralRes.class);
+     }
+
+    /**
+     *Read the amounts received from sales by type of payment and specified operator.
+     * @param  operNum
+     *         Symbols from 1 to 20 corresponding to operator's 
+     * number
+     * @return DailyReceivedSalesAmountsByOperatorRes
+     * @throws java.lang.Exception
+     */
+     public DailyReceivedSalesAmountsByOperatorRes ReadDailyReceivedSalesAmountsByOperator(final Double operNum) throws Exception {
+             return CreateRes(Do("ReadDailyReceivedSalesAmountsByOperator", "OperNum", operNum), DailyReceivedSalesAmountsByOperatorRes.class);
+     }
+
+    /**
+     *Provides information about the accumulated amounts from sale of foreign currency, currency purchase and commissions.
+     * @return DailyCurrencyRes
+     * @throws java.lang.Exception
+     */
+     public DailyCurrencyRes ReadDailyCurrency() throws Exception {
+             return CreateRes(Do("ReadDailyCurrency"), DailyCurrencyRes.class);
+     }
+
+    /**
+     *Provide information for specified customer from FD database.
+     * @param  customerNum
+     *         3 symbols for customer number in order in format ###
+     * @return CustomerDataRes
+     * @throws java.lang.Exception
+     */
+     public CustomerDataRes ReadCustomerData(final Double customerNum) throws Exception {
+             return CreateRes(Do("ReadCustomerData", "CustomerNum", customerNum), CustomerDataRes.class);
+     }
+
+    /**
+     *Program device's TCP IP. To apply use - SaveNetworInterfaceSettings()
+     * @param  deviceIP
+     *         15 symbols for the device's IP address
+     * @throws java.lang.Exception
+     */
+     public void SetTCP_IPaddress(final String deviceIP) throws Exception {
+             Do("SetTCP_IPaddress", "DeviceIP", deviceIP);
+     }
+
+    /**
+     *Program the contents of customer receipt name message.
+     * @param  custRecieptName
+     *         TextLength symbols for customer receipt name
+     * @throws java.lang.Exception
+     */
+     public void ProgCustomerReceiptNameMessage(final String custRecieptName) throws Exception {
+             Do("ProgCustomerReceiptNameMessage", "CustRecieptName", custRecieptName);
+     }
+
+    /**
+     *Read the current status of the receipt.
+     * @return CurrentReceiptInfoRes
+     * @throws java.lang.Exception
+     */
+     public CurrentReceiptInfoRes ReadCurrentReceiptInfo() throws Exception {
+             return CreateRes(Do("ReadCurrentReceiptInfo"), CurrentReceiptInfoRes.class);
+     }
+
+    /**
+     *Provides information about the all registers of the specified article.
+     * @param  pLUNum
+     *         5 symbols for article number with leading zeroes in format: #####
+     * @return PLUallDataRes
+     * @throws java.lang.Exception
+     */
+     public PLUallDataRes ReadPLUallData(final Double pLUNum) throws Exception {
+             return CreateRes(Do("ReadPLUallData", "PLUNum", pLUNum), PLUallDataRes.class);
+     }
+
+    /**
+     *Read whole Electronic Journal report from beginning to the end.
+     * @throws java.lang.Exception
+     */
+     public void ReadEJ() throws Exception {
+             Do("ReadEJ");
      }
 
     /**
@@ -1534,7 +1757,7 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides consequently information about every single block stored in the FM starting with ACKs and ending with end message.
+     *Provides consequently information about every single block stored in the FM starting with Acknowledgements and ending with end message.
      * @throws java.lang.Exception
      */
      public void ReadFMcontent() throws Exception {
@@ -1542,13 +1765,29 @@ public class FP extends FPcore {
      }
 
     /**
-     *Shows a 20-symbol text in the upper display line.
-     * @param  text
-     *         20 symbols text
+     *Read the date and number of the last Z-report and the last RAM reset event.
+     * @return LastDailyReportInfoRes
      * @throws java.lang.Exception
      */
-     public void DisplayText1(final String text) throws Exception {
-             Do("DisplayText1", "Text", text);
+     public LastDailyReportInfoRes ReadLastDailyReportInfo() throws Exception {
+             return CreateRes(Do("ReadLastDailyReportInfo"), LastDailyReportInfoRes.class);
+     }
+
+    /**
+     *Store Electronic Journal Report from report number to report number to External USB Flash memory, External SD card or Print.
+     * @param  optionReportStorage
+     *         2 symbols for destination: 
+     *  - 'J1' - Printing  
+     *  - 'J2' - Storage in External USB Flash memory. 
+     *  - 'J4' - Storage in External SD card memory
+     * @param  startNum
+     *         4 symbols for initial number report in format ####
+     * @param  endNum
+     *         4 symbols for final number report in format ####
+     * @throws java.lang.Exception
+     */
+     public void PrintOrStoreEJByZReportNum(final OptionReportStorage optionReportStorage, final Double startNum, final Double endNum) throws Exception {
+             Do("PrintOrStoreEJByZReportNum", "OptionReportStorage", optionReportStorage, "StartNum", startNum, "EndNum", endNum);
      }
 
     /**
@@ -1562,15 +1801,58 @@ public class FP extends FPcore {
      }
 
     /**
-     *Closes the opened fiscal receipt.
+     *Print a brief FM report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial FM report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final FM report number included in report, format ####
      * @throws java.lang.Exception
      */
-     public void CloseFiscReceipt() throws Exception {
-             Do("CloseFiscReceipt");
+     public void PrintBriefFMReportByZNum(final Double startNum, final Double endNum) throws Exception {
+             Do("PrintBriefFMReportByZNum", "StartNum", startNum, "EndNum", endNum);
      }
 
     /**
-     *Provides detailed 6-byte information about the current status of the fiscal printer.
+     *Print a brief payment FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
+     * @throws java.lang.Exception
+     */
+     public void PrintBriefFMPaymentReportByDate(final Date startDate, final Date endDate) throws Exception {
+             Do("PrintBriefFMPaymentReportByDate", "StartDate", startDate, "EndDate", endDate);
+     }
+
+    /**
+     *Prints an operator's report for a specified operator (0 = all operators) with or without zeroing ('Z' or 'X'). When a 'Z' value is specified the report should include all operators.
+     * @param  optionZeroing
+     *         with following values: 
+     *  - 'Z' -Zeroing 
+     *  - 'X' - Not zeroing
+     * @param  number
+     *         Symbols from 0 to 20 corresponding to operator's number, 
+     * 0 = all operators
+     * @throws java.lang.Exception
+     */
+     public void PrintOperatorReport(final OptionZeroing optionZeroing, final Double number) throws Exception {
+             Do("PrintOperatorReport", "OptionZeroing", optionZeroing, "Number", number);
+     }
+
+    /**
+     *Prints the special FM events report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
+     * @throws java.lang.Exception
+     */
+     public void PrintSpecialFMReportByDate(final Date startDate, final Date endDate) throws Exception {
+             Do("PrintSpecialFMReportByDate", "StartDate", startDate, "EndDate", endDate);
+     }
+
+    /**
+     *Provides detailed 7-byte information about the current status of the fiscal printer.
      * @return StatusRes
      * @throws java.lang.Exception
      */
@@ -1579,41 +1861,51 @@ public class FP extends FPcore {
      }
 
     /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction. The VAT Class field is not obligatory. If it is not present the sale is associated to VAT Class of department belonging.
-     * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h 
-     * or 60h followed up to 3 symbols for unit
-     * @param  depNo
-     *         1 symbol for article department attachment, 
-     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
-     * Dep19 = 93h
-     * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
-     * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
-     * @param  discAddP
-     *         2 to 7 symbols for percentage of 
-     * discount/addition  
-     * ':' 1 symbol ':' indicating the of value discount/addition field
-     * @param  discAddV
-     *         2..8 for value of discount/addition  
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
-     * @param  category
-     *         1..7 symbols for PLU Category code in format ####.## 
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '!' 1 symbol with value '!'
-     * @param  namePLUextension
-     *         12 symbols for extension of the PLU Name: FP Only
-     * @param  additionalNamePLU
-     *         108 symbols for additional PLU name
+     *Opens a fiscal receipt assigned to the specified operator and print type depends of FiscalReceiptPrintType parameter.
+     * @param  operNum
+     *         Symbols from 1 to 20 corresponding to operator's 
+     * number
+     * @param  operPass
+     *         4 symbols for operator's password
+     * @param  optionFiscalReceiptPrintType
+     *         1 symbol with value: 
+     *  - '0' - Step by step printing 
+     *  - '2' - Postponed printing 
+     *  - '4' - Buffered Printing
      * @throws java.lang.Exception
      */
-     public void SaleOrCorrectionPLUwithDEPdefenition_4(final String namePLU, final int depNo, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double category, final Double discNamed, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("SaleOrCorrectionPLUwithDEPdefenition_4", "NamePLU", namePLU, "DepNo", depNo, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "Category", category, "DiscNamed", discNamed, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     public void OpenReceipt(final Double operNum, final String operPass, final OptionFiscalReceiptPrintType optionFiscalReceiptPrintType) throws Exception {
+             Do("OpenReceipt", "OperNum", operNum, "OperPass", operPass, "OptionFiscalReceiptPrintType", optionFiscalReceiptPrintType);
+     }
+
+    /**
+     *Registers the sale/buying of currency with specified name,rate of exchange, quantity and percentage of commission and closes the receipt. The type of transaction - sale or purchase transaction depends on the receipt opening type. This command closes the receipt with payment cash or other type, defined in PaymentType field if present. The Quantity, Commission and PaymentType fields are not obligatory.
+     * @param  currencyName
+     *         3 symbols for currency name
+     * @param  rate
+     *         Up to 11 symbols "xxxxx.xxxxx" for rate of exchange
+     * @param  perCurrencyUnit
+     *         Up to 6 digits for rate "per" factor
+     * @param  quantity
+     *         1 to 8 symbols "xxxxxxxx" for amount of currency
+     * @param  commission
+     *         1 to 5 symbols for percentage of commission
+     * @throws java.lang.Exception
+     */
+     public void CurrencyTransaction(final String currencyName, final Double rate, final Double perCurrencyUnit, final Double quantity, final Double commission) throws Exception {
+             Do("CurrencyTransaction", "CurrencyName", currencyName, "Rate", rate, "PerCurrencyUnit", perCurrencyUnit, "Quantity", quantity, "Commission", commission);
+     }
+
+    /**
+     *Programs the PLU Category for a certain article (item) from the internal database.
+     * @param  pLUNum
+     *         5 symbols for article number in format: #####
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @throws java.lang.Exception
+     */
+     public void ProgPLUcategory(final Double pLUNum, final Double category) throws Exception {
+             Do("ProgPLUcategory", "PLUNum", pLUNum, "Category", category);
      }
 
     /**
@@ -1627,14 +1919,60 @@ public class FP extends FPcore {
      }
 
     /**
+     *Stores a block containing the number format into the fiscal memory. Print the current status on the printer.
+     * @param  password
+     *         6-symbol string
+     * @param  optionDecimalPointPosition
+     *         1 symbol with values: 
+     *  - '0'- Whole numbers 
+     *  - '2' - Fractions
+     * @throws java.lang.Exception
+     */
+     public void ProgDecimalPointPosition(final String password, final OptionDecimalPointPosition optionDecimalPointPosition) throws Exception {
+             Do("ProgDecimalPointPosition", "Password", password, "OptionDecimalPointPosition", optionDecimalPointPosition);
+     }
+
+    /**
+     *Provides information about the price and price type of the specified article.
+     * @param  pLUNum
+     *         5 symbols for article number with leading zeroes in format: #####
+     * @return PLUpriceRes
+     * @throws java.lang.Exception
+     */
+     public PLUpriceRes ReadPLUprice(final Double pLUNum) throws Exception {
+             return CreateRes(Do("ReadPLUprice", "PLUNum", pLUNum), PLUpriceRes.class);
+     }
+
+    /**
+     *Provides information about device's network IP.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadTCP_IPaddress() throws Exception {
+             return CreateRes(Do("ReadTCP_IPaddress"), String.class);
+     }
+
+    /**
      *Provides information about an operator's name and password.
      * @param  number
-     *         Symbol from 1 to 20 corresponding to the number of operator
+     *         Symbol from 1 to 20 corresponding to the number of operators
      * @return OperatorNamePasswordRes
      * @throws java.lang.Exception
      */
      public OperatorNamePasswordRes ReadOperatorNamePassword(final Double number) throws Exception {
              return CreateRes(Do("ReadOperatorNamePassword", "Number", number), OperatorNamePasswordRes.class);
+     }
+
+    /**
+     *Read the last operator's report number and date and time.
+     * @param  operNum
+     *         Symbols from 1 to 20 corresponding to 
+     * operator's number
+     * @return DailyCountersByOperatorRes
+     * @throws java.lang.Exception
+     */
+     public DailyCountersByOperatorRes ReadDailyCountersByOperator(final Double operNum) throws Exception {
+             return CreateRes(Do("ReadDailyCountersByOperator", "OperNum", operNum), DailyCountersByOperatorRes.class);
      }
 
     /**
@@ -1647,44 +1985,42 @@ public class FP extends FPcore {
      }
 
     /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
+     *Register the sell (for correction use minus sign in the price field) of article with specified VAT. If department is present the relevant accumulations are perfomed in its registers.
      * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
      * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values: 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
      *  - 'F' - Alte taxe
      * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
+     *         1 to 10 symbols for article's price
      * @param  quantity
-     *         3  to 10 symbols for quantity in format fractional format (e.g. 1/3) 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
+     *         1 to 10 symbols for quantity
      * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
+     *         1 to 7 for percentage of discount/addition
      * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
+     *         1 to 8 for value of discount/addition
      * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
+     *         1 to 8 symbols for value of named discount
      * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  depNum
+     *         1 symbol for article department attachment, 
+     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
+     * Dep19 = 93h
      * @param  namePLUextension
      *         12 symbols for extension of the PLU Name: FP Only
      * @param  additionalNamePLU
      *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public void SaleOrCorrectionFractionalQuantityPLUwithVATdefenition_(final String namePLU, final OptionVATClass optionVATClass, final Double price, final String quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("SaleOrCorrectionFractionalQuantityPLUwithVATdefenition_", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     public void SellPLUwithSpecifiedVATfromDep(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final int depNum, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellPLUwithSpecifiedVATfromDep", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "DepNum", depNum, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
      }
 
     /**
@@ -1713,95 +2049,6 @@ public class FP extends FPcore {
      }
 
     /**
-     *Read the VAT registration and Fiscal Memory numbers.
-     * @return VATNumberRes
-     * @throws java.lang.Exception
-     */
-     public VATNumberRes ReadVATNumber() throws Exception {
-             return CreateRes(Do("ReadVATNumber"), VATNumberRes.class);
-     }
-
-    /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
-     * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
-     * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values: 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
-     *  - 'F' - Alte taxe
-     * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
-     * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * '&' 1 symbol '&' indicating the presence of departament
-     * @param  depNo
-     *         1 symbol for article department attachment, 
-     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
-     * Dep19 = 93h 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
-     * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
-     * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
-     * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
-     * @param  namePLUextension
-     *         12 symbols for extension of the PLU Name: FP Only
-     * @param  additionalNamePLU
-     *         108 symbols for additional PLU name
-     * @throws java.lang.Exception
-     */
-     public void StornoPLUwithVATdefinitionBelongingToDEP_1(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final int depNo, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("StornoPLUwithVATdefinitionBelongingToDEP_1", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DepNo", depNo, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
-     }
-
-    /**
-     *Programs the number of POS, printing of logo, Cash drawer opening, display mode, cutting permission. Changes in USBHost parameter will power off the printer.
-     * @param  noPOS
-     *         4 symbols for number of POS in format ####
-     * @param  optionPrintLogo
-     *         1 symbol of value: 
-     *  - '1' - Yes 
-     *  - '0' - No
-     * @param  optionAutoOpenDrawer
-     *         1 symbol of value: 
-     *  - '1' - Yes 
-     *  - '0' - No
-     * @param  optionAutoCut
-     *         1 symbol of value: 
-     *  - '1' - Yes 
-     *  - '0' - No
-     * @param  optionExternalDispManagement
-     *         1 symbol of value: 
-     *  - '1' - Manuel 
-     *  - '0' - Auto
-     * @param  optionEnableCurrency
-     *         1 symbol of value: 
-     *  - '1' - Yes 
-     *  - '0' - No
-     * @param  optionUSBHost
-     *         1 symbol, FP Only, with value: 
-     *  - '1' - Yes 
-     *  - '0' - No
-     * @throws java.lang.Exception
-     */
-     public void ProgParam(final Double noPOS, final OptionPrintLogo optionPrintLogo, final OptionAutoOpenDrawer optionAutoOpenDrawer, final OptionAutoCut optionAutoCut, final OptionExternalDispManagement optionExternalDispManagement, final OptionEnableCurrency optionEnableCurrency, final OptionUSBHost optionUSBHost) throws Exception {
-             Do("ProgParam", "NoPOS", noPOS, "OptionPrintLogo", optionPrintLogo, "OptionAutoOpenDrawer", optionAutoOpenDrawer, "OptionAutoCut", optionAutoCut, "OptionExternalDispManagement", optionExternalDispManagement, "OptionEnableCurrency", optionEnableCurrency, "OptionUSBHost", optionUSBHost);
-     }
-
-    /**
      *Prints out a diagnostic receipt.
      * @throws java.lang.Exception
      */
@@ -1810,9 +2057,17 @@ public class FP extends FPcore {
      }
 
     /**
+     *Start GPRS test on the device and print out the result
+     * @throws java.lang.Exception
+     */
+     public void StartGPRStest() throws Exception {
+             Do("StartGPRStest");
+     }
+
+    /**
      *Program the contents of a footer lines.
      * @param  optionFooterLine
-     *         1 symbol for option footer line: 
+     *         1 symbol for option footer lines: 
      *  - '1' - Footer 1 
      *  - '2' - Footer 2 
      *  - '3' - Footer 3
@@ -1825,45 +2080,25 @@ public class FP extends FPcore {
      }
 
     /**
-     *Opens a special Customer fiscal receipt document assigned to the specified operator and Customer data with with buffered printing.
-     * @param  operNum
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @param  operPass
-     *         4 symbols for operator's password
-     * @param  customerVATNo
-     *         15 ASCII symbols text for Customer VAT number
-     * @param  invRecipient
-     *         30 ASCII symbols for Recipient name
-     * @param  invFree1
-     *         20 ASCII symbols for free text line
-     * @param  invFree2
-     *         20 ASCII symbols for free text line
-     * @param  invFree3
-     *         20 ASCII symbols for free text line
-     * @param  invFree4
-     *         20 ASCII symbols for free text line
-     * @param  address
-     *         30 symbols for Address
+     *Print a copy of the last receipt document issued
      * @throws java.lang.Exception
      */
-     public void OpenSpecialFiscDocumentBufferedPrn(final Double operNum, final String operPass, final String customerVATNo, final String invRecipient, final String invFree1, final String invFree2, final String invFree3, final String invFree4, final String address) throws Exception {
-             Do("OpenSpecialFiscDocumentBufferedPrn", "OperNum", operNum, "OperPass", operPass, "CustomerVATNo", customerVATNo, "InvRecipient", invRecipient, "InvFree1", invFree1, "InvFree2", invFree2, "InvFree3", invFree3, "InvFree4", invFree4, "Address", address);
+     public void PrintLastReceiptDuplicate() throws Exception {
+             Do("PrintLastReceiptDuplicate");
      }
 
     /**
-     *Print a brief FM report by initial and end date.
-     * @param  startDate
-     *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
-     *         6 symbols for final date in the DDMMYY format
+     *Restore default parameters of the device.
+     * @param  password
+     *         6-symbols string
      * @throws java.lang.Exception
      */
-     public void PrintBriefFMdailyReportByDate(final Date startDate, final Date endDate) throws Exception {
-             Do("PrintBriefFMdailyReportByDate", "StartDate", startDate, "EndDate", endDate);
+     public void SoftwareReset(final String password) throws Exception {
+             Do("SoftwareReset", "Password", password);
      }
 
     /**
-     *Stores a block containing the values of the tax rates into the fiscal memory. Prints the values on the printer.
+     *Stores a block containing the values of the VAT rates into the fiscal memory. Print the values on the printer.
      * @param  password
      *         6-symbols string
      * @param  vATrateA
@@ -1881,74 +2116,107 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides information about the programmed number of POS and the current values of the logo and Cash drawer options.
-     * @return ParamRes
-     * @throws java.lang.Exception
-     */
-     public ParamRes ReadParam() throws Exception {
-             return CreateRes(Do("ReadParam"), ParamRes.class);
-     }
-
-    /**
-     *Provides information about the all registers of the specified article.
-     * @param  pLUNo
-     *         1..5 symbols for article number with leading zeroes in format: #####
-     * @return PLU0Res
-     * @throws java.lang.Exception
-     */
-     public PLU0Res ReadPLU0(final Double pLUNo) throws Exception {
-             return CreateRes(Do("ReadPLU0", "PLUNo", pLUNo), PLU0Res.class);
-     }
-
-    /**
-     *Store a brief FM report by initial and end date.
-     * @param  startDate
+     *Read Electronic Journal Report initial date to report end date.
+     * @param  startRepFromDate
      *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
+     * @param  endRepFromDate
      *         6 symbols for final date in the DDMMYY format
-     * @param  optionStorage
-     *         1 symbol for destination: 
-     *  - '2' - Storage in External USB Flash memory. 
-     *  - '4' - Storage in External SD card memory
      * @throws java.lang.Exception
      */
-     public void StoreBriefFMdailyReportByDate(final Date startDate, final Date endDate, final OptionStorage optionStorage) throws Exception {
-             Do("StoreBriefFMdailyReportByDate", "StartDate", startDate, "EndDate", endDate, "OptionStorage", optionStorage);
+     public void ReadEJByDate(final Date startRepFromDate, final Date endRepFromDate) throws Exception {
+             Do("ReadEJByDate", "StartRepFromDate", startRepFromDate, "EndRepFromDate", endRepFromDate);
      }
 
     /**
-     *Reading all Electronic Journal report from beginning to the end.
+     *Provides information about the barcode of the specified article.
+     * @param  pLUNum
+     *         5 symbols for article number with leading zeroes in format: #####
+     * @return PLUbarcodeRes
      * @throws java.lang.Exception
      */
-     public void EJreportFromBeginningEnd() throws Exception {
-             Do("EJreportFromBeginningEnd");
+     public PLUbarcodeRes ReadPLUbarcode(final Double pLUNum) throws Exception {
+             return CreateRes(Do("ReadPLUbarcode", "PLUNum", pLUNum), PLUbarcodeRes.class);
      }
 
     /**
-     *Printing Electronic Journal Report from report number to report number.
-     * @param  optionRepStorage
-     *         2 symbols for destination: 
-     *  - 'J1' - Printing  
-     *  - 'J2' - Storage in External USB Flash memory. 
-     *  - 'J4' - Storage in External SD card memory 
-     * 'Z' 1 symbol 'Z'
-     * @param  startNo
-     *         4 symbols for initial number report in format ####
-     * @param  endNo
-     *         4 symbols for final number report in format ####
+     *Program device's idle timeout setting. Set timeout for closing the connection if there is an inactivity. Maximal value - 7200, minimal value 1. 0 is for never close the connection. This option can be used only if the device has LAN or WiFi. To apply use - SaveZFPNetworkSettings()
+     * @param  idleTimeout
+     *         4 symbols in format ####
      * @throws java.lang.Exception
      */
-     public void PrintEJreportZreportNo(final OptionRepStorage optionRepStorage, final Double startNo, final Double endNo) throws Exception {
-             Do("PrintEJreportZreportNo", "OptionRepStorage", optionRepStorage, "StartNo", startNo, "EndNo", endNo);
+     public void SetIdleTimeout(final Double idleTimeout) throws Exception {
+             Do("SetIdleTimeout", "IdleTimeout", idleTimeout);
      }
 
     /**
-     *Provides information about the accumulated amount by VAT class.
-     * @return VATClassAmountsRes
+     *Set data for the stated department number from the internal FD database. Parameters Price, OptionDepPrice, AdditionalName and Category are not obligatory and require the previous not obligatory parameter.
+     * @param  number
+     *         2 symbols department number in format: ##
+     * @param  name
+     *         20 characters department name
+     * @param  optionVATClass
+     *         1 symbol for article's VAT class with optional values:" 
+     *  - 'A' - VAT Class A 
+     *  - 'B' - VAT Class B 
+     *  - 'C' - VAT Class C 
+     *  - 'D' - VAT Class D 
+     *  - 'E' - VAT Class E 
+     *  - 'F' - Alte taxe
+     * @param  price
+     *         Up 10 symbols for department price
+     * @param  optionDepPrice
+     *         1 symbol for Department flags with next value: 
+     *  - '0' - Free price disabled  
+     *  - '1' - Free price enabled  
+     *  - '2' - Limited price 
+     *  - '4' - Free price disabled for single transaction 
+     *  - '5' - Free price enabled for single transaction 
+     *  - '6' - Limited price for single transaction
+     * @param  additionalName
+     *         14 characters additional department name
+     * @param  category
+     *         From 1 to 7 symbols for categoryin format: ####.##
      * @throws java.lang.Exception
      */
-     public VATClassAmountsRes ReadVATClassAmounts() throws Exception {
-             return CreateRes(Do("ReadVATClassAmounts"), VATClassAmountsRes.class);
+     public void ProgDepartment(final Double number, final String name, final OptionVATClass optionVATClass, final Double price, final OptionDepPrice optionDepPrice, final String additionalName, final Double category) throws Exception {
+             Do("ProgDepartment", "Number", number, "Name", name, "OptionVATClass", optionVATClass, "Price", price, "OptionDepPrice", optionDepPrice, "AdditionalName", additionalName, "Category", category);
+     }
+
+    /**
+     *Opens a fiscal receipt assigned to the specified operator for Currency Purchase transaction.
+     * @param  operNum
+     *         Symbols from 1 to 20 corresponding to operator's number
+     * @param  operPass
+     *         4 symbols for operator's password
+     * @param  optionCurrencyBuyingRcpPrintType
+     *         1 symbol with value 
+     *  - '8' - Step by step printing 
+     *  - ':' - Postponed printing
+     * @param  text1
+     *         26 symbols free text for header line 1 in the receipt
+     * @param  text2
+     *         26 symbols free text for header line 2 in the receipt
+     * @param  text3
+     *         26 symbols free text for header line 3 in the receipt
+     * @param  text4
+     *         26 symbols free text for header line 4 in the receipt
+     * @param  text5
+     *         26 symbols free text for header line 5 in the receipt
+     * @param  text6
+     *         26 symbols free text for header line 6 in the receipt
+     * @throws java.lang.Exception
+     */
+     public void OpenCurrencyBuyingReceipt(final Double operNum, final String operPass, final OptionCurrencyBuyingRcpPrintType optionCurrencyBuyingRcpPrintType, final String text1, final String text2, final String text3, final String text4, final String text5, final String text6) throws Exception {
+             Do("OpenCurrencyBuyingReceipt", "OperNum", operNum, "OperPass", operPass, "OptionCurrencyBuyingRcpPrintType", optionCurrencyBuyingRcpPrintType, "Text1", text1, "Text2", text2, "Text3", text3, "Text4", text4, "Text5", text5, "Text6", text6);
+     }
+
+    /**
+     *Provides information about device's GPRS password.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadGPRSpassword() throws Exception {
+             return CreateRes(Do("ReadGPRSpassword"), String.class);
      }
 
     /**
@@ -1959,6 +2227,17 @@ public class FP extends FPcore {
      */
      public void PrintLogo(final Double number) throws Exception {
              Do("PrintLogo", "Number", number);
+     }
+
+    /**
+     *Read the total number of customers, discounts, additions, corrections and accumulated amounts by specified operator.
+     * @param  operNum
+     *         Symbols from 1 to 20 corresponding to operator's number
+     * @return DailyGeneralRegistersByOperatorRes
+     * @throws java.lang.Exception
+     */
+     public DailyGeneralRegistersByOperatorRes ReadDailyGeneralRegistersByOperator(final Double operNum) throws Exception {
+             return CreateRes(Do("ReadDailyGeneralRegistersByOperator", "OperNum", operNum), DailyGeneralRegistersByOperatorRes.class);
      }
 
     /**
@@ -1973,12 +2252,50 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides information about the number of the last issued receipt.
-     * @return LastReceiptNoRes
+     *Registers the correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
+     * @param  namePLU
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  price
+     *         1 to 10 symbols for article's price
+     * @param  quantity
+     *         1 to 10 symbols for quantity
+     * @param  discAddP
+     *         1 to 7 for percentage of discount/addition
+     * @param  discAddV
+     *         1 to 8 for value of discount/addition
+     * @param  discNamed
+     *         1 to 8 symbols for value of named discount
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  depNum
+     *         1 symbol for article department attachment, 
+     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
+     * Dep19 = 93h
+     * @param  namePLUextension
+     *         12 symbols for extension of the PLU Name: FP Only
+     * @param  additionalNamePLU
+     *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public LastReceiptNoRes ReadLastReceiptNo() throws Exception {
-             return CreateRes(Do("ReadLastReceiptNo"), LastReceiptNoRes.class);
+     public void StornoPLUfromDep(final String namePLU, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final int depNum, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("StornoPLUfromDep", "NamePLU", namePLU, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "DepNum", depNum, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     }
+
+    /**
+     *Program the service contract expired warning message text.
+     * @param  password
+     *         6 symbols for service password
+     * @param  line1
+     *         TextLength symbols for warning message of line 1
+     * @param  line2
+     *         TextLength symbols for warning message of line 2
+     * @param  line3
+     *         TextLength symbols for warning message of line 3
+     * @throws java.lang.Exception
+     */
+     public void ProgContractWarningMessages(final String password, final String line1, final String line2, final String line3) throws Exception {
+             Do("ProgContractWarningMessages", "Password", password, "Line1", line1, "Line2", line2, "Line3", line3);
      }
 
     /**
@@ -2006,14 +2323,13 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides information about the amounts received from sales by type of payment and specified operator.
-     * @param  opNo
-     *         Symbol from 1 to 20 corresponding to operator's number
-     * @return OperRecAmountsRes
+     *Program device's TCP network Gateway. To apply use - SaveNetworInterfaceSettings()
+     * @param  deviceGateway
+     *         15 symbols for the device's Gateway address
      * @throws java.lang.Exception
      */
-     public OperRecAmountsRes ReadOperRecAmounts(final Double opNo) throws Exception {
-             return CreateRes(Do("ReadOperRecAmounts", "OpNo", opNo), OperRecAmountsRes.class);
+     public void SetTCP_GatewayAddress(final String deviceGateway) throws Exception {
+             Do("SetTCP_GatewayAddress", "DeviceGateway", deviceGateway);
      }
 
     /**
@@ -2027,19 +2343,16 @@ public class FP extends FPcore {
      }
 
     /**
-     *Print a detailed FM payment report by initial and end FM report number.
-     * @param  startNo
-     *         4 symbols for initial FM report number included in report, format ####
-     * @param  endNo
-     *         4 symbols for final FM report number included in report, format ####
+     *Provides information about device's DNS address.
+     * @return String
      * @throws java.lang.Exception
      */
-     public void PrintDetFMdailyPaymReportByZNo(final Double startNo, final Double endNo) throws Exception {
-             Do("PrintDetFMdailyPaymReportByZNo", "StartNo", startNo, "EndNo", endNo);
+     public String ReadTCP_DNSaddress() throws Exception {
+             return CreateRes(Do("ReadTCP_DNSaddress"), String.class);
      }
 
     /**
-     *Provide information about the contents of the footer line.
+     *Provides the content of the footer lines.
      * @param  optionFooterLine
      *         1 symbol with value: 
      *  - '1' - Footer 1 
@@ -2053,88 +2366,94 @@ public class FP extends FPcore {
      }
 
     /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
-     * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
-     * @param  optionVATClass
-     *         1 symbol for article's VAT class with optional values: 
-     *  - 'A' - VAT class A 
-     *  - 'B' - VAT class B 
-     *  - 'C' - VAT class C 
-     *  - 'D' - VAT class D 
-     *  - 'E' - VAT class E 
-     *  - 'F' - Alte taxe
-     * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
-     * @param  quantity
-     *         1 to 10 symbols for quantity 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
-     * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
-     * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
-     * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
-     * @param  namePLUextension
-     *         12 symbols for extension of the PLU Name: FP Only
-     * @param  additionalNamePLU
-     *         108 symbols for additional PLU name
+     *Start Bluetooth test on the device and print out the result
      * @throws java.lang.Exception
      */
-     public void StornoPLUwithVATdefenition_(final String namePLU, final OptionVATClass optionVATClass, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("StornoPLUwithVATdefenition_", "NamePLU", namePLU, "OptionVATClass", optionVATClass, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     public void StartBluetoothTest() throws Exception {
+             Do("StartBluetoothTest");
      }
 
     /**
-     *Store the header into fiscal memory.
-     * @param  password
-     *         6-symbols string
+     *Opens a non-fiscal receipt assigned to the specified operator and print type depends on NonFiscalPrintType parameter.
+     * @param  operNum
+     *         Symbols from '1' to '20' corresponding to operator's 
+     * number
+     * @param  operPass
+     *         4 symbols for operator's password
+     * @param  optionNonFiscalPrintType
+     *         1 symbol with value: 
+     *  - '0' - Step by step printing 
+     *  - '1' - Postponed printing
      * @throws java.lang.Exception
      */
-     public void StoreInFMcurrentHeader(final String password) throws Exception {
-             Do("StoreInFMcurrentHeader", "Password", password);
+     public void OpenNonFiscalReceipt(final Double operNum, final String operPass, final OptionNonFiscalPrintType optionNonFiscalPrintType) throws Exception {
+             Do("OpenNonFiscalReceipt", "OperNum", operNum, "OperPass", operPass, "OptionNonFiscalPrintType", optionNonFiscalPrintType);
      }
 
     /**
-     *Calculates the subtotal amount with printing and display visualization options. Provides information about values of the calculated amounts. If a percent or value discount/addition has been specified the subtotal and the discount/addition value will be printed regardless the parameter for printing.
-     * @param  optionPrint
+     *Calculate the subtotal amount with printing and display visualization options. Provide information about values of the calculated amounts. If a percent or value discount/addition has been specified the subtotal and the discount/addition value will be printed regardless the parameter for printing.
+     * @param  optionPrinting
      *         1 symbol with value: 
      *  - '1' - Yes 
      *  - '0' - No
      * @param  optionDisplay
      *         1 symbol with value: 
      *  - '1' - Yes 
-     *  - '0' - No 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
+     *  - '0' - No
      * @param  discAddV
-     *         1 to 10 symbols for the value of the discount/addition 
-     * ',' 1 symbol ',' indicating the presence of percent discount/addition field
+     *         1 to 10 symbols for the value of the discount/addition
      * @param  discAddP
-     *         2 to 7 symbols for the percentage value of the 
+     *         1 to 7 symbols for the percentage value of the 
      * discount/addition
      * @return Double
      * @throws java.lang.Exception
      */
-     public Double Subtotal(final OptionPrint optionPrint, final OptionDisplay optionDisplay, final Double discAddV, final Double discAddP) throws Exception {
-             return CreateRes(Do("Subtotal", "OptionPrint", optionPrint, "OptionDisplay", optionDisplay, "DiscAddV", discAddV, "DiscAddP", discAddP), Double.class);
+     public Double Subtotal(final OptionPrinting optionPrinting, final OptionDisplay optionDisplay, final Double discAddV, final Double discAddP) throws Exception {
+             return CreateRes(Do("Subtotal", "OptionPrinting", optionPrinting, "OptionDisplay", optionDisplay, "DiscAddV", discAddV, "DiscAddP", discAddP), Double.class);
      }
 
     /**
-     *Shows a 40-symbol text in the two display lines.
-     * @param  text
-     *         40 symbols text
+     *Print a detailed payment FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
      * @throws java.lang.Exception
      */
-     public void DisplayText1and2(final String text) throws Exception {
-             Do("DisplayText1and2", "Text", text);
+     public void PrintDetailedFMPaymentsReportByDate(final Date startDate, final Date endDate) throws Exception {
+             Do("PrintDetailedFMPaymentsReportByDate", "StartDate", startDate, "EndDate", endDate);
+     }
+
+    /**
+     *Provides information about WiFi network name where device is connected.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadTCPWiFiNetworkName() throws Exception {
+             return CreateRes(Do("ReadTCPWiFiNetworkName"), String.class);
+     }
+
+    /**
+     *Provide information about last found Z report, having the same date or date before than the input date
+     * @param  dateFrom
+     *         6 symbols for specified date in format "DDMMYY"
+     * @return Double
+     * @throws java.lang.Exception
+     */
+     public Double ReadLastZReportNumFromDate(final Date dateFrom) throws Exception {
+             return CreateRes(Do("ReadLastZReportNumFromDate", "DateFrom", dateFrom), Double.class);
+     }
+
+    /**
+     *Program device's TCP network DHCP enabled or disabled. To apply use -SaveNetworInterfaceSettings()
+     * @param  optionDHCPEnabled
+     *         1 symbol with value: 
+     *  - '0' - No 
+     *  - '1' - Yes
+     * @throws java.lang.Exception
+     */
+     public void SetTCP_DHCPenabled(final OptionDHCPEnabled optionDHCPEnabled) throws Exception {
+             Do("SetTCP_DHCPenabled", "OptionDHCPEnabled", optionDHCPEnabled);
      }
 
     /**
@@ -2147,45 +2466,88 @@ public class FP extends FPcore {
      }
 
     /**
-     *Provides information about the registers of the specified article.
-     * @param  pLUNo
-     *         5 symbols for article number with leading zeroes in format: #####
-     * @return PLU4Res
+     *Provides information about the number of customers (number of fiscal receipt issued), number of discounts, additions and corrections made and the accumulated amounts.
+     * @return GeneralDailyRegistersRes
      * @throws java.lang.Exception
      */
-     public PLU4Res ReadPLU4(final Double pLUNo) throws Exception {
-             return CreateRes(Do("ReadPLU4", "PLUNo", pLUNo), PLU4Res.class);
+     public GeneralDailyRegistersRes ReadGeneralDailyRegisters() throws Exception {
+             return CreateRes(Do("ReadGeneralDailyRegisters"), GeneralDailyRegistersRes.class);
      }
 
     /**
-     *Lodges/withdraws the stated amount in the specified type of payment from the registers of the specified operator (the '-' symbol preceding the amount means withdrawal).
-     * @param  number
-     *         Symbol from 1 to 20 corresponding to the operator's number
-     * @param  password
-     *         4 symbols for operator's password
-     * @param  amount
-     *         1 to 10 symbols for the amount lodged/withdrawn 
-     * '@' Symbol @
-     * @param  text
-     *         Text - TextLength-2 symbols length
+     *Stores in the memory the graphic file under stated number. Prints information about loaded in the printer graphic files.
+     * @param  logoNumber
+     *         1 character value from '0' to '9' or '?'. The number sets the active logo 
+     * number, and the '?' invokes only printing of information
      * @throws java.lang.Exception
      */
-     public void RA_PO(final Double number, final String password, final Double amount, final String text) throws Exception {
-             Do("RA_PO", "Number", number, "Password", password, "Amount", amount, "Text", text);
+     public void SetActiveLogo(final String logoNumber) throws Exception {
+             Do("SetActiveLogo", "LogoNumber", logoNumber);
      }
 
     /**
-     *Printing all Electronic Journal report.
-     * @param  optionRepStorage
-     *         2 symbols for destination: 
-     *  - 'J1' - Printing  
-     *  - 'J2' - Storage in External USB Flash memory. 
-     *  - 'J4' - Storage in External SD card memory 
-     * '*' 1 symbol '*'
+     *Provide information about the display greeting message.
+     * @return String
      * @throws java.lang.Exception
      */
-     public void PrintEJwhole(final OptionRepStorage optionRepStorage) throws Exception {
-             Do("PrintEJwhole", "OptionRepStorage", optionRepStorage);
+     public String ReadDisplayGreetingMessage() throws Exception {
+             return CreateRes(Do("ReadDisplayGreetingMessage"), String.class);
+     }
+
+    /**
+     *Provides information about if the TCP connection autostart when the device enter in Line/Sale mode.
+     * @return OptionTCPAutoStart
+     * @throws java.lang.Exception
+     */
+     public OptionTCPAutoStart ReadTCPAutoStartFlag() throws Exception {
+             return CreateRes(Do("ReadTCPAutoStartFlag"), OptionTCPAutoStart.class);
+     }
+
+    /**
+     *Providing information about WiFi password where device is connected.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadTCPWiFiPassword() throws Exception {
+             return CreateRes(Do("ReadTCPWiFiPassword"), String.class);
+     }
+
+    /**
+     *Provides information about device's TCP password.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadTCPpassword() throws Exception {
+             return CreateRes(Do("ReadTCPpassword"), String.class);
+     }
+
+    /**
+     *Print the special FM events report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
+     * @throws java.lang.Exception
+     */
+     public void PrintSpecialFMReportByZReportNum(final Double startNum, final Double endNum) throws Exception {
+             Do("PrintSpecialFMReportByZReportNum", "StartNum", startNum, "EndNum", endNum);
+     }
+
+    /**
+     *Provides information about is the device's DHPC is enabled or disabled.
+     * @return OptionDHCPEnabled
+     * @throws java.lang.Exception
+     */
+     public OptionDHCPEnabled ReadTCP_DHCPenabled() throws Exception {
+             return CreateRes(Do("ReadTCP_DHCPenabled"), OptionDHCPEnabled.class);
+     }
+
+    /**
+     *Start LAN test on the device and print out the result
+     * @throws java.lang.Exception
+     */
+     public void StartLANtest() throws Exception {
+             Do("StartLANtest");
      }
 
     /**
@@ -2197,58 +2559,86 @@ public class FP extends FPcore {
      }
 
     /**
-     *Program the available quantity for a certain article (item) from the internal database.
-     * @param  pLUNo
-     *         5 symbols for article number in format: #####
-     * @param  availQTY
-     *         1..11 symbols for quantity in stock
-     * @param  optionQtyType
-     *         1 byte for Quantity flag with next value: 
-     *  - '0'- for availability of PLU stock is not monitored 
-     *  - '1'- for disable negative quantity 
-     *  - '2'- for enable negative quantity
-     * @throws java.lang.Exception
-     */
-     public void ProgPLU2(final Double pLUNo, final Double availQTY, final OptionQtyType optionQtyType) throws Exception {
-             Do("ProgPLU2", "PLUNo", pLUNo, "AvailQTY", availQTY, "OptionQtyType", optionQtyType);
-     }
-
-    /**
-     *Registers the sale or correction of a specified quantity of an article of the internal database of the FPR.
-     * @param  optionSign
-     *         1 symbol with optional value: 
-     *  - '+' - Sale 
-     *  - '-' - Correction
-     * @param  noPLU
-     *         5 symbols for number of article of FPR's db in format: #####  
-     * '*' 1 symbol '*' indicating the presence of quantity field
+     *Register the sell (for correction use minus sign in the price field) of article with specified VAT. If department is present the relevant accumulations are perfomed in its registers.
+     * @param  namePLU
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  price
+     *         1 to 10 symbols for article's price
      * @param  quantity
-     *         1 to 10 symbols for article's quantity sold 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
+     *         3 to 10 symbols for quantity in format fractional format (e.g. 1/3)
      * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
+     *         1 to 7 for percentage of discount/addition
      * @param  discAddV
-     *         2 to 8 symbols for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
+     *         1 to 8 for value of discount/addition
      * @param  discNamed
-     *         2 to 8 symbols for value of named discount
+     *         1 to 8 symbols for value of named discount
+     * @param  category
+     *         Up to 7 symbols for PLU Category code in format ####.##
+     * @param  depNum
+     *         1 symbol for article department attachment, 
+     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
+     * Dep19 = 93h
+     * @param  namePLUextension
+     *         12 symbols for extension of the PLU Name: FP Only
+     * @param  additionalNamePLU
+     *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public void SaleOrCorrectionFPRArticle(final OptionSign optionSign, final Double noPLU, final Double quantity, final Double discAddP, final Double discAddV, final Double discNamed) throws Exception {
-             Do("SaleOrCorrectionFPRArticle", "OptionSign", optionSign, "NoPLU", noPLU, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed);
+     public void SellFractQtyPLUfromDep(final String namePLU, final Double price, final String quantity, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final int depNum, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellFractQtyPLUfromDep", "NamePLU", namePLU, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "DepNum", depNum, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
      }
 
     /**
-     *Program the Barcode number for a certain article (item) from the internal database.
-     * @param  pLUNo
-     *         5 symbols for article number in format: #####
-     * @param  barcode
-     *         13 symbols for barcode
+     *FlagsModule is a char with bits representing modules supported by the device.
+     * @return byte
      * @throws java.lang.Exception
      */
-     public void ProgPLU3(final Double pLUNo, final String barcode) throws Exception {
-             Do("ProgPLU3", "PLUNo", pLUNo, "Barcode", barcode);
+     public byte ReadDeviceModuleSupport() throws Exception {
+             return CreateRes(Do("ReadDeviceModuleSupport"), byte.class);
+     }
+
+    /**
+     *Storage of receipts xml files by Z-report number to USB Flash memory or SD card memory.
+     * @param  optionRecieptXmlStorage
+     *         2 symbols for destination: 
+     * - 'Jx' - Storage in External USB Flash memory. 
+     * - 'JX' - Storage in External SD card memory
+     * @param  startNum
+     *         4 symbols for initial number report in format ####
+     * @param  endNum
+     *         4 symbols for final number report in format ####
+     * @throws java.lang.Exception
+     */
+     public void StoreEJByZReportNum(final OptionRecieptXmlStorage optionRecieptXmlStorage, final Double startNum, final Double endNum) throws Exception {
+             Do("StoreEJByZReportNum", "OptionRecieptXmlStorage", optionRecieptXmlStorage, "StartNum", startNum, "EndNum", endNum);
+     }
+
+    /**
+     *Program device's TCP network subnet mask. To apply use - SaveNetworInterfaceSettings()
+     * @param  deviceSubnetMask
+     *         15 symbols for the device's subnet mask
+     * @throws java.lang.Exception
+     */
+     public void SetTCP_SubnetMask(final String deviceSubnetMask) throws Exception {
+             Do("SetTCP_SubnetMask", "DeviceSubnetMask", deviceSubnetMask);
+     }
+
+    /**
+     *After every change on LAN/WiFi IP addresses, WiFi network name, WiFi password or GPRS data networks settings this Save command needs to be execute.
+     * @throws java.lang.Exception
+     */
+     public void SaveNetworkInterfaceSettings() throws Exception {
+             Do("SaveNetworkInterfaceSettings");
+     }
+
+    /**
+     *Provides information about the programmed number of POS and the current values of the logo, cutting permission, display mode, enable/disable currency in receipt and enable/disableUSB host mode.
+     * @return ParametersRes
+     * @throws java.lang.Exception
+     */
+     public ParametersRes ReadParameters() throws Exception {
+             return CreateRes(Do("ReadParameters"), ParametersRes.class);
      }
 
     /**
@@ -2258,18 +2648,6 @@ public class FP extends FPcore {
      */
      public String ReadVersion() throws Exception {
              return CreateRes(Do("ReadVersion"), String.class);
-     }
-
-    /**
-     *Print a detailed payment FM report by initial and end date.
-     * @param  startDate
-     *         6 symbols for initial date in the DDMMYY format
-     * @param  endDate
-     *         6 symbols for final date in the DDMMYY format
-     * @throws java.lang.Exception
-     */
-     public void PrintDetFMdailyPaymReportByDate(final Date startDate, final Date endDate) throws Exception {
-             Do("PrintDetFMdailyPaymReportByDate", "StartDate", startDate, "EndDate", endDate);
      }
 
     /**
@@ -2295,73 +2673,74 @@ public class FP extends FPcore {
      }
 
     /**
-     *Prints an extended daily financial report (an article report followed by a daily financial report) with or without zeroing ('Z' or 'X').
-     * @param  optionZeroing
-     *         with following values: 
-     *  - 'Z' -Zeroing 
-     *  - 'X' - Not zeroing
-     * @throws java.lang.Exception
-     */
-     public void PrintExtendDailyRep(final OptionZeroing optionZeroing) throws Exception {
-             Do("PrintExtendDailyRep", "OptionZeroing", optionZeroing);
-     }
-
-    /**
-     *Print a brief FM report by initial and end FM report number.
-     * @param  startNo
-     *         4 symbols for the initial FM report number included in report, format ####
-     * @param  endNo
-     *         4 symbols for the final FM report number included in report, format ####
-     * @throws java.lang.Exception
-     */
-     public void PrintBriefFMdailyReportByZNo(final Double startNo, final Double endNo) throws Exception {
-             Do("PrintBriefFMdailyReportByZNo", "StartNo", startNo, "EndNo", endNo);
-     }
-
-    /**
-     *Registers the sale or correction of article with specified name, price, quantity, VAT class and/or discount/addition on the transaction.
+     *Registers the sell (for correction use minus sign in the price field)  of article with specified department, name, price, quantity and/or discount/addition on  the transaction.
      * @param  namePLU
-     *         36 symbols for article's name included separator for MU=80h or 
-     * 60h followed up to 3 symbols for unit
+     *         30 symbols for article's name plus separator for MU=60h 
+     * followed up to 3 symbols for unit plus 2 symbols spaces
+     * @param  depNum
+     *         1 symbol for article department 
+     * attachment, formed in the following manner; example: Dep01 = 81h, Dep02 
+     * = 82h … Dep19 = 93h
      * @param  price
-     *         1 to 10 symbols for article's price  
-     * '*' 1 symbol '*' indicating the presence of quantity field
+     *         1 to 10 symbols for article's price
      * @param  quantity
-     *         3  to 10 symbols for quantity in format fractional format (e.g. 1/3) 
-     * '&' 1 symbol '&' indicating the presence of departament
-     * @param  depNo
-     *         1 symbol for article department attachment, 
-     * formed in the following manner; example: Dep01 = 81h, Dep02 = 82h … 
-     * Dep19 = 93h 
-     * ',' 1 symbol ',' indicating the presence of discount/addition field
+     *         1 to 10 symbols for quantity
      * @param  discAddP
-     *         2 to 7 for percentage of discount/addition 
-     * ':' 1 symbol ':' indicating the presence of value discount/addition field
+     *         1 to 7 symbols for percentage of 
+     * discount/addition
      * @param  discAddV
-     *         2 to 8 for value of discount/addition  
-     * '@' 1 symbol '@' indicating the presence value of named discount
-     * @param  discNamed
-     *         2 to 8 symbols for value of named discount 
-     * '+' 1 symbol '+' indicating the presence of value PLU Category code
+     *         1..8 for value of discount/addition
      * @param  category
-     *         Up to 7 symbols for PLU Category code in format ####.## 
-     * '!' 1 symbol with value '!'
+     *         1..7 symbols for PLU Category code in format ####.##
+     * @param  discNamed
+     *         1 to 8 symbols for value of named discount
      * @param  namePLUextension
      *         12 symbols for extension of the PLU Name: FP Only
      * @param  additionalNamePLU
      *         108 symbols for additional PLU name
      * @throws java.lang.Exception
      */
-     public void SaleOrCorrectionFractionalQuantityPLUBelongingToDEP_1(final String namePLU, final Double price, final String quantity, final int depNo, final Double discAddP, final Double discAddV, final Double discNamed, final Double category, final String namePLUextension, final String additionalNamePLU) throws Exception {
-             Do("SaleOrCorrectionFractionalQuantityPLUBelongingToDEP_1", "NamePLU", namePLU, "Price", price, "Quantity", quantity, "DepNo", depNo, "DiscAddP", discAddP, "DiscAddV", discAddV, "DiscNamed", discNamed, "Category", category, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
+     public void SellPLUwithSpecifiedVATfromDep_(final String namePLU, final int depNum, final Double price, final Double quantity, final Double discAddP, final Double discAddV, final Double category, final Double discNamed, final String namePLUextension, final String additionalNamePLU) throws Exception {
+             Do("SellPLUwithSpecifiedVATfromDep_", "NamePLU", namePLU, "DepNum", depNum, "Price", price, "Quantity", quantity, "DiscAddP", discAddP, "DiscAddV", discAddV, "Category", category, "DiscNamed", discNamed, "NamePLUextension", namePLUextension, "AdditionalNamePLU", additionalNamePLU);
      }
 
     /**
-     *Close the fiscal receipt, paying the due amount in cash
+     *Provides information about device's Gateway address.
+     * @return String
+     * @throws java.lang.Exception
+     */
+     public String ReadTCP_GatewayAddress() throws Exception {
+             return CreateRes(Do("ReadTCP_GatewayAddress"), String.class);
+     }
+
+    /**
+     *Read the amounts returned as change by different payment types for the specified operator.
+     * @param  operNum
+     *         Symbol from 1 to 20 corresponding to operator's 
+     * number
+     * @return DailyReturnedChangeAmountsByOperatorRes
+     * @throws java.lang.Exception
+     */
+     public DailyReturnedChangeAmountsByOperatorRes ReadDailyReturnedChangeAmountsByOperator(final Double operNum) throws Exception {
+             return CreateRes(Do("ReadDailyReturnedChangeAmountsByOperator", "OperNum", operNum), DailyReturnedChangeAmountsByOperatorRes.class);
+     }
+
+    /**
+     *Paying the exact amount in cash and close the fiscal receipt.
      * @throws java.lang.Exception
      */
      public void CashPayCloseReceipt() throws Exception {
              Do("CashPayCloseReceipt");
+     }
+
+    /**
+     *Program the contents of a Display Greeting message.
+     * @param  displayGreetingText
+     *         20 symbols for display greeting message
+     * @throws java.lang.Exception
+     */
+     public void ProgDisplayGreetingMessage(final String displayGreetingText) throws Exception {
+             Do("ProgDisplayGreetingMessage", "DisplayGreetingText", displayGreetingText);
      }
 
     /**
@@ -2383,4 +2762,58 @@ public class FP extends FPcore {
      public AlteTaxeRes ReadAlteTaxe(final String number) throws Exception {
              return CreateRes(Do("ReadAlteTaxe", "Number", number), AlteTaxeRes.class);
      }
-}
+
+    /**
+     *Store a brief FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
+     * @throws java.lang.Exception
+     */
+     public void ReadBriefFMReportByDate(final Date startDate, final Date endDate) throws Exception {
+             Do("ReadBriefFMReportByDate", "StartDate", startDate, "EndDate", endDate);
+     }
+
+    /**
+     *Store a brief FM report by initial and end FM report number.
+     * @param  startNum
+     *         4 symbols for the initial report number included in report, format ####
+     * @param  endNum
+     *         4 symbols for the final report number included in report, format ####
+     * @param  optionStorage
+     *         1 symbol for destination: 
+     *  - '2' - Storage in External USB Flash memory. 
+     *  - '4' - Storage in External SD card memory
+     * @throws java.lang.Exception
+     */
+     public void StoreBriefFMReportByNum(final Double startNum, final Double endNum, final OptionStorage optionStorage) throws Exception {
+             Do("StoreBriefFMReportByNum", "StartNum", startNum, "EndNum", endNum, "OptionStorage", optionStorage);
+     }
+
+    /**
+     *Storage a detailed FM report by initial and end date.
+     * @param  startDate
+     *         6 symbols for initial date in the DDMMYY format
+     * @param  endDate
+     *         6 symbols for final date in the DDMMYY format
+     * @throws java.lang.Exception
+     */
+     public void ReadDetailedFMReportByDate(final Date startDate, final Date endDate) throws Exception {
+             Do("ReadDetailedFMReportByDate", "StartDate", startDate, "EndDate", endDate);
+     }
+
+    /**
+     *Prints an extended daily financial report (an article report followed by a daily financial report) with or without zeroing ('Z' or 'X').
+     * @param  optionZeroing
+     *         with following values: 
+     *  - 'Z' -Zeroing 
+     *  - 'X' - Not zeroing
+     * @throws java.lang.Exception
+     */
+     public void PrintDetailedDailyReport(final OptionZeroing optionZeroing) throws Exception {
+             Do("PrintDetailedDailyReport", "OptionZeroing", optionZeroing);
+     }
+
+     }
+

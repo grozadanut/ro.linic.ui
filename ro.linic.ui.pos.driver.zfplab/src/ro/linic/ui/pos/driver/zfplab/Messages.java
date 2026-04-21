@@ -11,10 +11,17 @@ public class Messages {
 
 	private Messages() {
 	}
-	
+
 	public static String ErrorECRDriver_SetIp;
 	public static String ZFPECRDriverPage_ServerAddress;
 	public static String ZFPECRDriverPage_Ip;
 	public static String ZFPECRDriverPage_Port;
 	public static String ZFPECRDriverPage_Password;
+	public static String ECRDriver_IllegalPaymentType;
+	public static String ZFPECRDriverPage_Operator;
+	public static String ZFPECRDriverPage_OperatorPassword;
+	public static String ZFPECRDriverPage_Department;
+	public static String ECRDriver_PaymentSmallerThanTotalErr;
+	public static String ECRDriver_PaymentTypeError;
+	public static String ECRDriverPage_ZAndD;
 }
