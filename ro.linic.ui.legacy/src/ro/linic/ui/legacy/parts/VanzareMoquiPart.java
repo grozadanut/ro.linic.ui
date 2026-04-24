@@ -105,7 +105,7 @@ import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadData;
-import ro.linic.ui.legacy.dialogs.AdaugaPartnerDialog;
+import ro.linic.ui.legacy.dialogs.AdaugaPartenerColibriDialog;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.ScheduleDialog;
 import ro.linic.ui.legacy.dialogs.TransferaSauNegativDialog;
@@ -330,7 +330,7 @@ public class VanzareMoquiPart implements VanzareInterface
 		GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(partner);
 		
 		createPartner = new Button(leftContainer, SWT.PUSH);
-		createPartner.setText(Messages.VanzarePart_AddPartner);
+		createPartner.setText(Messages.VanzareMoquiPart_AddPartner);
 		UIUtils.setFont(createPartner);
 		
 		inchideCasaButton = new Button(leftContainer, SWT.PUSH | SWT.WRAP);
@@ -598,7 +598,7 @@ public class VanzareMoquiPart implements VanzareInterface
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				if (new AdaugaPartnerDialog(createPartner.getShell(), bundle, log).open() == Window.OK)
+				if (new AdaugaPartenerColibriDialog(createPartner.getShell(), bundle, log, ctx).open() == Window.OK)
 					reloadPartners();
 			}
 		});

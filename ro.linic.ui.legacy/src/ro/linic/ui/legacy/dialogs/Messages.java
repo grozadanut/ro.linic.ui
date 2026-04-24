@@ -104,6 +104,11 @@ public class Messages extends NLS {
 	public static String AdaugaPartnerDialog_SocialSecurityNumber;
 	public static String AdaugaPartnerDialog_TaxCode;
 	public static String AdaugaPartnerDialog_Title;
+	public static String AdaugaPartnerColibriDialog_PartnerCode;
+	public static String AdaugaPartnerColibriDialog_WelcomeMessage1;
+	public static String AdaugaPartnerColibriDialog_WelcomeMessage2;
+	public static String AdaugaPartnerColibriDialog_WelcomeMessage3;
+	public static String AdaugaPartnerColibriDialog_WelcomeMessage4;
 	public static String AdaugaProductDialog_Category;
 	public static String AdaugaProductDialog_Code;
 	public static String AdaugaProductDialog_Department;

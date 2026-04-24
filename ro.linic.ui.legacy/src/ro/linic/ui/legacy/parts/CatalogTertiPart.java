@@ -5,6 +5,7 @@ import static ro.colibri.util.NumberUtils.parseToInt;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.colibri.util.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.StringUtils.sanitizePhoneNumber;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -57,10 +59,7 @@ import ro.colibri.util.InvocationResult;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.wrappers.RulajPartener;
-import ro.linic.ui.base.dialogs.ConfirmDialog;
-import ro.linic.ui.base.services.model.GenericValue;
-import ro.linic.ui.http.BodyProvider;
-import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.base.services.UtilServices;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.GrupeInteresDialog;
 import ro.linic.ui.legacy.dialogs.SmsQueryDialog;
@@ -120,6 +119,7 @@ public class CatalogTertiPart
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
 	@Inject private AuthenticationSession auth;
+	@Inject private IEclipseContext ctx;
 	
 	public static void openPart(final EPartService partService)
 	{
@@ -624,40 +624,9 @@ public class CatalogTertiPart
 							.append("Discount cheltuit: "+PresentationUtils.displayBigDecimal(rp.getDiscChelt())+" RON").append(NEWLINE)
 							.append("Showroom Colibri Marghita").append(PresentationUtils.NEWLINE);
 							
-							final GenericValue body = new GenericValue("", "");
-							body.put("text", sb.toString());
-							body.put("phoneNumbers", java.util.List.of(sanitizePhoneNumber(rp.getPhoneNumber())));
-							
-							if (ConfirmDialog.open(generateSms.getShell(), Messages.Confirm, 
-									"Catre "+rp.getName()+" "+sanitizePhoneNumber(rp.getPhoneNumber())+NEWLINE+NEWLINE+sb.toString())) {
-								RestCaller.post("/rest/s1/moqui-linic-legacy/sms")
-								.internal(auth.authentication())
-								.body(BodyProvider.of(body))
-								.sync(t -> UIUtils.showException(t, sync));
-							}
+							UtilServices.sendSms(generateSms.getShell(), ctx, rp.getName(),
+									java.util.List.of(sanitizePhoneNumber(rp.getPhoneNumber())), sb.toString());
 						});
-					}
-
-					public static String sanitizePhoneNumber(final String phoneNumber) {
-						if (isEmpty(phoneNumber))
-							return PresentationUtils.EMPTY_STRING;
-
-						final String trimmed = phoneNumber.trim();
-						final boolean hasPlus = trimmed.startsWith("+");
-						final String digitsOnly = trimmed.replaceAll("\\D", "");
-
-						if (digitsOnly.isEmpty())
-							return phoneNumber;
-
-						if (hasPlus) {
-							return "+" + digitsOnly;
-						} else if (digitsOnly.startsWith("00")) {
-							return "+" + digitsOnly.substring(2);
-						} else if (digitsOnly.startsWith("0")) {
-							return "+40" + digitsOnly.substring(1);
-						} else {
-							return "+40" + digitsOnly;
-						}
 					}
 
 					@Override
