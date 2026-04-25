@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -58,6 +59,11 @@ import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.ListUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
+import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.expressions.BetaTester;
 import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
@@ -66,17 +72,18 @@ import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.services.ECRService;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class InchideBonFacturaOrBCPage extends WizardPage
 {
 	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	private ScheduledFuture<?> jobHandle;
 	private AccountingDocument bonCasa;
-	private UISynchronize sync;
 	private Bundle bundle;
 	private Logger log;
 	private boolean casaActive;
-	private ECRService ecrService;
+	private String affiliatePartnerId;
+	private IEclipseContext ctx;
 	
 	private ImmutableList<Partner> allPartners;
 	
@@ -101,16 +108,16 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 	private boolean partnersAreUpdating = false;
 	private ImmutableList<ContBancar> allConturiBancare = ImmutableList.of();
 	
-	public InchideBonFacturaOrBCPage(final AccountingDocument bonCasa, final boolean casaActive, final IEclipseContext ctx,
-			final Bundle bundle, final Logger log)
+	public InchideBonFacturaOrBCPage(final AccountingDocument bonCasa, final boolean casaActive, final String affiliatePartnerId,
+			final IEclipseContext ctx, final Bundle bundle, final Logger log)
 	{
 		super("InchideBonFacturaOrBCPage");
 		this.bonCasa = bonCasa;
-		this.sync = ctx.get(UISynchronize.class);
-		this.ecrService = ctx.get(ECRService.class);
+		this.ctx = ctx;
 		this.bundle = bundle;
 		this.log = log;
 		this.casaActive = casaActive;
+		this.affiliatePartnerId = affiliatePartnerId;
 		allConturiBancare = BusinessDelegate.allConturiBancare();
 	}
 
@@ -408,12 +415,26 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 			return;
 		}
 		
+		// sync to moqui
+		if (chitantaToPrint != null && new BetaTester().evaluate(ctx.get(AuthenticationSession.class))) {
+			final Map<String, Object> partnerBody = Map.of("paymentId", chitantaToPrint.getId(),
+					"fromPartyId", chitantaToPrint.getPartner().getId(),
+					"toPartyId", chitantaToPrint.getGestiune().getImportName(),
+					"amount", chitantaToPrint.getTotal(),
+					"affiliatePartnerId", affiliatePartnerId);
+			
+			RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
+			.internal(ctx.get(AuthenticationSession.class).authentication())
+			.body(BodyProvider.of(HttpUtils.toJSON(partnerBody)))
+			.sync(GenericValue.class, t -> UIUtils.showException(t, ctx.get(UISynchronize.class)));
+		}
+		
 		final List<AccountingDocument> bonuriCasa = result.extra(InvocationResult.BONURI_CASA_KEY);
 		try
 		{
 			// scoate Bon Fiscal, daca e cazul
 			if (casaActive)
-				ecrService.printReceipt(AccDocMapper.toReceipt(bonuriCasa),
+				ctx.get(ECRService.class).printReceipt(AccDocMapper.toReceipt(bonuriCasa),
 						contBancar() != null ? PaymentType.CARD : PaymentType.CASH)
 				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(bonuriCasa.stream()
 						.map(AccountingDocument::getId).collect(Collectors.toSet()), false));
@@ -514,7 +535,7 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 				
 				jobHandle = executorService.schedule(() ->
 				{
-					sync.syncExec(() ->
+					ctx.get(UISynchronize.class).syncExec(() ->
 					{
 						final Optional<Partner> newPartner = selectedPartner();
 						if (Objects.equals(newPartner.orElse(null), bonCasa.getPartner()))

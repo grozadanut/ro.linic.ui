@@ -8,11 +8,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -34,6 +36,11 @@ import com.google.common.collect.ImmutableSet;
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Operatiune;
 import ro.colibri.util.InvocationResult;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpUtils;
+import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.expressions.BetaTester;
 import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
@@ -42,6 +49,7 @@ import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.services.ECRService;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class InchideBonFirstPage extends WizardPage
 {
@@ -59,20 +67,22 @@ public class InchideBonFirstPage extends WizardPage
 	private Button inchideCard;
 	private Button abandon;
 	
+	private String affiliatePartnerId;
 	private Bundle bundle;
 	private Logger log;
-	private ECRService ecrService;
+	private IEclipseContext ctx;
 
-	public InchideBonFirstPage(final AccountingDocument bonCasa, final boolean casaActive,
+	public InchideBonFirstPage(final AccountingDocument bonCasa, final boolean casaActive, final String affiliatePartnerId,
 			final Bundle bundle, final Logger log, final TipInchidere tipInchidere, final IEclipseContext ctx)
 	{
         super("InchideBonFirstPage");
         this.bonCasa = bonCasa;
         this.casaActive = casaActive;
+        this.affiliatePartnerId = affiliatePartnerId;
         this.bundle = bundle;
         this.log = log;
         this.tipInchidere = tipInchidere;
-        this.ecrService = ctx.get(ECRService.class);
+        this.ctx = ctx;
     }
 
 	@Override
@@ -286,6 +296,19 @@ public class InchideBonFirstPage extends WizardPage
 				reloadedBon.setOperatiuni(new HashSet<Operatiune>(operatiuni));
 				if (reloadedBon.isShouldTransport())
 					JasperReportManager.instance(bundle, log).printNonOfficialDoc(bundle, reloadedBon, false);
+				
+				if (new BetaTester().evaluate(ctx.get(AuthenticationSession.class))) {
+					final Map<String, Object> partnerBody = Map.of("paymentId", reloadedBon.getId(),
+							"fromPartyId", reloadedBon.getPartner().getId(),
+							"toPartyId", reloadedBon.getGestiune().getImportName(),
+							"amount", reloadedBon.getTotal(),
+							"affiliatePartnerId", affiliatePartnerId);
+					
+					RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
+					.internal(ctx.get(AuthenticationSession.class).authentication())
+					.body(BodyProvider.of(HttpUtils.toJSON(partnerBody)))
+					.sync(GenericValue.class, t -> UIUtils.showException(t, ctx.get(UISynchronize.class)));
+				}
 			}
 		}
 		catch (final Exception e)
@@ -298,7 +321,7 @@ public class InchideBonFirstPage extends WizardPage
 		{
 			// print bon to casa
 			if (casaActive)
-				ecrService.printReceipt(AccDocMapper.toReceipt(List.of(bonCasa)),
+				ctx.get(ECRService.class).printReceipt(AccDocMapper.toReceipt(List.of(bonCasa)),
 						incasarePrinCard ? PaymentType.CARD : PaymentType.CASH, Optional.ofNullable(cuiBonText.getText()))
 				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(bonCasa.getId() == null ? Set.of() : Set.of(bonCasa.getId()), false));
 		}

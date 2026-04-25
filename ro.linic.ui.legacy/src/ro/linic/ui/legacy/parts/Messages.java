@@ -305,6 +305,7 @@ public class Messages extends NLS {
 	public static String VanzarePart_Offer;
 	public static String VanzarePart_PrintRoutes;
 	public static String VanzarePart_Quant;
+	public static String VanzarePart_SelectColibriPartner;
 	public static String VanzarePart_SelectInventory;
 	public static String VanzarePart_StockTooLow;
 	public static String VanzarePart_StockTooLowMess;
@@ -314,6 +315,7 @@ public class Messages extends NLS {
 	public static String VanzarePart_TransferMess;
 	public static String VanzarePart_TransferOther;
 	public static String VanzarePart_VAT;
+	public static String VanzareMoquiPart_ColibriPartner;
 	public static String VanzareMoquiPart_ConfirmAutoOrder;
 	public static String VanzareMoquiPart_AddPartner;
 	public static String VerifyOperationsPart_DelegateMissing;

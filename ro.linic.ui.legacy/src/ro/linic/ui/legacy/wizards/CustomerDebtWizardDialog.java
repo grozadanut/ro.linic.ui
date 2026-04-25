@@ -15,7 +15,7 @@ public class CustomerDebtWizardDialog extends WizardDialog
 	@Override
 	protected Point getInitialSize()
 	{
-		return new Point(630, 730);
+		return new Point(690, 890);
 	}
 	
 	@Override

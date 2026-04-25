@@ -933,7 +933,7 @@ public class VanzarePart implements VanzareInterface
 		{
 			final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 					Display.getCurrent().getActiveShell(),
-					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), ctx, bundle, log, tipInchidere));
+					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), null, ctx, bundle, log, tipInchidere));
 			if (wizardDialog.open() == Window.OK)
 			{
 				updateBonCasa(null, false);

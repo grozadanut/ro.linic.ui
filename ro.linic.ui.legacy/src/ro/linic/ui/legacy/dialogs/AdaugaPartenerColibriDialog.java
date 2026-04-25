@@ -237,7 +237,7 @@ public class AdaugaPartenerColibriDialog extends TitleAreaDialog {
 						"name", name.getText(),
 						"phone", telefon.getText());
 
-				if (RestCaller.put("/rest/s1/moqui-linic-legacy/partners")
+				if (RestCaller.post("/rest/s1/moqui-linic-legacy/partners")
 						.internal(ctx.get(AuthenticationSession.class).authentication())
 						.body(BodyProvider.of(HttpUtils.toJSON(partnerBody)))
 						.sync(GenericValue.class, t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))

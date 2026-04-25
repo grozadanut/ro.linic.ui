@@ -140,7 +140,7 @@ public class SupplierDebtSelectPage extends WizardPage
 		contBancar = new Combo(container, SWT.DROP_DOWN);
 		contBancar.setItems(allConturiBancare.stream().map(ContBancar::displayName).toArray(String[]::new));
 		UIUtils.setFont(contBancar);
-		GridDataFactory.swtDefaults().hint(InchideBonWizard.EDITABLE_TEXT_WIDTH, SWT.DEFAULT).applyTo(contBancar);
+		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(contBancar);
 		
 		final Composite bottomButtonsCont = new Composite(container, SWT.NONE);
 		bottomButtonsCont.setLayout(new GridLayout(2, false));

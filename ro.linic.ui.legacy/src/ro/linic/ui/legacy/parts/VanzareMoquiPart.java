@@ -9,6 +9,7 @@ import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.StringUtils.globalIsMatch;
 import static ro.colibri.util.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
@@ -24,12 +25,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -47,6 +47,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.nattable.datachange.IdIndexIdentifier;
 import org.eclipse.nebula.widgets.nattable.selection.SelectionLayer.MoveDirectionEnum;
@@ -122,6 +123,7 @@ import ro.linic.ui.legacy.tables.TreeOperationsNatTable;
 import ro.linic.ui.legacy.wizards.InchideBonWizard;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 import ro.linic.ui.legacy.wizards.InchideBonWizardDialog;
+import ro.linic.ui.security.exception.AuthenticationException;
 import ro.linic.ui.security.services.AuthenticationSession;
 
 public class VanzareMoquiPart implements VanzareInterface
@@ -139,7 +141,6 @@ public class VanzareMoquiPart implements VanzareInterface
 	
 	// MODEL
 	private AccountingDocument bonCasa;
-	private ImmutableList<Partner> allPartners;
 
 	// UI
 	private SashForm verticalSash;
@@ -150,8 +151,12 @@ public class VanzareMoquiPart implements VanzareInterface
 	private Text cantitateText;
 	private AllProductsNatTable allProductsTable;
 	
-	private Combo partner;
+	private Text affiliate;
+	private GenericValue selectedAffiliate;
+	private Label affiliateLabel;
+	private Text availableDiscount;
 	private Button createPartner;
+	
 	private Button scheduleButton;
 	private Button inchideCasaButton;
 	private Button inchideFacturaBCButton;
@@ -172,8 +177,6 @@ public class VanzareMoquiPart implements VanzareInterface
 	private Button printPlanuriButton;
 	private Button cancelBonButton;
 	private Button stergeRandButton;
-	
-	private boolean partnersAreUpdating = false;
 	
 	private BigDecimal tvaPercentGlobal;
 	private BigDecimal tvaExtractDivisorGlobal;
@@ -207,7 +210,6 @@ public class VanzareMoquiPart implements VanzareInterface
 			return null;
 
 		vanzarePart.updateBonCasa(bon, true);
-		vanzarePart.selectComboPartner();
 		return vanzarePart;
 	}
 	
@@ -325,13 +327,32 @@ public class VanzareMoquiPart implements VanzareInterface
 		UIUtils.setFont(scheduleButton);
 		GridDataFactory.fillDefaults().applyTo(scheduleButton);
 		
-		partner = new Combo(leftContainer, SWT.DROP_DOWN);
-		UIUtils.setFont(partner);
-		GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(partner);
+		affiliate = new Text(leftContainer, SWT.BORDER);
+		affiliate.setMessage(Messages.VanzareMoquiPart_ColibriPartner);
+		affiliate.setTextLimit(255);
+		UIUtils.setBannerFont(affiliate);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(affiliate);
 		
 		createPartner = new Button(leftContainer, SWT.PUSH);
 		createPartner.setText(Messages.VanzareMoquiPart_AddPartner);
 		UIUtils.setFont(createPartner);
+		
+		final Composite affiliateContainer = new Composite(leftContainer, SWT.NONE);
+		GridLayoutFactory.createFrom(new GridLayout(3, false)).margins(0, 0).applyTo(affiliateContainer);
+		GridDataFactory.fillDefaults().grab(true, false).span(3, 1)
+		.exclude(!ClientSession.instance().hasPermission(Permissions.ADD_CLIENT_DOCS)).applyTo(affiliateContainer);
+		
+		affiliateLabel = new Label(affiliateContainer, SWT.NONE);
+		UIUtils.setFont(affiliateLabel);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(affiliateLabel);
+		
+		final Label availableDiscountLabel = new Label(affiliateContainer, SWT.NONE);
+		availableDiscountLabel.setText(Messages.VanzareBarPart_Discount);
+		UIUtils.setFont(availableDiscountLabel);
+		
+		availableDiscount = new Text(affiliateContainer, SWT.SINGLE | SWT.BORDER | SWT.READ_ONLY);
+		UIUtils.setFont(availableDiscount);
+		GridDataFactory.swtDefaults().hint(InchideBonWizard.BUTTON_WIDTH, SWT.DEFAULT).applyTo(availableDiscount);
 		
 		inchideCasaButton = new Button(leftContainer, SWT.PUSH | SWT.WRAP);
 		inchideCasaButton.setText(Messages.VanzarePart_CloseCash);
@@ -550,7 +571,6 @@ public class VanzareMoquiPart implements VanzareInterface
 				final ScheduleDialog dialog = new ScheduleDialog(scheduleButton.getShell(), sync, log, bundle, bonCasa);
 				if (dialog.open() == Window.OK)
 					updateBonCasa(dialog.reloadedDoc(), false);
-				selectComboPartner();
 			}
 		});
 
@@ -598,8 +618,7 @@ public class VanzareMoquiPart implements VanzareInterface
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				if (new AdaugaPartenerColibriDialog(createPartner.getShell(), bundle, log, ctx).open() == Window.OK)
-					reloadPartners();
+				new AdaugaPartenerColibriDialog(createPartner.getShell(), bundle, log, ctx).open();
 			}
 		});
 		
@@ -670,7 +689,6 @@ public class VanzareMoquiPart implements VanzareInterface
 			{
 				reloadProduct(null, true);
 				updateBonCasa(BusinessDelegate.reloadDoc(bonCasa), true);
-				reloadPartners();
 			}
 		});
 		
@@ -691,26 +709,14 @@ public class VanzareMoquiPart implements VanzareInterface
 			}
 		});
 		
-		partner.addModifyListener(e ->
-		{
-			if (!partnersAreUpdating)
-			{
-				if (jobHandle != null)
-					jobHandle.cancel(false);
-				
-				jobHandle = executorService.schedule(() ->
-				{
-					sync.syncExec(() ->
-					{
-						final Optional<Partner> newPartner = partner();
-						if (bonCasa == null || Objects.equals(newPartner.orElse(null), bonCasa.getPartner()))
-							return;
-						
-						bonCasa.setPartner(newPartner.orElse(null));
-						final InvocationResult result = BusinessDelegate.changeDocPartner(bonCasa.getId(), newPartner.map(Partner::getId), false);
-						UIUtils.showResult(result);
-					});
-				}, 200, TimeUnit.MILLISECONDS); // on average it takes 40-60ms between calls when scrolling
+		affiliate.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(final KeyEvent e) {
+				if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+					final Optional<GenericValue> foundAffiliate = findAffiliate();
+					if (foundAffiliate.isPresent())
+						selectAffiliate(foundAffiliate);
+				}
 			}
 		});
 	}
@@ -719,30 +725,21 @@ public class VanzareMoquiPart implements VanzareInterface
 	{
 		reloadProduct(null, false);
 		updateBonCasa(bonCasa, true);
-		reloadPartners();
 	}
 	
-	private void reloadPartners()
-	{
-		partnersAreUpdating = true;
-		allPartners = BusinessDelegate.allPartners();
-		partner.setItems(allPartners.stream()
-				.map(Partner::getName)
-				.toArray(String[]::new));
-		partner.deselectAll();
-		if (bonCasa != null && bonCasa.getPartner() != null)
-			partner.select(allPartners.indexOf(bonCasa.getPartner()));
-		partnersAreUpdating = false;
-	}
-	
-	private void selectComboPartner() {
-		partnersAreUpdating = true;
-//		partner.setText(EMPTY_STRING);
-//		partner.clearSelection();
-		partner.deselectAll();
-		if (bonCasa != null && bonCasa.getPartner() != null)
-			partner.select(allPartners.indexOf(bonCasa.getPartner()));
-		partnersAreUpdating = false;
+	private void selectAffiliate(final Optional<GenericValue> selAff) {
+		this.selectedAffiliate = selAff.orElse(null);
+		affiliateLabel.setText(selAff.map(cl -> java.text.MessageFormat.format("{0} - {1}", cl.getString("partnerCode"), cl.getString("name")))
+				.orElse(EMPTY_STRING));
+		availableDiscount.setText(selAff.map(cl -> cl.getBigDecimal("discDisponibil"))
+				.map(bd -> bd.setScale(2, RoundingMode.DOWN))
+				.map(BigDecimal::toString)
+				.orElse(EMPTY_STRING));
+		
+		if (selAff.isPresent()) {
+			affiliate.setText(EMPTY_STRING);
+			denumireText.setFocus();
+		}
 	}
 	
 	/**
@@ -873,7 +870,6 @@ public class VanzareMoquiPart implements VanzareInterface
 						result.toTextDescription());
 		} else
 		{
-			final Optional<Partner> newPartner = partner();
 			// everything was okay;
 			// - reload product and bonCasa
 			// - clear denumire and cantitate input
@@ -886,11 +882,6 @@ public class VanzareMoquiPart implements VanzareInterface
 			denumireText.setText(EMPTY_STRING);
 			cantitateText.setText("1"); //$NON-NLS-1$
 			denumireText.setFocus();
-			
-			if (newPartner.isPresent()) {
-				bonCasa.setPartner(newPartner.orElse(null));
-				UIUtils.showResult(BusinessDelegate.changeDocPartner(bonCasa.getId(), newPartner.map(Partner::getId), false));
-			}
 			
 			if (product.isPresent())
 				addDiscountLine(product.get(), cantitate, overridePrice, null);
@@ -957,7 +948,8 @@ public class VanzareMoquiPart implements VanzareInterface
 		else
 			productsToReload.forEach(p -> reloadProduct(p, false));
 		
-		selectComboPartner();
+		if (bonCasa == null)
+			selectAffiliate(Optional.empty());
 	}
 	
 	private void transferOperations(final ImmutableList<Operatiune> operations)
@@ -1011,19 +1003,16 @@ public class VanzareMoquiPart implements VanzareInterface
 		{
 			final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 					Display.getCurrent().getActiveShell(),
-					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), ctx, bundle, log, tipInchidere));
+					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), safeString(selectedAffiliate, gv -> gv.getString("partyId")),
+							ctx, bundle, log, tipInchidere));
 			if (wizardDialog.open() == Window.OK)
 			{
 				checkForOrders();
 				updateBonCasa(null, false);
-				// delivery clear
-				partner.setText(EMPTY_STRING);
-				partner.clearSelection();
-				partner.deselectAll();
-				reloadPartners();
+				// affiliate clear
+				affiliate.setText(EMPTY_STRING);
+				selectAffiliate(Optional.empty());
 			}
-			else
-				selectComboPartner(); // user just changes the invoice partner and doesn't close the receipt
 			denumireText.setFocus();
 		}
 	}
@@ -1114,13 +1103,31 @@ public class VanzareMoquiPart implements VanzareInterface
 		allProductsTable.filter(denumireText.getText());
 	}
 	
-	private Optional<Partner> partner()
+	private Optional<GenericValue> findAffiliate()
 	{
-		final int index = partner.getSelectionIndex();
-		if (index == -1)
+		try {
+			final List<GenericValue> affiliates = RestCaller.get("/rest/s1/moqui-linic-legacy/partners")
+					.internal(ctx.get(AuthenticationSession.class).authentication())
+					.addUrlParam("searchKeyword", affiliate.getText())
+					.async(t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
+					.get();
+			
+			if (affiliates.size() > 1) {
+				final SelectEntityDialog<GenericValue> affiliateDialog = new SelectEntityDialog<>(Display.getCurrent().getActiveShell(),
+						Messages.VanzareMoquiPart_ColibriPartner, Messages.VanzarePart_SelectColibriPartner, Messages.VanzareMoquiPart_ColibriPartner,
+						affiliates, gv -> gv.getString("name"), Messages.OK, Messages.Cancel);
+				
+				if (affiliateDialog.open() != 0)
+					return Optional.empty();
+				
+				return affiliateDialog.selectedEntity();
+			}
+			return affiliates.stream().findFirst();
+		} catch (AuthenticationException | InterruptedException | ExecutionException e) {
+			log.error(e);
+			ro.linic.ui.base.services.util.UIUtils.showException(e);
 			return Optional.empty();
-		
-		return Optional.of(allPartners.get(index));
+		}
 	}
 	
 	private void addDiscountLine(final Product p, final BigDecimal quantity, final BigDecimal overridePrice, final Long ownerOpId) {

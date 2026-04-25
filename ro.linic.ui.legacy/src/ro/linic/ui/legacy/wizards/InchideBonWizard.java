@@ -29,16 +29,18 @@ public class InchideBonWizard extends Wizard
 	private TipInchidere tipInchidere;
 	private AccountingDocument bonCasa;
 	private boolean casaActive;
+	private String affiliatePartnerId;
 	private IEclipseContext ctx;
 	private Bundle bundle;
 	private Logger log;
 	
-	public InchideBonWizard(final AccountingDocument bonCasa, final boolean casaActive,
+	public InchideBonWizard(final AccountingDocument bonCasa, final boolean casaActive, final String affiliatePartnerId,
 			final IEclipseContext ctx, final Bundle bundle, final Logger log, final TipInchidere tipInchidere)
 	{
 		super();
 		this.bonCasa = bonCasa;
 		this.casaActive = casaActive;
+		this.affiliatePartnerId = affiliatePartnerId;
 		this.ctx = ctx;
 		this.bundle = bundle;
 		this.log = log;
@@ -54,8 +56,8 @@ public class InchideBonWizard extends Wizard
 	@Override
 	public void addPages()
 	{
-		one = new InchideBonFirstPage(bonCasa, casaActive, bundle, log, tipInchidere, ctx);
-		two = new InchideBonFacturaOrBCPage(bonCasa, casaActive, ctx, bundle, log);
+		one = new InchideBonFirstPage(bonCasa, casaActive, affiliatePartnerId, bundle, log, tipInchidere, ctx);
+		two = new InchideBonFacturaOrBCPage(bonCasa, casaActive, affiliatePartnerId, ctx, bundle, log);
 		if (!TipInchidere.FACTURA_BC.equals(tipInchidere))
 			addPage(one);
 		if (!TipInchidere.PRIN_CARD.equals(tipInchidere) && !TipInchidere.PRIN_CASA.equals(tipInchidere))

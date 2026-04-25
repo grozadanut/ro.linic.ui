@@ -38,14 +38,17 @@ import ro.colibri.util.ListUtils;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.legacy.expressions.BetaTester;
 import ro.linic.ui.legacy.mapper.AccDocMapper;
 import ro.linic.ui.legacy.service.CasaMarcat;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.services.ECRService;
 import ro.linic.ui.security.services.AuthenticationSession;
@@ -56,10 +59,9 @@ public class CustomerDebtWizard extends Wizard
 	private CustomerDebtConfirmPage two;
 	
 	private AuthenticationSession authSession;
-	private UISynchronize sync;
+	private IEclipseContext ctx;
 	private Bundle bundle;
 	private Logger log;
-	private ECRService ecrService;
 	
 	private List<AccountingDocument> sourceDocs = ImmutableList.of();
 	private List<AccountingDocument> paidDocs = ImmutableList.of();
@@ -98,10 +100,9 @@ public class CustomerDebtWizard extends Wizard
 	{
 		super();
 		this.authSession = authSession;
-		this.sync = ctx.get(UISynchronize.class);
+		this.ctx = ctx;
 		this.bundle = bundle;
 		this.log = log;
-		this.ecrService = ctx.get(ECRService.class);
 	}
 
 	@Override
@@ -113,7 +114,7 @@ public class CustomerDebtWizard extends Wizard
 	@Override
 	public void addPages()
 	{
-		one = new CustomerDebtSelectPage(sync, bundle, log);
+		one = new CustomerDebtSelectPage(ctx, bundle, log);
 		two = new CustomerDebtConfirmPage();
 		addPage(one);
 		addPage(two);
@@ -134,7 +135,7 @@ public class CustomerDebtWizard extends Wizard
 		{
 			// 1. Scoate Bon Fiscal(daca e cazul)
 			if (one.casaActiva())
-				ecrService.printReceipt(AccDocMapper.toReceipt(bonuriCasa),
+				ctx.get(ECRService.class).printReceipt(AccDocMapper.toReceipt(bonuriCasa),
 						one.contBancar() != null ? PaymentType.CARD : PaymentType.CASH)
 				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(bonuriCasa.stream()
 						.map(AccountingDocument::getId).collect(Collectors.toSet()), false));
@@ -167,6 +168,22 @@ public class CustomerDebtWizard extends Wizard
 		
 		try
 		{
+			// sync to moqui
+			if (new BetaTester().evaluate(ctx.get(AuthenticationSession.class))) {
+				for (final AccountingDocument incasare : paidDocs) {
+					final Map<String, Object> partnerBody = Map.of("paymentId", incasare.getId(),
+							"fromPartyId", incasare.getPartner().getId(),
+							"toPartyId", incasare.getGestiune().getImportName(),
+							"amount", incasare.getTotal(),
+							"affiliatePartnerId", one.affiliate().map(gv -> gv.getString("partyId")).orElse(null));
+					
+					RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
+					.internal(ctx.get(AuthenticationSession.class).authentication())
+					.body(BodyProvider.of(HttpUtils.toJSON(partnerBody)))
+					.sync(GenericValue.class, t -> UIUtils.showException(t, ctx.get(UISynchronize.class)));
+				}
+			}
+			
 			// produse vandute in cealalta gestiune
 			final BigDecimal totalOtherGest = sourceDocs.stream()
 					.filter(AccountingDocument::isFullyCovered)

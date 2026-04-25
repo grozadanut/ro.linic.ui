@@ -15,7 +15,7 @@ public class SupplierDebtWizardDialog extends WizardDialog
 	@Override
 	protected Point getInitialSize()
 	{
-		return new Point(620, 620);
+		return new Point(690, 790);
 	}
 	
 	@Override

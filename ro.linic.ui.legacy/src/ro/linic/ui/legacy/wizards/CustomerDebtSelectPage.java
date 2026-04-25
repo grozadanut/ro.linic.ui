@@ -11,9 +11,12 @@ import static ro.linic.ui.legacy.session.UIUtils.extractLocalDate;
 import static ro.linic.ui.legacy.session.UIUtils.showException;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -46,12 +49,17 @@ import ro.colibri.entities.comercial.Partner;
 import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.components.AsyncLoadResult;
+import ro.linic.ui.legacy.expressions.BetaTester;
+import ro.linic.ui.legacy.parts.Messages;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.CustomerDebtNatTable;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class CustomerDebtSelectPage extends WizardPage
 {
@@ -59,6 +67,7 @@ public class CustomerDebtSelectPage extends WizardPage
 	private CustomerDebtNatTable table;
 	private Text incasat;
 	private DateTime dataDoc;
+	private Combo affiliate;
 	private Button transformaInFactura;
 	private Button transformaInBC;
 	private Button addFidelityPoints;
@@ -75,20 +84,25 @@ public class CustomerDebtSelectPage extends WizardPage
 //	private Text tempFilter;
 //	private Button deleteTempDocs;
 	
-	private UISynchronize sync;
+	private IEclipseContext ctx;
 	private Bundle bundle;
 	private Logger log;
 	private ImmutableList<ContBancar> allConturiBancare;
+	private List<GenericValue> allAffiliates;
 	
-	public CustomerDebtSelectPage(final UISynchronize sync, final Bundle bundle, final Logger log)
+	public CustomerDebtSelectPage(final IEclipseContext ctx, final Bundle bundle, final Logger log)
 	{
         super("Incaseaza");
         setTitle("Selecteaza documente");
         setMessage("Selecteaza documentele care trebuie incasate sau partenerul la care se adauga incasarea");
-        this.sync = sync;
+        this.ctx = ctx;
         this.bundle = bundle;
         this.log = log;
         allConturiBancare = BusinessDelegate.allConturiBancare();
+        allAffiliates = new BetaTester().evaluate(ctx.get(AuthenticationSession.class)) ?
+        		RestCaller.get("/rest/s1/moqui-linic-legacy/partners")
+				.internal(ctx.get(AuthenticationSession.class).authentication())
+				.sync(t -> UIUtils.showException(t, ctx.get(UISynchronize.class))) : List.of();
     }
 	
 	@Override
@@ -140,6 +154,18 @@ public class CustomerDebtSelectPage extends WizardPage
 		dataDoc = new DateTime(container, SWT.DATE | SWT.DROP_DOWN | SWT.CALENDAR_WEEKNUMBERS);
 		UIUtils.setFont(dataDoc);
 		
+		final Label affiliateLabel = new Label(container, SWT.NONE);
+		affiliateLabel.setText(Messages.VanzareMoquiPart_ColibriPartner);
+		UIUtils.setFont(affiliateLabel);
+		GridDataFactory.swtDefaults().exclude(!new BetaTester().evaluate(ctx.get(AuthenticationSession.class))).applyTo(affiliateLabel);
+		
+		affiliate = new Combo(container, SWT.DROP_DOWN);
+		affiliate.setItems(allAffiliates.stream()
+				.map(gv -> MessageFormat.format("{0} - {1} {2}", gv.getString("partnerCode"), gv.getString("name"), gv.getString("phone")))
+				.toArray(String[]::new));
+		UIUtils.setFont(affiliate);
+		GridDataFactory.fillDefaults().exclude(!new BetaTester().evaluate(ctx.get(AuthenticationSession.class))).applyTo(affiliate);
+		
 		final Label discDispLabel = new Label(container, SWT.NONE);
 		discDispLabel.setText("Disc disponibil");
 		UIUtils.setFont(discDispLabel);
@@ -188,7 +214,7 @@ public class CustomerDebtSelectPage extends WizardPage
 		contBancar = new Combo(container, SWT.DROP_DOWN);
 		contBancar.setItems(allConturiBancare.stream().map(ContBancar::displayName).toArray(String[]::new));
 		UIUtils.setFont(contBancar);
-		GridDataFactory.swtDefaults().hint(InchideBonWizard.EDITABLE_TEXT_WIDTH, SWT.DEFAULT).applyTo(contBancar);
+		GridDataFactory.swtDefaults().hint(200, SWT.DEFAULT).applyTo(contBancar);
 		
 		final Label paidDocNrLabel = new Label(container, SWT.NONE);
 		paidDocNrLabel.setText("Nr chitanta bancara");
@@ -518,6 +544,15 @@ public class CustomerDebtSelectPage extends WizardPage
 		return allConturiBancare.get(index);
 	}
 	
+	public Optional<GenericValue> affiliate()
+	{
+		final int index = affiliate.getSelectionIndex();
+		if (index == -1)
+			return Optional.empty();
+
+		return Optional.ofNullable(allAffiliates.get(index));
+	}
+	
 	public boolean casaActiva()
 	{
 		return casaActiva.getSelection();
@@ -640,7 +675,7 @@ public class CustomerDebtSelectPage extends WizardPage
 			{
 				MessageDialog.openError(Display.getCurrent().getActiveShell(), "Eroare la incarcarea documentelor", details);
 			}
-		}, sync);
+		}, ctx.get(UISynchronize.class));
 		
 //		BusinessDelegate.incasariOfDrivers(new AsyncLoadData<TempDocument>()
 //		{
