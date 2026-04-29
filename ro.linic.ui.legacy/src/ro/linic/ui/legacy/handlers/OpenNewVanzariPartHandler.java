@@ -12,9 +12,11 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 import jakarta.annotation.PostConstruct;
 import ro.colibri.security.Permissions;
+import ro.linic.ui.legacy.expressions.BetaTester;
 import ro.linic.ui.legacy.parts.VanzareBarPart;
 import ro.linic.ui.legacy.parts.VanzarePart;
 import ro.linic.ui.legacy.session.ClientSession;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class OpenNewVanzariPartHandler
 {
@@ -44,9 +46,10 @@ public class OpenNewVanzariPartHandler
 	}
 	
 	@CanExecute
-	boolean canExecute(final EPartService partService)
+	boolean canExecute(final EPartService partService, final AuthenticationSession auth)
 	{
-		final boolean canExecute = ClientSession.instance().hasPermission(Permissions.SALES_AGENT);
+		final boolean canExecute = ClientSession.instance().hasPermission(Permissions.SALES_AGENT) &&
+				!new BetaTester().evaluate(auth);
 		toolItem.setVisible(canExecute);
 		return canExecute;
 	}
