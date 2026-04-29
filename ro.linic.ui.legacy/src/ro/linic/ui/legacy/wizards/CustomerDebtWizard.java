@@ -175,7 +175,7 @@ public class CustomerDebtWizard extends Wizard
 							"fromPartyId", incasare.getPartner().getId(),
 							"toPartyId", incasare.getGestiune().getImportName(),
 							"amount", incasare.getTotal(),
-							"affiliatePartnerId", one.affiliate().map(gv -> gv.getString("partyId")).orElse(null));
+							"affiliatePartnerId", one.affiliate().map(gv -> gv.getString("partyId")).orElse(""));
 					
 					RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
 					.internal(ctx.get(AuthenticationSession.class).authentication())
