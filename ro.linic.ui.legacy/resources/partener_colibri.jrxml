@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 6.11.0-0c4056ccaa4d25a5a8c45672d2f764ea3498bebb  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="partener_colibri" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c22eb204-bd93-494b-9ac8-82e32c1e3d31">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="nume" class="java.lang.String"/>
+	<parameter name="furnizorName" class="java.lang.String"/>
+	<parameter name="furnizorRowDetails" class="java.lang.String"/>
+	<parameter name="furnizorEmail" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="25" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="80" y="0" width="400" height="20" uuid="b5e72215-29f9-4f39-83fa-6b7df7cf5c76"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REGULAMENT - Partener Colibri 2026]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="730" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="556" height="730" uuid="08056680-efca-4f2e-bbe1-ec95a8edc179"/>
+				<text><![CDATA[Prin semnarea acestui act declar că sunt de acord ca Organizatorul campaniei să prelucreze datele mele personale și accept acest Regulament.
+1. Organizatorul campaniei
+Campania este organizată de Showroom Colibri(LINIC SRL RO14998343), cu sediul în Marghita, Str. Tudor Vladimirescu 59.
+2. Perioada campaniei
+Campania se desfășoară în perioada 01.05.2026 – 31.12.2026.
+3. Locul desfășurării
+Campania este valabilă exclusiv în Showroom-ul Colibri din Marghita, Str. Tudor Vladimirescu 59.
+4. Condiții de participare
+Poate participa orice persoană fizică sau juridică care:
+- se înscrie în programul de fidelizare
+- oferă datele necesare pentru înregistrare
+- efectuează achiziții cu plata pe loc
+5. Mecanismul campaniei
+Pentru fiecare achiziție efectuată, valoarea acesteia se acumulează într-un cont de fidelitate.
+În funcție de totalul cumpărăturilor realizate în anul 2026, clientul primește discounturi astfel:
+    500 lei → 50 lei discount
+    5.000 lei → 150 lei discount
+    10.000 lei → 300 lei discount
+    15.000 lei → 500 lei discount
+    20.000 lei → 750 lei discount
+    30.000 lei → 1.500 lei discount
+    40.000 lei → 2.500 lei discount
+    50.000 lei → 3.500 lei discount
+    75.000 lei → 6.000 lei discount
+    100.000 lei → 10.000 lei discount
+Discountul este cumulativ pe praguri.
+Exemplu:
+La atingerea pragului de 5.000 lei, valoarea totală a discountului este 150 lei. Dacă anterior a fost acordat discount de 50 lei, clientul mai primește încă 100 lei.
+6. Utilizarea discountului
+- Discountul nu poate fi transformat în bani
+7. Produse excluse
+Campania nu se aplică pentru: ciment, cărămidă, produse aflate la ofertă negociată, produse aflate în lichidare de stoc, nu se cumulează cu alte promoții sau reduceri.
+8. Alte restricții
+- Campania nu se cumulează cu cardul de meșter
+- Discountul se acordă doar pentru achiziții cu plata pe loc
+9. Identificarea în program
+Pentru ca o achiziție să fie înregistrată în contul de fidelitate, clientul trebuie să prezinte la fiecare cumpărătură codul de partener sau numărul de telefon asociat contului.
+În lipsa acestor informații, tranzacția nu poate fi adăugată ulterior.
+10. Comunicarea cu participanții
+Comunicările oficiale legate de program se realizează prin: SMS, apel telefonic sau WhatsApp.
+Clientul este responsabil să mențină actualizat numărul de telefon. În cazul schimbării acestuia, trebuie să anunțe organizatorul.
+Numărul de contact al organizatorului este 0787577227.
+11. Valabilitate și expirare
+- Discounturile sunt valabile doar în anul 2026
+- Cardul de fidelitate devine inactiv dacă nu există nicio tranzacție într-un an calendaristic
+- La inactivarea cardului toate beneficiile și discounturile acumulate se pierd
+12. Date personale
+Prin participarea la campanie, clientul este de acord cu prelucrarea datelor personale.
+Date colectate: nume și prenume, număr de telefon, adresă de livrare și facturare.
+Alte date procesate: produse achiziționate, plăți efectuate, livrări, discounturi acumulate și utilizate.
+Datele sunt utilizate pentru: administrarea programului, comunicarea cu clientul, evidența comenzilor și beneficiilor.
+13. Modificarea regulamentului
+Organizatorul își rezervă dreptul de a modifica regulamentul, cu informarea clienților în showroom sau pe canalele oficiale.]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="40" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField textAdjust="ScaleFont" pattern="dd/MM /yyyy">
+				<reportElement x="20" y="16" width="140" height="20" uuid="d8547359-f209-42b8-b664-fa74f0c141de"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="20" y="0" width="56" height="16" uuid="4d560964-7722-4f4f-980f-e4f9cd72e330"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="440" y="0" width="116" height="16" uuid="8d09c43f-b037-4d90-9ceb-4410db7daf24"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Nume și semnatură]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

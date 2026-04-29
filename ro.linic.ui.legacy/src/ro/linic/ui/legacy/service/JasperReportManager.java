@@ -726,6 +726,22 @@ public class JasperReportManager
 		JasperViewer.viewReport(JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource), false);
 	}
 	
+	public void printPartenerColibri(final Bundle bundle, final String nume) throws IOException, JRException
+	{
+		final URL url = FileLocator.find(bundle, new Path("resources/partener_colibri.jasper"));
+		final URL fileUrl = FileLocator.toFileURL(url);
+		final InvocationResult firmaDetails = BusinessDelegate.firmaDetails();
+
+		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(nume));
+		final Map<String, Object> parameters = new HashMap<>();
+		parameters.put("nume", nume);
+		parameters.put("furnizorName", firmaDetails.extraString(PersistedProp.FIRMA_NAME_KEY));
+		parameters.put("furnizorRowDetails", buildOneRowDetails(firmaDetails));
+		parameters.put("furnizorEmail", firmaDetails.extraString(PersistedProp.FIRMA_EMAIL_KEY));
+		
+		JasperViewer.viewReport(JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource), false);
+	}
+	
 	public void printBarchart(final Bundle bundle, final String title, final Gestiune gestiune, final ImmutableList<JasperChartSerie> stats)
 			throws IOException, JRException
 	{

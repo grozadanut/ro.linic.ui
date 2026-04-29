@@ -247,7 +247,7 @@ public class AdaugaPartenerColibriDialog extends TitleAreaDialog {
 				
 				if (!isPersJuridica())
 					try {
-						JasperReportManager.instance(bundle, log).printGDPR(bundle, name.getText());
+						JasperReportManager.instance(bundle, log).printPartenerColibri(bundle, name.getText());
 					} catch (IOException | JRException e) {
 						log.error(e);
 						showException(e);
