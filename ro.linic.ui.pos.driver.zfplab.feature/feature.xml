@@ -2,7 +2,7 @@
 <feature
       id="ro.linic.ui.pos.driver.zfplab.feature"
       label="ZFPLab ECR Driver"
-      version="1.0.0">
+      version="1.0.1">
 
    <description>
       Driver ZFPLab pentru conectarea caselor de marcat Tremol la calculator.
