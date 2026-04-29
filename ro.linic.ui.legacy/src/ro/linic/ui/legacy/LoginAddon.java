@@ -205,6 +205,7 @@ public class LoginAddon {
 						{
 							prefs.putBoolean(JUST_UPDATED_PROP, true);
 							flushPrefs(prefs, log);
+							ro.linic.ui.base.services.util.UIUtils.openUrl("https://flexbiz.ro/changelog/index.html");
 							new ReleaseNotesDialog(null, log).open();
 							System.exit(0);
 						}
