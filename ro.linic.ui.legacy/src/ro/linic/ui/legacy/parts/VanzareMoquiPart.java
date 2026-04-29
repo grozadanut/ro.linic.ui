@@ -729,7 +729,7 @@ public class VanzareMoquiPart implements VanzareInterface
 	
 	private void selectAffiliate(final Optional<GenericValue> selAff) {
 		this.selectedAffiliate = selAff.orElse(null);
-		affiliateLabel.setText(selAff.map(cl -> java.text.MessageFormat.format("{0} - {1}", cl.getString("partnerCode"), cl.getString("name")))
+		affiliateLabel.setText(selAff.map(gv -> java.text.MessageFormat.format("{0} - {1} {2}", gv.getString("partnerCode"), gv.getString("name"), gv.getString("phone")))
 				.orElse(EMPTY_STRING));
 		availableDiscount.setText(selAff.map(cl -> cl.getBigDecimal("discDisponibil"))
 				.map(bd -> bd.setScale(2, RoundingMode.DOWN))
