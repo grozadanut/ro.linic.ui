@@ -259,7 +259,7 @@ public class AdaugaPartenerColibriDialog extends TitleAreaDialog {
 	}
 
 	private void sendWelcomeSMSSequence(final String phone, final String name, final String partnerCode) {
-		final List<String> toPhoneNumbers = java.util.List.of(sanitizePhoneNumber(phone), "+40754476519");
+		final List<String> toPhoneNumbers = java.util.List.of(sanitizePhoneNumber(phone));
 		
 		UtilServices.sendSms(getShell(), ctx, name, toPhoneNumbers,
 				MessageFormat.format(Messages.AdaugaPartnerColibriDialog_WelcomeMessage1, name, partnerCode));
