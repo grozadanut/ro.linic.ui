@@ -135,6 +135,12 @@
 		<field name="totalAchTva" class="java.math.BigDecimal">
 			<fieldDescription><![CDATA[totalAchTva]]></fieldDescription>
 		</field>
+		<field name="procentTvaAchizitie" class="java.math.BigDecimal">
+			<fieldDescription><![CDATA[procentTvaAchizitie]]></fieldDescription>
+		</field>
+		<field name="procentTvaVanzare" class="java.math.BigDecimal">
+			<fieldDescription><![CDATA[procentTvaVanzare]]></fieldDescription>
+		</field>
 		<sortField name="gestiune"/>
 		<sortField name="categorie"/>
 		<sortField name="id"/>
@@ -689,9 +695,14 @@
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="20">
 							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="40" height="20" uuid="8423b9dd-090e-460d-a2e9-a1de3ae8bb9c"/>
+								<reportElement x="0" y="0" width="40" height="10" uuid="8423b9dd-090e-460d-a2e9-a1de3ae8bb9c"/>
 								<textElement textAlignment="Right"/>
 								<textFieldExpression><![CDATA[$F{valoareAchizitieTVA}]]></textFieldExpression>
+							</textField>
+							<textField textAdjust="ScaleFont">
+								<reportElement x="0" y="10" width="40" height="10" uuid="418edd85-afae-4de9-ae51-d4f5c197cd01"/>
+								<textElement textAlignment="Right"/>
+								<textFieldExpression><![CDATA[$F{procentTvaAchizitie}+"%"]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -841,9 +852,14 @@
 						</jr:columnHeader>
 						<jr:detailCell style="Table 1_TD" height="20">
 							<textField textAdjust="ScaleFont">
-								<reportElement x="0" y="0" width="46" height="20" uuid="58fd6115-efec-4a52-be74-4587f364dcf6"/>
+								<reportElement x="0" y="0" width="46" height="10" uuid="58fd6115-efec-4a52-be74-4587f364dcf6"/>
 								<textElement textAlignment="Right"/>
 								<textFieldExpression><![CDATA[$F{valoareVanzareTVA}]]></textFieldExpression>
+							</textField>
+							<textField textAdjust="ScaleFont">
+								<reportElement x="0" y="10" width="46" height="10" uuid="b6afb9f2-b9ba-4e54-a320-743a910effcb"/>
+								<textElement textAlignment="Right"/>
+								<textFieldExpression><![CDATA[$F{procentTvaVanzare}+"%"]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

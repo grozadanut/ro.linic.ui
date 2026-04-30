@@ -37,6 +37,14 @@ public class AccDocReceptieDatasource extends AccDocDatasource {
 			final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 			final boolean groupByVAT = prefs.getBoolean(PreferenceKey.RECEPTIE_GROUPBY_VAT_KEY, false);
 			return op.getCategorie() + (groupByVAT ? PresentationUtils.SPACE + calculateVAT(op) : "");
+		case "procentTvaAchizitie":
+			return AccountingDocument.extractTvaPercentage(op.getValoareAchizitieFaraTVA(), op.getValoareAchizitieTVA())
+					.multiply(new BigDecimal("100"))
+					.setScale(0, RoundingMode.HALF_EVEN);
+		case "procentTvaVanzare":
+			return AccountingDocument.extractTvaPercentage(op.getValoareVanzareFaraTVA(), op.getValoareVanzareTVA())
+					.multiply(new BigDecimal("100"))
+					.setScale(0, RoundingMode.HALF_EVEN);
 		}
 
 		return super.getFieldValue(field);
