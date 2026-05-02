@@ -270,7 +270,7 @@ public class AdaugaPartenerColibriDialog extends TitleAreaDialog {
 
 	private Partner partnerFromFields() {
 		final Partner partner = new Partner();
-		partner.setName(name.getText());
+		partner.setName("L2 "+name.getText());
 		partner.setCodFiscal(isEmpty(cui.getText()) ? null : cui.getText());
 		partner.setRegCom(regCom.getText());
 		partner.setAddress(adresa.getModel());
