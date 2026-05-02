@@ -1110,7 +1110,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				
 				final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 						Display.getCurrent().getActiveShell(),
-						new InchideBonWizard(BusinessDelegate.reloadDoc(bonCasa.getId()), casaActivaButton.getSelection(), null, ctx, bundle, log,
+						new InchideBonWizard(BusinessDelegate.reloadDoc(bonCasa.getId()), casaActivaButton.getSelection(), EMPTY_STRING, ctx, bundle, log,
 								tipInchidere));
 
 				if (wizardDialog.open() == Window.OK) {

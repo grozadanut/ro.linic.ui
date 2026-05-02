@@ -2,6 +2,7 @@ package ro.linic.ui.legacy.wizards;
 
 import static ro.colibri.util.NumberUtils.parse;
 import static ro.colibri.util.PresentationUtils.displayBigDecimal;
+import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.linic.ui.legacy.session.UIUtils.showException;
 
 import java.math.BigDecimal;
@@ -302,7 +303,7 @@ public class InchideBonFirstPage extends WizardPage
 							"fromPartyId", reloadedBon.getPartner().getId(),
 							"toPartyId", reloadedBon.getGestiune().getImportName(),
 							"amount", reloadedBon.getTotal(),
-							"affiliatePartnerId", affiliatePartnerId);
+							"affiliatePartnerId", safeString(affiliatePartnerId));
 					
 					RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
 					.internal(ctx.get(AuthenticationSession.class).authentication())

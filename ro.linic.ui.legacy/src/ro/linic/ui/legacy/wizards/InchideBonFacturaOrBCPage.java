@@ -421,7 +421,7 @@ public class InchideBonFacturaOrBCPage extends WizardPage
 					"fromPartyId", chitantaToPrint.getPartner().getId(),
 					"toPartyId", chitantaToPrint.getGestiune().getImportName(),
 					"amount", chitantaToPrint.getTotal(),
-					"affiliatePartnerId", affiliatePartnerId);
+					"affiliatePartnerId", safeString(affiliatePartnerId));
 			
 			RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
 			.internal(ctx.get(AuthenticationSession.class).authentication())
