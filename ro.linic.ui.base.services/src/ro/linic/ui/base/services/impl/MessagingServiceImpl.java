@@ -13,8 +13,6 @@ import java.util.Optional;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -37,8 +35,7 @@ public class MessagingServiceImpl implements MessagingService {
 
 	@Activate
 	private void activate() throws IOException, InterruptedException {
-		final Bundle bundle = FrameworkUtil.getBundle(getClass());
-		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
 		final String natsUrl = safeString(prefs.get(PreferenceKey.NATS_URL, System.getProperty(PreferenceKey.NATS_URL)),
 						System.getenv(PreferenceKey.NATS_URL));
 		
