@@ -43,13 +43,13 @@ public class MessagingService
 	private boolean connectionStarted = false;
 	private HashMap<String, MessageListener> listenersByTopic = new HashMap<>();
 	
-	public static MessagingService instance()
-	{
-		if (instance == null)
-			instance = new MessagingService();
-		
-		return instance;
-	}
+//	public static MessagingService instance()
+//	{
+//		if (instance == null)
+//			instance = new MessagingService();
+//		
+//		return instance;
+//	}
 	
 	private MessagingService()
 	{

@@ -523,6 +523,17 @@ public class UIUtils
 			return EMPTY_STRING;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T deserialize(final byte[] data) {
+		try (ByteArrayInputStream bis = new ByteArrayInputStream(data);
+				ObjectInputStream ois = new ObjectInputStream(bis)) {
+			return (T) ois.readObject();
+		} catch (final IOException | ClassNotFoundException e) {
+			log.error(e.getMessage(), e);
+			return null;
+		}
+	}
 
 	public static <T extends Serializable> Optional<T> deserializeFrom(final String objectAsString) {
 		if (isEmpty(objectAsString))

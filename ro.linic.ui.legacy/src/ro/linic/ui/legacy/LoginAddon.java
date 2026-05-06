@@ -2,8 +2,6 @@ package ro.linic.ui.legacy;
 
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.ServerConstants.L1_NAME;
-import static ro.colibri.util.ServerConstants.L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
-import static ro.colibri.util.ServerConstants.L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
 import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_DEFAULT;
 import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_KEY;
 
@@ -43,12 +41,11 @@ import org.osgi.service.prefs.BackingStoreException;
 import com.google.common.collect.ImmutableList;
 import com.opcoach.e4.preferences.ScopedPreferenceStore;
 
+import io.nats.client.Message;
+import io.nats.client.MessageHandler;
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import jakarta.jms.Message;
-import jakarta.jms.MessageListener;
-import jakarta.jms.ObjectMessage;
 import ro.colibri.util.PresentationUtils;
+import ro.colibri.util.ServerConstants;
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
@@ -58,7 +55,6 @@ import ro.linic.ui.legacy.service.PeripheralService;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.service.components.LegacyReceiptLine;
 import ro.linic.ui.legacy.session.ClientSession;
-import ro.linic.ui.legacy.session.MessagingService;
 import ro.linic.ui.legacy.session.NotificationManager;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.pos.base.model.AllowanceCharge;
@@ -89,7 +85,7 @@ public class LoginAddon {
 	
 	@PostConstruct
 	public void beforeStartup(final IEclipseContext workbenchContext, final UISynchronize sync,
-			@OSGiBundle final Bundle bundle, @Preference final IEclipsePreferences prefs)
+			@OSGiBundle final Bundle bundle, @Preference final IEclipsePreferences prefs, final ro.linic.ui.base.services.MessagingService nats)
 	{
 		Locale.setDefault(Locale.Category.FORMAT, Locale.ENGLISH);
 		final Logger log = (Logger) workbenchContext.get(Logger.class.getName());
@@ -118,8 +114,8 @@ public class LoginAddon {
 				NotificationManager.SHOW_NOTIFICATIONS_PROP_DEFAULT)))
 			NotificationManager.initialize(new InAppNotificationService(bundle, log));
 
-		registerBarcodePrinter(log, bundle);
-		new JMSGeneralTopicHandler(log, bundle, sync);
+		registerBarcodePrinter(log, bundle, nats);
+		new JMSGeneralTopicHandler(log, bundle, sync, nats);
 		
 		workbenchContext.set("ro.linic.ui.legacy.prefStore",
 				new ScopedPreferenceStore(ConfigurationScope.INSTANCE, bundle.getSymbolicName()));
@@ -257,13 +253,13 @@ public class LoginAddon {
 		JFaceResources.getFontRegistry().put(UIUtils.XXX_BANNER_FONT, xxxBannerFD);
 	}
 	
-	private void registerBarcodePrinter(final Logger log, final Bundle bundle)
+	private void registerBarcodePrinter(final Logger log, final Bundle bundle, final ro.linic.ui.base.services.MessagingService nats)
 	{
-		final String remoteJndi = ClientSession.instance().getLoggedUser().getSelectedGestiune().isMatch(L1_NAME) ? 
-				L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
+		final String subject = ClientSession.instance().getLoggedUser().getSelectedGestiune().isMatch(L1_NAME) ? 
+				ServerConstants.L1_PRINT_BARCODE_TOPIC : ServerConstants.L2_PRINT_BARCODE_TOPIC;
 		final String barcodePrinter = System.getProperty(PeripheralService.BARCODE_PRINTER_KEY, PeripheralService.BARCODE_PRINTER_DEFAULT);
 		if (PeripheralService.instance().isPrinterConnected(barcodePrinter))
-			MessagingService.instance().registerMsgListener(remoteJndi, new PrintTopicListener(log, bundle));
+			nats.subscribe(ClientSession.instance().getCompany().getId()+"", subject, new PrintTopicListener(log, bundle));
 	}
 	
 	private void initSQLite(final IEclipseContext workbenchContext) {
@@ -343,13 +339,7 @@ public class LoginAddon {
 		return productsSb.toString();
 	}
 
-	@PreDestroy
-	public void applicationShutdown(final IEclipseContext workbenchContext)
-	{
-		MessagingService.instance().closeSession();
-	}
-	
-	private static class PrintTopicListener implements MessageListener
+	private static class PrintTopicListener implements MessageHandler
 	{
 		private Logger log;
 		private Bundle bundle;
@@ -359,18 +349,14 @@ public class LoginAddon {
 			this.log = log;
 			this.bundle = bundle;
 		}
-
-		@Override public void onMessage(final Message msg)
-		{
+		
+		@Override
+		public void onMessage(final Message msg) {
 			try
 			{
-				if (msg instanceof ObjectMessage)
-				{
-					final ObjectMessage objMessage = (ObjectMessage) msg;
-					final ImmutableList<BarcodePrintable> printables = (ImmutableList<BarcodePrintable>) objMessage.getObject();
-					final String barcodePrinter = System.getProperty(PeripheralService.BARCODE_PRINTER_KEY, PeripheralService.BARCODE_PRINTER_DEFAULT);
-					PeripheralService.printPrintables(printables, barcodePrinter, log, bundle, false, java.util.Optional.empty());
-				}
+				final ImmutableList<BarcodePrintable> printables = UIUtils.deserialize(msg.getData());
+				final String barcodePrinter = System.getProperty(PeripheralService.BARCODE_PRINTER_KEY, PeripheralService.BARCODE_PRINTER_DEFAULT);
+				PeripheralService.printPrintables(printables, barcodePrinter, log, bundle, false, java.util.Optional.empty(), null);
 			}
 			catch (final Exception e)
 			{

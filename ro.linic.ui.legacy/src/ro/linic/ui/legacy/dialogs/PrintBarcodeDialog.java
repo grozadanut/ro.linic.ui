@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.security.Permissions;
+import ro.linic.ui.base.services.MessagingService;
 import ro.linic.ui.legacy.service.PeripheralService;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.service.components.BarcodePrintable.LabelType;
@@ -45,14 +46,16 @@ public class PrintBarcodeDialog extends Dialog
 	
 	private Logger log;
 	private Bundle bundle;
+	private MessagingService nats;
 	
 	public PrintBarcodeDialog(final Shell parent, final ImmutableList<BarcodePrintable> inputData,
-			final Logger log, final Bundle bundle)
+			final Logger log, final Bundle bundle, final MessagingService nats)
 	{
 		super(parent);
 		this.inputData = inputData;
 		this.log = log;
 		this.bundle = bundle;
+		this.nats = nats;
 	}
 	
 	@Override
@@ -108,7 +111,7 @@ public class PrintBarcodeDialog extends Dialog
 	protected void okPressed()
 	{
 		PeripheralService.printPrintables(table.getFilteredSortedData(), System.getProperty(PeripheralService.BARCODE_PRINTER_KEY,
-				PeripheralService.BARCODE_PRINTER_DEFAULT), log, bundle, true, selectedGestiune());
+				PeripheralService.BARCODE_PRINTER_DEFAULT), log, bundle, true, selectedGestiune(), nats);
 		super.okPressed();
 	}
 	

@@ -58,6 +58,7 @@ import ro.colibri.util.InvocationResult;
 import ro.colibri.util.StringUtils;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.GenericDataHolder;
+import ro.linic.ui.base.services.MessagingService;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.AdaugaProductDialog;
@@ -117,6 +118,7 @@ public class CatalogProdusePart
 	@Inject private Logger log;
 	@Inject private IEclipseContext ctx;
 	@Inject private DataServices dataServices;
+	@Inject private MessagingService nats;
 	
 	public static void openPart(final EPartService partService)
 	{
@@ -464,7 +466,7 @@ public class CatalogProdusePart
 				final ImmutableList<BarcodePrintable> printables = BarcodePrintable.fromProducts(ctx, table.selection());
 				
 				if (!printables.isEmpty())
-					new PrintBarcodeDialog(etichete.getShell(), printables, log, bundle).open();
+					new PrintBarcodeDialog(etichete.getShell(), printables, log, bundle, nats).open();
 			}
 		});
 		

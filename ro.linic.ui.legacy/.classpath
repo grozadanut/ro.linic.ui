@@ -8,7 +8,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/log4j-to-slf4j-2.22.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/log4j-slf4j-impl-2.22.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/log4j-core-2.22.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/colibri_stat_ejb.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/colibri_stat_ejb.jar" sourcepath="C:/Users/danut/git/colibri_stat_repo/colibri_stat_ejb"/>
 	<classpathentry exported="true" kind="lib" path="libs/gson-2.8.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jasperreports-6.19.1-jar-with-dependencies.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jssc-2.9.4.jar"/>
@@ -22,7 +22,11 @@
 	<classpathentry exported="true" kind="lib" path="libs/ph-xsds-xades141-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ph-xsds-xmldsig-2.6.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/postgresql-42.2.5.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="target/generated-sources/annotations">

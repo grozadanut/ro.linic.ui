@@ -108,6 +108,7 @@ import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.base.dialogs.SelectEntityDialog;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.GenericDataHolder;
+import ro.linic.ui.base.services.MessagingService;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpUtils;
@@ -211,6 +212,7 @@ public class ManagerPart implements IMouseAction
 	@Inject private Logger log;
 	@Inject private AuthenticationSession authSession;
 	@Inject private DataServices dataServices;
+	@Inject private MessagingService nats;
 
 	public static ManagerPart loadDocInPart(final EPartService partService, final AccountingDocument doc)
 	{
@@ -894,7 +896,7 @@ public class ManagerPart implements IMouseAction
 						ImmutableList.copyOf(operationsTable.getSourceData()), bundle, log);
 				
 				if (!printables.isEmpty())
-					new PrintBarcodeDialog(etichete.getShell(), printables, log, bundle).open();
+					new PrintBarcodeDialog(etichete.getShell(), printables, log, bundle, nats).open();
 			}
 		});
 		

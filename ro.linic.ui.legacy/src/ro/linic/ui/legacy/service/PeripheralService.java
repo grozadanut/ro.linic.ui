@@ -2,8 +2,6 @@ package ro.linic.ui.legacy.service;
 
 import static ro.colibri.util.ListUtils.toImmutableList;
 import static ro.colibri.util.ServerConstants.L1_NAME;
-import static ro.colibri.util.ServerConstants.L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
-import static ro.colibri.util.ServerConstants.L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
 import static ro.linic.ui.legacy.session.UIUtils.isWindows;
 
 import java.io.IOException;
@@ -33,7 +31,6 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.UnmodifiableIterator;
 
 import jssc.SerialPortException;
@@ -41,7 +38,7 @@ import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
-import ro.colibri.util.ServerConstants.JMSMessageType;
+import ro.colibri.util.ServerConstants;
 import ro.colibri.wrappers.ThreeEntityWrapper;
 import ro.colibri.wrappers.TwoEntityWrapper;
 import ro.linic.ui.base.services.util.UIUtils;
@@ -50,7 +47,6 @@ import ro.linic.ui.legacy.preferences.PreferenceKey;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.service.components.BarcodePrintable.LabelType;
 import ro.linic.ui.legacy.session.ClientSession;
-import ro.linic.ui.legacy.session.MessagingService;
 
 public abstract class PeripheralService
 {
@@ -73,7 +69,8 @@ public abstract class PeripheralService
 	}
 	
 	public static void printPrintables(final Collection<BarcodePrintable> printables, final String printerName,
-			final Logger log, final Bundle bundle, final boolean sendFurther, final Optional<Gestiune> gestiune)
+			final Logger log, final Bundle bundle, final boolean sendFurther, final Optional<Gestiune> gestiune,
+			final ro.linic.ui.base.services.MessagingService nats)
 	{
 		// A4 labels we don't send further because the printer is selected from JasperViewer by user
 		try
@@ -111,17 +108,17 @@ public abstract class PeripheralService
 		if (sendFurther && gestiune.isPresent() && !gestiune.get().equals(ClientSession.instance().getLoggedUser().getSelectedGestiune()) &&
 				!printablesToSend.isEmpty())
 		{
-			final String remoteJndi = gestiune.get().isMatch(L1_NAME) ? 
-					L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
-			MessagingService.instance().sendMsg(remoteJndi, JMSMessageType.GENERAL, ImmutableMap.of(), printablesToSend);
+			final String subject = gestiune.get().isMatch(L1_NAME) ? 
+					ServerConstants.L1_PRINT_BARCODE_TOPIC : ServerConstants.L2_PRINT_BARCODE_TOPIC;
+			nats.sendMessage(ClientSession.instance().getCompany().getId()+"", subject, printablesToSend);
 			return;
 		}
 		
 		if (sendFurther && !instance().isPrinterConnected(printerName) && !printablesToSend.isEmpty())
 		{
-			final String remoteJndi = ClientSession.instance().getLoggedUser().getSelectedGestiune().isMatch(L1_NAME) ? 
-					L1_PRINT_BARCODE_TOPIC_REMOTE_JNDI : L2_PRINT_BARCODE_TOPIC_REMOTE_JNDI;
-			MessagingService.instance().sendMsg(remoteJndi, JMSMessageType.GENERAL, ImmutableMap.of(), printablesToSend);
+			final String subject = ClientSession.instance().getLoggedUser().getSelectedGestiune().isMatch(L1_NAME) ? 
+					ServerConstants.L1_PRINT_BARCODE_TOPIC : ServerConstants.L2_PRINT_BARCODE_TOPIC;
+			nats.sendMessage(ClientSession.instance().getCompany().getId()+"", subject, printablesToSend);
 			return;
 		}
 		

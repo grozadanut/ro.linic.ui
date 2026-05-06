@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" deactivate="deactivate" name="ro.linic.ui.base.services.impl.MessagingServiceImpl">
+   <service scope="singleton">
+      <provide interface="ro.linic.ui.base.services.MessagingService"/>
+   </service>
+   <implementation class="ro.linic.ui.base.services.impl.MessagingServiceImpl"/>
+</scr:component>

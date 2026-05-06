@@ -12,6 +12,7 @@ import org.osgi.framework.Bundle;
 import com.google.common.collect.ImmutableList;
 
 import jakarta.inject.Inject;
+import ro.linic.ui.base.services.MessagingService;
 import ro.linic.ui.legacy.dialogs.PrintBarcodeDialog;
 import ro.linic.ui.legacy.parts.components.VanzareInterface;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
@@ -22,7 +23,7 @@ public class PrintBarcodeHandler
 	@Inject @OSGiBundle private Bundle bundle;
 	
 	@Execute
-	public void execute(final EPartService partService, final IEclipseContext ctx)
+	public void execute(final EPartService partService, final IEclipseContext ctx, final MessagingService nats)
 	{
 		final MPart activePart = partService.getActivePart();
 		
@@ -33,6 +34,6 @@ public class PrintBarcodeHandler
 				BarcodePrintable.fromProducts(ctx, ((VanzareInterface) activePart.getObject()).selection());
 		
 		if (!printables.isEmpty())
-			new PrintBarcodeDialog(Display.getCurrent().getActiveShell(), printables, log, bundle).open();
+			new PrintBarcodeDialog(Display.getCurrent().getActiveShell(), printables, log, bundle, nats).open();
 	}
 }

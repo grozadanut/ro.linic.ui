@@ -15,5 +15,6 @@ public class SettingsPage extends FieldEditorPreferencePage {
 	@Override
 	protected void createFieldEditors() {
 		addField(new StringFieldEditor(PreferenceKey.SERVER_BASE_URL, Messages.ServerUrl, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.NATS_URL, Messages.NatsUrl, getFieldEditorParent()));
 	}
 }

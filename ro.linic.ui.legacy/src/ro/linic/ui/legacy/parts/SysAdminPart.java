@@ -4,8 +4,6 @@ import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.LocalDateUtils.POSTGRES_MAX;
 import static ro.colibri.util.LocalDateUtils.POSTGRES_MIN;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
-import static ro.colibri.util.ServerConstants.GENERAL_TOPIC_REMOTE_JNDI;
-import static ro.colibri.util.ServerConstants.JMS_USERS_KEY;
 import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
 import static ro.linic.ui.legacy.session.UIUtils.saveState;
@@ -16,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
@@ -47,9 +46,9 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import io.nats.client.Message;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import ro.colibri.entities.comercial.AccountingDocument;
@@ -61,6 +60,7 @@ import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.wrappers.RulajPartener;
+import ro.linic.ui.base.dialogs.InfoDialog;
 import ro.linic.ui.legacy.JMSGeneralTopicHandler;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.PrintBarcodeDialog;
@@ -70,7 +70,6 @@ import ro.linic.ui.legacy.inport.ImportParseException;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
-import ro.linic.ui.legacy.session.MessagingService;
 import ro.linic.ui.legacy.session.UIUtils;
 import ro.linic.ui.legacy.tables.PersistedPropNatTable;
 
@@ -105,6 +104,7 @@ public class SysAdminPart
 	@Inject private UISynchronize sync;
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private IEclipseContext ctx;
+	@Inject private ro.linic.ui.base.services.MessagingService nats;
 	
 	@PostConstruct
 	public void createComposite(final Composite parent)
@@ -348,10 +348,15 @@ public class SysAdminPart
 		
 		requestLogs.addSelectionListener(new SelectionAdapter() {
 			@Override public void widgetSelected(final SelectionEvent e) {
-				if (selectedUser().isPresent())
-					MessagingService.instance().sendMsg(GENERAL_TOPIC_REMOTE_JNDI, JMSGeneralTopicHandler.JMSMSGTYPE_LOG_REQUEST, 
-							ImmutableMap.of(JMS_USERS_KEY, selectedUser().get().getId()+"",
-									JMSGeneralTopicHandler.REPLY_TO, ClientSession.instance().getLoggedUser().getId()+""), "");
+				if (selectedUser().isPresent()) {
+					final Optional<Message> response = nats.requestReply(ClientSession.instance().getCompany().getId()+"", selectedUser().get().getId()+"",
+							JMSGeneralTopicHandler.JMSMSGTYPE_LOG_REQUEST, null, Duration.ofSeconds(30));
+
+					response.ifPresent(msg -> {
+						final String logs = UIUtils.deserialize(msg.getData());
+						sync.asyncExec(() -> InfoDialog.open(Display.getDefault().getActiveShell(), "Logs", logs));
+					});
+				}
 			}
 		});
 		
@@ -560,7 +565,7 @@ public class SysAdminPart
 			final ImmutableList<BarcodePrintable> printables = BarcodePrintable.fromProducts(ctx, products);
 			
 			if (!printables.isEmpty())
-				new PrintBarcodeDialog(printBarcodes.getShell(), printables, log, bundle).open();
+				new PrintBarcodeDialog(printBarcodes.getShell(), printables, log, bundle, nats).open();
 		}
 		catch (EncryptedDocumentException | InvalidFormatException | ImportParseException | IOException e)
 		{

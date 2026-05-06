@@ -65,8 +65,6 @@ public class ClientSession
 	public User login()
 	{
 		loggedUser = BusinessDelegate.login();
-		MessagingService.instance().closeSession();
-		MessagingService.instance().restoreListeners();
 		reloadBillImages();
 		return loggedUser;
 	}
@@ -182,6 +180,11 @@ public class ClientSession
 	public Gestiune getGestiune()
 	{
 		return loggedUser.getSelectedGestiune();
+	}
+	
+	public Company getCompany()
+	{
+		return loggedUser.getSelectedCompany();
 	}
 	
 	public Properties getProperties()

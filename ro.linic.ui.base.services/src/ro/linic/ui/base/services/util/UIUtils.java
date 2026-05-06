@@ -6,9 +6,12 @@ import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.awt.Desktop;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -373,5 +376,19 @@ public class UIUtils {
 				bundleNicenames.append(bundleNicename).append(NEWLINE);
 		}
 		return bundleNicenames.toString();
+	}
+	
+	public static byte[] serialize(final Serializable object) {
+		if (object == null)
+			return null;
+		
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+			oos.writeObject(object);
+			return bos.toByteArray();
+		} catch (final IOException e) {
+			log.error(e.getMessage(), e);
+			return null;
+		}
 	}
 }

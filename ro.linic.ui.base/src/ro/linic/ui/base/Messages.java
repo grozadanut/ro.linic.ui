@@ -20,5 +20,6 @@ public class Messages extends NLS {
 	public static String ClearPersistedStateMessage;
 	public static String About;
 	public static String ServerUrl;
+	public static String NatsUrl;
 	public static String Confirm;
 }
