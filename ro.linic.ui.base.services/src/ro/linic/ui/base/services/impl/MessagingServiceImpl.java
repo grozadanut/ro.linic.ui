@@ -46,6 +46,7 @@ public class MessagingServiceImpl implements MessagingService {
 		
 		final Options options = new Options.Builder()
 				.server(natsUrl)
+				.maxReconnects(-1) // infinite
 				.noEcho() // don't send message back to me
 				.build();
 		nc = Nats.connect(options);
@@ -62,7 +63,11 @@ public class MessagingServiceImpl implements MessagingService {
 		if (nc == null)
 			return;
 		
-		nc.publish(tenandId+"."+subject, body == null ? null : body.getBytes(StandardCharsets.UTF_8));
+		try {
+			nc.publish(tenandId+"."+subject, body == null ? null : body.getBytes(StandardCharsets.UTF_8));
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -70,7 +75,11 @@ public class MessagingServiceImpl implements MessagingService {
 		if (nc == null)
 			return;
 		
-		nc.publish(tenandId+"."+subject, UIUtils.serialize(body));
+		try {
+			nc.publish(tenandId+"."+subject, UIUtils.serialize(body));
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	@Override
@@ -78,7 +87,11 @@ public class MessagingServiceImpl implements MessagingService {
 		if (nc == null)
 			return;
 		
-		nc.publish(tenandId+"."+userId+"."+subject, UIUtils.serialize(body));
+		try {
+			nc.publish(tenandId+"."+userId+"."+subject, UIUtils.serialize(body));
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	@Override
@@ -91,7 +104,11 @@ public class MessagingServiceImpl implements MessagingService {
 		if (nc == null)
 			return;
 		
-		nc.publish(replyTo.getReplyTo(), UIUtils.serialize(body));
+		try {
+			nc.publish(replyTo.getReplyTo(), UIUtils.serialize(body));
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	@Override
@@ -105,7 +122,7 @@ public class MessagingServiceImpl implements MessagingService {
 				sb.append("."+userId);
 			sb.append("."+subject);
 			return Optional.ofNullable(nc.request(sb.toString(), UIUtils.serialize(body), timeout));
-		} catch (final InterruptedException e) {
+		} catch (final Exception e) {
 			log.error(e.getMessage(), e);
 			return Optional.empty();
 		}
@@ -116,7 +133,11 @@ public class MessagingServiceImpl implements MessagingService {
 		if (nc == null)
 			return;
 		
-		nc.createDispatcher(handler).subscribe(tenandId+"."+subject);
+		try {
+			nc.createDispatcher(handler).subscribe(tenandId+"."+subject);
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	@Override
@@ -124,6 +145,10 @@ public class MessagingServiceImpl implements MessagingService {
 		if (nc == null)
 			return;
 		
-		nc.createDispatcher(handler).subscribe(tenandId+"."+userId+"."+subject);
+		try {
+			nc.createDispatcher(handler).subscribe(tenandId+"."+userId+"."+subject);
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 }
