@@ -23,6 +23,8 @@ import ro.linic.ui.legacy.dialogs.Messages;
 import ro.linic.ui.legacy.session.UIUtils;
 
 public class AnafInvoiceLineTray extends DialogTray {
+	private static final int WIDGET_WIDTH = 200;
+	
 	private final GenericValue anafInvoiceLine;
 	private final Consumer<SelectionEvent> disconnected;
 	private final Consumer<SelectionEvent> markReceived;
@@ -53,39 +55,43 @@ public class AnafInvoiceLineTray extends DialogTray {
 		
 		final Label codeLabel = new Label(container, SWT.NONE);
 		codeLabel.setText(Messages.AdaugaProductDialog_Code);
-		GridDataFactory.swtDefaults().span(2, 1).applyTo(codeLabel);
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(codeLabel);
+		
+		code = new Text(container, SWT.SINGLE | SWT.BORDER);
+		code.setEditable(false);
+		UIUtils.setFont(code);
+		GridDataFactory.fillDefaults().span(3, 1).hint(WIDGET_WIDTH, SWT.DEFAULT).applyTo(code);
+		
+		final Label nameLabel = new Label(container, SWT.NONE);
+		nameLabel.setText(Messages.AdaugaProductDialog_Name);
+		GridDataFactory.swtDefaults().span(3, 1).applyTo(nameLabel);
+		
+		name = new Text(container, SWT.SINGLE | SWT.BORDER);
+		name.setEditable(false);
+		UIUtils.setFont(name);
+		GridDataFactory.fillDefaults().span(3, 1).hint(WIDGET_WIDTH, SWT.DEFAULT).applyTo(name);
 		
 		final Label quantityLabel = new Label(container, SWT.NONE);
 		quantityLabel.setText(Messages.AdaugaOpDialog_Quantity);
 		GridDataFactory.swtDefaults().applyTo(quantityLabel);
 		
-		code = new Text(container, SWT.SINGLE | SWT.BORDER);
-		code.setEditable(false);
-		UIUtils.setFont(code);
-		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(code);
-		
-		quantity = new Text(container, SWT.SINGLE | SWT.BORDER);
-		quantity.setEditable(false);
-		UIUtils.setFont(quantity);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(quantity);
-		
-		final Label nameLabel = new Label(container, SWT.NONE);
-		nameLabel.setText(Messages.AdaugaProductDialog_Name);
-		GridDataFactory.swtDefaults().span(2, 1).applyTo(nameLabel);
-		
 		final Label uomLabel = new Label(container, SWT.NONE);
 		uomLabel.setText(Messages.UOM);
 		GridDataFactory.swtDefaults().applyTo(uomLabel);
 		
-		name = new Text(container, SWT.SINGLE | SWT.BORDER);
-		name.setEditable(false);
-		UIUtils.setFont(name);
-		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(name);
+		new Label(container, SWT.NONE); // layout purpose
+
+		quantity = new Text(container, SWT.SINGLE | SWT.BORDER);
+		quantity.setEditable(false);
+		UIUtils.setFont(quantity);
+		GridDataFactory.swtDefaults().hint(WIDGET_WIDTH/2, SWT.DEFAULT).applyTo(quantity);
 		
 		uom = new Text(container, SWT.SINGLE | SWT.BORDER);
 		uom.setEditable(false);
 		UIUtils.setFont(uom);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(uom);
+		GridDataFactory.swtDefaults().hint(WIDGET_WIDTH/2, SWT.DEFAULT).applyTo(uom);
+		
+		new Label(container, SWT.NONE);  // layout purpose
 		
 		final Label puaFaraTVALabel = new Label(container, SWT.NONE);
 		puaFaraTVALabel.setText(Messages.AdaugaOpDialog_PUAfTVA);
@@ -102,28 +108,28 @@ public class AnafInvoiceLineTray extends DialogTray {
 		puaFaraTVA = new Text(container, SWT.SINGLE | SWT.BORDER);
 		puaFaraTVA.setEditable(false);
 		UIUtils.setFont(puaFaraTVA);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(puaFaraTVA);
+		GridDataFactory.fillDefaults().hint(WIDGET_WIDTH, SWT.DEFAULT).applyTo(puaFaraTVA);
 		
 		valAchFaraTVA = new Text(container, SWT.SINGLE | SWT.BORDER);
 		valAchFaraTVA.setEditable(false);
 		UIUtils.setFont(valAchFaraTVA);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(valAchFaraTVA);
+		GridDataFactory.fillDefaults().hint(WIDGET_WIDTH, SWT.DEFAULT).applyTo(valAchFaraTVA);
 		
 		valAchTVA = new Text(container, SWT.SINGLE | SWT.BORDER);
 		valAchTVA.setEditable(false);
 		UIUtils.setFont(valAchTVA);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(valAchTVA);
+		GridDataFactory.fillDefaults().hint(WIDGET_WIDTH, SWT.DEFAULT).applyTo(valAchTVA);
 		
 		disconnectLine = new Button(container, SWT.PUSH);
 		disconnectLine.setText(Messages.AnafInvoiceLineTray_Disconnect);
-		disconnectLine.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+		disconnectLine.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		disconnectLine.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(disconnectLine);
 		UIUtils.setBoldBannerFont(disconnectLine);
 		
 		ignoreLine = new Button(container, SWT.PUSH);
 		ignoreLine.setText(Messages.AnafInvoiceLineTray_IgnoreLine);
-		ignoreLine.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+		ignoreLine.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
 		ignoreLine.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		GridDataFactory.swtDefaults().applyTo(ignoreLine);
 		UIUtils.setBoldBannerFont(ignoreLine);
