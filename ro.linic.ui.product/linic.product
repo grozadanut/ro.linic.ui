@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="linic" uid="ro.linic.ui.product" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0" type="mixed" includeLaunchers="true" autoIncludeRequirements="true">
+<product name="flexbiz" uid="ro.linic.ui.product" id="ro.linic.ui.base.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="2.0.0" type="mixed" includeLaunchers="true" autoIncludeRequirements="true">
 
    <configIni use="default">
    </configIni>
@@ -16,7 +16,7 @@ ro_RO
 
    <windowImages i16="/ro.linic.ui.base/icons/logo_16x16.png" i32="/ro.linic.ui.base/icons/logo_32x32.png" i48="/ro.linic.ui.base/icons/logo_48x48.png" i64="/ro.linic.ui.base/icons/logo_64x64.png" i128="/ro.linic.ui.base/icons/logo_128x128.png" i256="/ro.linic.ui.base/icons/logo_256x256.png"/>
 
-   <launcher name="linic">
+   <launcher name="flexbiz">
       <win useIco="true">
          <ico path="/ro.linic.ui.base/icons/logo.ico"/>
          <bmp/>

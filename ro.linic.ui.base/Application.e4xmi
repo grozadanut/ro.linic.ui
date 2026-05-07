@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_cGVhQI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.application">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_tbP-oI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimmedwindow.linic" label="Linic Desktop" iconURI="platform:/plugin/ro.linic.ui.base/icons/logo_256x256.png" x="0" y="0" width="800" height="1024">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_tbP-oI0BEe6qNdK_29XQrA" elementId="ro.linic.ui.base.trimmedwindow.linic" label="Flexbiz Desktop" iconURI="platform:/plugin/ro.linic.ui.base/icons/logo_256x256.png" x="0" y="0" width="800" height="1024">
     <mainMenu xmi:id="_cvKv8I0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.main.menu">
       <children xsi:type="menu:Menu" xmi:id="_rWkeMI0OEe6qNdK_29XQrA" elementId="org.eclipse.ui.file.menu" label="%menu.label.file" mnemonics="">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_Cjyw8MfiEe6wm9FSKxJZow" elementId="ro.linic.ui.base.handledmenuitem.save" label="%handledmenuitem.label.save" iconURI="platform:/plugin/ro.linic.ui.base/icons/save_16x16.png" command="_mPIBcMfhEe6wm9FSKxJZow"/>
