@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.Future;
@@ -87,6 +88,7 @@ import ro.colibri.entities.user.Role;
 import ro.colibri.entities.user.User;
 import ro.colibri.security.SecurityUtils;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.ListUtils;
 import ro.colibri.wrappers.ClasamentEntry;
 import ro.colibri.wrappers.LastYearStats;
 import ro.colibri.wrappers.PontajLine;
@@ -142,8 +144,11 @@ public class BusinessDelegate
 	
 	public static ImmutableMap<User, List<Company>> usersWithCompanyRoles()
 	{
+		final Company companyLoggedIn = ClientSession.instance().getCompany();
 		final UsersBeanRemote usersBean = ServiceLocator.getBusinessService(UsersBean.class, UsersBeanRemote.class);
-		return usersBean.usersWithCompanyRoles();
+		return usersBean.usersWithCompanyRoles().entrySet().stream()
+				.filter(e -> e.getKey().hasAnyRoleInCompany(companyLoggedIn))
+				.collect(ListUtils.toImmutableMap(Entry::getKey, Entry::getValue));
 	}
 	
 	public static ImmutableMap<Company, List<Gestiune>> companiesWithGestiuni()
