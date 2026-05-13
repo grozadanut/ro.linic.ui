@@ -121,6 +121,7 @@ import ro.colibri.entities.comercial.Raion;
 import ro.colibri.entities.comercial.Reducere;
 import ro.colibri.entities.comercial.mappings.ProductReducereMapping;
 import ro.colibri.security.Permissions;
+import ro.colibri.util.NumberUtils;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.tables.components.Column;
@@ -141,6 +142,7 @@ public class AllProductsNatTable
 	
 	private static final int RETETA_QUANTITY_ID = 21;
 	private static final int REDUCERI_ID = 26;
+	private static final int ZILE_VALABILITATE_ID = 27;
 	private static final int STOC_ID_BASE = 1000;
 	private static final int AVERAGE_DAY_SALE_ID_BASE = 2000;
 	private static final int FUTURE_STOC_ID_BASE = 3000;
@@ -166,6 +168,7 @@ public class AllProductsNatTable
 	private static final Column casaDeptColumn = new Column(24, Product.CASA_DEPT_FIELD, "Departament Casa", 120);
 	private static final Column raionColumn = new Column(25, Product.RAION_FIELD, "Raion", 120);
 	private static final Column reduceriColumn = new Column(REDUCERI_ID, EMPTY_STRING, "Reduceri", 120);
+	private static final Column zileValabilitateColumn = new Column(ZILE_VALABILITATE_ID, EMPTY_STRING, "Zile valabilitate", 120);
 	
 	private static final ImmutableMap<Column, Gestiune> stocColumns;
 	private static final ImmutableMap<Column, Gestiune> averageDaySaleColumns;
@@ -276,7 +279,8 @@ public class AllProductsNatTable
 			.add(priceColumn)
 			.addAll(stocColumns.keySet())
 //			.add(stocMinimColumn)
-			.add(idxColumn);
+			.add(idxColumn)
+			.add(zileValabilitateColumn);
 			break;
 		case COMENZI_FURNIZORI:
 			builder.add(barcodeColumn)
@@ -800,6 +804,9 @@ public class AllProductsNatTable
 				return rowObject.getReduceri().stream()
 						.map(ProductReducereMapping::getReducere)
 						.collect(toHashSet());
+				
+			case ZILE_VALABILITATE_ID:
+				return BusinessDelegate.persistedProp("termen_"+rowObject.getBarcode()).getValue();
 
 			default:
 				return super.getDataValue(rowObject, columnIndex);
@@ -830,6 +837,16 @@ public class AllProductsNatTable
 				else
 					rowObj.getReduceri().clear();
 				break;
+				
+			case ZILE_VALABILITATE_ID:
+				if (newValue == null) {
+					BusinessDelegate.updatePersistedProp("termen_"+rowObj.getBarcode(), null);
+					break;
+				}
+				
+				BusinessDelegate.updatePersistedProp("termen_"+rowObj.getBarcode(), NumberUtils.parseToLong(newValue.toString())+"");
+				break;
+
 			default:
 				super.setDataValue(rowObj, columnIndex, newValue);
 
@@ -979,6 +996,8 @@ public class AllProductsNatTable
 						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(raionColumn));
 				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(reduceriColumn));
+				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
+						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + columns.indexOf(zileValabilitateColumn));
 				
 				// CELL EDITOR
 				final ComboBoxCellEditor allCatCellEditor = new ComboBoxCellEditor(Product.ALL_CATEGORIES.asList());

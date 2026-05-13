@@ -24,6 +24,12 @@
             id="ro.linic.ui.legacy.preference.printpage.receptie"
             name="%page.receptie">
       </page>
+      <page
+            category="ro.linic.ui.legacy.preference.printpage"
+            class="ro.linic.ui.legacy.preferences.PrintFacturaPage"
+            id="ro.linic.ui.legacy.preference.printpage.invoice"
+            name="%page.invoice">
+      </page>
    </extension>
    <extension
          point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">

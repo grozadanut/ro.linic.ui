@@ -39,6 +39,8 @@ import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -81,6 +83,7 @@ import ro.linic.ui.legacy.jasper.datasource.AccDocReceptieDatasource;
 import ro.linic.ui.legacy.jasper.datasource.OfertaCuDiscountDatasource;
 import ro.linic.ui.legacy.jasper.datasource.OfertaDatasource;
 import ro.linic.ui.legacy.jasper.datasource.ProductsDatasource;
+import ro.linic.ui.legacy.preferences.PreferenceKey;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
 import ro.linic.ui.legacy.service.components.JasperChartSerie;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -854,13 +857,19 @@ public class JasperReportManager
 	
 	private JasperPrint createFactura(final Bundle bundle, final AccountingDocument factura) throws IOException, JRException
 	{
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		final boolean printConformitate = prefs.getBoolean(PreferenceKey.FACTURA_PRINT_CONFORMITATE_KEY, PreferenceKey.FACTURA_PRINT_CONFORMITATE_DEF);
+		
 		final AccountingDocument facturaReload = loadFacturaWithoutConsumabile(factura);
 		final JasperPrint jasperReport = createFacturaPage(bundle, facturaReload, "1");
 		final JasperPrint firstCopy = createFacturaPage(bundle, facturaReload, "2");
 		final JasperPrint secondCopy = createFacturaPage(bundle, facturaReload, "3");
+		final JasperPrint conformitate = printConformitate ? createConformitatePage(bundle, facturaReload) : null;
 		
 		jasperReport.getPages().addAll(firstCopy.getPages());
 		jasperReport.getPages().addAll(secondCopy.getPages());
+		if (conformitate != null)
+			jasperReport.getPages().addAll(conformitate.getPages());
 		
 		return jasperReport;
 	}
@@ -924,6 +933,28 @@ public class JasperReportManager
 		final Optional<String> stampUuid = ClientSession.instance().loggedUserStamp();
 		if (stampUuid.isPresent())
 			parameters.put("stampImage", BusinessDelegate.imagePathFromUuid(bundle, log, stampUuid.get()));
+		
+		return JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource);
+	}
+	
+	private JasperPrint createConformitatePage(final Bundle bundle, final AccountingDocument factura) throws IOException, JRException
+	{
+		final URL url = FileLocator.find(bundle, new Path("resources/conformitate.jasper"));
+		final URL fileUrl = FileLocator.toFileURL(url);
+		final InvocationResult firmaDetails = BusinessDelegate.firmaDetails();
+
+		final JRBeanCollectionDataSource beanColDataSource = new JRBeanCollectionDataSource(ImmutableList.of(factura));
+		final Map<String, Object> parameters = new HashMap<>();
+		parameters.put("furnizorName", firmaDetails.extraString(PersistedProp.FIRMA_NAME_KEY));
+		parameters.put("furnizorDetails", buildOneRowDetails(firmaDetails));
+		parameters.put("nrFactura", factura.getNrDoc());
+		parameters.put("dataFactura", factura.getDataDoc_toLocalDate());
+		parameters.put("customerName", safeString(factura.getPartner(), Partner::getName));
+		parameters.put("termeneValabilitate", factura.getOperatiuni_Stream()
+				.map(op -> op.getName() + " - " + factura.getDataDoc_toLocalDate().plusDays(
+						NumberUtils.parseToLong(BusinessDelegate.persistedProp("termen_"+op.getBarcode()).getValueOr("3"))))
+				.sorted()
+				.collect(Collectors.joining(NEWLINE)));
 		
 		return JasperFillManager.fillReport(fileUrl.getFile(), parameters, beanColDataSource);
 	}
