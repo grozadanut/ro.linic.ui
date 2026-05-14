@@ -3,6 +3,7 @@ package ro.linic.ui.legacy.session;
 import static ro.colibri.util.ListUtils.toImmutableList;
 import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.StringUtils.globalIsMatch;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -99,6 +100,7 @@ import ro.colibri.wrappers.RulajPartener;
 import ro.colibri.wrappers.SalesPerHours;
 import ro.colibri.wrappers.SalesPerOperators;
 import ro.colibri.wrappers.ThreeEntityWrapper;
+import ro.flexbiz.util.commons.StringUtils.TextFilterMethod;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.components.AsyncLoadResult;
 import ro.linic.ui.legacy.preferences.PreferenceKey;
@@ -1092,6 +1094,9 @@ public class BusinessDelegate
 				.findFirst()
 				.orElseGet(() ->
 				{
+					if (globalIsMatch(key, "termen_", TextFilterMethod.BEGINS_WITH))
+						return new PersistedProp().setKey(key);
+					
 					final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);
 					return bean.getPersistedProp(key);
 				});
