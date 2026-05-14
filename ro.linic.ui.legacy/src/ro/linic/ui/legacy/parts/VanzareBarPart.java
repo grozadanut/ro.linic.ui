@@ -7,6 +7,8 @@ import static ro.colibri.util.NumberUtils.isNumeric;
 import static ro.colibri.util.NumberUtils.parse;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
 import static ro.colibri.util.StringUtils.globalIsMatch;
+import static ro.flexbiz.util.commons.PresentationUtils.safeString;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
 import static ro.linic.ui.legacy.session.UIUtils.createTopBar;
 import static ro.linic.ui.legacy.session.UIUtils.loadState;
@@ -83,6 +85,7 @@ import ro.colibri.entities.comercial.Operatiune.TransferType;
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.entities.comercial.ProductUiCategory;
+import ro.colibri.entities.comercial.Raion;
 import ro.colibri.security.Permissions;
 import ro.colibri.security.SecurityUtils;
 import ro.colibri.util.InvocationResult;
@@ -946,6 +949,9 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	private String findCompanionSku(final String sku) {
 		try {
+			if (isEmpty(companionSkus))
+				return null;
+			
 			// format is: productSku:companionSku,productSku:companionSku
 			final String[] entries = companionSkus.split(",");
 			for (final String entry : entries) {
@@ -1131,18 +1137,41 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	}
 	
 	private void accumulateDiscount() {
-		if (selectedClient == null)
+		if (selectedClient == null || NumberUtils.smallerThanOrEqual(selectedClient.getDiscountPercentage(), BigDecimal.ZERO))
 			return;
 		if (NumberUtils.smallerThanOrEqual(bonCasa.total(), BigDecimal.ZERO))
 			return;
 		
 		try {
+			final ImmutableList<Product> products = BusinessDelegate.convertToProducts(bonCasa.getLines().stream()
+					.map(line -> {
+						final Operatiune op = new Operatiune();
+						op.setBarcode(line.getSku());
+						return op;
+					}).collect(toImmutableList()), bundle, log);
+			
+			final BigDecimal excludedTotal = bonCasa.getLines().stream()
+					.filter(line -> {
+						return products.stream().filter(p -> line.getSku().equalsIgnoreCase(p.getBarcode())).findFirst()
+								.map(p -> safeString(p.getRaion(), Raion::getId, String::valueOf))
+								.filter(raion -> !isEmpty(raion))
+								.map(raion -> Boolean.parseBoolean(BusinessDelegate.persistedProp("raionExclDisc_"+raion).getValueOr("false")))
+								.orElse(false);
+					})
+					.map(ReceiptLine::getTotal)
+					.reduce(BigDecimal::add)
+					.orElse(BigDecimal.ZERO);
+			final BigDecimal calculatedTotal = NumberUtils.subtract(bonCasa.total(), excludedTotal);
+			
+			if (NumberUtils.smallerThanOrEqual(calculatedTotal, BigDecimal.ZERO))
+				return;
+			
 			final DocumentWithDiscount discountDoc = new DocumentWithDiscount();
 			discountDoc.setDataDoc(LocalDateTime.now());
 			discountDoc.setName(MessageFormat.format("Conform bon casa ''{0}''", bonCasa.getNumber()));
 			discountDoc.setTipDoc(TipDoc.INCASARE);
-			discountDoc.setTotal(bonCasa.total());
-			discountDoc.setTotalTva(bonCasa.taxTotal());
+			discountDoc.setTotal(calculatedTotal);
+			discountDoc.setTotalTva(BigDecimal.ZERO);
 			discountDoc.setDiscountPercentage(selectedClient.getDiscountPercentage());
 			final InvocationResult result = BusinessDelegate.persistDiscountDoc(discountDoc, selectedClient.getId());
 			showResult(result);
