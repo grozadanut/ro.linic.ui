@@ -42,7 +42,7 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 	}
 	
 	@Override
-	public Authentication authentication() throws AuthenticationException {
+	synchronized public Authentication authentication() throws AuthenticationException {
 		if (!isAuthenticated())
 			authentication = authManager == null ?
 					AnonymousAuthenticationToken.unauthenticated() :

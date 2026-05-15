@@ -4,7 +4,6 @@ import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 import static ro.flexbiz.util.commons.StringUtils.notEmpty;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -34,7 +33,7 @@ public class MessagingServiceImpl implements MessagingService {
 	private Connection nc;
 
 	@Activate
-	private void activate() throws IOException, InterruptedException {
+	private void activate() {
 		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
 		final String natsUrl = safeString(prefs.get(PreferenceKey.NATS_URL, System.getProperty(PreferenceKey.NATS_URL)),
 						System.getenv(PreferenceKey.NATS_URL));
@@ -44,20 +43,28 @@ public class MessagingServiceImpl implements MessagingService {
 			return;
 		}
 		
-		final Options options = new Options.Builder()
-				.server(natsUrl)
-				.maxReconnects(-1) // infinite
-				.noEcho() // don't send message back to me
-				.build();
-		nc = Nats.connect(options);
+		try {
+			final Options options = new Options.Builder()
+					.server(natsUrl)
+					.maxReconnects(-1) // infinite
+					.noEcho() // don't send message back to me
+					.build();
+			nc = Nats.connect(options);
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 	
 	@Deactivate
-	private void deactivate() throws InterruptedException {
-		if (nc != null)
-			nc.close();
+	private void deactivate() {
+		try {
+			if (nc != null)
+				nc.close();
+		} catch (final InterruptedException e) {
+			log.error(e.getMessage(), e);
+		}
 	}
-	
+
 	@Override
 	public void sendMessage(final String tenandId, final String subject, final String body) {
 		if (nc == null)
