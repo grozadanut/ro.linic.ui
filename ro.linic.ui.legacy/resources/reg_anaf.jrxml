@@ -120,7 +120,7 @@
 	</background>
 	<title>
 		<band height="95" splitType="Stretch">
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="0" y="0" width="90" height="90" uuid="67238adb-d4d9-4a6b-9b82-a765499b9ee0">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

@@ -133,7 +133,7 @@
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[java.time.LocalDate.now()]]></textFieldExpression>
 			</textField>
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="0" y="0" width="90" height="90" uuid="94883631-a913-43e2-b182-ab8d77d0181e">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>

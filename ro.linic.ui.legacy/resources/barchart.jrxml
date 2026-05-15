@@ -86,7 +86,7 @@
 				</reportElement>
 				<textFieldExpression><![CDATA[$P{furnizorDetails}]]></textFieldExpression>
 			</textField>
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="0" y="0" width="90" height="90" uuid="0e1b3318-87d0-483d-90a5-9957ef0e5f11">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

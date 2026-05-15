@@ -54,6 +54,7 @@ public interface RestCaller {
 		 * @return the response deserialized from JSON or empty when error(blocking call)
 		 */
 		List<GenericValue> sync(Consumer<Throwable> exceptionHandler);
+		<T> Optional<HttpResponse<T>> syncRaw(BodyHandler<T> responseBodyHandler, Consumer<Throwable> exceptionHandler);
 	}
 	
 	interface PostConfigurer extends BaseConfigurer {

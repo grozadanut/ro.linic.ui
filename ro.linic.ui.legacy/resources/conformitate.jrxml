@@ -33,7 +33,7 @@
 				</textElement>
 				<text><![CDATA[Declaraţie de conformitate]]></text>
 			</staticText>
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="20" y="0" width="80" height="80" uuid="f274f889-756f-4473-bc02-adb3e419b765">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

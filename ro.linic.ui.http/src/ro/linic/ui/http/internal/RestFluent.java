@@ -135,6 +135,22 @@ abstract class RestFluent implements BaseConfigurer {
 			return List.of();
 		}
 	}
+	
+	@Override
+	final public <T> Optional<HttpResponse<T>> syncRaw(final BodyHandler<T> responseBodyHandler, final Consumer<Throwable> exceptionHandler) {
+		try {
+			return Optional.ofNullable(asyncRaw(responseBodyHandler)
+					.thenApply(HttpUtils::checkOk)
+					.exceptionally(t -> {
+						log.error(t.getMessage(), t);
+						exceptionHandler.accept(t);
+						return null;
+					}).get());
+		} catch (InterruptedException | ExecutionException e) {
+			exceptionHandler.accept(e);
+			return Optional.empty();
+		}
+	}
 
 	protected abstract Builder buildMethod(Builder reqBuilder);
 }

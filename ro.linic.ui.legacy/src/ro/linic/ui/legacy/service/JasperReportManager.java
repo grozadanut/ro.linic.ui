@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -76,6 +77,8 @@ import ro.colibri.wrappers.PontajLine;
 import ro.colibri.wrappers.RulajPartener;
 import ro.colibri.wrappers.ThreeEntityWrapper;
 import ro.colibri.wrappers.TwoEntityWrapper;
+import ro.linic.ui.base.services.util.UIUtils;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.anaf.ReceivedMessage;
 import ro.linic.ui.legacy.dialogs.SendEmailDialog;
 import ro.linic.ui.legacy.jasper.datasource.AccDocDatasource;
@@ -258,7 +261,16 @@ public class JasperReportManager
 	{
 		final URL url = FileLocator.find(bundle, new Path("resources/logo_256x256.png"));
 		final URL fileUrl = FileLocator.toFileURL(url);
-		new File(fileUrl.getFile());
+		try {
+			RestCaller.get(System.getProperty("logoBaseUrl", "https://p2.flexbiz.ro/")+ClientSession.instance().getCompany().getId()+".png")
+					.syncRaw(BodyHandlers.ofInputStream(), t -> log.error(t))
+					.ifPresentOrElse(loadedLogo -> UIUtils.copyFileFromTo(loadedLogo.body(), fileUrl.getFile()),
+							() -> new File(fileUrl.getFile()));
+		} catch (final Exception e) {
+			log.error(e);
+			new File(fileUrl.getFile());
+		}
+		
 		this.log = log;
 	}
 	

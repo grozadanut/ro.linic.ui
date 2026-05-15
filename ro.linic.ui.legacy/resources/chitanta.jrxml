@@ -29,7 +29,7 @@
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
 			</rectangle>
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="0" y="0" width="90" height="90" uuid="509773ad-f5d1-44b0-a62e-ac84fd0a20eb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -164,7 +164,7 @@
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
 			</rectangle>
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="0" y="270" width="90" height="90" uuid="d4727da7-12b7-4c88-99fc-aa376bc2beeb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -299,7 +299,7 @@
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
 			</rectangle>
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="0" y="540" width="90" height="90" uuid="257dbc8e-d342-47bd-b66b-868896d3b95b">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>

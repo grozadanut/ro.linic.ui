@@ -30,7 +30,7 @@
 					<pen lineStyle="Dotted"/>
 				</graphicElement>
 			</rectangle>
-			<image hAlign="Center">
+			<image hAlign="Center" onErrorType="Blank">
 				<reportElement x="0" y="0" width="90" height="90" uuid="509773ad-f5d1-44b0-a62e-ac84fd0a20eb">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
