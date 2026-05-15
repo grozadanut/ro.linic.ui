@@ -60,7 +60,9 @@ public class AnafReporter
 			return List.of();
 		
 		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+				.getValue();
+		if (isEmpty(connectorBaseUrl))
+			return List.of();
 		final String searchUrl = connectorBaseUrl + "/report/search/findAllById";
 		final List<NameValuePair> params = List.of(new BasicNameValuePair("ids", 
 				ids.stream().map(String::valueOf).collect(Collectors.joining(","))));
@@ -119,7 +121,9 @@ public class AnafReporter
 	private static Optional<String> report(final int companyId, final String invoiceJson)
 			throws IOException, URISyntaxException {
 		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+				.getValue();
+		if (isEmpty(connectorBaseUrl))
+			throw new UnsupportedOperationException("Modulul eFactura nu este configurat!");
 		final String reportUrl = connectorBaseUrl + "/report";
 		final Optional<HttpResponseW> reportResponse = RestCaller.put_WithSSL(reportUrl, invoiceJson,
 				List.of(new BasicNameValuePair("companyId", String.valueOf(companyId))));
@@ -152,7 +156,9 @@ public class AnafReporter
 	public static void forceCheckReportedInvoices()
 	{
 		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+				.getValue();
+		if (isEmpty(connectorBaseUrl))
+			return;
 		final String checkUrl = connectorBaseUrl + "/report/check";
 		final List<NameValuePair> params = List.of(new BasicNameValuePair("companyId", 
 				ClientSession.instance().getLoggedUser().getSelectedCompany().getId().toString()));
@@ -180,7 +186,9 @@ public class AnafReporter
 			return;
 		
 		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+				.getValue();
+		if (isEmpty(connectorBaseUrl))
+			return;
 		final String downloadUrl = connectorBaseUrl + "/report/download";
 		final List<NameValuePair> params = List.of(new BasicNameValuePair("companyId", 
 				ClientSession.instance().getLoggedUser().getSelectedCompany().getId().toString()));
@@ -280,7 +288,9 @@ public class AnafReporter
 	public static Collection<ReceivedMessage> findAnafMessagesBetween(final LocalDateTime start, final LocalDateTime end)
 	{
 		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+				.getValue();
+		if (isEmpty(connectorBaseUrl))
+			return List.of();
 		final String searchUrl = connectorBaseUrl + "/messages/search/between";
 		final List<NameValuePair> params = List.of(new BasicNameValuePair("start", start.toString()),
 				new BasicNameValuePair("end", end.toString()));
@@ -320,7 +330,9 @@ public class AnafReporter
 	private static Stream<ReceivedInvoice> findReceivedInvoicesBetween(final UISynchronize sync, final LocalDate start, final LocalDate end,
 			final IProgressMonitor monitor) {
 		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+				.getValue();
+		if (isEmpty(connectorBaseUrl))
+			return Stream.empty();
 		final String searchUrl = connectorBaseUrl + "/invoices/search/between";
 		final List<NameValuePair> params = List.of(new BasicNameValuePair("start", start.toString()),
 				new BasicNameValuePair("end", end.toString()));
@@ -331,7 +343,9 @@ public class AnafReporter
 	private static Stream<ReceivedCreditNote> findCreditNotesBetween(final UISynchronize sync, final LocalDate start, final LocalDate end,
 			final IProgressMonitor monitor) {
 		final String connectorBaseUrl = BusinessDelegate.persistedProp(PersistedProp.ANAF_CONNECTOR_BASE_URL_KEY)
-				.getValueOr(PersistedProp.ANAF_CONNECTOR_BASE_URL_DEFAULT);
+				.getValue();
+		if (isEmpty(connectorBaseUrl))
+			return Stream.empty();
 		final String searchUrl = connectorBaseUrl + "/creditNotes/search/between";
 		final List<NameValuePair> params = List.of(new BasicNameValuePair("start", start.toString()),
 				new BasicNameValuePair("end", end.toString()));
