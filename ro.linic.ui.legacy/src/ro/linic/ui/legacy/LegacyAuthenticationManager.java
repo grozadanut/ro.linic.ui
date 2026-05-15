@@ -40,7 +40,11 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 		return authentication;
 	}
 
+	private static boolean opened = false; // avoid stack overflow error when called from BetaTester.evaluate
 	private Authentication login() {
+		if (opened)
+			return AnonymousAuthenticationToken.unauthenticated();
+		
 		final Bundle bundle = FrameworkUtil.getBundle(getClass());
 		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(bundle.getSymbolicName());
 		IEclipseContext ctx = EclipseContextFactory.getServiceContext(getClass());
@@ -50,8 +54,10 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 		{
 			final LoginDialog dialog = new LoginDialog(null, prefs, ctx);
 
+			opened = true;
 			if (dialog.open() != Window.OK)
 				System.exit(0);
+			opened = false;
 		}
 		return UsernamePasswordAuthenticationToken.authenticated(ClientSession.instance().getUsername(), ClientSession.instance().getPassword(),
 				PermissionMapper.toGrantedAuthorities(ClientSession.instance().getLoggedUser().getRole().getPermissions()));
