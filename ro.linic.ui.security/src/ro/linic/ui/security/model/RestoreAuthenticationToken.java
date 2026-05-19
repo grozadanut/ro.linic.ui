@@ -10,7 +10,9 @@ public class RestoreAuthenticationToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 1L;
 
 	private final String principal;
-	private String credentials;
+	private final String credentials;
+	private final String sessionId;
+	private final String csrf;
 
 	/**
 	 * This constructor can be safely used by any code that wishes to create a
@@ -18,10 +20,12 @@ public class RestoreAuthenticationToken extends AbstractAuthenticationToken {
 	 * will return <code>false</code>.
 	 *
 	 */
-	private RestoreAuthenticationToken(final String principal, final String credentials) {
+	private RestoreAuthenticationToken(final String principal, final String credentials, final String sessionId, final String csrf) {
 		super(null);
 		this.principal = principal;
 		this.credentials = credentials;
+		this.sessionId = sessionId;
+		this.csrf = csrf;
 		setAuthenticated(false);
 	}
 
@@ -32,8 +36,8 @@ public class RestoreAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param credentials
 	 * @return RestoreAuthenticationToken with false isAuthenticated() result
 	 */
-	public static RestoreAuthenticationToken unauthenticated(final String principal, final String credentials) {
-		return new RestoreAuthenticationToken(principal, credentials);
+	public static RestoreAuthenticationToken unauthenticated(final String principal, final String credentials, final String sessionId, final String csrf) {
+		return new RestoreAuthenticationToken(principal, credentials, sessionId, csrf);
 	}
 
 	@Override
@@ -44,6 +48,16 @@ public class RestoreAuthenticationToken extends AbstractAuthenticationToken {
 	@Override
 	public String getName() {
 		return (this.principal == null) ? "" : this.principal;
+	}
+	
+	@Override
+	public String getSessionId() {
+		return sessionId;
+	}
+	
+	@Override
+	public String getCsrf() {
+		return csrf;
 	}
 
 	@Override

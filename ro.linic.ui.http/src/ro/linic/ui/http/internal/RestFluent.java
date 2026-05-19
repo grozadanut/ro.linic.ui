@@ -11,7 +11,6 @@ import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandler;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +21,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.runtime.ILog;
 
 import ro.flexbiz.util.commons.ParameterStringBuilder;
+import ro.flexbiz.util.commons.StringUtils;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.http.HttpHeaders;
@@ -66,12 +65,12 @@ abstract class RestFluent implements BaseConfigurer {
 	@Override
 	public BaseConfigurer internal(final Authentication auth) {
 		this.internal = true;
-		final String credentials = auth.getName() + ":" + auth.getCredentials();
-		final byte[] encodedAuth = Base64.encodeBase64(credentials.getBytes(StandardCharsets.ISO_8859_1));
-		final String authHeader = "Basic " + new String(encodedAuth);
-		addHeader(HttpHeaders.AUTHORIZATION, authHeader);
 		addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 		addHeader(HttpHeaders.ACCEPT, "application/json");
+		if (!StringUtils.isEmpty(auth.getSessionId()))
+			addHeader("Cookie", "JSESSIONID="+auth.getSessionId());
+		addHeader("x-csrf-token", auth.getCsrf());
+		addHeader("moquisessiontoken", auth.getCsrf());
 		return this;
 	}
 	

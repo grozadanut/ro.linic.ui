@@ -28,4 +28,9 @@ public interface AuthenticationSession {
 	 * @return whether the user is authenticated or not
 	 */
 	boolean isAuthenticated();
+	/**
+	 * Invalidates the current authentication, if present. After calling this method, the next time {@link AuthenticationSession.authentication()} 
+	 * is called, authentication will be forced again.
+	 */
+	void invalidate();
 }

@@ -23,6 +23,7 @@ import ro.linic.ui.security.model.Authentication;
 import ro.linic.ui.security.model.RestoreAuthenticationToken;
 import ro.linic.ui.security.services.AuthenticationManager;
 import ro.linic.ui.security.services.AuthenticationSession;
+import ro.linic.ui.security.util.StringUtils;
 
 @Component(immediate = true)
 public class AuthenticationSessionImpl implements AuthenticationSession {
@@ -31,6 +32,8 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 	private static final String SAVE_TIME_KEY = "save_time";
 	private static final String PRINCIPAL_KEY = "principal";
 	private static final String CREDENTIALS_KEY = "credentials";
+	private static final String SESSION_ID_KEY = "session_id";
+	private static final String CSRF_KEY = "csrf";
 	private static final Duration SESSION_INVALIDATE_DURATION = Duration.ofSeconds(60);
 	
 	private AuthenticationManager authManager;
@@ -51,6 +54,11 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 		return authentication;
 	}
 	
+	@Override
+	public void invalidate() {
+		authentication = null;
+	}
+	
 	@Activate
 	private void activate() {
 		restoreSessionAndClear();
@@ -69,7 +77,9 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 				if (Instant.now().isBefore(savedAt.plus(SESSION_INVALIDATE_DURATION))) {
 					final String principal = node.get(PRINCIPAL_KEY, null);
 					final String credentials = node.get(CREDENTIALS_KEY, null);
-					authentication = RestoreAuthenticationToken.unauthenticated(principal, credentials);
+					final String sessionId = node.get(SESSION_ID_KEY, null);
+					final String csrf = node.get(CSRF_KEY, null);
+					authentication = RestoreAuthenticationToken.unauthenticated(principal, credentials, sessionId, csrf);
 				}
 			}
 		} catch (final StorageException e) {
@@ -80,6 +90,8 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 			node.remove(SAVE_TIME_KEY);
 			node.remove(PRINCIPAL_KEY);
 			node.remove(CREDENTIALS_KEY);
+			node.remove(SESSION_ID_KEY);
+			node.remove(CSRF_KEY);
 			node.flush();
 		} catch (final IOException e) {
 			log.log(Level.SEVERE, "Error removing secure preferences", e);
@@ -101,6 +113,10 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 			node.put(SAVE_TIME_KEY, Instant.now().toString(), true);
 			node.put(PRINCIPAL_KEY, auth.getName(), true);
 			node.put(CREDENTIALS_KEY, auth.getCredentials().toString(), true);
+			if (StringUtils.hasText(auth.getSessionId()))
+				node.put(SESSION_ID_KEY, auth.getSessionId(), true);
+			if (StringUtils.hasText(auth.getCsrf()))
+				node.put(CSRF_KEY, auth.getCsrf(), true);
 			node.flush();
 		} catch (final IOException | StorageException e) {
 			log.log(Level.SEVERE, "Error storing secure preferences", e);

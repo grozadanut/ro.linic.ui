@@ -5,7 +5,6 @@ import java.security.Principal;
 import java.util.Collection;
 
 public interface Authentication extends Principal, Serializable {
-
 	/**
 	 * Set by an <code>AuthenticationManager</code> to indicate the authorities that the
 	 * principal has been granted. Note that classes should not rely on this value as
@@ -66,4 +65,12 @@ public interface Authentication extends Principal, Serializable {
 	 */
 	void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException;
 
+	/**
+	 * @return the id associated with the session, usually the JSESSIONID
+	 */
+	String getSessionId();
+	/**
+	 * @return the CSRF token
+	 */
+	String getCsrf();
 }

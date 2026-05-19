@@ -1,12 +1,18 @@
 package ro.linic.ui.legacy;
 
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.window.Window;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -14,6 +20,12 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.prefs.BackingStoreException;
 
 import ro.colibri.entities.user.User;
+import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.base.services.util.UIUtils;
+import ro.linic.ui.http.BodyProvider;
+import ro.linic.ui.http.HttpHeaders;
+import ro.linic.ui.http.HttpUtils;
+import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.dialogs.LoginDialog;
 import ro.linic.ui.legacy.mapper.PermissionMapper;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -32,10 +44,11 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 	
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-		if (authentication == null)
-			return login();
-		else if (authentication instanceof RestoreAuthenticationToken)
+		if (authentication != null && authentication instanceof RestoreAuthenticationToken)
 			return restoreAuth((RestoreAuthenticationToken) authentication);
+		
+		if (authentication == null || !authentication.isAuthenticated())
+			return login();
 		
 		return authentication;
 	}
@@ -47,8 +60,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 		
 		final Bundle bundle = FrameworkUtil.getBundle(getClass());
 		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(bundle.getSymbolicName());
-		IEclipseContext ctx = EclipseContextFactory.getServiceContext(getClass());
-		ctx = ctx.getActiveLeaf();
+		final IEclipseContext ctx = EclipseContextFactory.getServiceContext(getClass()).getActiveLeaf();
 		
 		while (!ClientSession.instance().isLoggedIn())
 		{
@@ -59,7 +71,32 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 				System.exit(0);
 			opened = false;
 		}
+		// MOQUI login to get session token
+		final Optional<HttpResponse<String>> loginResponse = RestCaller.post(UIUtils.moquiBaseUrl()+"/rest/login")
+				.addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+				.addHeader(HttpHeaders.ACCEPT, "application/json")
+				.body(BodyProvider.of(GenericValue.of("", "", "username", ClientSession.instance().getUsername(),
+						"password",  ClientSession.instance().getPassword())))
+				.syncRaw(BodyHandlers.ofString(), t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
+				.map(res -> {
+					if (HttpUtils.fromJSON(res.body(), GenericValue.class).getBoolean("loggedIn"))
+						return res;
+					log.severe(res.body());
+					return null;
+				});
+		String sessionId = null, csrf = null;
+		if (loginResponse.isPresent()) {
+			csrf = loginResponse.get().headers().firstValue("x-csrf-token").orElse(null);
+			sessionId = loginResponse.get().headers()
+					.firstValue("set-cookie")
+					.map(cookie -> {
+						final Matcher matcher = Pattern.compile("JSESSIONID=([^;]+)").matcher(cookie);
+						return matcher.find() ? matcher.group(1) : null;
+					})
+					.orElse(null);
+		}
 		return UsernamePasswordAuthenticationToken.authenticated(ClientSession.instance().getUsername(), ClientSession.instance().getPassword(),
+				sessionId, csrf,
 				PermissionMapper.toGrantedAuthorities(ClientSession.instance().getLoggedUser().getRole().getPermissions()));
 	}
 	
@@ -82,7 +119,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 				log.log(Level.SEVERE, e.getMessage(), e);
 			}
 			return UsernamePasswordAuthenticationToken.authenticated(ClientSession.instance().getUsername(),
-					ClientSession.instance().getPassword(),
+					ClientSession.instance().getPassword(), authentication.getSessionId(), authentication.getCsrf(),
 					PermissionMapper.toGrantedAuthorities(ClientSession.instance().getLoggedUser().getRole().getPermissions()));
 		}
 		return AnonymousAuthenticationToken.unauthenticated();

@@ -59,4 +59,14 @@ public class AnonymousAuthenticationToken extends AbstractAuthenticationToken im
 	public String getName() {
 		return "Anonymous";
 	}
+	
+	@Override
+	public String getSessionId() {
+		return null;
+	}
+	
+	@Override
+	public String getCsrf() {
+		return null;
+	}
 }

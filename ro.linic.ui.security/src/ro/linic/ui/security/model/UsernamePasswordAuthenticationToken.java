@@ -19,20 +19,9 @@ public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationT
 	private static final long serialVersionUID = 1L;
 
 	private final String principal;
-	private String credentials;
-
-	/**
-	 * This constructor can be safely used by any code that wishes to create a
-	 * <code>UsernamePasswordAuthenticationToken</code>, as the {@link #isAuthenticated()}
-	 * will return <code>false</code>.
-	 *
-	 */
-	private UsernamePasswordAuthenticationToken(final String principal, final String credentials) {
-		super(null);
-		this.principal = principal;
-		this.credentials = credentials;
-		setAuthenticated(false);
-	}
+	private final String credentials;
+	private final String sessionId;
+	private final String csrf;
 
 	/**
 	 * This constructor should only be used by <code>AuthenticationManager</code> or
@@ -43,25 +32,14 @@ public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationT
 	 * @param credentials
 	 * @param authorities
 	 */
-	private UsernamePasswordAuthenticationToken(final String principal, final String credentials,
+	private UsernamePasswordAuthenticationToken(final String principal, final String credentials, final String sessionId, final String csrf,
 			final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.principal = principal;
 		this.credentials = credentials;
+		this.sessionId = sessionId;
+		this.csrf = csrf;
 		super.setAuthenticated(true); // must use super, as we override
-	}
-
-	/**
-	 * This factory method can be safely used by any code that wishes to create a
-	 * unauthenticated <code>UsernamePasswordAuthenticationToken</code>.
-	 * @param principal
-	 * @param credentials
-	 * @return UsernamePasswordAuthenticationToken with false isAuthenticated() result
-	 *
-	 * @since 5.7
-	 */
-	public static UsernamePasswordAuthenticationToken unauthenticated(final String principal, final String credentials) {
-		return new UsernamePasswordAuthenticationToken(principal, credentials);
 	}
 
 	/**
@@ -73,9 +51,9 @@ public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationT
 	 *
 	 * @since 5.7
 	 */
-	public static UsernamePasswordAuthenticationToken authenticated(final String principal, final String credentials,
+	public static UsernamePasswordAuthenticationToken authenticated(final String principal, final String credentials, final String sessionId, final String csrf,
 			final Collection<? extends GrantedAuthority> authorities) {
-		return new UsernamePasswordAuthenticationToken(principal, credentials, authorities);
+		return new UsernamePasswordAuthenticationToken(principal, credentials, sessionId, csrf, authorities);
 	}
 
 	@Override
@@ -86,6 +64,15 @@ public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationT
 	@Override
 	public String getName() {
 		return (this.principal == null) ? "" : this.principal;
+	}
+	
+	@Override
+	public String getSessionId() {
+		return sessionId;
+	}
+	
+	public String getCsrf() {
+		return csrf;
 	}
 
 	@Override
