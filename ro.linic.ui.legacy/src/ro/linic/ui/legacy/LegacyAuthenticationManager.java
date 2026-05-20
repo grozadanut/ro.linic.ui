@@ -1,5 +1,7 @@
 package ro.linic.ui.legacy;
 
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
+
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Optional;
@@ -11,7 +13,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.window.Window;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -71,28 +72,30 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 			opened = false;
 		}
 		// MOQUI login to get session token
-		final Optional<HttpResponse<String>> loginResponse = RestCaller.post(UIUtils.moquiBaseUrl()+"/rest/login")
-				.addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-				.addHeader(HttpHeaders.ACCEPT, "application/json")
-				.body(BodyProvider.of(GenericValue.of("", "", "username", ClientSession.instance().getUsername(),
-						"password",  ClientSession.instance().getPassword())))
-				.syncRaw(BodyHandlers.ofString(), t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
-				.map(res -> {
-					if (HttpUtils.fromJSON(res.body(), GenericValue.class).getBoolean("loggedIn"))
-						return res;
-					log.error(UIUtils.moquiBaseUrl()+"/rest/login RESPONSE: "+res.body());
-					return null;
-				});
 		String sessionId = null, csrf = null;
-		if (loginResponse.isPresent()) {
-			csrf = loginResponse.get().headers().firstValue("x-csrf-token").orElse(null);
-			sessionId = loginResponse.get().headers()
-					.firstValue("set-cookie")
-					.map(cookie -> {
-						final Matcher matcher = Pattern.compile("JSESSIONID=([^;]+)").matcher(cookie);
-						return matcher.find() ? matcher.group(1) : null;
-					})
-					.orElse(null);
+		if (!isEmpty(UIUtils.moquiBaseUrl())) {
+			final Optional<HttpResponse<String>> loginResponse = RestCaller.post(UIUtils.moquiBaseUrl()+"/rest/login")
+					.addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+					.addHeader(HttpHeaders.ACCEPT, "application/json")
+					.body(BodyProvider.of(GenericValue.of("", "", "username", ClientSession.instance().getUsername(),
+							"password",  ClientSession.instance().getPassword())))
+					.syncRaw(BodyHandlers.ofString(), t -> log.error(t.getMessage(), t))
+					.map(res -> {
+						if (HttpUtils.fromJSON(res.body(), GenericValue.class).getBoolean("loggedIn"))
+							return res;
+						log.error(UIUtils.moquiBaseUrl()+"/rest/login RESPONSE: "+res.body());
+						return null;
+					});
+			if (loginResponse.isPresent()) {
+				csrf = loginResponse.get().headers().firstValue("x-csrf-token").orElse(null);
+				sessionId = loginResponse.get().headers()
+						.firstValue("set-cookie")
+						.map(cookie -> {
+							final Matcher matcher = Pattern.compile("JSESSIONID=([^;]+)").matcher(cookie);
+							return matcher.find() ? matcher.group(1) : null;
+						})
+						.orElse(null);
+			}
 		}
 		return UsernamePasswordAuthenticationToken.authenticated(ClientSession.instance().getUsername(), ClientSession.instance().getPassword(),
 				sessionId, csrf,
