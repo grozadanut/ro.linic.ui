@@ -178,7 +178,7 @@ public class CustomerDebtWizard extends Wizard
 							"affiliatePartnerId", one.affiliate().map(gv -> gv.getString("partyId")).orElse(""));
 					
 					RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
-					.internal(ctx.get(AuthenticationSession.class).authentication())
+					.internal(ctx.get(AuthenticationSession.class))
 					.body(BodyProvider.of(HttpUtils.toJSON(partnerBody)))
 					.sync(GenericValue.class, t -> UIUtils.showException(t, ctx.get(UISynchronize.class)));
 				}
@@ -205,7 +205,7 @@ public class CustomerDebtWizard extends Wizard
 						"persist", true);
 				
 				RestCaller.post("/rest/s1/moqui-linic-legacy/notification")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.body(BodyProvider.of(HttpUtils.toJSON(body)))
 				.asyncRaw(BodyHandlers.ofString())
 				.thenApply(HttpUtils::checkOk)

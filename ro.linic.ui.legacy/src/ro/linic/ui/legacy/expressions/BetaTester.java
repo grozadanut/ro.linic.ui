@@ -21,7 +21,7 @@ public class BetaTester {
 		Boolean betaValue = CACHE.get(authSession.authentication().getName());
 		if (betaValue == null) {
 			betaValue = RestCaller.get("/rest/s1/mantle/my/preference")
-					.internal(authSession.authentication())
+					.internal(authSession)
 					.addUrlParam("preferenceKey", BETA_TESTER_PREF_KEY)
 					.sync(GenericValue.class, t -> log.error(t.getMessage(), t))
 					.map(gv -> gv.getBoolean("preferenceValue"))

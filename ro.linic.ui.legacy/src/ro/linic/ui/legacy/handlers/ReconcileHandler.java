@@ -75,7 +75,7 @@ public class ReconcileHandler {
 				"gestiuneId", ClientSession.instance().getGestiune().getId(),
 				"contBancarId", contBancarId);
 
-		RestCaller.post("/rest/s1/moqui-linic-legacy/reconcile").internal(authSession.authentication())
+		RestCaller.post("/rest/s1/moqui-linic-legacy/reconcile").internal(authSession)
 				.body(BodyProvider.of(HttpUtils.toJSON(body)))
 				.async(t -> UIUtils.showException(t, sync))
 				.thenAccept(result -> dataServices.holder(ReconciliationPart.DATA_HOLDER).setData(result.stream().sorted(dateComparator).toList()))

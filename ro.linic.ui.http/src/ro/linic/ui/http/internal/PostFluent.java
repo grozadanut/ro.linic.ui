@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.RestCaller.PostConfigurer;
-import ro.linic.ui.security.model.Authentication;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class PostFluent extends RestFluent implements PostConfigurer {
 	private BodyProvider body;
@@ -26,7 +26,7 @@ public class PostFluent extends RestFluent implements PostConfigurer {
 	}
 	
 	@Override
-	public PostConfigurer internal(final Authentication auth) {
+	public PostConfigurer internal(final AuthenticationSession auth) {
 		return (PostConfigurer) super.internal(auth);
 	}
 	

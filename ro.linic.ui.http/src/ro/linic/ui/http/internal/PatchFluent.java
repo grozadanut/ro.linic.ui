@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.RestCaller.PatchConfigurer;
-import ro.linic.ui.security.model.Authentication;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class PatchFluent extends RestFluent implements PatchConfigurer {
 	private BodyProvider body;
@@ -26,7 +26,7 @@ public class PatchFluent extends RestFluent implements PatchConfigurer {
 	}
 	
 	@Override
-	public PatchConfigurer internal(final Authentication auth) {
+	public PatchConfigurer internal(final AuthenticationSession auth) {
 		return (PatchConfigurer) super.internal(auth);
 	}
 	

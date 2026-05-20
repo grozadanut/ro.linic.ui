@@ -101,7 +101,7 @@ public class CustomerDebtSelectPage extends WizardPage
         allConturiBancare = BusinessDelegate.allConturiBancare();
         allAffiliates = new BetaTester().evaluate(ctx.get(AuthenticationSession.class)) ?
         		RestCaller.get("/rest/s1/moqui-linic-legacy/partners")
-				.internal(ctx.get(AuthenticationSession.class).authentication())
+				.internal(ctx.get(AuthenticationSession.class))
 				.sync(t -> UIUtils.showException(t, ctx.get(UISynchronize.class))) : List.of();
     }
 	

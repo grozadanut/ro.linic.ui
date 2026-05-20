@@ -13,7 +13,7 @@ import ro.linic.ui.http.internal.GetFluent;
 import ro.linic.ui.http.internal.PatchFluent;
 import ro.linic.ui.http.internal.PostFluent;
 import ro.linic.ui.http.internal.PutFluent;
-import ro.linic.ui.security.model.Authentication;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public interface RestCaller {
 
@@ -24,7 +24,7 @@ public interface RestCaller {
 		 * Specify whether this is an internal call. If true, you can omit 
 		 * the server URL. eg: get("/products/1")
 		 */
-		BaseConfigurer internal(Authentication auth);
+		BaseConfigurer internal(AuthenticationSession auth);
 		<T> CompletableFuture<HttpResponse<T>> asyncRaw(BodyHandler<T> responseBodyHandler);
 		/**
 		 * Convenience method to check the response and convert the returned JSON 
@@ -60,28 +60,28 @@ public interface RestCaller {
 	interface PostConfigurer extends BaseConfigurer {
 		@Override PostConfigurer addHeader(String key, String value);
 		@Override PostConfigurer addUrlParam(String key, String value);
-		@Override PostConfigurer internal(Authentication auth);
+		@Override PostConfigurer internal(AuthenticationSession auth);
 		PostConfigurer body(BodyProvider body);
     }
 	
 	interface PutConfigurer extends BaseConfigurer {
 		@Override PutConfigurer addHeader(String key, String value);
 		@Override PutConfigurer addUrlParam(String key, String value);
-		@Override PutConfigurer internal(Authentication auth);
+		@Override PutConfigurer internal(AuthenticationSession auth);
 		PutConfigurer body(BodyProvider body);
     }
 	
 	interface PatchConfigurer extends BaseConfigurer {
 		@Override PatchConfigurer addHeader(String key, String value);
 		@Override PatchConfigurer addUrlParam(String key, String value);
-		@Override PatchConfigurer internal(Authentication auth);
+		@Override PatchConfigurer internal(AuthenticationSession auth);
 		PatchConfigurer body(BodyProvider body);
     }
 	
 	interface DeleteConfigurer extends BaseConfigurer {
 		@Override DeleteConfigurer addHeader(String key, String value);
 		@Override DeleteConfigurer addUrlParam(String key, String value);
-		@Override DeleteConfigurer internal(Authentication auth);
+		@Override DeleteConfigurer internal(AuthenticationSession auth);
     }
 	
 	public static PostConfigurer post(final String url) {

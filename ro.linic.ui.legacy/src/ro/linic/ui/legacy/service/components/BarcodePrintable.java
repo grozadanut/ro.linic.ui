@@ -118,7 +118,7 @@ public class BarcodePrintable implements Serializable
 	
 	private static Optional<BarcodePrintable> findMoquiPrintable(final IEclipseContext ctx, final BigDecimal tvaPercentDb, final Product p) {
 		final BigDecimal moquiPrice = RestCaller.get("/rest/s1/mantle/products/"+p.getId()+"/price")
-				.internal(ctx.get(AuthenticationSession.class).authentication())
+				.internal(ctx.get(AuthenticationSession.class))
 				.addUrlParam("quantity", "1")
 				.addUrlParam("productStoreId", PresentationUtils.safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getImportName))
 				.sync(GenericValue.class, t -> log.error(t.getMessage(), t))

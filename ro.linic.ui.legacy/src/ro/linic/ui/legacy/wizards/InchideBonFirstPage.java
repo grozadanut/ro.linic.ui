@@ -306,7 +306,7 @@ public class InchideBonFirstPage extends WizardPage
 							"affiliatePartnerId", safeString(affiliatePartnerId));
 					
 					RestCaller.put("/rest/s1/moqui-linic-legacy/payment")
-					.internal(ctx.get(AuthenticationSession.class).authentication())
+					.internal(ctx.get(AuthenticationSession.class))
 					.body(BodyProvider.of(HttpUtils.toJSON(partnerBody)))
 					.sync(GenericValue.class, t -> UIUtils.showException(t, ctx.get(UISynchronize.class)));
 				}

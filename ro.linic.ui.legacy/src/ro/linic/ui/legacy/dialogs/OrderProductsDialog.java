@@ -139,7 +139,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 	
 	private void reloadPartners() {
 		allSuppliers.addAll(RestCaller.get("/rest/s1/moqui-linic-legacy/suppliers")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.sync(t -> UIUtils.showException(t, sync))
 				.stream()
 				.sorted(Comparator.comparing(gv -> gv.getString("organizationName")))
@@ -156,7 +156,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 		}
 		
 		allChannels.addAll(RestCaller.get("/rest/s1/moqui-linic-legacy/orderChannels")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.addUrlParam("supplierId", supplier().get().getString("partyId"))
 				.sync(t -> UIUtils.showException(t, sync)));
 		channel.setItems(allChannels.stream().map(gv -> gv.getString("channelName")).toArray(String[]::new));
@@ -228,7 +228,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 						"statusId", "RqmtStOrdered");
 				
 				RestCaller.put("/rest/s1/moqui-linic-legacy/requirements/status")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.body(BodyProvider.of(HttpUtils.toJSON(body)))
 				.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 				.ifPresent(r -> dataServices.holder(ApproveRequirementsPart.DATA_HOLDER).getData().remove(req));
@@ -264,7 +264,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 				"otherGestiuneId", otherGestiuneId);
 		
 		RestCaller.post("/rest/s1/moqui-linic-legacy/order")
-		.internal(authSession.authentication())
+		.internal(authSession)
 		.body(BodyProvider.of(HttpUtils.toJSON(body)))
 		.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 		.ifPresent(r -> {
@@ -286,7 +286,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 				"requirements", requirements);
 		
 		RestCaller.post("/rest/s1/moqui-linic-legacy/order")
-		.internal(authSession.authentication())
+		.internal(authSession)
 		.body(BodyProvider.of(HttpUtils.toJSON(body)))
 		.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 		.ifPresent(r -> dataServices.holder(ApproveRequirementsPart.DATA_HOLDER).remove(requirements));

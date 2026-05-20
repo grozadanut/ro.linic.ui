@@ -3,9 +3,8 @@ package ro.linic.ui.security.services.impl;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.equinox.security.storage.ISecurePreferences;
 import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
 import org.eclipse.equinox.security.storage.StorageException;
@@ -27,7 +26,7 @@ import ro.linic.ui.security.util.StringUtils;
 
 @Component(immediate = true)
 public class AuthenticationSessionImpl implements AuthenticationSession {
-	private static final Logger log = Logger.getLogger(AuthenticationSessionImpl.class.getName());
+	private static final ILog log = ILog.of(AuthenticationSessionImpl.class);
 	
 	private static final String SAVE_TIME_KEY = "save_time";
 	private static final String PRINCIPAL_KEY = "principal";
@@ -57,6 +56,7 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 	@Override
 	public void invalidate() {
 		authentication = null;
+		log.info("AuthenticationSession invalidated");
 	}
 	
 	@Activate
@@ -83,7 +83,7 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 				}
 			}
 		} catch (final StorageException e) {
-			log.log(Level.SEVERE, "Error getting secure preferences", e);
+			log.error("Error getting secure preferences", e);
 		}
  		
  		try {
@@ -94,7 +94,7 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 			node.remove(CSRF_KEY);
 			node.flush();
 		} catch (final IOException e) {
-			log.log(Level.SEVERE, "Error removing secure preferences", e);
+			log.error("Error removing secure preferences", e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class AuthenticationSessionImpl implements AuthenticationSession {
 				node.put(CSRF_KEY, auth.getCsrf(), true);
 			node.flush();
 		} catch (final IOException | StorageException e) {
-			log.log(Level.SEVERE, "Error storing secure preferences", e);
+			log.error("Error storing secure preferences", e);
 		}
 	}
 

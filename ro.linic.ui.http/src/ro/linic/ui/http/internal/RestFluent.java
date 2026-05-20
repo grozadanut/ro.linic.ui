@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -31,7 +32,7 @@ import ro.linic.ui.http.HttpHeaders;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller.BaseConfigurer;
 import ro.linic.ui.http.pojo.StubResponse;
-import ro.linic.ui.security.model.Authentication;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 abstract class RestFluent implements BaseConfigurer {
 	private static final ILog log = ILog.of(RestFluent.class);
@@ -40,6 +41,7 @@ abstract class RestFluent implements BaseConfigurer {
 	protected final Map<String, String> headers;
 	protected final Map<String, String> urlParams;
 	protected boolean internal;
+	protected AuthenticationSession session;
 
 	protected RestFluent(final String url) {
 		this.url = Objects.requireNonNull(url, "url is required");
@@ -63,14 +65,15 @@ abstract class RestFluent implements BaseConfigurer {
 	}
 	
 	@Override
-	public BaseConfigurer internal(final Authentication auth) {
+	public BaseConfigurer internal(final AuthenticationSession session) {
 		this.internal = true;
+		this.session = Objects.requireNonNull(session);
 		addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 		addHeader(HttpHeaders.ACCEPT, "application/json");
-		if (!StringUtils.isEmpty(auth.getSessionId()))
-			addHeader("Cookie", "JSESSIONID="+auth.getSessionId());
-		addHeader("x-csrf-token", auth.getCsrf());
-		addHeader("moquisessiontoken", auth.getCsrf());
+		if (!StringUtils.isEmpty(session.authentication().getSessionId()))
+			addHeader("Cookie", "JSESSIONID="+session.authentication().getSessionId());
+		addHeader("x-csrf-token", session.authentication().getCsrf());
+		addHeader("moquisessiontoken", session.authentication().getCsrf());
 		return this;
 	}
 	
@@ -82,19 +85,33 @@ abstract class RestFluent implements BaseConfigurer {
 		        .connectTimeout(Duration.ofSeconds(30))
 		        .build();
 		
-		final String serverUrl = internal ? UIUtils.moquiBaseUrl() : "";
-		
-		if (internal && isEmpty(serverUrl))
+		if (internal && isEmpty(UIUtils.moquiBaseUrl()))
 			return CompletableFuture.completedFuture(new StubResponse<>(200, null));
 
-		final Builder reqBuilder = HttpRequest.newBuilder()
-		.uri(URI.create(serverUrl + url + ParameterStringBuilder.getParamsString(urlParams)));
-		headers.entrySet().forEach(h -> reqBuilder.header(h.getKey(), h.getValue()));
-		
-		final HttpRequest request = buildMethod(reqBuilder).build();
-		return client.sendAsync(request, responseBodyHandler);
+		return client.sendAsync(buildRequest(), responseBodyHandler)
+				.thenCompose(response -> {
+					if (internal && response.statusCode() == 403 && (response.body()+"").contains("User [No User] is not authorized for View on REST Path"))
+						return retryRequestAfterRelogin(client, responseBodyHandler);
+					return CompletableFuture.completedFuture(response);
+				});
 	}
 	
+	private HttpRequest buildRequest() {
+		final String serverUrl = internal ? UIUtils.moquiBaseUrl() : "";
+		final Builder reqBuilder = HttpRequest.newBuilder()
+				.uri(URI.create(serverUrl + url + ParameterStringBuilder.getParamsString(urlParams)));
+		headers.entrySet().forEach(h -> reqBuilder.header(h.getKey(), h.getValue()));
+		return buildMethod(reqBuilder).build();
+	}
+	
+	private <T> CompletionStage<HttpResponse<T>> retryRequestAfterRelogin(final HttpClient client, final BodyHandler<T> responseBodyHandler) {
+		session.invalidate();
+		internal(session); // relogin and refresh session tokens
+		final HttpRequest request = buildRequest();
+		log.info("session refreshed, now retrying: "+request);
+		return client.sendAsync(request, responseBodyHandler);
+	}
+
 	@Override
 	public CompletableFuture<List<GenericValue>> async(final Consumer<Throwable> exceptionHandler) {
 		return asyncRaw(BodyHandlers.ofString())

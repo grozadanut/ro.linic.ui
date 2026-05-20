@@ -770,7 +770,7 @@ public class AdaugaOpDialog extends TrayDialog {
 	private Optional<Integer> findProduct() {
 		try {
 			return RestCaller.get("/rest/s1/moqui-linic-legacy/suppliers/product")
-					.internal(authSession.authentication())
+					.internal(authSession)
 					.addUrlParam("vendorPartyId", safeString(partnerIdSupplier.get(), id -> id.toString()))
 					.addUrlParam("otherPartyItemId", selAnafInvoiceLine.getString("itemId"))
 					.addUrlParam("otherPartyItemName", selAnafInvoiceLine.getString("name"))
@@ -789,7 +789,7 @@ public class AdaugaOpDialog extends TrayDialog {
 			// run this with a delay from ManagerPart.updateProductSuppliers because of Moqui entity auto 'store' concurrency issues
 			Thread.sleep(1000);
 			final HttpResponse<String> response = RestCaller
-					.post("/rest/s1/moqui-linic-legacy/anafInvoiceLines/receive").internal(authSession.authentication())
+					.post("/rest/s1/moqui-linic-legacy/anafInvoiceLines/receive").internal(authSession)
 					.addUrlParam("systemMessageId", selAnafInvoiceLine.getString("id"))
 					.addUrlParam("invoiceId", accDoc.getId().toString())
 					.addUrlParam("supplierId", accDoc.getPartner().getId().toString())
@@ -815,7 +815,7 @@ public class AdaugaOpDialog extends TrayDialog {
 	private void markReceived() {
 		try {
 			final HttpResponse<String> response = RestCaller
-					.post("/rest/s1/moqui-linic-legacy/anafInvoiceLines/receive").internal(authSession.authentication())
+					.post("/rest/s1/moqui-linic-legacy/anafInvoiceLines/receive").internal(authSession)
 					.addUrlParam("systemMessageId", selAnafInvoiceLine.getString("id"))
 					.addUrlParam("invoiceId", safeString(accDocSupplier.get(), AccountingDocument::getId, Object::toString))
 					.asyncRaw(BodyHandlers.ofString()).get();

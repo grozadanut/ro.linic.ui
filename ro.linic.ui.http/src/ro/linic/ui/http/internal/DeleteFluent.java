@@ -3,7 +3,7 @@ package ro.linic.ui.http.internal;
 import java.net.http.HttpRequest.Builder;
 
 import ro.linic.ui.http.RestCaller.DeleteConfigurer;
-import ro.linic.ui.security.model.Authentication;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class DeleteFluent extends RestFluent implements DeleteConfigurer {
 	
@@ -22,7 +22,7 @@ public class DeleteFluent extends RestFluent implements DeleteConfigurer {
 	}
 	
 	@Override
-	public DeleteConfigurer internal(final Authentication auth) {
+	public DeleteConfigurer internal(final AuthenticationSession auth) {
 		return (DeleteConfigurer) super.internal(auth);
 	}
 	

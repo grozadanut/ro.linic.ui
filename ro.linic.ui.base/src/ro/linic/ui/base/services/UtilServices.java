@@ -25,7 +25,7 @@ public class UtilServices {
 		if (ConfirmDialog.open(shell, ro.linic.ui.base.Messages.Confirm,
 				"Catre "+name+" "+toPhoneNumbers+NEWLINE+NEWLINE+message)) {
 			RestCaller.post("/rest/s1/moqui-linic-legacy/sms")
-			.internal(ctx.get(AuthenticationSession.class).authentication())
+			.internal(ctx.get(AuthenticationSession.class))
 			.body(BodyProvider.of(phoneBody))
 			.sync(t -> UIUtils.showException(t, ctx.get(UISynchronize.class)));
 		}

@@ -242,7 +242,7 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 		case MARK:
 			try {
 				final HttpResponse<String> response = RestCaller.post("/rest/s1/moqui-linic-legacy/anafInvoices/receive")
-						.internal(authSession.authentication())
+						.internal(authSession)
 						.addUrlParam("systemMessageId", anafInvoice.getString("id"))
 						.asyncRaw(BodyHandlers.ofString())
 						.get();

@@ -39,7 +39,7 @@ public class EliminateFromOrdersHandler {
 		final GenericDataHolder ordersHolder = dataServices.holder(SupplierOrdersPart.DATA_HOLDER);
 		orders.forEach(gv -> {
 			RestCaller.delete("/rest/s1/moqui-linic-legacy/requirements")
-					.internal(authSession.authentication())
+					.internal(authSession)
 					.addUrlParam("requirementId", "*")
 					.addUrlParam("facilityId", ClientSession.instance().getGestiune().getImportName())
 					.addUrlParam("requirementTypeEnumId", "RqTpInventory")

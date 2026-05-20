@@ -153,7 +153,7 @@ public class RequirementsPart
 		if (productSuppliersHolder.getData().isEmpty())
 			try {
 				RestCaller.get("/rest/s1/moqui-linic-legacy/products/suppliers")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.addUrlParam("organizationPartyId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
 				.async(t -> UIUtils.showException(t, sync))
 				.thenApply(ps -> ps.stream().filter(gv -> gv.getString("preferredOrderEnumId") == null ||
@@ -224,7 +224,7 @@ public class RequirementsPart
 			shell.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
 		
 		RestCaller.get("/rest/s1/moqui-linic-legacy/suppliers")
-		.internal(authSession.authentication())
+		.internal(authSession)
 		.async(t -> UIUtils.showException(t, sync))
 		.thenApply(suppliers -> suppliers.stream()
 				.sorted(Comparator.comparing(gv -> gv.getString("organizationName")))
@@ -341,7 +341,7 @@ public class RequirementsPart
 		.toList();
 		
 		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.body(BodyProvider.of(HttpUtils.toJSON_Deprecated(valuesToUpdate)))
 				.sync(Result.class, t -> UIUtils.showException(t, sync))
 				.isPresent();
@@ -356,7 +356,7 @@ public class RequirementsPart
 		.toList();
 		
 		return RestCaller.put("/rest/s1/moqui-linic-legacy/products/facility")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.body(BodyProvider.of(HttpUtils.toJSON_Deprecated(valuesToUpdate)))
 				.sync(Result.class, t -> UIUtils.showException(t, sync))
 				.isPresent();
@@ -378,7 +378,7 @@ public class RequirementsPart
 				"quantity", quantity);
 		
 		RestCaller.post("/rest/s1/moqui-linic-legacy/requirements")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.body(BodyProvider.of(HttpUtils.toJSON(body)))
 				.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
 				.ifPresent(reqId -> {

@@ -1052,7 +1052,7 @@ public class VanzareMoquiPart implements VanzareInterface
 							"quantity", op.getCantitate());
 
 					RestCaller.post("/rest/s1/moqui-linic-legacy/requirements")
-					.internal(authSession.authentication())
+					.internal(authSession)
 					.body(BodyProvider.of(HttpUtils.toJSON(body)))
 					.sync(GenericValue.class, t -> UIUtils.showException(t, sync));
 				});
@@ -1107,7 +1107,7 @@ public class VanzareMoquiPart implements VanzareInterface
 	{
 		try {
 			final List<GenericValue> affiliates = RestCaller.get("/rest/s1/moqui-linic-legacy/partners")
-					.internal(ctx.get(AuthenticationSession.class).authentication())
+					.internal(ctx.get(AuthenticationSession.class))
 					.addUrlParam("searchKeyword", affiliate.getText())
 					.async(t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
 					.get();
@@ -1166,7 +1166,7 @@ public class VanzareMoquiPart implements VanzareInterface
 		BigDecimal discPerUom = null;
 		
 		final BigDecimal moquiPrice = RestCaller.get("/rest/s1/mantle/products/"+p.getId()+"/price")
-				.internal(ctx.get(AuthenticationSession.class).authentication())
+				.internal(ctx.get(AuthenticationSession.class))
 				.addUrlParam("quantity", PresentationUtils.safeString(quantity, BigDecimal::abs, BigDecimal::toString))
 				.addUrlParam("customerPartyId", PresentationUtils.safeString(customerId, id -> id.toString()))
 				.addUrlParam("productStoreId", PresentationUtils.safeString(ClientSession.instance().getLoggedUser(), User::getSelectedGestiune, Gestiune::getImportName))

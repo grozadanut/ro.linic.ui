@@ -52,7 +52,7 @@ public class EliminateFromRequirementsHandler {
 			// MOQUI
 			final String pId = gv.getString(Product.ID_FIELD);
 			RestCaller.delete("/rest/s1/mantle/products/"+pId)
-					.internal(authSession.authentication())
+					.internal(authSession)
 					.sync(GenericValue.class, t -> UIUtils.showException(t, t.getMessage()));
 		});
 		

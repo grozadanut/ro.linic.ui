@@ -308,7 +308,7 @@ public class ManagerCasaDialog extends Dialog
 					"date", date,
 					"receipts", receipts);
 
-			RestCaller.post("/rest/s1/moqui-linic-legacy/reconcile/receipts").internal(ctx.get(AuthenticationSession.class).authentication())
+			RestCaller.post("/rest/s1/moqui-linic-legacy/reconcile/receipts").internal(ctx.get(AuthenticationSession.class))
 					.body(BodyProvider.of(HttpUtils.toJSON(body)))
 					.async(t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
 					.thenAccept(result -> ctx.get(DataServices.class).holder(ReconciliationPart.DATA_HOLDER).setData(result.stream().toList()))

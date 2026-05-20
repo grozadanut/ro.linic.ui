@@ -236,7 +236,7 @@ public class ApproveRequirementsPart {
 		requirementsHolder.clear();
 		
 		RestCaller.get("/rest/s1/moqui-linic-legacy/requirements")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.addUrlParam("facilityId", ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName())
 				.addUrlParam("statusId", "RqmtStCreated")
 				.async(t -> UIUtils.showException(t, sync))

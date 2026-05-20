@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.RestCaller.PutConfigurer;
-import ro.linic.ui.security.model.Authentication;
+import ro.linic.ui.security.services.AuthenticationSession;
 
 public class PutFluent extends RestFluent implements PutConfigurer {
 	private BodyProvider body;
@@ -26,7 +26,7 @@ public class PutFluent extends RestFluent implements PutConfigurer {
 	}
 	
 	@Override
-	public PutConfigurer internal(final Authentication auth) {
+	public PutConfigurer internal(final AuthenticationSession auth) {
 		return (PutConfigurer) super.internal(auth);
 	}
 	

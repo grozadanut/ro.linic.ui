@@ -415,7 +415,7 @@ public class AccountingPart implements IMouseAction {
 				if (selAnafInvoice.isPresent())
 					new ReceptieEFacturaDialog(receptie.getShell(), log, partService, authSession, selAnafInvoice.get(),
 							RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoiceLines")
-							.internal(authSession.authentication())
+							.internal(authSession)
 							.addUrlParam("systemMessageId", selAnafInvoice.get().getString("id"))
 							.sync(Result.class, t -> UIUtils.showException(t, sync))
 							.get().resultList())
@@ -560,7 +560,7 @@ public class AccountingPart implements IMouseAction {
 				selectedPartner().map(Partner::getId).orElse(null), extractLocalDate(from), extractLocalDate(to), log);
 
 		RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoices")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.addUrlParam("start", Timestamp.valueOf(extractLocalDate(from).atStartOfDay()).toString())
 				.addUrlParam("end", Timestamp.valueOf(extractLocalDate(to).atTime(23, 59)).toString())
 				.async(t -> UIUtils.showException(t, sync))

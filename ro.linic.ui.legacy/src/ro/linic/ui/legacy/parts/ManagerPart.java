@@ -1454,7 +1454,7 @@ public class ManagerPart implements IMouseAction
 		
 		final String organizationPartyId = ClientSession.instance().getLoggedUser().getSelectedGestiune().getImportName();
 		RestCaller.put("/rest/s1/moqui-linic-legacy/products/suppliers")
-				.internal(authSession.authentication())
+				.internal(authSession)
 				.body(BodyProvider.of(HttpUtils.toJSON_Deprecated(List.of(GenericValue.of("", "", 
 						Map.of("organizationPartyId", organizationPartyId,
 								"productId", p.get().getId(),
@@ -1470,7 +1470,7 @@ public class ManagerPart implements IMouseAction
 		
 		final GenericDataHolder ordersHolder = dataServices.holder(SupplierOrdersPart.DATA_HOLDER);
 		RestCaller.delete("/rest/s1/moqui-linic-legacy/requirements")
-		.internal(authSession.authentication())
+		.internal(authSession)
 		.addUrlParam("requirementId", "*")
 		.addUrlParam("facilityId", ClientSession.instance().getGestiune().getImportName())
 		.addUrlParam("requirementTypeEnumId", "RqTpInventory")

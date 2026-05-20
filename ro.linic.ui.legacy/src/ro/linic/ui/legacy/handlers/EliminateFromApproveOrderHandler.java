@@ -42,7 +42,7 @@ public class EliminateFromApproveOrderHandler {
 		final GenericDataHolder requirementsHolder = dataServices.holder(ApproveRequirementsPart.DATA_HOLDER);
 		requirements.forEach(gv -> {
 			RestCaller.delete("/rest/s1/moqui-linic-legacy/requirements")
-					.internal(authSession.authentication())
+					.internal(authSession)
 					.addUrlParam("requirementId", "*")
 					.addUrlParam("facilityId", ClientSession.instance().getGestiune().getImportName())
 					.addUrlParam("requirementTypeEnumId", "RqTpInventory")

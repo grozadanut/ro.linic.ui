@@ -3,11 +3,10 @@ package ro.linic.ui.legacy;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
@@ -40,7 +39,7 @@ import ro.linic.ui.security.services.AuthenticationManager;
 
 @Component
 public class LegacyAuthenticationManager implements AuthenticationManager {
-	private static final Logger log = Logger.getLogger(LegacyAuthenticationManager.class.getName());
+	private static final ILog log = ILog.of(LegacyAuthenticationManager.class);
 	
 	@Override
 	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
@@ -81,7 +80,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 				.map(res -> {
 					if (HttpUtils.fromJSON(res.body(), GenericValue.class).getBoolean("loggedIn"))
 						return res;
-					log.severe(res.body());
+					log.error(UIUtils.moquiBaseUrl()+"/rest/login RESPONSE: "+res.body());
 					return null;
 				});
 		String sessionId = null, csrf = null;
@@ -116,7 +115,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 			try {
 				prefs.flush();
 			} catch (final BackingStoreException e) {
-				log.log(Level.SEVERE, e.getMessage(), e);
+				log.error(e.getMessage(), e);
 			}
 			return UsernamePasswordAuthenticationToken.authenticated(ClientSession.instance().getUsername(),
 					ClientSession.instance().getPassword(), authentication.getSessionId(), authentication.getCsrf(),
