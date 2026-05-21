@@ -134,10 +134,12 @@ public class UIUtils {
 			sync.asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), title,
 					MessageFormat.format("{1}{0}{0}{2}", isEmpty(message) ? EMPTY_STRING : NEWLINE, safeString(message),
 							safeString(ex, Throwable::getMessage))));
-		else
-			MessageDialog.openError(Display.getDefault().getActiveShell(), title,
+		else if (Display.getDefault() != null)
+			Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(), title,
 					MessageFormat.format("{1}{0}{0}{2}", isEmpty(message) ? EMPTY_STRING : NEWLINE, safeString(message),
-							safeString(ex, Throwable::getMessage)));
+							safeString(ex, Throwable::getMessage))));
+		else
+			log.error(message, ex);
 	}
 
 	public static GridLayout layoutNoSpaces(final GridLayout layout) {

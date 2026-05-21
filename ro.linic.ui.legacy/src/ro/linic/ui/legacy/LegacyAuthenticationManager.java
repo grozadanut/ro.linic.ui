@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
@@ -26,7 +27,8 @@ import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpHeaders;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
-import ro.linic.ui.legacy.dialogs.LoginDialog;
+import ro.linic.ui.legacy.dialogs.security.LoginDialog;
+import ro.linic.ui.legacy.dialogs.security.TwoFactorCodeDialog;
 import ro.linic.ui.legacy.mapper.PermissionMapper;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -80,12 +82,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 					.body(BodyProvider.of(GenericValue.of("", "", "username", ClientSession.instance().getUsername(),
 							"password",  ClientSession.instance().getPassword())))
 					.syncRaw(BodyHandlers.ofString(), t -> log.error(t.getMessage(), t))
-					.map(res -> {
-						if (HttpUtils.fromJSON(res.body(), GenericValue.class).getBoolean("loggedIn"))
-							return res;
-						log.error(UIUtils.moquiBaseUrl()+"/rest/login RESPONSE: "+res.body());
-						return null;
-					});
+					.map(res -> readLoginResponse(res, ctx));
 			if (loginResponse.isPresent()) {
 				csrf = loginResponse.get().headers().firstValue("x-csrf-token").orElse(null);
 				sessionId = loginResponse.get().headers()
@@ -100,6 +97,22 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 		return UsernamePasswordAuthenticationToken.authenticated(ClientSession.instance().getUsername(), ClientSession.instance().getPassword(),
 				sessionId, csrf,
 				PermissionMapper.toGrantedAuthorities(ClientSession.instance().getLoggedUser().getRole().getPermissions()));
+	}
+	
+	private HttpResponse<String> readLoginResponse(final HttpResponse<String> res, final IEclipseContext ctx) {
+		final GenericValue response = HttpUtils.fromJSON(res.body(), GenericValue.class);
+		if (response.getBoolean("loggedIn"))
+			return res;
+		
+		if (response.getBoolean("secondFactorRequired")) {
+			final TwoFactorCodeDialog twoFactordialog = new TwoFactorCodeDialog(Display.getCurrent().getActiveShell(), ctx, response);
+			if (twoFactordialog.open() != Window.OK)
+				System.exit(0);
+			return twoFactordialog.response();
+		}
+		
+		log.error(UIUtils.moquiBaseUrl()+"/rest/login RESPONSE: "+res.body());
+		return null;
 	}
 	
 	private Authentication restoreAuth(final RestoreAuthenticationToken authentication) {

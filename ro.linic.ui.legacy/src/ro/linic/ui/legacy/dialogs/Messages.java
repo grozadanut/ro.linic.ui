@@ -1,5 +1,8 @@
 package ro.linic.ui.legacy.dialogs;
 
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
@@ -303,10 +306,35 @@ public class Messages extends NLS {
 	public static String OrderProductsDialog_SupplierMissingError;
 	public static String OrderProductsDialog_ChannelMissingError;
 	public static String SmsQueryDialog_GenerateSms;
+	public static String TwoFactorTitle;
+	public static String TwoFactorDescription;
+	public static String TwoFactorDescriptionLong;
+	public static String TwoFactor_Code;
+	public static String TwoFactor_CodeSent;
+	public static String TwoFactor_MissingCode;
+	public static String TwoFactor_InvalidCode;
 	static {
 		// initialize resource bundle
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
+	
+	/**
+	 * Returns the resource object with the given key in POS's resource
+	 * bundle. If there isn't any value under the given key, the key is
+	 * returned.
+	 *
+	 * @param key
+	 *            the resource name
+	 * @return the string
+	 */
+	public static String getString(final String key) {
+		try {
+			return bundle.getString(key);
+		} catch (final MissingResourceException e) {
+			return key;
+		}
+	}
+	private static final ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME);
 
 	private Messages() {
 	}

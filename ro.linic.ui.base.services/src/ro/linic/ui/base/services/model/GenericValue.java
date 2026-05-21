@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -162,6 +163,10 @@ public class GenericValue extends JavaBean implements Map<String, Object>, Compa
 	
 	public String getString(final Object key) {
 		return Optional.ofNullable(get(key)).map(Object::toString).orElse(null);
+	}
+	
+	public <T> List<T> getList(final Object key) {
+		return get(key) instanceof List ? (List<T>) get(key) : null;
 	}
 	
 	public GenericValue getChild(final Object key) {

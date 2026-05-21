@@ -72,7 +72,8 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench;bundle-version="2.4.100.v20230
  slf4j.api;bundle-version="1.7.30",
  tools.jackson.core.jackson-core;bundle-version="3.1.0",
  tools.jackson.core.jackson-databind;bundle-version="3.1.0",
- wrapped.ro.flexbiz.util.commons;bundle-version="1.0.2"
+ wrapped.ro.flexbiz.util.commons;bundle-version="1.0.2",
+ org.eclipse.nebula.widgets.opal.commons;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Bundle-Description: %Bundle-Description

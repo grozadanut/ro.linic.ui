@@ -1,4 +1,4 @@
-package ro.linic.ui.legacy.dialogs;
+package ro.linic.ui.legacy.dialogs.security;
 
 import static ro.colibri.util.NumberUtils.parseToInt;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
@@ -40,6 +40,7 @@ import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.legacy.dialogs.Messages;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.ServiceLocator;
