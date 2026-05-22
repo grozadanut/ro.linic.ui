@@ -91,7 +91,7 @@ abstract class RestFluent implements BaseConfigurer {
 		return client.sendAsync(buildRequest(), responseBodyHandler)
 				.thenCompose(response -> {
 					if (internal && response.statusCode() == 403 && (response.body()+"").contains("User [No User] is not authorized for View on REST Path"))
-						return retryRequestAfterRelogin(client, responseBodyHandler);
+						session.invalidate(); //return retryRequestAfterRelogin(client, responseBodyHandler);
 					return CompletableFuture.completedFuture(response);
 				});
 	}
@@ -104,6 +104,14 @@ abstract class RestFluent implements BaseConfigurer {
 		return buildMethod(reqBuilder).build();
 	}
 	
+	/**
+	 * We currently use only session.invalidate(); instead of this method because we have a deadlock in here;
+	 * The UI thread waits for the rest call to complete and the rest thread waits for the user to authenticate on the UI thread. 
+	 * The fix would be either to have a reactive UI that doesn't block for rest calls, or run the UI loop while waiting for the rest call, 
+	 * allowing the user to complete the login without UI freezing.
+	 * Until then, the current inconvenience is that if the token is expired, the rest call will fail with an exception, the user 
+	 * having to rerun the rest call after the error
+	 */
 	private <T> CompletionStage<HttpResponse<T>> retryRequestAfterRelogin(final HttpClient client, final BodyHandler<T> responseBodyHandler) {
 		session.invalidate();
 		internal(session); // relogin and refresh session tokens

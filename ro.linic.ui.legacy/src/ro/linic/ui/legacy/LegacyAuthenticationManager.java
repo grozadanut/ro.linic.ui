@@ -55,10 +55,22 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 		return authentication;
 	}
 
-	private static boolean opened = false; // avoid stack overflow error when called from BetaTester.evaluate
+	/**
+	 * This method is called from the UI thread multiple times resulting in multiple TwoFactorDialogs, even if in theory the dialog should block on open;
+	 * It seems the UI thread runs a loop where the BetaTester(which calls authenticate) is run even if a dialog is already opened;
+	 * That's why we need this opened field, if the dialog is already opened it's safe to return an unauthenticated token to the BetaTester handlers, 
+	 * they will be asserted again in the future anyway
+	 */
+	private static boolean opened = false;
 	private Authentication login() {
 		if (opened)
 			return AnonymousAuthenticationToken.unauthenticated();
+		
+		final boolean isUIThread = Display.findDisplay(Thread.currentThread()) != null;
+		if (!isUIThread) {
+			log.error("LegacyAuthenticationManager.login should only be called from the UI thread, but is: "+Thread.currentThread().getName());
+			Thread.dumpStack();
+		}
 		
 		final Bundle bundle = FrameworkUtil.getBundle(getClass());
 		final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(bundle.getSymbolicName());
@@ -76,6 +88,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 		// MOQUI login to get session token
 		String sessionId = null, csrf = null;
 		if (!isEmpty(UIUtils.moquiBaseUrl())) {
+			opened = true;
 			final Optional<HttpResponse<String>> loginResponse = RestCaller.post(UIUtils.moquiBaseUrl()+"/rest/login")
 					.addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
 					.addHeader(HttpHeaders.ACCEPT, "application/json")
@@ -93,6 +106,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 						})
 						.orElse(null);
 			}
+			opened = false;
 		}
 		return UsernamePasswordAuthenticationToken.authenticated(ClientSession.instance().getUsername(), ClientSession.instance().getPassword(),
 				sessionId, csrf,
