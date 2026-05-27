@@ -30,6 +30,11 @@
             id="ro.linic.ui.legacy.preference.printpage.invoice"
             name="%page.invoice">
       </page>
+      <page
+            class="ro.linic.ui.legacy.preferences.SalesPage"
+            id="ro.linic.ui.legacy.preference.sales"
+            name="%page.sales">
+      </page>
    </extension>
    <extension
          point="com.opcoach.e4.preferences.e4PreferenceStoreProvider">

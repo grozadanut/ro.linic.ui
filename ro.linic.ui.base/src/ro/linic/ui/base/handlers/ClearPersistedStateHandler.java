@@ -13,6 +13,7 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import ro.linic.ui.base.Messages;
 import ro.linic.ui.base.dialogs.PromptRestartDialog;
+import ro.linic.ui.base.preferences.PreferenceKey;
 
 public class ClearPersistedStateHandler {
 	private static final ILog log = ILog.of(ClearPersistedStateHandler.class);
@@ -25,6 +26,7 @@ public class ClearPersistedStateHandler {
 		try {
 			final IEclipsePreferences node = InstanceScope.INSTANCE.getNode(FrameworkUtil.getBundle(getClass()).getSymbolicName());
 			node.putBoolean(IWorkbench.CLEAR_PERSISTED_STATE, true);
+			node.putBoolean(PreferenceKey.IS_FRESH_UI, true);
 			node.flush();
 		} catch (final BackingStoreException e) {
 			log.error(e.getMessage(), e);

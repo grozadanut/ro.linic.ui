@@ -1,5 +1,7 @@
 package ro.linic.ui.legacy.preferences;
 
+import ro.colibri.base.IPresentableEnum;
+
 public interface PreferenceKey {
 	public static final String NODE_PATH = "ro.linic.ui.legacy";
 	/**
@@ -25,4 +27,27 @@ public interface PreferenceKey {
 	public static final String RECEPTIE_GROUPBY_VAT_KEY = "receptie_groupby_vat";
 	public static final String FACTURA_PRINT_CONFORMITATE_KEY = "factura_print_conformitate";
 	public static final boolean FACTURA_PRINT_CONFORMITATE_DEF = false;
+	
+	public static final String VANZARE_PART_TYPE_KEY = "vanzare_part_type_key"; //$NON-NLS-1$
+	public static final SalesPartType VANZARE_PART_TYPE_DEFAULT = SalesPartType.STANDARD;
+	
+	public enum SalesPartType implements IPresentableEnum {
+		CAFE("Cafe"), STANDARD("Standard"), BETA("Moqui Beta");
+
+		private final String displayName;
+
+		private SalesPartType(final String displayName) {
+			this.displayName = displayName;
+		}
+
+		@Override
+		public String displayName() {
+			return displayName;
+		}
+
+		@Override
+		public String namestamp() {
+			return name();
+		}
+	}
 }

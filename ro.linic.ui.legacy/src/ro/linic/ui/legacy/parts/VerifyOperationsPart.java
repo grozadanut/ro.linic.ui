@@ -34,6 +34,7 @@ import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -48,12 +49,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.embeddable.Verificat;
@@ -66,11 +69,13 @@ import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.entities.comercial.mappings.AccountingDocumentMapping;
 import ro.colibri.util.InvocationResult;
 import ro.linic.ui.base.dialogs.ConfirmDialog;
+import ro.linic.ui.base.services.UtilServices;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.ScheduleDialog;
 import ro.linic.ui.legacy.dialogs.SendEmailDialog;
 import ro.linic.ui.legacy.dialogs.VerifyDialog;
+import ro.linic.ui.legacy.handlers.OpenNewVanzariPartHandler;
 import ro.linic.ui.legacy.service.JasperReportManager;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.ClientSession;
@@ -136,8 +141,17 @@ public class VerifyOperationsPart
 	}
 	
 	@PostConstruct
-	public void createComposite(final Composite parent)
+	public void createComposite(final Composite parent, @Named(IServiceConstants.ACTIVE_SHELL) final Shell shell)
 	{
+		if (shell != null && ClientSession.PROVIDER_URL_VALUE.contains("localhost"))
+			shell.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
+		sync.asyncExec(() -> {
+			if (UtilServices.isFreshUI()) {
+				OpenNewVanzariPartHandler.openNewSalesPart(ctx);
+				UtilServices.setFreshUI(false);
+			}
+		});
+		
 		parent.setLayout(new GridLayout());
 		
 		final Composite container = new Composite(parent, SWT.NONE);
