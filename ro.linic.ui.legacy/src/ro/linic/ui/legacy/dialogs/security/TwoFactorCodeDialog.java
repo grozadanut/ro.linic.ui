@@ -4,6 +4,7 @@ import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
 import static ro.linic.ui.legacy.session.UIUtils.setFont;
 
+import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
@@ -16,6 +17,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.di.UISynchronize;
+import org.eclipse.equinox.security.storage.ISecurePreferences;
+import org.eclipse.equinox.security.storage.SecurePreferencesFactory;
+import org.eclipse.equinox.security.storage.StorageException;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -30,14 +34,22 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 
+import ro.flexbiz.util.commons.LocalDateUtils;
+import ro.flexbiz.util.commons.StringUtils;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.util.UIUtils;
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpHeaders;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
+import ro.linic.ui.http.RestCaller.PostConfigurer;
+import ro.linic.ui.legacy.LegacyAuthenticationManager;
 import ro.linic.ui.legacy.dialogs.Messages;
+import ro.linic.ui.legacy.preferences.PreferenceKey;
 import ro.linic.ui.legacy.session.ClientSession;
 
 public class TwoFactorCodeDialog extends TitleAreaDialog {
@@ -136,13 +148,32 @@ public class TwoFactorCodeDialog extends TitleAreaDialog {
 			setErrorMessage(Messages.TwoFactor_MissingCode);
 			return;
 		}
+		
+		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
+		final ISecurePreferences root = SecurePreferencesFactory.getDefault();
+ 		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName());
+ 		
+ 		String deviceId = null, deviceSecret = null;
+ 		try {
+ 			deviceId = secureNode.get(LegacyAuthenticationManager.DEVICE_ID_KEY, null);
+ 			deviceSecret = secureNode.get(LegacyAuthenticationManager.DEVICE_SECRET_KEY, null);
+		} catch (final StorageException e) {
+			log.error("Error getting secure preferences", e);
+		}
 
-		final Optional<HttpResponse<String>> loginResponse = RestCaller.post(UIUtils.moquiBaseUrl()+"/rest/login")
+		final PostConfigurer rest = RestCaller.post(UIUtils.moquiBaseUrl()+"/rest/login");
+		if (!StringUtils.isEmpty(deviceId))
+			rest.addHeader("Cookie", "deviceId="+deviceId+"; deviceSecret="+deviceSecret);
+		
+		final Version v = bundle.getVersion();
+		final Optional<HttpResponse<String>> loginResponse = rest
+				.addHeader(HttpHeaders.USER_AGENT, String.format("%s %d.%d.%d %s", "Flexbiz Desktop", v.getMajor(), v.getMinor(), v.getMicro(), UIUtils.getHostName()))
 				.addHeader(HttpHeaders.CONTENT_TYPE, "application/json")
 				.addHeader(HttpHeaders.ACCEPT, "application/json")
 				.body(BodyProvider.of(GenericValue.of("", "", "username", ClientSession.instance().getUsername(),
 						"password",  ClientSession.instance().getPassword(),
-						"code", code.getText())))
+						"code", code.getText(),
+						"trustDevice", true, "trustThruDate", LocalDateUtils.POSTGRES_MAX)))
 				.syncRaw(BodyHandlers.ofString(), t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
 				.map(res -> {
 					final GenericValue response = HttpUtils.fromJSON(res.body(), GenericValue.class);
@@ -154,6 +185,17 @@ public class TwoFactorCodeDialog extends TitleAreaDialog {
 		
 		if (loginResponse.isPresent()) {
 			twoFactorResponse = loginResponse.get();
+			try {
+				final Optional<String> deviceIdResp = HttpUtils.extractCookie(loginResponse.get().headers(), LegacyAuthenticationManager.DEVICE_ID_KEY);
+				final Optional<String> deviceSecretResp = HttpUtils.extractCookie(loginResponse.get().headers(), LegacyAuthenticationManager.DEVICE_SECRET_KEY);
+				if (deviceIdResp.isPresent())
+					secureNode.put(LegacyAuthenticationManager.DEVICE_ID_KEY, deviceIdResp.get(), true);
+				if (deviceSecretResp.isPresent())
+					secureNode.put(LegacyAuthenticationManager.DEVICE_SECRET_KEY, deviceSecretResp.get(), true);
+				secureNode.flush();
+			} catch (final IOException | StorageException e) {
+				log.error(e.getMessage(), e);
+			}
 			super.okPressed();
 		}
 		else {

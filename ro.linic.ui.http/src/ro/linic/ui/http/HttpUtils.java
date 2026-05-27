@@ -2,9 +2,14 @@ package ro.linic.ui.http;
 
 import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
+import java.net.http.HttpHeaders;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ro.flexbiz.util.commons.HttpStatusCode;
 import ro.linic.ui.base.services.model.GenericValue;
@@ -56,5 +61,15 @@ public class HttpUtils {
 		if (response.statusCode() != HttpStatusCode.OK.getValue())
 			throw new RuntimeException(response + ": " + response.body());
 		return response;
+	}
+	
+	public static Optional<String> extractCookie(final HttpHeaders headers, final String name) {
+		return headers.allValues("set-cookie").stream()
+				.map(cookie -> {
+					final Matcher matcher = Pattern.compile(name+"=([^;]+)").matcher(cookie);
+					return matcher.find() ? matcher.group(1) : null;
+				})
+				.filter(Objects::nonNull)
+				.findFirst();
 	}
 }

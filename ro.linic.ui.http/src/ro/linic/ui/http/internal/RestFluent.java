@@ -90,7 +90,7 @@ abstract class RestFluent implements BaseConfigurer {
 
 		return client.sendAsync(buildRequest(), responseBodyHandler)
 				.thenCompose(response -> {
-					if (internal && response.statusCode() == 403 && (response.body()+"").contains("User [No User] is not authorized for View on REST Path"))
+					if (internal && response.statusCode() == 403 && (response.body()+"").contains("User [No User] is not authorized for"))
 						session.invalidate(); //return retryRequestAfterRelogin(client, responseBodyHandler);
 					return CompletableFuture.completedFuture(response);
 				});

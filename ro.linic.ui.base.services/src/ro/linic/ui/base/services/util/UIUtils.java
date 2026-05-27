@@ -13,9 +13,11 @@ import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -391,6 +393,15 @@ public class UIUtils {
 		} catch (final IOException e) {
 			log.error(e.getMessage(), e);
 			return null;
+		}
+	}
+
+	public static String getHostName() {
+		try {
+			return InetAddress.getLocalHost().getHostName();
+		} catch (final UnknownHostException e) {
+			log.error(e.getMessage(), e);
+			return EMPTY_STRING;
 		}
 	}
 }
