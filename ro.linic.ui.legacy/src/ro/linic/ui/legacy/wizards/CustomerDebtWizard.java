@@ -195,12 +195,13 @@ public class CustomerDebtWizard extends Wizard
 			if (greaterThan(totalOtherGest, BigDecimal.ZERO)) {
 				final Map<String, Object> body = Map.of("topic", "LegacyGeneral",
 						"showAlert", true,
-						"title", MessageFormat.format("Vanzari din cealalta gestiune fara transfer: {0} RON{1}{2}", displayBigDecimal(totalOtherGest),
+						"title", MessageFormat.format("{0} RON incasat in {3} si vandut in alte gestiuni{1}{2}", displayBigDecimal(totalOtherGest),
 								NEWLINE,
 								sourceDocs.stream()
 								.filter(AccountingDocument::isFullyCovered)
 								.map(AccountingDocument::namestamp)
-								.collect(Collectors.joining(NEWLINE))),
+								.collect(Collectors.joining(NEWLINE)),
+								ClientSession.instance().getGestiune().getImportName()),
 						"userIds", Set.of("100000"),
 						"persist", true);
 				
