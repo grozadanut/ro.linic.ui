@@ -1,5 +1,8 @@
 package ro.linic.ui.legacy.wizards;
 
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.wizard.Wizard;
@@ -26,6 +29,7 @@ public class InchideBonWizard extends Wizard
 	private InchideBonFirstPage one;
 	private InchideBonFacturaOrBCPage two;
 	
+	private List<String> freeText;
 	private TipInchidere tipInchidere;
 	private AccountingDocument bonCasa;
 	private boolean casaActive;
@@ -35,7 +39,7 @@ public class InchideBonWizard extends Wizard
 	private Logger log;
 	
 	public InchideBonWizard(final AccountingDocument bonCasa, final boolean casaActive, final String affiliatePartnerId,
-			final IEclipseContext ctx, final Bundle bundle, final Logger log, final TipInchidere tipInchidere)
+			final IEclipseContext ctx, final Bundle bundle, final Logger log, final TipInchidere tipInchidere, final List<String> freeText)
 	{
 		super();
 		this.bonCasa = bonCasa;
@@ -45,6 +49,7 @@ public class InchideBonWizard extends Wizard
 		this.bundle = bundle;
 		this.log = log;
 		this.tipInchidere = tipInchidere;
+		this.freeText = Objects.requireNonNull(freeText);
 	}
 
 	@Override
@@ -56,7 +61,7 @@ public class InchideBonWizard extends Wizard
 	@Override
 	public void addPages()
 	{
-		one = new InchideBonFirstPage(bonCasa, casaActive, affiliatePartnerId, bundle, log, tipInchidere, ctx);
+		one = new InchideBonFirstPage(bonCasa, casaActive, affiliatePartnerId, bundle, log, tipInchidere, ctx, freeText);
 		two = new InchideBonFacturaOrBCPage(bonCasa, casaActive, affiliatePartnerId, ctx, bundle, log);
 		if (!TipInchidere.FACTURA_BC.equals(tipInchidere))
 			addPage(one);

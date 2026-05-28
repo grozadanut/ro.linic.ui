@@ -5,6 +5,7 @@ import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class ZFPLabECRDriver implements ECRDriver {
 	}
 
 	@Override
-	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId, final List<String> freeText) {
 		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
@@ -70,7 +71,7 @@ public class ZFPLabECRDriver implements ECRDriver {
 	
 	@Override
 	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments,
-			final Optional<String> taxId) {
+			final Optional<String> taxId, final List<String> freeText) {
 		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
@@ -250,6 +251,11 @@ public class ZFPLabECRDriver implements ECRDriver {
 
 	@Override
 	public CompletableFuture<Result> readReceipts(final LocalDateTime reportStart, final LocalDateTime reportEnd) {
+		throw new RuntimeException("Not implemented!");
+	}
+	
+	@Override
+	public CompletableFuture<Result> printNonFiscalReceipt(final List<String> lines) {
 		throw new RuntimeException("Not implemented!");
 	}
 

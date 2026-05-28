@@ -30,6 +30,8 @@ public interface PreferenceKey {
 	
 	public static final String VANZARE_PART_TYPE_KEY = "vanzare_part_type_key"; //$NON-NLS-1$
 	public static final SalesPartType VANZARE_PART_TYPE_DEFAULT = SalesPartType.STANDARD;
+	public static final String PRINT_ORDER_WITH_RECEIPT_KEY = "print_order_with_receipt"; //$NON-NLS-1$
+	public static final boolean PRINT_ORDER_WITH_RECEIPT_DEF = false;
 	
 	public enum SalesPartType implements IPresentableEnum {
 		CAFE("Cafe"), STANDARD("Standard"), BETA("Moqui Beta");

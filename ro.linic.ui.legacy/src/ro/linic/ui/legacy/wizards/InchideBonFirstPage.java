@@ -72,9 +72,10 @@ public class InchideBonFirstPage extends WizardPage
 	private Bundle bundle;
 	private Logger log;
 	private IEclipseContext ctx;
+	private List<String> freeText;
 
 	public InchideBonFirstPage(final AccountingDocument bonCasa, final boolean casaActive, final String affiliatePartnerId,
-			final Bundle bundle, final Logger log, final TipInchidere tipInchidere, final IEclipseContext ctx)
+			final Bundle bundle, final Logger log, final TipInchidere tipInchidere, final IEclipseContext ctx, final List<String> freeText)
 	{
         super("InchideBonFirstPage");
         this.bonCasa = bonCasa;
@@ -84,6 +85,7 @@ public class InchideBonFirstPage extends WizardPage
         this.log = log;
         this.tipInchidere = tipInchidere;
         this.ctx = ctx;
+        this.freeText = freeText;
     }
 
 	@Override
@@ -323,7 +325,7 @@ public class InchideBonFirstPage extends WizardPage
 			// print bon to casa
 			if (casaActive)
 				ctx.get(ECRService.class).printReceipt(AccDocMapper.toReceipt(List.of(bonCasa)),
-						incasarePrinCard ? PaymentType.CARD : PaymentType.CASH, Optional.ofNullable(cuiBonText.getText()))
+						incasarePrinCard ? PaymentType.CARD : PaymentType.CASH, Optional.ofNullable(cuiBonText.getText()), freeText)
 				.thenAcceptAsync(new CasaMarcat.UpdateDocStatus(bonCasa.getId() == null ? Set.of() : Set.of(bonCasa.getId()), false));
 		}
 		catch (final Exception e)

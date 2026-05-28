@@ -15,6 +15,7 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -66,9 +67,17 @@ public class FiscalNetECRDriver implements ECRDriver {
 	public boolean isECRSupported(final String ecrModel) {
 		return ECR_MODEL_PARTNER.equalsIgnoreCase(ecrModel);
 	}
+	
+	@Override
+	public CompletableFuture<Result> printNonFiscalReceipt(final List<String> lines) {
+		final StringBuilder ecrCommands = new StringBuilder();
+		// TL^TEXT
+		lines.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)));
+		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr("nf_", ecrCommands)));
+	}
 
 	@Override
-	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId, final List<String> freeText) {
 		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
@@ -79,18 +88,20 @@ public class FiscalNetECRDriver implements ECRDriver {
 		taxId.filter(StringUtils::notEmpty).ifPresent(tid -> ecrCommands.append("CF^"+tid).append(NEWLINE)); //$NON-NLS-1$
 		ecrCommands.append(saleLines(receipt));
 		
+		// TL^TEXT
+		freeText.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)));
 		/* close receipt
 		 * P^TipPlata(1,2,3,4,5,…)^VALOARE 
 		 */
 		ecrCommands.append(MessageFormat.format("P^{0}^{1}", mapPaymentType(paymentType), //$NON-NLS-1$
 				formatPrice(receipt.total())));
 		
-		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
+		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(EMPTY_STRING, ecrCommands)));
 	}
 	
 	@Override
 	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments,
-			final Optional<String> taxId) {
+			final Optional<String> taxId, final List<String> freeText) {
 		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
@@ -104,6 +115,8 @@ public class FiscalNetECRDriver implements ECRDriver {
 		taxId.filter(StringUtils::notEmpty).ifPresent(tid -> ecrCommands.append("CF^"+tid).append(NEWLINE)); //$NON-NLS-1$
 		ecrCommands.append(saleLines(receipt));
 		
+		// TL^TEXT
+		freeText.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)));
 		/* close receipt
 		 * P^TipPlata(1,2,3,4,5,…)^VALOARE 
 		 */
@@ -115,7 +128,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 			.append(NEWLINE);
 		});
 		
-		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
+		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(EMPTY_STRING, ecrCommands)));
 	}
 	
 	private String mapPaymentType(final PaymentType paymentType) {
@@ -196,14 +209,14 @@ public class FiscalNetECRDriver implements ECRDriver {
 	public void reportZ() {
 		final StringBuilder ecrCommands = new StringBuilder();
 		ecrCommands.append("Z^"); //$NON-NLS-1$
-		sendToEcr(ecrCommands);
+		sendToEcr(EMPTY_STRING, ecrCommands);
 	}
 
 	@Override
 	public void reportX() {
 		final StringBuilder ecrCommands = new StringBuilder();
 		ecrCommands.append("X^"); //$NON-NLS-1$
-		sendToEcr(ecrCommands);
+		sendToEcr(EMPTY_STRING, ecrCommands);
 	}
 
 	@Override
@@ -221,7 +234,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 				reportStart.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)),
 				reportEnd.format(DateTimeFormatter.ofPattern(ECR_REPORT_DATE_PATTERN)),
 				chosenDirectory));
-		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(ecrCommands)));
+		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr(EMPTY_STRING, ecrCommands)));
 	}
 	
 	@Override
@@ -233,10 +246,10 @@ public class FiscalNetECRDriver implements ECRDriver {
 	public void cancelReceipt() {
 		final StringBuilder ecrCommands = new StringBuilder();
 		ecrCommands.append("VB^"); //$NON-NLS-1$
-		sendToEcr(ecrCommands);
+		sendToEcr(EMPTY_STRING, ecrCommands);
 	}
 	
-	private Optional<Path> sendToEcr(final StringBuilder ecrCommands)
+	private Optional<Path> sendToEcr(final String filePrefix, final StringBuilder ecrCommands)
 	{
 		try
 		{
@@ -248,10 +261,10 @@ public class FiscalNetECRDriver implements ECRDriver {
 			
 			final String commandFolderPath = prefs.get(PreferenceKey.FISCAL_NET_COMMAND_FOLDER, PreferenceKey.FISCAL_NET_COMMAND_FOLDER_DEF);
 			int i = 1;
-			String filename = System.currentTimeMillis()+"_"+i+".txt"; //$NON-NLS-1$ //$NON-NLS-2$
+			String filename = safeString(filePrefix)+System.currentTimeMillis()+"_"+i+".txt"; //$NON-NLS-1$ //$NON-NLS-2$
 			
 			while (Files.exists(Paths.get(commandFolderPath, filename)))
-				filename = System.currentTimeMillis()+"_"+ ++i+".txt"; //$NON-NLS-1$ //$NON-NLS-2$
+				filename = safeString(filePrefix)+System.currentTimeMillis()+"_"+ ++i+".txt"; //$NON-NLS-1$ //$NON-NLS-2$
 			
 			Files.write(Paths.get(commandFolderPath, filename), ecrCommands.toString().getBytes());
 			final String responseFolderPath = prefs.get(PreferenceKey.FISCAL_NET_RESPONSE_FOLDER, PreferenceKey.FISCAL_NET_RESPONSE_FOLDER_DEF);

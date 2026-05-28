@@ -48,17 +48,26 @@ public class ECRServiceImpl implements ECRService {
 	}
 	
 	@Override
-	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId, final List<String> freeText) {
 		return findDriver()
-				.map(driver -> driver.printReceipt(receipt, paymentType, taxId))
+				.map(driver -> driver.printReceipt(receipt, paymentType, taxId, freeText))
 				.map(cf -> cf.completeOnTimeout(Result.error(Messages.ECRServiceImpl_Timeout), RESULT_READ_TIMEOUT_S, TimeUnit.SECONDS))
 				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
 	}
 	
 	@Override
-	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments, final Optional<String> taxId) {
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments, final Optional<String> taxId,
+			final List<String> freeText) {
 		return findDriver()
-				.map(driver -> driver.printReceipt(receipt, payments, taxId))
+				.map(driver -> driver.printReceipt(receipt, payments, taxId, freeText))
+				.map(cf -> cf.completeOnTimeout(Result.error(Messages.ECRServiceImpl_Timeout), RESULT_READ_TIMEOUT_S, TimeUnit.SECONDS))
+				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
+	}
+	
+	@Override
+	public CompletableFuture<Result> printNonFiscalReceipt(final List<String> lines) {
+		return findDriver()
+				.map(driver -> driver.printNonFiscalReceipt(lines))
 				.map(cf -> cf.completeOnTimeout(Result.error(Messages.ECRServiceImpl_Timeout), RESULT_READ_TIMEOUT_S, TimeUnit.SECONDS))
 				.orElse(CompletableFuture.completedFuture(Result.error(Messages.ECRServiceImpl_DriverNotFound)));
 	}

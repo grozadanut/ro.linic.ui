@@ -1,5 +1,6 @@
 package ro.linic.ui.legacy.preferences;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 
@@ -19,5 +20,6 @@ public class SalesPage extends FieldEditorPreferencePage {
 					{SalesPartType.STANDARD.displayName(), SalesPartType.STANDARD.name()},
 					{SalesPartType.BETA.displayName(), SalesPartType.BETA.name()}},
 				getFieldEditorParent()));
+		addField(new BooleanFieldEditor(PreferenceKey.PRINT_ORDER_WITH_RECEIPT_KEY, Messages.SalesPage_PrintOrderWithReceipt, getFieldEditorParent()));
 	}
 }

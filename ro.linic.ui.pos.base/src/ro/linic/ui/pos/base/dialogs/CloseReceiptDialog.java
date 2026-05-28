@@ -9,6 +9,7 @@ import static ro.flexbiz.util.commons.NumberUtils.subtract;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -86,6 +87,7 @@ public class CloseReceiptDialog extends TitleAreaDialogValidated {
 	private boolean otherTextVisible = true;
 	private Map<PaymentType, BigDecimal> initialValues = Map.of();
 	
+	private List<String> freeText = List.of();
 	private Text outstandingTotalText;
 	
 	private Button closeReceiptButton;
@@ -337,7 +339,7 @@ public class CloseReceiptDialog extends TitleAreaDialogValidated {
 		}
 		
 		try {
-			ecrService.printReceipt(receipt, payments(), Optional.ofNullable(taxCodeText.getText()))
+			ecrService.printReceipt(receipt, payments(), Optional.ofNullable(taxCodeText.getText()), freeText)
 			.thenAcceptAsync(printResult -> {
 				if (!printResult.isOk())
 					Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getCurrent().getActiveShell(),
@@ -447,6 +449,11 @@ public class CloseReceiptDialog extends TitleAreaDialogValidated {
 		
 		public Builder initialValues(final Map<PaymentType, BigDecimal> values) {
 			this.dialog.initialValues = Objects.requireNonNull(values);
+			return this;
+		}
+		
+		public Builder freeText(final List<String> freeText) {
+			this.dialog.freeText = Objects.requireNonNull(freeText);
 			return this;
 		}
 		

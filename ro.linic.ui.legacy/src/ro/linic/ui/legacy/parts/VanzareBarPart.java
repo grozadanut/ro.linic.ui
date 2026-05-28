@@ -7,6 +7,7 @@ import static ro.colibri.util.NumberUtils.isNumeric;
 import static ro.colibri.util.NumberUtils.parse;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
 import static ro.colibri.util.StringUtils.globalIsMatch;
+import static ro.flexbiz.util.commons.PresentationUtils.displayBigDecimal;
 import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.XXX_BANNER_FONT;
@@ -21,10 +22,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
@@ -120,6 +123,7 @@ import ro.linic.ui.pos.base.model.AllowanceCharge;
 import ro.linic.ui.pos.base.model.PaymentType;
 import ro.linic.ui.pos.base.model.Receipt;
 import ro.linic.ui.pos.base.model.ReceiptLine;
+import ro.linic.ui.pos.base.services.ECRService;
 import ro.linic.ui.pos.base.services.ProductDataHolder;
 import ro.linic.ui.pos.base.services.ProductDataLoader;
 import ro.linic.ui.pos.base.services.ProductDataUpdater;
@@ -237,6 +241,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	@Inject @OSGiBundle private Bundle bundle;
 	@Inject private Logger log;
 	@Inject IEclipseContext ctx;
+	@Inject private ECRService ecrService;
 
 	public static VanzareBarPart newPartForBon(final IEclipseContext ctx, final CloudReceipt bon) {
 		final EPartService partService = ctx.get(EPartService.class);
@@ -1088,6 +1093,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 	@Override
 	public void closeBon(final TipInchidere tipInchidere) {
 		if (bonCasa != null) {
+			printOrder();
 			if (casaActivaButton.getSelection() &&
 					(tipInchidere.equals(TipInchidere.PRIN_CASA) || tipInchidere.equals(TipInchidere.PRIN_CARD))) {
 				final PaymentType paymentType = switch (tipInchidere) {
@@ -1099,6 +1105,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 				final CloseReceiptDialog closeReceiptDialog = Builder.partial(search.getShell(), fixDiscounts(bonCasa))
 						.initialValues(Map.of(paymentType, bonCasa.total()))
+						.freeText(getOrderNumber())
 						.build();
 				ContextInjectionFactory.inject(closeReceiptDialog, ctx);
 				
@@ -1117,7 +1124,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 				final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 						Display.getCurrent().getActiveShell(),
 						new InchideBonWizard(BusinessDelegate.reloadDoc(bonCasa.getId()), casaActivaButton.getSelection(), EMPTY_STRING, ctx, bundle, log,
-								tipInchidere));
+								tipInchidere, getOrderNumber()));
 
 				if (wizardDialog.open() == Window.OK) {
 					if (!casaActivaButton.getSelection() &&
@@ -1136,6 +1143,42 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		}
 	}
 	
+	private List<String> getOrderNumber() {
+		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		final boolean printOrder = prefs.getBoolean(PreferenceKey.PRINT_ORDER_WITH_RECEIPT_KEY, PreferenceKey.PRINT_ORDER_WITH_RECEIPT_DEF);
+		if (printOrder) {
+			final List<String> lines = new ArrayList<>();
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("COMANDA "+bonCasa.getNumber());
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+		}
+		return List.of();
+	}
+
+	private void printOrder() {
+		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		final boolean printOrder = prefs.getBoolean(PreferenceKey.PRINT_ORDER_WITH_RECEIPT_KEY, PreferenceKey.PRINT_ORDER_WITH_RECEIPT_DEF);
+		
+		if (printOrder) {
+			final List<String> lines = new ArrayList<>();
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("COMANDA "+bonCasa.getNumber());
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			
+			lines.addAll(bonCasa.getLines().stream()
+					.filter(line -> NumberUtils.greaterThan(line.getQuantity(), BigDecimal.ZERO))
+					.map(line -> MessageFormat.format("{0}  {1} {2}", line.getName(), displayBigDecimal(line.getQuantity()), line.getUom()))
+					.collect(Collectors.toList()));
+			ecrService.printNonFiscalReceipt(lines);
+		}
+	}
+
 	private void accumulateDiscount() {
 		if (selectedClient == null || NumberUtils.smallerThanOrEqual(selectedClient.getDiscountPercentage(), BigDecimal.ZERO))
 			return;

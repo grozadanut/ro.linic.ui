@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -64,7 +65,7 @@ public class DudeECRDriver implements ECRDriver {
 	}
 	
 	@Override
-	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId) {
+	public CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId, final List<String> freeText) {
 		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
@@ -88,7 +89,7 @@ public class DudeECRDriver implements ECRDriver {
 	
 	@Override
 	public CompletableFuture<Result> printReceipt(final Receipt receipt, final Map<PaymentType, BigDecimal> payments,
-			final Optional<String> taxId) {
+			final Optional<String> taxId, final List<String> freeText) {
 		if (receipt == null || receipt.getLines().isEmpty())
 			return CompletableFuture.completedFuture(Result.ok());
 		
@@ -321,6 +322,11 @@ public class DudeECRDriver implements ECRDriver {
 				safeString(line.getAllowanceCharge(), AllowanceCharge::amountAbs, amt -> truncate(amt, 2), BigDecimal::toString),
 				safeString(line.getDepartmentCode(), prefs.get(PreferenceKey.DUDE_ECR_DEPT, PreferenceKey.DUDE_ECR_DEPT_DEF)),
 				truncate(line.getUom(), ECR_MAX_ITEM_UOM_LENGTH));
+	}
+	
+	@Override
+	public CompletableFuture<Result> printNonFiscalReceipt(final List<String> lines) {
+		throw new RuntimeException("Not implemented!");
 	}
 	
 	// ------ Testing purposes 

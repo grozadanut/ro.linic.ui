@@ -52,7 +52,7 @@ public class FiscalNetECRDriverTest {
 		receipt.setLines(List.of(line));
 		receipt.setAllowanceCharge(new AllowanceCharge(false, new BigDecimal("9"))); // allowance
 		
-		driver.printReceipt(receipt, PaymentType.CASH, Optional.of("RO123456"));
+		driver.printReceipt(receipt, PaymentType.CASH, Optional.of("RO123456"), List.of());
 		
 		assertEquals(result.get().replaceAll("\\s", ""), """
 				CF^RO123456
@@ -92,7 +92,7 @@ public class FiscalNetECRDriverTest {
 		receipt.setLines(List.of(line));
 		receipt.setAllowanceCharge(new AllowanceCharge(false, new BigDecimal("9"))); // allowance
 		
-		driver.printReceipt(receipt, Map.of(PaymentType.CASH, receipt.total()), Optional.of("RO123456"));
+		driver.printReceipt(receipt, Map.of(PaymentType.CASH, receipt.total()), Optional.of("RO123456"), List.of());
 		
 		assertEquals(result.get().replaceAll("\\s", ""), """
 				CF^RO123456
@@ -141,7 +141,7 @@ public class FiscalNetECRDriverTest {
 				PaymentType.VALUE_TICKET, new BigDecimal("5"),
 				PaymentType.VOUCHER, new BigDecimal("6"),
 				PaymentType.MODERN_PAYMENT, new BigDecimal("7"),
-				PaymentType.OTHER, new BigDecimal("175")), Optional.of("RO123456"));
+				PaymentType.OTHER, new BigDecimal("175")), Optional.of("RO123456"), List.of());
 		
 		assertEquals(result.get().replaceAll("\\s", ""), """
 				CF^RO123456
@@ -191,7 +191,7 @@ public class FiscalNetECRDriverTest {
 		// receipt total is: 10*21 = 210+2-9 = 203
 		final ExecutionException ex = assertThrows(ExecutionException.class, () -> driver.printReceipt(receipt, Map.of(
 				PaymentType.CASH, new BigDecimal("1"),
-				PaymentType.CARD, new BigDecimal("2")), Optional.of("RO123456")).get());
+				PaymentType.CARD, new BigDecimal("2")), Optional.of("RO123456"), List.of()).get());
 		
 		assertEquals(ex.getMessage(), "java.lang.IllegalArgumentException: " + Messages.ECRDriver_PaymentSmallerThanTotalErr);
 	}

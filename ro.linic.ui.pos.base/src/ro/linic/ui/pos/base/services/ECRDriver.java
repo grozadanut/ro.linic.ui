@@ -4,6 +4,7 @@ import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -18,8 +19,9 @@ public interface ECRDriver {
 	public static final String ECR_MODEL_TREMOL = "Tremol";
 	
 	boolean isECRSupported(String ecrModel);
-	CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId);
-	CompletableFuture<Result> printReceipt(Receipt receipt, Map<PaymentType, BigDecimal> payments, Optional<String> taxId);
+	CompletableFuture<Result> printReceipt(final Receipt receipt, final PaymentType paymentType, final Optional<String> taxId, List<String> freeText);
+	CompletableFuture<Result> printReceipt(Receipt receipt, Map<PaymentType, BigDecimal> payments, Optional<String> taxId, List<String> freeText);
+	CompletableFuture<Result> printNonFiscalReceipt(List<String> lines);
 	public void reportZ();
 	public void reportX();
 	public void reportD();

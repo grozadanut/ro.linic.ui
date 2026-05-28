@@ -18,6 +18,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			node.put(PreferenceKey.BROTHER_PRINT_FOLDER, PreferenceKey.BROTHER_PRINT_FOLDER_DEF);
 			node.putBoolean(PreferenceKey.RECEPTIE_GROUPBY_VAT_KEY, false);
 			node.putBoolean(PreferenceKey.FACTURA_PRINT_CONFORMITATE_KEY, PreferenceKey.FACTURA_PRINT_CONFORMITATE_DEF);
+			node.putBoolean(PreferenceKey.PRINT_ORDER_WITH_RECEIPT_KEY, PreferenceKey.PRINT_ORDER_WITH_RECEIPT_DEF);
 			try { node.flush();  }  catch (final BackingStoreException e) { }
 		}	
     }

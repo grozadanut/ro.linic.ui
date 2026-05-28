@@ -1004,7 +1004,7 @@ public class VanzareMoquiPart implements VanzareInterface
 			final InchideBonWizardDialog wizardDialog = new InchideBonWizardDialog(
 					Display.getCurrent().getActiveShell(),
 					new InchideBonWizard(bonCasa, casaActivaButton.getSelection(), safeString(selectedAffiliate, gv -> gv.getString("partyId")),
-							ctx, bundle, log, tipInchidere));
+							ctx, bundle, log, tipInchidere, List.of()));
 			if (wizardDialog.open() == Window.OK)
 			{
 				checkForOrders();

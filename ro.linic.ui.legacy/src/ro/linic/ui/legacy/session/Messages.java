@@ -62,4 +62,5 @@ public class Messages extends NLS
 	public static String PrintReceptiePage_GroupByVAT;
 	public static String PrintFacturaPage_Conformitate;
 	public static String SalesPage_PartType;
+	public static String SalesPage_PrintOrderWithReceipt;
 }
