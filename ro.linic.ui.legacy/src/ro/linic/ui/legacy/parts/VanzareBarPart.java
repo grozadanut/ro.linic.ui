@@ -7,7 +7,7 @@ import static ro.colibri.util.NumberUtils.isNumeric;
 import static ro.colibri.util.NumberUtils.parse;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
 import static ro.colibri.util.StringUtils.globalIsMatch;
-import static ro.flexbiz.util.commons.PresentationUtils.NEWLINE;
+import static ro.flexbiz.util.commons.PresentationUtils.SPACE;
 import static ro.flexbiz.util.commons.PresentationUtils.displayBigDecimal;
 import static ro.flexbiz.util.commons.PresentationUtils.safeString;
 import static ro.flexbiz.util.commons.StringUtils.isEmpty;
@@ -1150,11 +1150,11 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		final boolean printOrder = prefs.getBoolean(PreferenceKey.PRINT_ORDER_WITH_RECEIPT_KEY, PreferenceKey.PRINT_ORDER_WITH_RECEIPT_DEF);
 		if (printOrder) {
 			final List<String> lines = new ArrayList<>();
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
 			lines.add("COMANDA "+bonCasa.getNumber());
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
 		}
 		return List.of();
 	}
@@ -1166,18 +1166,24 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		
 		if (printOrder) {
 			final List<String> lines = new ArrayList<>();
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
 			lines.add("COMANDA "+bonCasa.getNumber());
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
-			lines.add("~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = = = = = = =");
 			
 			lines.addAll(bonCasa.getLines().stream()
 					.filter(line -> NumberUtils.greaterThan(line.getQuantity(), BigDecimal.ZERO))
-					.map(line -> MessageFormat.format("{0}  {1} {2}", line.getName(), displayBigDecimal(line.getQuantity()), line.getUom()))
+					.map(line -> MessageFormat.format("{0}  X  {1} {2}", line.getName(), displayBigDecimal(line.getQuantity()), line.getUom()))
 					.collect(Collectors.toList()));
-			lines.add(NEWLINE);
-			lines.add(NEWLINE);
+			lines.add(SPACE);
+			lines.add(SPACE);
+			lines.add(SPACE);
+			lines.add(SPACE);
+			lines.add(SPACE);
+			lines.add(SPACE);
+			lines.add(SPACE);
+			lines.add(SPACE);
 			ecrService.printNonFiscalReceipt(lines);
 		}
 	}
