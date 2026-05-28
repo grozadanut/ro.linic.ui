@@ -2,7 +2,7 @@
 <feature
       id="ro.linic.ui.pos.feature"
       label="Standalone POS"
-      version="1.2.1"
+      version="1.2.2"
       provider-name="LINIC">
 
    <description>
