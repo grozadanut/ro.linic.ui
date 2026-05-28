@@ -72,7 +72,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 	public CompletableFuture<Result> printNonFiscalReceipt(final List<String> lines) {
 		final StringBuilder ecrCommands = new StringBuilder();
 		// TL^TEXT
-		lines.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)));
+		lines.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)).append(NEWLINE));
 		return CompletableFuture.supplyAsync(new ReadResult(sendToEcr("nf_", ecrCommands)));
 	}
 
@@ -89,7 +89,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 		ecrCommands.append(saleLines(receipt));
 		
 		// TL^TEXT
-		freeText.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)));
+		freeText.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)).append(NEWLINE));
 		/* close receipt
 		 * P^TipPlata(1,2,3,4,5,…)^VALOARE 
 		 */
@@ -116,7 +116,7 @@ public class FiscalNetECRDriver implements ECRDriver {
 		ecrCommands.append(saleLines(receipt));
 		
 		// TL^TEXT
-		freeText.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)));
+		freeText.forEach(line -> ecrCommands.append(MessageFormat.format("TL^{0}", line)).append(NEWLINE));
 		/* close receipt
 		 * P^TipPlata(1,2,3,4,5,…)^VALOARE 
 		 */
