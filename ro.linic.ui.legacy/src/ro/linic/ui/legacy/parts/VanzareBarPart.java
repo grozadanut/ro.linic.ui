@@ -1150,11 +1150,11 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		final boolean printOrder = prefs.getBoolean(PreferenceKey.PRINT_ORDER_WITH_RECEIPT_KEY, PreferenceKey.PRINT_ORDER_WITH_RECEIPT_DEF);
 		if (printOrder) {
 			final List<String> lines = new ArrayList<>();
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
 			lines.add("COMANDA "+bonCasa.getNumber());
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
 		}
 		return List.of();
 	}
@@ -1166,20 +1166,17 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 		
 		if (printOrder) {
 			final List<String> lines = new ArrayList<>();
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
 			lines.add("COMANDA "+bonCasa.getNumber());
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
-			lines.add("= = = = = = = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
+			lines.add("= = = = = = = = = = = = = = =");
 			
 			lines.addAll(bonCasa.getLines().stream()
 					.filter(line -> NumberUtils.greaterThan(line.getQuantity(), BigDecimal.ZERO))
-					.map(line -> MessageFormat.format("{0}  X  {1} {2}", line.getName(), displayBigDecimal(line.getQuantity()), line.getUom()))
+					.map(line -> MessageFormat.format("{0}  X  {1} {2}", StringUtils.truncate(line.getName(), 33),
+							displayBigDecimal(line.getQuantity()), line.getUom()))
 					.collect(Collectors.toList()));
-			lines.add(SPACE);
-			lines.add(SPACE);
-			lines.add(SPACE);
-			lines.add(SPACE);
 			lines.add(SPACE);
 			lines.add(SPACE);
 			lines.add(SPACE);
