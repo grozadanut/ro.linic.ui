@@ -55,6 +55,7 @@ import org.osgi.framework.FrameworkUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import ro.linic.ui.base.services.UtilServices;
 
 /**
  * This class is responsible to load and save the model
@@ -167,6 +168,7 @@ public class ResourceHandler implements IModelResourceHandler {
 				log.error(e.getMessage(), e);
 			}
 			
+			UtilServices.setFreshUI(true);
 			workbenchData.delete();
 		}
 

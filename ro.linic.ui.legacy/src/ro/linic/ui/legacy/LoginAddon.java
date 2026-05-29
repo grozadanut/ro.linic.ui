@@ -47,6 +47,7 @@ import jakarta.annotation.PostConstruct;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.ServerConstants;
 import ro.linic.ui.base.services.LocalDatabase;
+import ro.linic.ui.base.services.UtilServices;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.dialogs.ReleaseNotesDialog;
@@ -174,6 +175,7 @@ public class LoginAddon {
 		// if we're restarting after updating, don't check again.
 		if (prefs.getBoolean(JUST_UPDATED_PROP, false))
 		{
+			UtilServices.setFreshUI(true);
 			System.setProperty(E4Workbench.CLEAR_PERSISTED_STATE, "true"); //$NON-NLS-1$
 			prefs.putBoolean(JUST_UPDATED_PROP, false);
 			flushPrefs(prefs, log);
