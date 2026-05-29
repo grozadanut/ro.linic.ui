@@ -132,7 +132,6 @@
        <id>products</id>
           <modules>
             <module>ro.linic.ui.product</module>
-			<module>ro.linic.ui.product.pos</module>
           </modules> 
       </profile>
   </profiles>

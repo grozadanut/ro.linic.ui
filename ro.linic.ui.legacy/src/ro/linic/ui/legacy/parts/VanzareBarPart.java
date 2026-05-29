@@ -1155,6 +1155,7 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			lines.add("COMANDA "+bonCasa.getNumber());
 			lines.add("= = = = = = = = = = = = = = =");
 			lines.add("= = = = = = = = = = = = = = =");
+			return lines;
 		}
 		return List.of();
 	}
@@ -1174,9 +1175,10 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 			
 			lines.addAll(bonCasa.getLines().stream()
 					.filter(line -> NumberUtils.greaterThan(line.getQuantity(), BigDecimal.ZERO))
-					.map(line -> MessageFormat.format("{0}  X  {1} {2}", StringUtils.truncate(line.getName(), 33),
+					.map(line -> MessageFormat.format("{0}  X  {1} {2}", ro.flexbiz.util.commons.StringUtils.truncate(line.getName(), 33),
 							displayBigDecimal(line.getQuantity()), line.getUom()))
 					.collect(Collectors.toList()));
+			lines.add("= = = = = = = = = = = = = = =");
 			lines.add(SPACE);
 			lines.add(SPACE);
 			lines.add(SPACE);
