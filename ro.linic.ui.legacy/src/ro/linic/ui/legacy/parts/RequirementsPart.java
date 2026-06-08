@@ -82,6 +82,7 @@ import ro.colibri.security.Permissions;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.wrappers.ProductProfitability;
 import ro.colibri.wrappers.RaionProfitability;
+import ro.flexbiz.util.commons.PresentationUtils;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.GenericDataHolder;
 import ro.linic.ui.base.services.di.DiscardChanges;
@@ -289,7 +290,7 @@ public class RequirementsPart
 		{
 			@Override public void getFilterStrings(final List<String> baseList, final GenericValue element)
 			{
-				baseList.add(element.getString(Product.FURNIZORI_FIELD));
+				baseList.add(PresentationUtils.safeString(element.getString(Product.FURNIZORI_FIELD)));
 			}
 		});
 		furnizoriFilter.setMode(TextMatcherEditor.CONTAINS);

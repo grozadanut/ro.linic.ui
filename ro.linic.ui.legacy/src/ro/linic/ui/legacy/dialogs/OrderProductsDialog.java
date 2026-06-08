@@ -41,6 +41,7 @@ import net.sf.jasperreports.engine.JRException;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.Product;
 import ro.colibri.util.PresentationUtils;
+import ro.flexbiz.util.commons.StringUtils;
 import ro.linic.ui.base.dialogs.InfoDialog;
 import ro.linic.ui.base.dialogs.SelectEntityDialog;
 import ro.linic.ui.base.services.DataServices;
@@ -122,6 +123,7 @@ public class OrderProductsDialog extends TitleAreaDialog {
 	private void fillFields() {
 		reloadPartners();
 		final Optional<String> mostCommonSupplierName = requirements.stream().map(gv -> gv.getString(Product.FURNIZORI_FIELD))
+				.filter(StringUtils::notEmpty)
 				.flatMap(names -> Arrays.stream(names.split(", ")))
 				.map(name -> name.replaceAll("\\(.*\\)", ""))
 				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))

@@ -51,6 +51,7 @@ import ca.odell.glazedlists.matchers.TextMatcherEditor;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import ro.colibri.entities.comercial.Product;
+import ro.flexbiz.util.commons.PresentationUtils;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.GenericDataHolder;
 import ro.linic.ui.base.services.model.GenericValue;
@@ -163,7 +164,7 @@ public class ApproveRequirementsPart {
 		furnizoriFilter = new TextMatcherEditor<GenericValue>(new TextFilterator<GenericValue>() {
 			@Override
 			public void getFilterStrings(final List<String> baseList, final GenericValue element) {
-				baseList.add(element.getString(Product.FURNIZORI_FIELD));
+				baseList.add(PresentationUtils.safeString(element.getString(Product.FURNIZORI_FIELD)));
 			}
 		});
 		furnizoriFilter.setMode(TextMatcherEditor.CONTAINS);
