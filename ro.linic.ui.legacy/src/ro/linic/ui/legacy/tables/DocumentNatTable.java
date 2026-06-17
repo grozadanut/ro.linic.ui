@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.nebula.widgets.nattable.Messages;
@@ -132,6 +133,7 @@ import ro.colibri.security.Permissions;
 import ro.colibri.util.HeterogeneousDataComparator;
 import ro.colibri.util.StringUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
+import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
 import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.anaf.ReportedInvoice;
 import ro.linic.ui.legacy.anaf.ReportedInvoice.ReportState;
@@ -215,7 +217,7 @@ public class DocumentNatTable
 	
 	public enum SourceLoc
 	{
-		URMARIRE_PARTENERI, CONTABILITATE, SCHEDULE_DIALOG;
+		URMARIRE_PARTENERI, CONTABILITATE, SCHEDULE_DIALOG, EFACTURA;
 	}
 	
 	private ImmutableList<Column> columns;
@@ -237,14 +239,16 @@ public class DocumentNatTable
 	private SourceLoc source;
 	private Bundle bundle;
 	private Logger log;
+	private IEclipseContext ctx;
 
-	public DocumentNatTable(final SourceLoc source, final Bundle bundle, final Logger log)
+	public DocumentNatTable(final SourceLoc source, final Bundle bundle, final Logger log, final IEclipseContext ctx)
 	{
 		allGestiuni = BusinessDelegate.allGestiuni();
 		allConturiBancare = BusinessDelegate.allConturiBancare();
 		this.source = source;
 		this.bundle = bundle;
 		this.log = log;
+		this.ctx = ctx;
 		
 		final Builder<Column> builder = ImmutableList.<Column>builder();
 		
@@ -291,6 +295,26 @@ public class DocumentNatTable
 			.add(masinaColumn)
 			.add(totalColumn)
 			.add(deliveryAddressColumn);
+			break;
+			
+		case EFACTURA:
+			builder.add(gestiuneColumn)
+			.add(gestiuneShortColumn)
+			.add(partnerColumn)
+			.add(tipDocColumn)
+			.add(docColumn)
+			.add(nrDocColumn)
+			.add(dataDocColumn)
+			.add(scadentaDocColumn)
+			.add(nameColumn)
+			.add(tvaPercentColumn)
+			.add(totalColumn)
+			.add(tvaColumn)
+			.add(valRpzColumn)
+			.add(valRpzTvaColumn)
+			.add(anafColumn)
+			.add(operatorColumn)
+			.add(idxColumn);
 			break;
 		default:
 			throw new IllegalArgumentException("Source location "+source+" not implemented!");
@@ -386,8 +410,12 @@ public class DocumentNatTable
 					.map(AccountingDocument::getId)
 					.collect(toImmutableList());
 			
-			this.reportedInvoices = AnafReporter.findReportedInvoicesById(invoiceIds).stream()
-					.collect(Collectors.toMap(ReportedInvoice::getInvoiceId, Function.identity()));
+			if (source.equals(SourceLoc.EFACTURA))
+				this.reportedInvoices = AnafMoquiReporter.findReportedInvoicesById(ctx, invoiceIds).stream()
+				.collect(Collectors.toMap(ReportedInvoice::getInvoiceId, Function.identity()));
+			else
+				this.reportedInvoices = AnafReporter.findReportedInvoicesById(invoiceIds).stream()
+				.collect(Collectors.toMap(ReportedInvoice::getInvoiceId, Function.identity()));
 		}
 	}
 
@@ -433,19 +461,30 @@ public class DocumentNatTable
 	private void replaceReportedInvoice(final AccountingDocument oldAccDoc, final AccountingDocument newAccDoc)
 	{
 		this.reportedInvoices.remove(oldAccDoc.getId());
-		AnafReporter.findReportedInvoicesById(List.of(newAccDoc.getId()))
-		.stream().findFirst()
-		.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
+		if (source.equals(SourceLoc.EFACTURA))
+			AnafMoquiReporter.findReportedInvoicesById(ctx, List.of(newAccDoc.getId()))
+			.stream().findFirst()
+			.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
+		else
+			AnafReporter.findReportedInvoicesById(List.of(newAccDoc.getId()))
+			.stream().findFirst()
+			.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
 	}
 
 	public DocumentNatTable add(final Object newData)
 	{
 		try
 		{
-			if (newData instanceof AccountingDocument && !source.equals(SourceLoc.SCHEDULE_DIALOG))
-				AnafReporter.findReportedInvoicesById(List.of(((AccountingDocument) newData).getId()))
-				.stream().findFirst()
-				.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
+			if (newData instanceof AccountingDocument && !source.equals(SourceLoc.SCHEDULE_DIALOG)) {
+				if (source.equals(SourceLoc.EFACTURA))
+					AnafMoquiReporter.findReportedInvoicesById(ctx, List.of(((AccountingDocument) newData).getId()))
+					.stream().findFirst()
+					.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
+				else
+					AnafReporter.findReportedInvoicesById(List.of(((AccountingDocument) newData).getId()))
+					.stream().findFirst()
+					.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
+			}
 			
 			this.sourceList.getReadWriteLock().writeLock().lock();
 			sourceList.add(newData);
@@ -716,9 +755,12 @@ public class DocumentNatTable
 				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ACC_DOC_LABEL + columns.indexOf(payAtDriverColumn));
 				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
-						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ACC_DOC_LABEL + columns.indexOf(scadentaDocColumn));
-				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
 						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ACC_DOC_LABEL + columns.indexOf(nameColumn));
+			}
+			if (SourceLoc.URMARIRE_PARTENERI.equals(source) || SourceLoc.CONTABILITATE.equals(source) || SourceLoc.EFACTURA.equals(source))
+			{
+				configRegistry.registerConfigAttribute(EditConfigAttributes.CELL_EDITABLE_RULE,
+						IEditableRule.ALWAYS_EDITABLE, DisplayMode.NORMAL, ACC_DOC_LABEL + columns.indexOf(scadentaDocColumn));
 			}
 
 			// CELL EDITOR
@@ -1162,12 +1204,19 @@ public class DocumentNatTable
 			{
 			case WAITING_VALIDATION:
 				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Continuati?",
-						"Fortati o verificare a starii de validare a facturilor raportate la ANAF?"))
-					AnafReporter.forceCheckReportedInvoices();
+						"Fortati o verificare a starii de validare a facturilor raportate la ANAF?")) {
+					if (source.equals(SourceLoc.EFACTURA))
+						AnafMoquiReporter.forceCheckReportedInvoices(ctx);
+					else
+						AnafReporter.forceCheckReportedInvoices();
+				}
 				break;
 			case REJECTED_INVALID:
 			case SENT:
-				AnafReporter.downloadResponse(repInv.getDownloadId());
+				if (source.equals(SourceLoc.EFACTURA))
+					AnafMoquiReporter.downloadResponse(ctx, repInv.getDownloadId());
+				else
+					AnafReporter.downloadResponse(repInv.getDownloadId());
 				break;
 			case UPLOAD_ERROR:
 				break;

@@ -13,6 +13,7 @@
     <elements xsi:type="commands:Command" xmi:id="_GrCTcMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.comenzi_furnizori" commandName="%command.commandname.8"/>
     <elements xsi:type="commands:Command" xmi:id="_I_AhMMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.audit_events" commandName="%command.commandname.9"/>
     <elements xsi:type="commands:Command" xmi:id="_LnniMMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.contabilitate" commandName="%command.commandname.10"/>
+    <elements xsi:type="commands:Command" xmi:id="_-TVT4GleEfGI5Kb1aAbORQ" elementId="linic_gest_client.command.efactura" commandName="%part.label.efactura"/>
     <elements xsi:type="commands:Command" xmi:id="_NyL8UMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.toggle_hide_unofficial_docs" commandName="%command.commandname.11"/>
     <elements xsi:type="commands:Command" xmi:id="_Py_9gMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.sys_admin" commandName="%command.commandname.12"/>
     <elements xsi:type="commands:Command" xmi:id="_RxRBAMZ_Ee6UtK1nDebMVw" elementId="linic_gest_client.command.puncte_fidelitate" commandName="%command.commandname.13"/>
@@ -40,6 +41,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_xQFi4MaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.comenzi_furnizori" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenSupplierOrderPartHandler" command="_GrCTcMZ_Ee6UtK1nDebMVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_1bQi0MaAEe6UtK1nDebMVw" elementId="linic_gest_client.handler.audit_events" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenAuditEventsPartHandler" command="_I_AhMMZ_Ee6UtK1nDebMVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_SDwNQMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.contabilitate" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenAccountingPartHandler" command="_LnniMMZ_Ee6UtK1nDebMVw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_EZhPAGlfEfGI5Kb1aAbORQ" elementId="linic_gest_client.handler.efactura" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenEFacturaPartHandler" command="_-TVT4GleEfGI5Kb1aAbORQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_U3RdwMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.toggle_hide_unofficial_docs" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.ToggleHideUnoffDocsHandler" command="_NyL8UMZ_Ee6UtK1nDebMVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_bk5MUMaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.sys_admin" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.OpenSysAdminPartHandler" command="_Py_9gMZ_Ee6UtK1nDebMVw"/>
     <elements xsi:type="commands:Handler" xmi:id="_en-i0MaBEe6UtK1nDebMVw" elementId="linic_gest_client.handler.puncte_fidelitate" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.handlers.PuncteFidelitateHandler" command="_RxRBAMZ_Ee6UtK1nDebMVw"/>
@@ -87,6 +89,7 @@
       <children xsi:type="menu:HandledToolItem" xmi:id="_2CFVcMaEEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.registerZ" label="%handledtoolitem.label.4" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/ecr_32x32.png" command="_8hxkcMZ-Ee6UtK1nDebMVw"/>
       <children xsi:type="menu:ToolBarSeparator" xmi:id="_6xIegMaEEe6UtK1nDebMVw" elementId="ro.linic.ui.legacy.toolbarseparator.0"/>
       <children xsi:type="menu:HandledToolItem" xmi:id="_AzYU0MaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.manager" label="%handledtoolitem.label.5" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/manager_32x32.png" command="_A7syEMZ_Ee6UtK1nDebMVw"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_WS0y4GlfEfGI5Kb1aAbORQ" elementId="linic_gest_client.handledtoolitem.trimbar.efactura" label="%part.label.efactura" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/efactura_32x32.png" command="_-TVT4GleEfGI5Kb1aAbORQ"/>
       <children xsi:type="menu:HandledToolItem" xmi:id="_E6AzAMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.plateste" label="%handledtoolitem.label.6" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/payment_32x32.png" command="_C7tiAMZ_Ee6UtK1nDebMVw"/>
       <children xsi:type="menu:HandledToolItem" xmi:id="_I7S3IMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.comenzi_furnizori" label="%handledtoolitem.label.7" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/supplier_order_32x32.png" command="_GrCTcMZ_Ee6UtK1nDebMVw"/>
       <children xsi:type="menu:HandledToolItem" xmi:id="_Mrz7YMaFEe6UtK1nDebMVw" elementId="linic_gest_client.handledtoolitem.trimbar.accounting" label="%handledtoolitem.label.8" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/contabilitate_32x32.png" command="_LnniMMZ_Ee6UtK1nDebMVw"/>
@@ -112,6 +115,7 @@
           <children xsi:type="menu:HandledToolItem" xmi:id="_9JCqcMcbEe6dhubwzOpIzg" elementId="linic_gest_client.handledtoolitem.xmltopdf" label="%handledtoolitem.label.16" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/xml_to_pdf_28x28.png" command="_fGbrUMZ_Ee6UtK1nDebMVw"/>
         </toolbar>
       </children>
+      <children xsi:type="basic_1:Part" xmi:id="_heGX8MccEe6dhubwzOpIzg" elementId="linic_gest_client.part.efactura" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.EFacturaPart" label="%part.label.efactura" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/efactura_32x32.png" closeable="true"/>
       <children xsi:type="basic_1:Part" xmi:id="_ESD7kMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.terti" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.CatalogTertiPart" label="%part.label.6" closeable="true"/>
       <children xsi:type="basic_1:Part" xmi:id="_KV67cMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.produse" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.CatalogProdusePart" label="%part.label.7" closeable="true"/>
       <children xsi:type="basic_1:Part" xmi:id="_PO3nYMccEe6dhubwzOpIzg" elementId="linic_gest_client.part.urmarire_parteneri" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.UrmarireParteneriPart" label="%part.label.8" closeable="true">
@@ -139,9 +143,9 @@
           </children>
         </children>
       </children>
-      <children xsi:type="basic_1:Part" xmi:id="_heGX8MccEe6dhubwzOpIzg" elementId="linic_gest_client.part.accounting" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.AccountingPart" label="%part.label.10" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/contabilitate_32x32.png" closeable="true">
-        <toolbar xmi:id="_Jb3mIBJNEfG6McfnqcvPzw" elementId="ro.linic.ui.legacy.toolbar.3">
-          <children xsi:type="menu:HandledToolItem" xmi:id="_KS6i4BJNEfG6McfnqcvPzw" elementId="ro.linic.ui.legacy.handledtoolitem.reconcile" label="%label.reconcile" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/reconcile_28x28.png" command="_LhenwBJNEfG6McfnqcvPzw"/>
+      <children xsi:type="basic_1:Part" xmi:id="_WDVa0GleEfGI5Kb1aAbORQ" elementId="linic_gest_client.part.accounting" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.AccountingPart" label="%part.label.10" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/contabilitate_32x32.png" closeable="true">
+        <toolbar xmi:id="_WDVa0WleEfGI5Kb1aAbORQ" elementId="ro.linic.ui.legacy.toolbar.3">
+          <children xsi:type="menu:HandledToolItem" xmi:id="_WDVa0mleEfGI5Kb1aAbORQ" elementId="ro.linic.ui.legacy.handledtoolitem.reconcile" label="%label.reconcile" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/reconcile_28x28.png" command="_LhenwBJNEfG6McfnqcvPzw"/>
         </toolbar>
       </children>
       <children xsi:type="basic_1:Part" xmi:id="_AyC5IBSIEfGf-t7gYau0KA" elementId="linic_gest_client.part.reconciliation" toBeRendered="false" contributionURI="bundleclass://ro.linic.ui.legacy/ro.linic.ui.legacy.parts.ReconciliationPart" label="%label.reconciliation" iconURI="platform:/plugin/ro.linic.ui.legacy/icons/reconcile_32x32.png" closeable="true">

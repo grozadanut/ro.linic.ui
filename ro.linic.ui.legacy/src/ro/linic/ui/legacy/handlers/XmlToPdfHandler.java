@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 
-import ro.linic.ui.legacy.anaf.AnafReporter;
+import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
 
 public class XmlToPdfHandler
 {
@@ -16,7 +16,7 @@ public class XmlToPdfHandler
 	{
 		try
 		{
-			AnafReporter.xmlFileToPdf();
+			AnafMoquiReporter.xmlFileToPdf();
 		}
 		catch (final IOException e)
 		{

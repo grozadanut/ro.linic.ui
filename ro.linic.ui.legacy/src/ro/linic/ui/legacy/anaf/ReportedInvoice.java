@@ -15,6 +15,19 @@ public class ReportedInvoice
 	private String downloadId;
 	private String errorMessage;
 	
+	public ReportedInvoice() {
+	}
+	
+	public ReportedInvoice(final Long invoiceId, final ReportState state, final String uploadIndex, final String downloadId,
+			final String errorMessage) {
+		super();
+		this.invoiceId = invoiceId;
+		this.state = state;
+		this.uploadIndex = uploadIndex;
+		this.downloadId = downloadId;
+		this.errorMessage = errorMessage;
+	}
+
 	public Long getInvoiceId()
 	{
 		return invoiceId;

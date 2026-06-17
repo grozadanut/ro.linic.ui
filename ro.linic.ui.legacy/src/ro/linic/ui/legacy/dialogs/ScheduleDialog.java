@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
@@ -95,15 +96,17 @@ public class ScheduleDialog extends Dialog
 	private UISynchronize sync;
 	private Logger log;
 	private Bundle bundle;
+	private IEclipseContext ctx;
 	
 	public ScheduleDialog(final Shell parent, final UISynchronize sync, final Logger log, final Bundle bundle,
-			final AccountingDocument doc)
+			final AccountingDocument doc, final IEclipseContext ctx)
 	{
 		super(parent);
 		this.sync = sync;
 		this.log = log;
 		this.bundle = bundle;
 		this.doc = doc;
+		this.ctx = ctx;
 		
 		emailSignature = BusinessDelegate.persistedProp(PersistedProp.EMAIL_SIGNATURE_KEY)
 				.getValueOr(PersistedProp.EMAIL_SIGNATURE_DEFAULT);
@@ -204,7 +207,7 @@ public class ScheduleDialog extends Dialog
 		UIUtils.setFont(payAtDriver);
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(payAtDriver);
 		
-		table = new DocumentNatTable(SourceLoc.SCHEDULE_DIALOG, bundle, log);
+		table = new DocumentNatTable(SourceLoc.SCHEDULE_DIALOG, bundle, log, ctx);
 		table.postConstruct(contents);
 		GridDataFactory.fillDefaults().grab(true, true).span(3, 1).applyTo(table.getTable());
 		

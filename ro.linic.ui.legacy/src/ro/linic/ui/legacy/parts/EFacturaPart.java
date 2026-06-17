@@ -1,11 +1,8 @@
 package ro.linic.ui.legacy.parts;
 
 import static ro.colibri.util.ListUtils.toImmutableList;
-import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.LocalDateUtils.POSTGRES_MAX;
 import static ro.colibri.util.LocalDateUtils.POSTGRES_MIN;
-import static ro.colibri.util.NumberUtils.nullOrZero;
-import static ro.colibri.util.PresentationUtils.displayBigDecimal;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.colibri.util.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.extractLocalDate;
@@ -17,7 +14,6 @@ import static ro.linic.ui.legacy.session.UIUtils.showException;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -25,6 +21,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.jobs.Job;
@@ -67,7 +64,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
 
 import com.google.common.collect.ImmutableList;
@@ -79,16 +75,22 @@ import jakarta.inject.Named;
 import net.sf.jasperreports.engine.JRException;
 import ro.colibri.embeddable.Delegat;
 import ro.colibri.entities.comercial.AccountingDocument;
+import ro.colibri.entities.comercial.AccountingDocument.BancaLoad;
+import ro.colibri.entities.comercial.AccountingDocument.CasaLoad;
+import ro.colibri.entities.comercial.AccountingDocument.ContaLoad;
+import ro.colibri.entities.comercial.AccountingDocument.CoveredDocsLoad;
+import ro.colibri.entities.comercial.AccountingDocument.DocumentTypesLoad;
+import ro.colibri.entities.comercial.AccountingDocument.RPZLoad;
+import ro.colibri.entities.comercial.Document;
 import ro.colibri.entities.comercial.Document.TipDoc;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.Partner;
 import ro.colibri.entities.comercial.PersistedProp;
-import ro.colibri.security.Permissions;
 import ro.colibri.util.InvocationResult;
+import ro.colibri.util.ListUtils;
 import ro.colibri.util.LocalDateUtils;
 import ro.colibri.util.NumberUtils;
 import ro.colibri.util.PresentationUtils;
-import ro.colibri.wrappers.RulajPartener;
 import ro.linic.ui.base.services.DataServices;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.base.services.nattable.Column;
@@ -97,7 +99,6 @@ import ro.linic.ui.base.services.nattable.TableBuilder;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.http.pojo.Result;
 import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
-import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.ReceptieEFacturaDialog;
 import ro.linic.ui.legacy.service.JasperReportManager;
@@ -112,16 +113,12 @@ import ro.linic.ui.legacy.wizards.EFacturaDetailsWizardDialog;
 import ro.linic.ui.legacy.wizards.EFacturaFileWizard;
 import ro.linic.ui.security.services.AuthenticationSession;
 
-public class AccountingPart implements IMouseAction {
-	public static final String PART_ID = "linic_gest_client.part.accounting"; //$NON-NLS-1$
+public class EFacturaPart implements IMouseAction {
+	public static final String PART_ID = "linic_gest_client.part.efactura"; //$NON-NLS-1$
 
-	private static final String TABLE_STATE_PREFIX = "accounting.documents_nt"; //$NON-NLS-1$
-	private static final String TABLE_REC_INV_STATE_PREFIX = "accounting.received_invoices_nt"; //$NON-NLS-1$
-	private static final String VERTICAL_SASH_STATE_PREFIX = "vanzari.vertical_sash"; //$NON-NLS-1$
-
-	private static final String RAP_FISA_PARTENERI_CONTA = Messages.AccountingPart_RepPartners;
-	private static final String RAP_ALL_DOCS = Messages.AccountingPart_RepAllDocs;
-	private static final String RAP_TVA_DOCS = Messages.AccountingPart_RepVAT;
+	private static final String TABLE_STATE_PREFIX = "efactura.documents_nt"; //$NON-NLS-1$
+	private static final String TABLE_REC_INV_STATE_PREFIX = "efactura.received_invoices_nt"; //$NON-NLS-1$
+	private static final String VERTICAL_SASH_STATE_PREFIX = "efactura.vertical_sash"; //$NON-NLS-1$
 
 	private static final Column idColumn = new Column(0, "id", "Id", 70);
 	private static final Column supplierTaxIdColumn = new Column(1, "senderId", "Cif emitent", 120);
@@ -135,9 +132,8 @@ public class AccountingPart implements IMouseAction {
 	private static List<Column> REC_INV_COLUMNS = ImmutableList.<Column>builder().add(idColumn).add(supplierTaxIdColumn)
 			.add(supplierNameColumn).add(issueDateColumn).add(invoiceNumberColumn).add(totalColumn).add(invoiceIdColumn)
 			.add(receivedColumn).build();
-	private static final String REC_INV_DATA_HOLDER = "AccountingPart.anafEInvoices"; //$NON-NLS-1$
+	private static final String REC_INV_DATA_HOLDER = "EFacturaPart.anafEInvoices"; //$NON-NLS-1$
 
-	private Text tvaDePlata;
 	private Combo partner;
 	private Combo gestiune;
 	private Button maxim;
@@ -151,14 +147,7 @@ public class AccountingPart implements IMouseAction {
 	private FullFeaturedNatTable<GenericValue> recInvTable;
 	private SashForm verticalSash;
 
-	private Button printFisaParteneri;
-	private Button printAllDocs;
-	private Button printTvaDocs;
-
 	private Button receptie;
-	private Button salveaza;
-	private Button closeAll;
-	private Button openAll;
 	private ExportButton printareDocs;
 
 	private ImmutableList<Gestiune> allGestiuni;
@@ -189,18 +178,10 @@ public class AccountingPart implements IMouseAction {
 		container.setLayout(new GridLayout(7, false));
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
 
-		final Composite tvaCont = new Composite(container, SWT.NONE);
-		tvaCont.setLayout(new GridLayout(2, false));
-		GridDataFactory.fillDefaults().span(2, 1).applyTo(tvaCont);
+		final Composite layoutPurpose = new Composite(container, SWT.NONE);
+		layoutPurpose.setLayout(new GridLayout());
+		GridDataFactory.fillDefaults().span(2, 1).applyTo(layoutPurpose);
 		
-		final Label tvaDePlataLabel = new Label(tvaCont, SWT.WRAP);
-		tvaDePlataLabel.setText(Messages.AccountingPart_PayableVAT);
-		UIUtils.setBoldBannerFont(tvaDePlataLabel);
-
-		tvaDePlata = new Text(tvaCont, SWT.READ_ONLY | SWT.SINGLE | SWT.BORDER);
-		UIUtils.setBoldBannerFont(tvaDePlata);
-		GridDataFactory.swtDefaults().hint(150, SWT.DEFAULT).applyTo(tvaDePlata);
-
 		maxim = new Button(container, SWT.PUSH);
 		maxim.setText(Messages.Max);
 		maxim.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_MAGENTA));
@@ -252,13 +233,11 @@ public class AccountingPart implements IMouseAction {
 		execute.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldBannerFont(execute);
 
-		createResultArea(container);
-
 		verticalSash = new SashForm(container, SWT.VERTICAL | SWT.SMOOTH | SWT.BORDER);
 		GridDataFactory.fillDefaults().grab(true, true).span(7, 1).applyTo(verticalSash);
 
-		table = new DocumentNatTable(SourceLoc.CONTABILITATE, bundle, log, ctx);
-		table.afterChange(op -> part.setDirty(true));
+		table = new DocumentNatTable(SourceLoc.EFACTURA, bundle, log, ctx);
+		table.afterChange(doc -> part.setDirty(true));
 		table.doubleClickAction(this);
 		table.postConstruct(verticalSash);
 		table.getTable().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -266,7 +245,7 @@ public class AccountingPart implements IMouseAction {
 
 		recInvTable = TableBuilder.with(GenericValue.class, REC_INV_COLUMNS, dataServices.holder(REC_INV_DATA_HOLDER).getData())
 				.addConfiguration(new RecInvStyleConfiguration())
-				.addClickListener(invoiceIdColumn, AccountingPart.this::openInvoice)
+				.addClickListener(invoiceIdColumn, EFacturaPart.this::openInvoice)
 				.build(verticalSash);
 		GridDataFactory.fillDefaults().applyTo(recInvTable.natTable());
 
@@ -275,30 +254,6 @@ public class AccountingPart implements IMouseAction {
 		loadVisualState();
 		addListeners();
 		loadData();
-	}
-
-	private void createResultArea(final Composite parent) {
-		final Composite container = new Composite(parent, SWT.NONE);
-		container.setLayout(new GridLayout(3, false));
-		GridDataFactory.fillDefaults().grab(true, false).span(7, 1).applyTo(container);
-
-		printFisaParteneri = new Button(container, SWT.PUSH | SWT.WRAP);
-		printFisaParteneri.setText(RAP_FISA_PARTENERI_CONTA);
-		printFisaParteneri.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
-		printFisaParteneri.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		UIUtils.setBoldBannerFont(printFisaParteneri);
-
-		printAllDocs = new Button(container, SWT.PUSH | SWT.WRAP);
-		printAllDocs.setText(RAP_ALL_DOCS);
-		printAllDocs.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
-		printAllDocs.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		UIUtils.setBoldBannerFont(printAllDocs);
-
-		printTvaDocs = new Button(container, SWT.PUSH | SWT.WRAP);
-		printTvaDocs.setText(RAP_TVA_DOCS);
-		printTvaDocs.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_BLUE));
-		printTvaDocs.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		UIUtils.setBoldBannerFont(printTvaDocs);
 	}
 
 	private void createBottom(final Composite parent) {
@@ -314,29 +269,6 @@ public class AccountingPart implements IMouseAction {
 		UIUtils.setBoldFont(receptie);
 		GridDataFactory.swtDefaults().grab(true, true).align(SWT.RIGHT, SWT.FILL).applyTo(receptie);
 		
-		salveaza = new Button(container, SWT.PUSH);
-		salveaza.setText(Messages.Save);
-		salveaza.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
-		salveaza.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		UIUtils.setBoldFont(salveaza);
-		GridDataFactory.fillDefaults().grab(false, true).applyTo(salveaza);
-
-		closeAll = new Button(container, SWT.PUSH);
-		closeAll.setText(Messages.AccountingPart_CloseAllDocs);
-		closeAll.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-		closeAll.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		closeAll.setEnabled(ClientSession.instance().hasStrictPermission(Permissions.SET_EDITABLE_ACC_DOCS));
-		UIUtils.setBoldFont(closeAll);
-		GridDataFactory.fillDefaults().grab(false, true).applyTo(closeAll);
-
-		openAll = new Button(container, SWT.PUSH);
-		openAll.setText(Messages.AccountingPart_OpenAllDocs);
-		openAll.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-		openAll.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		openAll.setEnabled(ClientSession.instance().hasStrictPermission(Permissions.SET_EDITABLE_ACC_DOCS));
-		UIUtils.setBoldFont(openAll);
-		GridDataFactory.fillDefaults().grab(false, true).applyTo(openAll);
-
 		printareDocs = new ExportButton(container, SWT.PUSH,
 				ImmutableList.of(Messages.Print, Messages.Email, "XML(UBL 2.1)", Messages.EInvoice), "down_0_inv"); // $NON-NLS-3$
 																													// //$NON-NLS-5$
@@ -367,9 +299,9 @@ public class AccountingPart implements IMouseAction {
 
 		final int[] verticalWeights = new int[2];
 		verticalWeights[0] = Integer
-				.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX + ".0", "250")); //$NON-NLS-1$ //$NON-NLS-2$
+				.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX + ".0", "200")); //$NON-NLS-1$ //$NON-NLS-2$
 		verticalWeights[1] = Integer
-				.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX + ".1", "150")); //$NON-NLS-1$ //$NON-NLS-2$
+				.parseInt(part.getPersistedState().getOrDefault(VERTICAL_SASH_STATE_PREFIX + ".1", "200")); //$NON-NLS-1$ //$NON-NLS-2$
 		verticalSash.setWeights(verticalWeights);
 	}
 
@@ -390,27 +322,6 @@ public class AccountingPart implements IMouseAction {
 			}
 		});
 
-		printFisaParteneri.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				printareFisaParteneri();
-			}
-		});
-
-		printAllDocs.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				printAllDocs();
-			}
-		});
-
-		printTvaDocs.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				printTvaDocs();
-			}
-		});
-		
 		receptie.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
@@ -423,65 +334,6 @@ public class AccountingPart implements IMouseAction {
 							.sync(Result.class, t -> UIUtils.showException(t, sync))
 							.get().resultList())
 					.open();
-			}
-		});
-
-		salveaza.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				onSave();
-			}
-		});
-
-		closeAll.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				askSave();
-				if (!MessageDialog.openQuestion(closeAll.getShell(), Messages.AccountingPart_CloseAll,
-						Messages.AccountingPart_CloseMessage))
-					return;
-
-				closeAll.setEnabled(false);
-				openAll.setEnabled(false);
-
-				final InvocationResult result = BusinessDelegate
-						.setEditableToAllContaDocs(table.getSourceList().stream().map(AccountingDocument.class::cast)
-								.map(AccountingDocument::getId).collect(toImmutableSet()), false);
-				showResult(result);
-
-				loadData();
-				closeAll.setEnabled(true);
-				openAll.setEnabled(true);
-
-				if (result.statusOk())
-					MessageDialog.openInformation(closeAll.getShell(), Messages.Success, NLS.bind(
-							Messages.AccountingPart_ClosedDocs, result.extraLong(InvocationResult.UPDATE_COUNT_KEY)));
-			}
-		});
-
-		openAll.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(final SelectionEvent e) {
-				askSave();
-				if (!MessageDialog.openQuestion(openAll.getShell(), Messages.AccountingPart_OpenAll,
-						Messages.AccountingPart_OpenMessage))
-					return;
-
-				closeAll.setEnabled(false);
-				openAll.setEnabled(false);
-
-				final InvocationResult result = BusinessDelegate
-						.setEditableToAllContaDocs(table.getSourceList().stream().map(AccountingDocument.class::cast)
-								.map(AccountingDocument::getId).collect(toImmutableSet()), true);
-				showResult(result);
-
-				loadData();
-				closeAll.setEnabled(true);
-				openAll.setEnabled(true);
-
-				if (result.statusOk())
-					MessageDialog.openInformation(openAll.getShell(), Messages.Success, NLS.bind(
-							Messages.AccountingPart_OpenedDocs, result.extraLong(InvocationResult.UPDATE_COUNT_KEY)));
 			}
 		});
 
@@ -542,16 +394,17 @@ public class AccountingPart implements IMouseAction {
 	private void loadData() {
 		cancelLoadJob();
 		execute.setEnabled(false);
-
-		contaJob = BusinessDelegate.contaDocs(new AsyncLoadData<AccountingDocument>() {
+		
+		contaJob = BusinessDelegate.filteredDocuments(new AsyncLoadData<Document>() {
 			@Override
-			public void success(final ImmutableList<AccountingDocument> data) {
+			public void success(final ImmutableList<Document> data) {
 				part.setDirty(false);
 				execute.setEnabled(true);
-				table.loadData(data);
-
-				tvaDePlata.setText(displayBigDecimal(data.stream().filter(AccountingDocument::calculeazaLaTva)
-						.map(AccountingDocument::tvaDePlata).reduce(BigDecimal::add).orElse(BigDecimal.ZERO)));
+				table.loadData(data.stream()
+						.filter(AccountingDocument.class::isInstance)
+						.map(AccountingDocument.class::cast)
+						.filter(accDoc -> AccountingDocument.FACTURA_NAME.equalsIgnoreCase(accDoc.getDoc()))
+						.collect(ListUtils.toImmutableList()));
 			}
 
 			@Override
@@ -559,11 +412,12 @@ public class AccountingPart implements IMouseAction {
 				execute.setEnabled(true);
 				MessageDialog.openError(execute.getShell(), Messages.ErrorFiltering, details);
 			}
-		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null),
-				selectedPartner().map(Partner::getId).orElse(null), extractLocalDate(from), extractLocalDate(to), log);
+		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selectedPartner().map(Partner::getId).orElse(null),
+				TipDoc.VANZARE, extractLocalDate(from), extractLocalDate(to), RPZLoad.DOAR_RPZ, CasaLoad.INDIFERENT,
+				BancaLoad.INDIFERENT, null, DocumentTypesLoad.FARA_DISCOUNTURI, CoveredDocsLoad.INDIFERENT,
+				null, null, ContaLoad.INDIFERENT, null, null, log);
 
-		RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoices")
-				.internal(authSession)
+		RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoices/v2").internal(authSession)
 				.addUrlParam("start", Timestamp.valueOf(extractLocalDate(from).atStartOfDay()).toString())
 				.addUrlParam("end", Timestamp.valueOf(extractLocalDate(to).atTime(23, 59)).toString())
 				.async(t -> UIUtils.showException(t, sync))
@@ -575,7 +429,7 @@ public class AccountingPart implements IMouseAction {
 		if (contaJob != null)
 			contaJob.cancel();
 	}
-
+	
 	@Persist
 	public void onSave() {
 		if (part.isDirty()) {
@@ -611,66 +465,6 @@ public class AccountingPart implements IMouseAction {
 			ManagerPart.loadDocInPart(partService, BusinessDelegate.reloadDoc(NumberUtils.parseToLong(value.toString())));
 	}
 
-	private void printareFisaParteneri() {
-		printFisaParteneri.setEnabled(false);
-		final LocalDate fromDate = extractLocalDate(from);
-		final LocalDate toDate = extractLocalDate(to);
-		final Long selPartnerId = selectedPartner().map(Partner::getId).orElse(null);
-		BusinessDelegate.rulajeParteneriInConta(new AsyncLoadData<RulajPartener>() {
-			@Override
-			public void success(final ImmutableList<RulajPartener> data) {
-				printFisaParteneri.setEnabled(true);
-				try {
-					JasperReportManager.instance(bundle, log)
-							.printFisaParteneri_Centralizat(bundle, fromDate, toDate,
-									selPartnerId != null ? data
-											: data.stream()
-													.filter(rulaj -> !nullOrZero(rulaj.getDeIncasat())
-															|| !nullOrZero(rulaj.getDePlata()))
-													.collect(toImmutableList()));
-				} catch (IOException | JRException e) {
-					log.error(e);
-					showException(e);
-				}
-			}
-
-			@Override
-			public void error(final String details) {
-				printFisaParteneri.setEnabled(true);
-				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.AccountingPart_ErrorLoading,
-						details);
-			}
-		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null), selPartnerId, fromDate, toDate, log);
-	}
-
-	private void printAllDocs() {
-		printAllDocs.setEnabled(false);
-		final LocalDate fromDate = extractLocalDate(from);
-		final LocalDate toDate = extractLocalDate(to);
-		try {
-			JasperReportManager.instance(bundle, log).printJurnalGeneral(bundle, fromDate, toDate,
-					table.getSourceList().stream().map(AccountingDocument.class::cast).collect(toImmutableList()));
-		} catch (IOException | JRException e) {
-			log.error(e);
-			showException(e);
-		}
-		printAllDocs.setEnabled(true);
-	}
-
-	private void printTvaDocs() {
-		printTvaDocs.setEnabled(false);
-		final LocalDate fromDate = extractLocalDate(from);
-		final LocalDate toDate = extractLocalDate(to);
-		try {
-			JasperReportManager.instance(bundle, log).printDocTVA(bundle, fromDate, toDate,
-					table.getSourceList().stream().map(AccountingDocument.class::cast)
-							.filter(AccountingDocument::calculeazaLaTva).collect(toImmutableList()));
-		} catch (IOException | JRException e) {
-			log.error(e);
-			showException(e);
-		}
-		printTvaDocs.setEnabled(true);
-	}
 
 	private void sendSelectedDocToEmail() {
 		final AccountingDocument docSelectat = table.selectedAccDocs_Stream().findFirst().orElse(null);
@@ -729,27 +523,26 @@ public class AccountingPart implements IMouseAction {
 	}
 
 	private void sendSelectedDocsTo_eFactura() {
-		if (!MessageDialog
-				.openQuestion(Display.getCurrent().getActiveShell(), Messages.AccountingPart_Report,
-						MessageFormat.format(Messages.AccountingPart_ReportMessage,
-								table.selectedAccDocs_Stream()
-										.filter(accDoc -> TipDoc.VANZARE.equals(accDoc.getTipDoc())
-												&& AccountingDocument.FACTURA_NAME.equalsIgnoreCase(accDoc.getDoc()))
-										.count())))
+		AnafMoquiReporter.initializeSettingsOnDemand(ctx);
+		
+		final List<AccountingDocument> invoices = table.selectedAccDocs_Stream()
+				.filter(accDoc -> TipDoc.VANZARE.equals(accDoc.getTipDoc())
+						&& AccountingDocument.FACTURA_NAME.equalsIgnoreCase(accDoc.getDoc()))
+				.collect(Collectors.toList());
+		
+		if (!MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.AccountingPart_Report,
+						MessageFormat.format(Messages.AccountingPart_ReportMessage, invoices.size())))
 			return;
 
-		table.selectedAccDocs_Stream().forEach(docSelectat -> {
-			if (TipDoc.VANZARE.equals(docSelectat.getTipDoc())
-					&& AccountingDocument.FACTURA_NAME.equalsIgnoreCase(docSelectat.getDoc())) {
-				if (isEmpty(safeString(docSelectat.getPartner(), Partner::getDelegat, Delegat::getName))) {
-					MessageDialog.openError(Display.getCurrent().getActiveShell(),
-							Messages.AccountingPart_MissingDelegate, NLS.bind(Messages.AccountingPart_EnterDelegate,
-									docSelectat.getDoc(), docSelectat.getNrDoc()));
-					return;
-				}
-
-				AnafReporter.reportInvoice(docSelectat.getCompany().getId(), docSelectat.getId());
+		invoices.forEach(invoice -> {
+			if (isEmpty(safeString(invoice.getPartner(), Partner::getDelegat, Delegat::getName))) {
+				MessageDialog.openError(Display.getCurrent().getActiveShell(),
+						Messages.AccountingPart_MissingDelegate, NLS.bind(Messages.AccountingPart_EnterDelegate,
+								invoice.getDoc(), invoice.getNrDoc()));
+				return;
 			}
+
+			AnafMoquiReporter.reportInvoice(ctx, invoice.getCompany().getId(), invoice.getId());
 		});
 	}
 
@@ -783,7 +576,7 @@ public class AccountingPart implements IMouseAction {
 
 		return Optional.of(allPartners.get(index));
 	}
-
+	
 	private void askSave() {
 		if (part.isDirty() && MessageDialog.openQuestion(Display.getCurrent().getActiveShell(), Messages.Save,
 				Messages.SaveMessage))

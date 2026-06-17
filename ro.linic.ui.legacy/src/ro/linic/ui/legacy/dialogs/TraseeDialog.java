@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
@@ -79,13 +80,15 @@ public class TraseeDialog extends Dialog
 	private UISynchronize sync;
 	private Logger log;
 	private Bundle bundle;
+	private IEclipseContext ctx;
 	
-	public TraseeDialog(final Shell parent, final UISynchronize sync, final Logger log, final Bundle bundle)
+	public TraseeDialog(final Shell parent, final UISynchronize sync, final Logger log, final Bundle bundle, final IEclipseContext ctx)
 	{
 		super(parent);
 		this.sync = sync;
 		this.log = log;
 		this.bundle = bundle;
+		this.ctx = ctx;
 	}
 	
 	@Override
@@ -153,7 +156,7 @@ public class TraseeDialog extends Dialog
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(to);
 		insertDate(to, LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()));
 		
-		table = new DocumentNatTable(SourceLoc.SCHEDULE_DIALOG, bundle, log);
+		table = new DocumentNatTable(SourceLoc.SCHEDULE_DIALOG, bundle, log, ctx);
 		table.postConstruct(contents);
 		GridDataFactory.fillDefaults().grab(true, true).span(5, 1).applyTo(table.getTable());
 		

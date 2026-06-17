@@ -19,9 +19,25 @@ public class ReceivedMessage {
 		@SerializedName("FACTURA TRIMISA")
 		FACTURA_TRIMISA,
 		@SerializedName("ERORI FACTURA")
-		ERORI_FACTURA;
+		ERORI_FACTURA,
+		@SerializedName("MESAJ CUMPARATOR TRANSMIS")
+		MESAJ_CUMPARATOR_TRANSMIS;
 	}
 	
+	public ReceivedMessage() {
+	}
+	
+	public ReceivedMessage(final Long id, final LocalDateTime creationDate, final String taxId, final String uploadIndex, final String details,
+			final AnafReceivedMessageType messageType) {
+		super();
+		this.id = id;
+		this.creationDate = creationDate;
+		this.taxId = taxId;
+		this.uploadIndex = uploadIndex;
+		this.details = details;
+		this.messageType = messageType;
+	}
+
 	public Long getId() {
 		return id;
 	}

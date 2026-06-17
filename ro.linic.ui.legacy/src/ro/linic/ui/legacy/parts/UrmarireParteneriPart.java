@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -91,6 +92,7 @@ import ro.colibri.util.InvocationResult.Problem;
 import ro.colibri.wrappers.RulajPartener;
 import ro.linic.ui.base.dialogs.SelectEntityDialog;
 import ro.linic.ui.base.services.model.GenericValue;
+import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
 import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.components.AsyncLoadResult;
@@ -178,6 +180,7 @@ public class UrmarireParteneriPart implements IMouseAction
 	@Inject private UISynchronize sync;
 	@Inject private EPartService partService;
 	@Inject private Logger log;
+	@Inject private IEclipseContext ctx;
 	
 	public static void openPart(final EPartService partService)
 	{
@@ -195,7 +198,7 @@ public class UrmarireParteneriPart implements IMouseAction
 		parent.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 		
 		createTop(parent);
-		table = new DocumentNatTable(SourceLoc.URMARIRE_PARTENERI, bundle, log);
+		table = new DocumentNatTable(SourceLoc.URMARIRE_PARTENERI, bundle, log, ctx);
 		table.afterChange(op -> part.setDirty(true));
 		table.doubleClickAction(this);
 		table.postConstruct(parent);
@@ -1219,6 +1222,7 @@ public class UrmarireParteneriPart implements IMouseAction
 						.count())))
 			return;
 		
+		AnafMoquiReporter.initializeSettingsOnDemand(ctx);
 		table.selectedAccDocs_Stream().forEach(docSelectat ->
 		{
 			if (TipDoc.VANZARE.equals(docSelectat.getTipDoc()) &&
@@ -1231,7 +1235,7 @@ public class UrmarireParteneriPart implements IMouseAction
 					return;
 				}
 				
-				AnafReporter.reportInvoice(docSelectat.getCompany().getId(), docSelectat.getId());
+				AnafMoquiReporter.reportInvoice(ctx, docSelectat.getCompany().getId(), docSelectat.getId());
 			}
 		});
 	}

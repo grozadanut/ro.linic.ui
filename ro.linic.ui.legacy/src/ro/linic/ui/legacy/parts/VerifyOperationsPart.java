@@ -107,7 +107,7 @@ public class VerifyOperationsPart
 	@Inject private EPartService partService;
 	@Inject private Logger log;
 	@Inject private ECRService ecrService;
-	@Inject IEclipseContext ctx;
+	@Inject private IEclipseContext ctx;
 	
 	public static VerifyOperationsPart loadDoc(final EPartService partService, final AccountingDocument doc)
 	{
@@ -263,7 +263,7 @@ public class VerifyOperationsPart
 					return;
 
 				final ScheduleDialog dialog = new ScheduleDialog(schedule.getShell(), sync, log, bundle,
-						BusinessDelegate.reloadDoc(selDoc.get()));
+						BusinessDelegate.reloadDoc(selDoc.get()), ctx);
 				if (dialog.open() == Window.OK)
 				{
 					final AccountingDocument reloadedDoc = dialog.reloadedDoc();

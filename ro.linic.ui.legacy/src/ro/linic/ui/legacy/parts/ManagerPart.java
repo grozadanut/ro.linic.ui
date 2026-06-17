@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.extensions.OSGiBundle;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.Persist;
@@ -113,7 +114,7 @@ import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
-import ro.linic.ui.legacy.anaf.AnafReporter;
+import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
 import ro.linic.ui.legacy.dialogs.AdaugaOpDialog;
 import ro.linic.ui.legacy.dialogs.FiltrePopup;
 import ro.linic.ui.legacy.dialogs.ManagerIncarcaDocPopup;
@@ -213,6 +214,7 @@ public class ManagerPart implements IMouseAction
 	@Inject private AuthenticationSession authSession;
 	@Inject private DataServices dataServices;
 	@Inject private MessagingService nats;
+	@Inject private IEclipseContext ctx;
 
 	public static ManagerPart loadDocInPart(final EPartService partService, final AccountingDocument doc)
 	{
@@ -1016,7 +1018,7 @@ public class ManagerPart implements IMouseAction
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				final ScheduleDialog dialog = new ScheduleDialog(schedule.getShell(), sync, log, bundle, docIncarcat);
+				final ScheduleDialog dialog = new ScheduleDialog(schedule.getShell(), sync, log, bundle, docIncarcat, ctx);
 				if (dialog.open() == Window.OK)
 					updateDoc(dialog.reloadedDoc());
 			}
@@ -1665,7 +1667,8 @@ public class ManagerPart implements IMouseAction
 						MessageFormat.format(Messages.ManagerPart_ReportMessage, docIncarcat.displayNameShort())))
 					return;
 
-				AnafReporter.reportInvoice(docIncarcat.getCompany().getId(), docIncarcat.getId());
+				AnafMoquiReporter.initializeSettingsOnDemand(ctx);
+				AnafMoquiReporter.reportInvoice(ctx, docIncarcat.getCompany().getId(), docIncarcat.getId());
 			}
 			else
 				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.ManagerPart_WrongDoc, Messages.ManagerPart_WrongDocMessageAnaf);

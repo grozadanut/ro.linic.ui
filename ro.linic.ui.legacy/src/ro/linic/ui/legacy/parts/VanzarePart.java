@@ -517,7 +517,7 @@ public class VanzarePart implements VanzareInterface
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				final ScheduleDialog dialog = new ScheduleDialog(scheduleButton.getShell(), sync, log, bundle, bonCasa);
+				final ScheduleDialog dialog = new ScheduleDialog(scheduleButton.getShell(), sync, log, bundle, bonCasa, ctx);
 				if (dialog.open() == Window.OK)
 					updateBonCasa(dialog.reloadedDoc(), false);
 			}
@@ -584,7 +584,7 @@ public class VanzarePart implements VanzareInterface
 		{
 			@Override public void widgetSelected(final SelectionEvent e)
 			{
-				new TraseeDialog(printPlanuriButton.getShell(), sync, log, bundle).open();
+				new TraseeDialog(printPlanuriButton.getShell(), sync, log, bundle, ctx).open();
 			}
 		});
 		

@@ -30,6 +30,8 @@ public class Messages extends NLS
 	public static String AnafReporter_UnauthorizedMessage;
 	public static String AnafReporter_ReloadBills;
 	public static String AnafReporter_AllSaved;
+	public static String AnafMoquiReporter_OpenManualMessage;
+	public static String AnafMoquiReporter_EditPropsMessage;
 	public static String AdaugaDocDialog_AddDoc;
 	public static String AdaugaDocDialog_Add;
 	public static String AdaugaDocDialog_DocType;
