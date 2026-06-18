@@ -37,6 +37,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import ro.colibri.entities.comercial.PersistedProp;
+import ro.colibri.wrappers.TwoEntityWrapper;
 import ro.linic.ui.base.dialogs.InfoDialog;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.BodyProvider;
@@ -79,10 +80,10 @@ public class AnafMoquiReporter {
 	public static void initializeSettingsOnDemand(final IEclipseContext ctx) {
 		final Optional<GenericValue> anafToken = ro.linic.ui.http.RestCaller.get("/rest/s1/moqui-anaf-efactura/token")
 				.internal(ctx.get(AuthenticationSession.class))
-				.sync(GenericValue.class, t -> UIUtils.showException(t, ctx.get(UISynchronize.class)));
-
+				.sync(GenericValue.class, t -> log.error(t.getMessage(), t));
+		
 		if (anafToken.isEmpty() || isEmpty(anafToken.get().getString("accessToken"))) {
-			final String registerUrl = ro.linic.ui.base.services.util.UIUtils.moquiBaseUrl() + "/anaf/code";
+			final String registerUrl = ro.linic.ui.base.services.util.UIUtils.moquiBaseUrl() + "/qapps/moqui_anaf_efactura";
 			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
 				try {
 					Desktop.getDesktop().browse(new URI(registerUrl));
@@ -94,9 +95,11 @@ public class AnafMoquiReporter {
 			} else
 				InfoDialog.open(ctx.getActive(Shell.class), ro.linic.ui.base.services.Messages.Error,
 						NLS.bind(Messages.AnafMoquiReporter_OpenManualMessage, registerUrl));
+			
+			return;
 		}
 
-		if (anafToken.isPresent() && isEmpty(anafToken.get().getString("taxId")))
+		if (isEmpty(anafToken.map(gv -> gv.getString("taxId")).orElse(null)))
 			throw new UnsupportedOperationException(
 					"Discutati cu administratorul sistemului pentru a va configura CUI-ul pentru eFactura!");
 
@@ -109,18 +112,18 @@ public class AnafMoquiReporter {
 
 		if (isEmpty(firmaNameV) || isEmpty(firmaCuiV) || isEmpty(firmaBillingAddressStreetV)
 				|| isEmpty(firmaBillingAddressCityV) || isEmpty(firmaBillingAddressCodJudetV)) {
-			final Map<String, PersistedProp> propsToEdit = new HashMap<>();
-			propsToEdit.put("Nume Firma", BusinessDelegate.persistedProp(PersistedProp.FIRMA_NAME_KEY));
-			propsToEdit.put("CUI", BusinessDelegate.persistedProp(PersistedProp.FIRMA_CUI_KEY));
-			propsToEdit.put("Nr.Reg.Com.", BusinessDelegate.persistedProp(PersistedProp.FIRMA_REG_COM_KEY));
-			propsToEdit.put("Serie factura", BusinessDelegate.persistedProp(PersistedProp.SERIA_FACTURA_KEY));
-			propsToEdit.put("Capital social", BusinessDelegate.persistedProp(PersistedProp.FIRMA_CAP_SOCIAL_KEY));
-			propsToEdit.put("Telefon", BusinessDelegate.persistedProp(PersistedProp.FIRMA_PHONE_KEY));
-			propsToEdit.put("Email", BusinessDelegate.persistedProp(PersistedProp.FIRMA_EMAIL_KEY));
-			propsToEdit.put("IBAN", BusinessDelegate.persistedProp(PersistedProp.FIRMA_MAIN_BANK_ACC_KEY));
-			propsToEdit.put("Cod judet(ex: RO-BH)", BusinessDelegate.persistedProp("firma_billing_cod_judet"));
-			propsToEdit.put("Oras", BusinessDelegate.persistedProp("firma_billing_city"));
-			propsToEdit.put("Adresa", BusinessDelegate.persistedProp("firma_billing_primary_line"));
+			final Map<TwoEntityWrapper<String>, PersistedProp> propsToEdit = new HashMap<>();
+			propsToEdit.put(new TwoEntityWrapper<>("01", "Nume Firma"), BusinessDelegate.persistedProp(PersistedProp.FIRMA_NAME_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("02", "CUI"), BusinessDelegate.persistedProp(PersistedProp.FIRMA_CUI_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("03", "Nr.Reg.Com."), BusinessDelegate.persistedProp(PersistedProp.FIRMA_REG_COM_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("04", "Serie factura"), BusinessDelegate.persistedProp(PersistedProp.SERIA_FACTURA_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("05", "Capital social"), BusinessDelegate.persistedProp(PersistedProp.FIRMA_CAP_SOCIAL_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("06", "Telefon"), BusinessDelegate.persistedProp(PersistedProp.FIRMA_PHONE_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("07", "Email"), BusinessDelegate.persistedProp(PersistedProp.FIRMA_EMAIL_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("08", "IBAN"), BusinessDelegate.persistedProp(PersistedProp.FIRMA_MAIN_BANK_ACC_KEY));
+			propsToEdit.put(new TwoEntityWrapper<>("09", "Cod judet(ex: RO-BH)"), BusinessDelegate.persistedProp("firma_billing_cod_judet"));
+			propsToEdit.put(new TwoEntityWrapper<>("10", "Oras"), BusinessDelegate.persistedProp("firma_billing_city"));
+			propsToEdit.put(new TwoEntityWrapper<>("11", "Adresa"), BusinessDelegate.persistedProp("firma_billing_primary_line"));
 
 			new EditPersistedPropDialog(ctx.getActive(Shell.class), propsToEdit,
 					Messages.AnafMoquiReporter_EditPropsMessage).open();

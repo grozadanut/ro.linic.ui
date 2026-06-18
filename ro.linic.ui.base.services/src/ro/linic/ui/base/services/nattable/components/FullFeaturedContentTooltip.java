@@ -1,5 +1,6 @@
 package ro.linic.ui.base.services.nattable.components;
 
+import static ro.flexbiz.util.commons.PresentationUtils.EMPTY_STRING;
 import static ro.flexbiz.util.commons.StringUtils.notEmpty;
 
 import java.util.List;
@@ -25,7 +26,11 @@ public class FullFeaturedContentTooltip extends NatTableContentTooltip {
 		final int row = this.natTable.getRowPositionByY(event.y);
 		
 		if (row == 0) {
-			final Optional<String> tooltip = Optional.ofNullable(columns.get(col-1)) // -1 because of the row header column
+			final int idx = col-1; // -1 because of the row header column
+			if (idx < 0 || idx >= columns.size())
+				return EMPTY_STRING;
+			
+			final Optional<String> tooltip = Optional.ofNullable(columns.get(idx))
 					.map(Column::tooltip);
 			
 			if (tooltip.isPresent() && notEmpty(tooltip.get()))

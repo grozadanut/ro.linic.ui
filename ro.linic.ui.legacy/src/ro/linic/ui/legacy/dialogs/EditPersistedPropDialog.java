@@ -1,5 +1,6 @@
 package ro.linic.ui.legacy.dialogs;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -18,15 +19,16 @@ import org.eclipse.swt.widgets.Text;
 
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.util.ListUtils;
+import ro.colibri.wrappers.TwoEntityWrapper;
 import ro.linic.ui.legacy.session.BusinessDelegate;
 import ro.linic.ui.legacy.session.UIUtils;
 
 public class EditPersistedPropDialog extends TitleAreaDialog {
-	private Map<String, PersistedProp> props;
+	private Map<TwoEntityWrapper<String>, PersistedProp> props;
 	private Map<PersistedProp, Text> widgets;
 	private String message;
 
-	public EditPersistedPropDialog(final Shell parent, final Map<String, PersistedProp> props, final String message) {
+	public EditPersistedPropDialog(final Shell parent, final Map<TwoEntityWrapper<String>, PersistedProp> props, final String message) {
 		super(parent);
 		this.props = props;
 		this.message = message;
@@ -48,10 +50,13 @@ public class EditPersistedPropDialog extends TitleAreaDialog {
 		container.setLayout(new GridLayout(2, false));
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		widgets = props.entrySet().stream().collect(Collectors.toMap(Entry::getValue,
+		widgets = props.entrySet().stream()
+				.sorted(Comparator.comparing(e -> e.getKey().getEntity1()))
+				.collect(Collectors.toMap(Entry::getValue,
 				e -> {
-					new Label(container, SWT.NONE).setText(e.getKey());
+					new Label(container, SWT.NONE).setText(e.getKey().getEntity2());
 					final Text field = new Text(container, SWT.BORDER);
+					field.setText(e.getValue().getValueOr(""));
 					UIUtils.setFont(field);
 					GridDataFactory.fillDefaults().grab(true, false).applyTo(field);
 					return field;
