@@ -192,8 +192,9 @@ public class AnafMoquiReporter {
 			return;
 
 		final Optional<Long> downloadResponse = ro.linic.ui.http.RestCaller
-				.post("/rest/s1/moqui-anaf-efactura/report/download").internal(ctx.get(AuthenticationSession.class))
-				.body(BodyProvider.of(GenericValue.of("", "", "downloadId", downloadId)))
+				.get("/apps/moqui_anaf_efactura/download")
+				.internal(ctx.get(AuthenticationSession.class))
+				.addUrlParam("downloadId", downloadId)
 				.syncRaw(BodyHandlers.ofInputStream(), t -> UIUtils.showException(t, ctx.get(UISynchronize.class)))
 				.flatMap(r -> UIUtils.copyFileFromTo(r.body(), outputFileUri));
 
