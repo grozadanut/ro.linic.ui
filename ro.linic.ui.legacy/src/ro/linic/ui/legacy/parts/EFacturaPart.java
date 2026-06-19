@@ -147,6 +147,7 @@ public class EFacturaPart implements IMouseAction {
 	private FullFeaturedNatTable<GenericValue> recInvTable;
 	private SashForm verticalSash;
 
+	private Button readAnafMessages;
 	private Button receptie;
 	private ExportButton printareDocs;
 
@@ -262,12 +263,19 @@ public class EFacturaPart implements IMouseAction {
 		container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
 		GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, 40).span(7, 1).applyTo(container);
 
+		readAnafMessages = new Button(container, SWT.PUSH);
+		readAnafMessages.setText(Messages.EFacturaPart_LoadAnafMessages);
+		readAnafMessages.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE));
+		readAnafMessages.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBoldFont(readAnafMessages);
+		GridDataFactory.fillDefaults().grab(true, true).align(SWT.RIGHT, SWT.FILL).applyTo(readAnafMessages);
+		
 		receptie = new Button(container, SWT.PUSH);
 		receptie.setText(Messages.AccountingPart_Receive);
 		receptie.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 		receptie.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(receptie);
-		GridDataFactory.swtDefaults().grab(true, true).align(SWT.RIGHT, SWT.FILL).applyTo(receptie);
+		GridDataFactory.fillDefaults().grab(false, true).applyTo(receptie);
 		
 		printareDocs = new ExportButton(container, SWT.PUSH,
 				ImmutableList.of(Messages.Print, Messages.Email, "XML(UBL 2.1)", Messages.EInvoice), "down_0_inv"); // $NON-NLS-3$
@@ -319,6 +327,18 @@ public class EFacturaPart implements IMouseAction {
 			public void widgetSelected(final SelectionEvent e) {
 				askSave();
 				loadData();
+			}
+		});
+		
+		readAnafMessages.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(final SelectionEvent e) {
+				askSave();
+				AnafMoquiReporter.initializeSettingsOnDemand(ctx);
+				RestCaller.post("/rest/s1/moqui-anaf-efactura/messages/check")
+				.internal(authSession)
+				.async(t -> UIUtils.showException(t, sync))
+				.thenRun(() -> ctx.get(UISynchronize.class).asyncExec(() -> loadData()));
 			}
 		});
 

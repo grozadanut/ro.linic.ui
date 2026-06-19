@@ -16,6 +16,7 @@ public class Messages extends NLS {
 	public static String ErrorFiltering;
 	public static String AccountingPart_ErrorFilteringAnaf;
 	public static String AccountingPart_ErrorLoading;
+	public static String EFacturaPart_LoadAnafMessages;
 	public static String Execute;
 	public static String Invoice_;
 	public static String ManagerPart_AqNoVAT;
