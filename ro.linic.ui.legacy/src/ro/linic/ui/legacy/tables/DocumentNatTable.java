@@ -134,7 +134,6 @@ import ro.colibri.util.HeterogeneousDataComparator;
 import ro.colibri.util.StringUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
-import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.anaf.ReportedInvoice;
 import ro.linic.ui.legacy.anaf.ReportedInvoice.ReportState;
 import ro.linic.ui.legacy.session.BusinessDelegate;
@@ -410,12 +409,12 @@ public class DocumentNatTable
 					.map(AccountingDocument::getId)
 					.collect(toImmutableList());
 			
-			if (source.equals(SourceLoc.EFACTURA))
+//			if (source.equals(SourceLoc.EFACTURA))
 				this.reportedInvoices = AnafMoquiReporter.findReportedInvoicesById(ctx, invoiceIds).stream()
 				.collect(Collectors.toMap(ReportedInvoice::getInvoiceId, Function.identity()));
-			else
-				this.reportedInvoices = AnafReporter.findReportedInvoicesById(invoiceIds).stream()
-				.collect(Collectors.toMap(ReportedInvoice::getInvoiceId, Function.identity()));
+//			else
+//				this.reportedInvoices = AnafReporter.findReportedInvoicesById(invoiceIds).stream()
+//				.collect(Collectors.toMap(ReportedInvoice::getInvoiceId, Function.identity()));
 		}
 	}
 
@@ -461,14 +460,14 @@ public class DocumentNatTable
 	private void replaceReportedInvoice(final AccountingDocument oldAccDoc, final AccountingDocument newAccDoc)
 	{
 		this.reportedInvoices.remove(oldAccDoc.getId());
-		if (source.equals(SourceLoc.EFACTURA))
+//		if (source.equals(SourceLoc.EFACTURA))
 			AnafMoquiReporter.findReportedInvoicesById(ctx, List.of(newAccDoc.getId()))
 			.stream().findFirst()
 			.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
-		else
-			AnafReporter.findReportedInvoicesById(List.of(newAccDoc.getId()))
-			.stream().findFirst()
-			.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
+//		else
+//			AnafReporter.findReportedInvoicesById(List.of(newAccDoc.getId()))
+//			.stream().findFirst()
+//			.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
 	}
 
 	public DocumentNatTable add(final Object newData)
@@ -476,14 +475,14 @@ public class DocumentNatTable
 		try
 		{
 			if (newData instanceof AccountingDocument && !source.equals(SourceLoc.SCHEDULE_DIALOG)) {
-				if (source.equals(SourceLoc.EFACTURA))
+//				if (source.equals(SourceLoc.EFACTURA))
 					AnafMoquiReporter.findReportedInvoicesById(ctx, List.of(((AccountingDocument) newData).getId()))
 					.stream().findFirst()
 					.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
-				else
-					AnafReporter.findReportedInvoicesById(List.of(((AccountingDocument) newData).getId()))
-					.stream().findFirst()
-					.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
+//				else
+//					AnafReporter.findReportedInvoicesById(List.of(((AccountingDocument) newData).getId()))
+//					.stream().findFirst()
+//					.ifPresent(repInv -> reportedInvoices.put(repInv.getInvoiceId(), repInv));
 			}
 			
 			this.sourceList.getReadWriteLock().writeLock().lock();
@@ -1205,18 +1204,18 @@ public class DocumentNatTable
 			case WAITING_VALIDATION:
 				if (MessageDialog.openConfirm(Display.getCurrent().getActiveShell(), "Continuati?",
 						"Fortati o verificare a starii de validare a facturilor raportate la ANAF?")) {
-					if (source.equals(SourceLoc.EFACTURA))
+//					if (source.equals(SourceLoc.EFACTURA))
 						AnafMoquiReporter.forceCheckReportedInvoices(ctx);
-					else
-						AnafReporter.forceCheckReportedInvoices();
+//					else
+//						AnafReporter.forceCheckReportedInvoices();
 				}
 				break;
 			case REJECTED_INVALID:
 			case SENT:
-				if (source.equals(SourceLoc.EFACTURA))
+//				if (source.equals(SourceLoc.EFACTURA))
 					AnafMoquiReporter.downloadResponse(ctx, repInv.getDownloadId());
-				else
-					AnafReporter.downloadResponse(repInv.getDownloadId());
+//				else
+//					AnafReporter.downloadResponse(repInv.getDownloadId());
 				break;
 			case UPLOAD_ERROR:
 				break;

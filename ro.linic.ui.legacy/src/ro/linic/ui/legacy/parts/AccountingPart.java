@@ -97,7 +97,6 @@ import ro.linic.ui.base.services.nattable.TableBuilder;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.http.pojo.Result;
 import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
-import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.ReceptieEFacturaDialog;
 import ro.linic.ui.legacy.service.JasperReportManager;
@@ -748,7 +747,7 @@ public class AccountingPart implements IMouseAction {
 					return;
 				}
 
-				AnafReporter.reportInvoice(docSelectat.getCompany().getId(), docSelectat.getId());
+				AnafMoquiReporter.reportInvoice(ctx, docSelectat.getCompany().getId(), docSelectat.getId());
 			}
 		});
 	}

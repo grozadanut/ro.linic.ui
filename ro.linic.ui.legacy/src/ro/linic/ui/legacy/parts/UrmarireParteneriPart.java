@@ -93,7 +93,6 @@ import ro.colibri.wrappers.RulajPartener;
 import ro.linic.ui.base.dialogs.SelectEntityDialog;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.legacy.anaf.AnafMoquiReporter;
-import ro.linic.ui.legacy.anaf.AnafReporter;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.components.AsyncLoadResult;
 import ro.linic.ui.legacy.dialogs.AdaugaDocDialog;
@@ -1095,7 +1094,7 @@ public class UrmarireParteneriPart implements IMouseAction
 		try
 		{
 			JasperReportManager.instance(bundle, log).printRegAnaf(bundle, fromDate, toDate,
-					AnafReporter.findAnafMessagesBetween(fromDate.atStartOfDay(), toDate.atTime(LocalTime.MAX)));
+					AnafMoquiReporter.findAnafMessagesBetween(ctx, fromDate.atStartOfDay(), toDate.atTime(LocalTime.MAX)));
 		}
 		catch (IOException | JRException e)
 		{
