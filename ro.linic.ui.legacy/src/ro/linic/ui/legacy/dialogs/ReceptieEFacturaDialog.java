@@ -1,5 +1,7 @@
 package ro.linic.ui.legacy.dialogs;
 
+import static ro.flexbiz.util.commons.PresentationUtils.safeString;
+
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.Timestamp;
@@ -177,8 +179,8 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 		
 		invoiceNumber.setText(anafInvoice.getString("invoiceNumber"));
 		issueDate.setText(LocalDateUtils.displayLocalDate(new Timestamp(anafInvoice.getLong("issueDate")).toLocalDateTime().toLocalDate()));
-		taxExclusiveAmount.setText(anafInvoice.getString("taxExclusiveAmount"));
-		taxTotal.setText(anafInvoice.getString("taxTotal"));
+		taxExclusiveAmount.setText(safeString(anafInvoice.getString("taxExclusiveAmount")));
+		taxTotal.setText(safeString(anafInvoice.getString("taxTotal")));
 		invoiceTotal.setText(anafInvoice.getString("invoiceTotal"));
 		linesSummary.setText(linesSummary());
 	}
