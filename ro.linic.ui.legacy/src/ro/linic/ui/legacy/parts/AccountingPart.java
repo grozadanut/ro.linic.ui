@@ -561,7 +561,7 @@ public class AccountingPart implements IMouseAction {
 		}, sync, selectedGestiune().map(Gestiune::getId).orElse(null),
 				selectedPartner().map(Partner::getId).orElse(null), extractLocalDate(from), extractLocalDate(to), log);
 
-		RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoices")
+		RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoices/v2")
 				.internal(authSession)
 				.addUrlParam("start", Timestamp.valueOf(extractLocalDate(from).atStartOfDay()).toString())
 				.addUrlParam("end", Timestamp.valueOf(extractLocalDate(to).atTime(23, 59)).toString())

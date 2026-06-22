@@ -262,10 +262,16 @@ public class JasperReportManager
 		final URL url = FileLocator.find(bundle, new Path("resources/logo_256x256.png"));
 		final URL fileUrl = FileLocator.toFileURL(url);
 		try {
-			RestCaller.get(System.getProperty("logoBaseUrl", "https://p2.flexbiz.ro/")+ClientSession.instance().getCompany().getId()+".png")
-					.syncRaw(BodyHandlers.ofInputStream(), t -> log.error(t))
-					.ifPresentOrElse(loadedLogo -> UIUtils.copyFileFromTo(loadedLogo.body(), fileUrl.getFile()),
-							() -> new File(fileUrl.getFile()));
+			final Optional<Object> gestiuneLogo = RestCaller.get(System.getProperty("logoBaseUrl", "https://p2.flexbiz.ro/")+ClientSession.instance().getCompany().getId()+"_"+ClientSession.instance().getGestiune().getId()+".png")
+					.syncRaw(BodyHandlers.ofInputStream(), t -> log.debug(t))
+					.map(loadedLogo -> UIUtils.copyFileFromTo(loadedLogo.body(), fileUrl.getFile()));
+			
+			if (gestiuneLogo.isEmpty())
+				RestCaller.get(System.getProperty("logoBaseUrl", "https://p2.flexbiz.ro/")+ClientSession.instance().getCompany().getId()+".png")
+				.syncRaw(BodyHandlers.ofInputStream(), t -> log.debug(t))
+				.ifPresentOrElse(loadedLogo -> UIUtils.copyFileFromTo(loadedLogo.body(), fileUrl.getFile()),
+						() -> new File(fileUrl.getFile()));
+
 		} catch (final Exception e) {
 			log.error(e);
 			new File(fileUrl.getFile());
