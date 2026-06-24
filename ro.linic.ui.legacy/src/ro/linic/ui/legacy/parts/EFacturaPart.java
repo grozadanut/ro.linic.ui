@@ -123,15 +123,17 @@ public class EFacturaPart implements IMouseAction {
 	private static final Column idColumn = new Column(0, "id", "Id", 70);
 	private static final Column supplierTaxIdColumn = new Column(1, "senderId", "Cif emitent", 120);
 	private static final Column supplierNameColumn = new Column(2, "senderName", "Nume emitent", 220);
-	private static final Column issueDateColumn = new Column(3, "issueDate", "Data", 120);
-	private static final Column invoiceNumberColumn = new Column(4, "invoiceNumber", "Numar", 120);
-	private static final Column totalColumn = new Column(5, "invoiceTotal", "ValCuTVA", 90);
-	private static final Column invoiceIdColumn = new Column(6, "invoiceId", "Id factura", 70);
-	private static final Column receivedColumn = new Column(7, "statusId", "Receptionat", 70);
+	private static final Column messageTypeColumn = new Column(3, "messageType", "Tip mesaj", 120);
+	private static final Column issueDateColumn = new Column(4, "issueDate", "Data", 120);
+	private static final Column detailsColumn = new Column(5, "details", "Mesaj", 300);
+	private static final Column invoiceNumberColumn = new Column(6, "invoiceNumber", "Numar", 120);
+	private static final Column totalColumn = new Column(7, "invoiceTotal", "ValCuTVA", 90);
+	private static final Column invoiceIdColumn = new Column(8, "invoiceId", "Id factura", 70);
+	private static final Column receivedColumn = new Column(9, "statusId", "Receptionat", 70);
 
 	private static List<Column> REC_INV_COLUMNS = ImmutableList.<Column>builder().add(idColumn).add(supplierTaxIdColumn)
-			.add(supplierNameColumn).add(issueDateColumn).add(invoiceNumberColumn).add(totalColumn).add(invoiceIdColumn)
-			.add(receivedColumn).build();
+			.add(supplierNameColumn).add(messageTypeColumn).add(issueDateColumn).add(detailsColumn).add(invoiceNumberColumn)
+			.add(totalColumn).add(invoiceIdColumn).add(receivedColumn).build();
 	private static final String REC_INV_DATA_HOLDER = "EFacturaPart.anafEInvoices"; //$NON-NLS-1$
 
 	private Combo partner;
@@ -345,7 +347,9 @@ public class EFacturaPart implements IMouseAction {
 		receptie.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Optional<GenericValue> selAnafInvoice = recInvTable.selection().stream().findFirst();
+				final Optional<GenericValue> selAnafInvoice = recInvTable.selection().stream()
+						.filter(gv -> "AnafRecMsgBillReceived".equalsIgnoreCase(gv.getString("messageType")))
+						.findFirst();
 				if (selAnafInvoice.isPresent())
 					new ReceptieEFacturaDialog(receptie.getShell(), log, partService, authSession, selAnafInvoice.get(),
 							RestCaller.get("/rest/s1/moqui-linic-legacy/anafInvoiceLines")
@@ -570,7 +574,8 @@ public class EFacturaPart implements IMouseAction {
 		try {
 			JasperReportManager.instance(bundle, log).printDocs(bundle, table.selectedAccDocs(), true);
 
-			recInvTable.selection().forEach(invoice -> {
+			recInvTable.selection().stream().filter(gv -> "AnafRecMsgBillReceived".equalsIgnoreCase(gv.getString("messageType")))
+			.forEach(invoice -> {
 				try {
 					AnafMoquiReporter.xmlToPdf(invoice.getString("rawXml"), invoice.getString("id"));
 				} catch (final IOException e) {
