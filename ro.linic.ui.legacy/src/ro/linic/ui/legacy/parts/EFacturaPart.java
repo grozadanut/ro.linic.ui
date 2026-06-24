@@ -5,6 +5,7 @@ import static ro.colibri.util.LocalDateUtils.POSTGRES_MAX;
 import static ro.colibri.util.LocalDateUtils.POSTGRES_MIN;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.colibri.util.StringUtils.isEmpty;
+import static ro.flexbiz.util.commons.StringUtils.notEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.extractLocalDate;
 import static ro.linic.ui.legacy.session.UIUtils.insertDate;
 import static ro.linic.ui.legacy.session.UIUtils.layoutNoSpaces;
@@ -249,6 +250,7 @@ public class EFacturaPart implements IMouseAction {
 		recInvTable = TableBuilder.with(GenericValue.class, REC_INV_COLUMNS, dataServices.holder(REC_INV_DATA_HOLDER).getData())
 				.addConfiguration(new RecInvStyleConfiguration())
 				.addClickListener(invoiceIdColumn, EFacturaPart.this::openInvoice)
+				.addClickListener(idColumn, EFacturaPart.this::downloadMessage)
 				.build(verticalSash);
 		GridDataFactory.fillDefaults().applyTo(recInvTable.natTable());
 
@@ -488,7 +490,11 @@ public class EFacturaPart implements IMouseAction {
 		if (value != null && NumberUtils.parseToLong(value.toString()) > 0)
 			ManagerPart.loadDocInPart(partService, BusinessDelegate.reloadDoc(NumberUtils.parseToLong(value.toString())));
 	}
-
+	
+	private void downloadMessage(final GenericValue row, final Object value) {
+		if (value != null && notEmpty(value.toString()))
+			AnafMoquiReporter.downloadResponse(ctx, value.toString());
+	}
 
 	private void sendSelectedDocToEmail() {
 		final AccountingDocument docSelectat = table.selectedAccDocs_Stream().findFirst().orElse(null);
