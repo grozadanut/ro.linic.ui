@@ -125,7 +125,7 @@ public class EFacturaPart implements IMouseAction {
 	private static final Column idColumn = new Column(0, "id", "Id", 70);
 	private static final Column supplierTaxIdColumn = new Column(1, "senderId", "Cif", 120);
 	private static final Column supplierNameColumn = new Column(2, "senderName", "Nume emitent", 220);
-	private static final Column messageTypeColumn = new Column(3, "messageType", "Tip mesaj", 120);
+	private static final Column messageTypeColumn = new Column(3, "messageTypeL10n", "Tip mesaj", 120);
 	private static final Column issueDateColumn = new Column(4, "issueDate", "Data", 120);
 	private static final Column detailsColumn = new Column(5, "details", "Mesaj", 300);
 	private static final Column invoiceNumberColumn = new Column(6, "invoiceNumber", "Numar", 120);
