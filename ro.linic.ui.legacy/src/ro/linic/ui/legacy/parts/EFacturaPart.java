@@ -123,7 +123,7 @@ public class EFacturaPart implements IMouseAction {
 	private static final String VERTICAL_SASH_STATE_PREFIX = "efactura.vertical_sash"; //$NON-NLS-1$
 
 	private static final Column idColumn = new Column(0, "id", "Id", 70);
-	private static final Column supplierTaxIdColumn = new Column(1, "senderId", "Cif emitent", 120);
+	private static final Column supplierTaxIdColumn = new Column(1, "senderId", "Cif", 120);
 	private static final Column supplierNameColumn = new Column(2, "senderName", "Nume emitent", 220);
 	private static final Column messageTypeColumn = new Column(3, "messageType", "Tip mesaj", 120);
 	private static final Column issueDateColumn = new Column(4, "issueDate", "Data", 120);
