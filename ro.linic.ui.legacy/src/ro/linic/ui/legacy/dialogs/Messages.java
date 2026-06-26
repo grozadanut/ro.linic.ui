@@ -263,6 +263,7 @@ public class Messages extends NLS {
 	public static String SelectDocToLoadPopup_Error;
 	public static String SendEmailDialog_Attachment;
 	public static String SendEmailDialog_Email;
+	public static String SendEmailDialog_ReplyTo;
 	public static String SendEmailDialog_EmailMissing;
 	public static String SendEmailDialog_Message;
 	public static String SendEmailDialog_Subject;

@@ -473,7 +473,9 @@ public class JasperReportManager
 		if (clientReport != null)
 		{
 			final String emailSignature = BusinessDelegate.persistedProp(PersistedProp.EMAIL_SIGNATURE_KEY)
-					.getValueOr(PersistedProp.EMAIL_SIGNATURE_DEFAULT);
+					.getValueOr(EMPTY_STRING);
+			final String replyToEmail = BusinessDelegate.persistedProp("email_replyTo")
+					.getValueOr(EMPTY_STRING);
 			
 			final String partnerEmail = facturaReload != null ? safeString(facturaReload.getPartner(), Partner::getEmail) :
 				safeString(chitanta, AccountingDocument::getPartner, Partner::getEmail);
@@ -504,7 +506,7 @@ public class JasperReportManager
 				attachementsDescriptionSB.append(MessageFormat.format("{0} nr {1}, valoare totala {2}", chitanta.getDoc(),
 						chitanta.getNrDoc(), displayBigDecimal(chitanta.getTotal())));
 
-			SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, partnerEmail, "Documente "+partnerName,
+			SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, partnerEmail, replyToEmail, "Documente "+partnerName,
 					messageSB.toString(), JasperExportManager.exportReportToPdf(clientReport), attachementsDescriptionSB.toString());
 		}
 	}
@@ -849,8 +851,8 @@ public class JasperReportManager
 			final StringBuilder attachementsDescriptionSB = new StringBuilder();
 			attachementsDescriptionSB.append(MessageFormat.format("Pontaj luna {0}", month.format(monthPattern)));
 
-			SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, contabilEmail, "Pontaj luna "+month.format(monthPattern),
-					messageSB.toString(), JasperExportManager.exportReportToPdf(pontajJasperReport), attachementsDescriptionSB.toString());
+//			SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, contabilEmail, "Pontaj luna "+month.format(monthPattern),
+//					messageSB.toString(), JasperExportManager.exportReportToPdf(pontajJasperReport), attachementsDescriptionSB.toString());
 		}
 	}
 	

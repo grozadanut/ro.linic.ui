@@ -26,17 +26,19 @@ import com.sun.istack.Nullable;
 
 import ro.colibri.entities.comercial.PersistedProp;
 import ro.colibri.util.InvocationResult;
-import ro.colibri.util.ServerConstants;
 import ro.linic.ui.legacy.session.BusinessDelegate;
+import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.legacy.session.UIUtils;
 
 public class SendEmailDialog extends TitleAreaDialog
 {
 	private Text email;
+	private Text replyTo;
 	private Text subject;
 	private Text message;
 	
 	final private String initialEmail;
+	final private String initialReplyTo;
 	final private String initialSubject;
 	final private String initialMessage;
 	final private byte[] fileAttachement;
@@ -44,7 +46,7 @@ public class SendEmailDialog extends TitleAreaDialog
 	
 	private Logger log;
 	
-	public static int open(final Shell parent, final Logger log, final String initialEmail, final String initialSubject,
+	public static int open(final Shell parent, final Logger log, final String initialEmail, final String initialReplyTo, final String initialSubject,
 			final String initialMessage, @Nullable final byte[] fileAttachement, final String attachementText)
 	{
 		final boolean hasMailConfigured = Boolean.valueOf(BusinessDelegate.persistedProp(PersistedProp.HAS_MAIL_SMTP_KEY)
@@ -52,16 +54,17 @@ public class SendEmailDialog extends TitleAreaDialog
 		if (!hasMailConfigured)
 			return 0;
 		
-		return new SendEmailDialog(parent, log, initialEmail, initialSubject, initialMessage, fileAttachement, attachementText)
+		return new SendEmailDialog(parent, log, initialEmail, initialReplyTo, initialSubject, initialMessage, fileAttachement, attachementText)
 				.open();
 	}
 	
-	private SendEmailDialog(final Shell parent, final Logger log, final String initialEmail, final String initialSubject,
+	private SendEmailDialog(final Shell parent, final Logger log, final String initialEmail, final String initialReplyTo, final String initialSubject,
 			final String initialMessage, @Nullable final byte[] fileAttachement, final String attachementText)
 	{
 		super(parent);
 		this.log = log;
 		this.initialEmail = initialEmail;
+		this.initialReplyTo = initialReplyTo;
 		this.initialSubject = initialSubject;
 		this.initialMessage = initialMessage;
 		this.fileAttachement = fileAttachement;
@@ -85,6 +88,15 @@ public class SendEmailDialog extends TitleAreaDialog
 		email.setText(safeString(initialEmail));
 		email.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		UIUtils.setFont(email);
+		
+		final Label replyToLabel = new Label(contents, SWT.NONE);
+		replyToLabel.setText(Messages.SendEmailDialog_ReplyTo);
+		UIUtils.setFont(replyToLabel);
+		
+		replyTo = new Text(contents, SWT.SINGLE | SWT.BORDER);
+		replyTo.setText(safeString(initialReplyTo));
+		replyTo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		UIUtils.setFont(replyTo);
 		
 		final Label subjectLabel = new Label(contents, SWT.NONE);
 		subjectLabel.setText(Messages.SendEmailDialog_Subject);
@@ -142,8 +154,9 @@ public class SendEmailDialog extends TitleAreaDialog
 			return;
 		}
 		
-		final Future<InvocationResult> result = BusinessDelegate.sendMail(ServerConstants.FIRMA_EMAIL, email.getText(),
-				subject.getText(), message.getText().replaceAll(NEWLINE, BR_SEPARATOR), fileAttachement, ServerConstants.DEVELOPER_EMAIL);
+		final String emailFrom = ClientSession.instance().getLoggedUser().displayName()+" <info@flexbiz.ro>";
+		final Future<InvocationResult> result = BusinessDelegate.sendMail(emailFrom, email.getText(), replyTo.getText(),
+				subject.getText(), message.getText().replaceAll(NEWLINE, BR_SEPARATOR), fileAttachement);
 		super.okPressed();
 		try
 		{

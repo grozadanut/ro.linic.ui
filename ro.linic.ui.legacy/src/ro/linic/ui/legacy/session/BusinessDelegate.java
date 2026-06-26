@@ -1598,6 +1598,13 @@ public class BusinessDelegate
 		return bean.send(from, addresses, subject, htmlMessage, fileAttachement, bcc);
 	}
 	
+	public static Future<InvocationResult> sendMail(final String from, final String addresses, final String replyTo, final String subject, final String htmlMessage,
+			final byte[] fileAttachement, final String... bcc)
+	{
+		final MailSenderRemote bean = ServiceLocator.getBusinessService(MailSender.class, MailSenderRemote.class);
+		return bean.send(from, addresses, replyTo, subject, htmlMessage, fileAttachement, bcc);
+	}
+	
 	public static InvocationResult comaseazaOpsFromDoc(final long docId)
 	{
 		final VanzariBeanRemote bean = ServiceLocator.getBusinessService(VanzariBean.class, VanzariBeanRemote.class);

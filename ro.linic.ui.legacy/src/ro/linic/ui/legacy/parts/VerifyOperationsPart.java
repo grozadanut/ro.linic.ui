@@ -3,7 +3,6 @@ package ro.linic.ui.legacy.parts;
 import static ro.colibri.util.ListUtils.toImmutableList;
 import static ro.colibri.util.ListUtils.toImmutableSet;
 import static ro.colibri.util.NumberUtils.add;
-import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.colibri.util.StringUtils.isEmpty;
@@ -73,7 +72,6 @@ import ro.linic.ui.base.services.UtilServices;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
 import ro.linic.ui.legacy.dialogs.ScheduleDialog;
-import ro.linic.ui.legacy.dialogs.SendEmailDialog;
 import ro.linic.ui.legacy.dialogs.VerifyDialog;
 import ro.linic.ui.legacy.handlers.OpenNewVanzariPartHandler;
 import ro.linic.ui.legacy.service.JasperReportManager;
@@ -328,8 +326,8 @@ public class VerifyOperationsPart
 		.append(operationsText).append(NEWLINE).append(NEWLINE)
 		.append(emailSignature);
 
-		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
-				entry.getKey().getEmail(), Messages.VerifyOperationsPart_ScheduleServices, messageSB.toString(), null, EMPTY_STRING);
+//		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
+//				entry.getKey().getEmail(), Messages.VerifyOperationsPart_ScheduleServices, messageSB.toString(), null, EMPTY_STRING);
 	}
 	
 	private void loadData()

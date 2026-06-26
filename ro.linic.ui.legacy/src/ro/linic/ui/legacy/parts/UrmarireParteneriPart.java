@@ -87,6 +87,7 @@ import ro.colibri.entities.comercial.DocumentWithDiscount;
 import ro.colibri.entities.comercial.Gestiune;
 import ro.colibri.entities.comercial.Partner;
 import ro.colibri.entities.comercial.PersistedProp;
+import ro.colibri.entities.comercial.mappings.AccountingDocumentMapping;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.InvocationResult.Problem;
 import ro.colibri.wrappers.RulajPartener;
@@ -1174,7 +1175,9 @@ public class UrmarireParteneriPart implements IMouseAction
 					return;
 				}
 
-				JasperReportManager.instance(bundle, log).printFactura_ClientDuplicate(bundle, docSelectat, null);
+				final AccountingDocument invoice = BusinessDelegate.reloadDoc(docSelectat, true);
+				JasperReportManager.instance(bundle, log).printFactura_ClientDuplicate(bundle, invoice, 
+						invoice.getPaidBy().stream().map(AccountingDocumentMapping::getPays).findFirst().orElse(null));
 			}
 			else
 				MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.UrmarireParteneriPart_WrongDoc, Messages.UrmarireParteneriPart_WrongDocMessage);

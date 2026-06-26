@@ -2,7 +2,6 @@ package ro.linic.ui.legacy.dialogs;
 
 import static ro.colibri.util.ListUtils.toImmutableList;
 import static ro.colibri.util.PresentationUtils.EMPTY_STRING;
-import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.PresentationUtils.safeString;
 import static ro.linic.ui.legacy.session.UIUtils.extractLocalDate;
 import static ro.linic.ui.legacy.session.UIUtils.extractLocalDateTime;
@@ -10,7 +9,6 @@ import static ro.linic.ui.legacy.session.UIUtils.insertDate;
 import static ro.linic.ui.legacy.session.UIUtils.showException;
 import static ro.linic.ui.legacy.session.UIUtils.showResult;
 
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -392,20 +390,20 @@ public class ScheduleDialog extends Dialog
 	private void openEmailDialog(final AccountingDocument reloadedDoc)
 	{
 		final String partnerName = partner().map(Partner::getName).orElse(EMPTY_STRING);
-		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
-				partner().map(Partner::getEmail).orElse(EMPTY_STRING), Messages.ScheduleDialog_EmailTitle, 
-				MessageFormat.format(Messages.ScheduleDialog_EmailMessage, NEWLINE, partnerName, reloadedDoc.clientExplanation(), emailSignature),
-				null, EMPTY_STRING);
+//		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
+//				partner().map(Partner::getEmail).orElse(EMPTY_STRING), Messages.ScheduleDialog_EmailTitle, 
+//				MessageFormat.format(Messages.ScheduleDialog_EmailMessage, NEWLINE, partnerName, reloadedDoc.clientExplanation(), emailSignature),
+//				null, EMPTY_STRING);
 	}
 
 	private void openRescheduleEmailDialog(final String oldAppointment, final AccountingDocument reloadedDoc)
 	{
 		final String partnerName = partner().map(Partner::getName).orElse(EMPTY_STRING);
-		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
-				partner().map(Partner::getEmail).orElse(EMPTY_STRING), Messages.ScheduleDialog_RescheduleEmailTitle, 
-				MessageFormat.format(Messages.ScheduleDialog_RescheduleEmailMessage, NEWLINE, partnerName, oldAppointment,
-						reloadedDoc.clientExplanation(), emailSignature),
-				null, EMPTY_STRING);
+//		SendEmailDialog.open(Display.getCurrent().getActiveShell(), log, 
+//				partner().map(Partner::getEmail).orElse(EMPTY_STRING), Messages.ScheduleDialog_RescheduleEmailTitle, 
+//				MessageFormat.format(Messages.ScheduleDialog_RescheduleEmailMessage, NEWLINE, partnerName, oldAppointment,
+//						reloadedDoc.clientExplanation(), emailSignature),
+//				null, EMPTY_STRING);
 		}
 	
 	private void updateTransportFields()
