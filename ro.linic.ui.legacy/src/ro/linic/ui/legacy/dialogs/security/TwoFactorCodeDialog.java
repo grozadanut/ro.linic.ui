@@ -151,7 +151,7 @@ public class TwoFactorCodeDialog extends TitleAreaDialog {
 		
 		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
 		final ISecurePreferences root = SecurePreferencesFactory.getDefault();
- 		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName());
+ 		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName()+ClientSession.instance().getCompany().getId());
  		
  		String deviceId = null, deviceSecret = null;
  		try {

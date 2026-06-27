@@ -96,7 +96,7 @@ public class LegacyAuthenticationManager implements AuthenticationManager {
 		if (!isEmpty(UIUtils.moquiBaseUrl())) {
 			opened = true;
 			final ISecurePreferences root = SecurePreferencesFactory.getDefault();
-	 		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName());
+	 		final ISecurePreferences secureNode = root.node(bundle.getSymbolicName()+ClientSession.instance().getCompany().getId());
 	 		
 	 		String deviceId = null, deviceSecret = null;
 	 		try {
