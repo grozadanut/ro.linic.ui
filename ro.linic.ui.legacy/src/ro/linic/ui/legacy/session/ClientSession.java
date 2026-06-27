@@ -10,12 +10,15 @@ import java.util.Properties;
 import javax.naming.Context;
 
 import org.eclipse.core.runtime.ILog;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.collect.ImmutableList;
 
@@ -25,6 +28,7 @@ import ro.colibri.entities.user.Company;
 import ro.colibri.entities.user.User;
 import ro.colibri.util.InvocationResult;
 import ro.colibri.util.StringUtils;
+import ro.linic.ui.base.services.preferences.PreferenceKey;
 
 public class ClientSession
 {
@@ -66,6 +70,16 @@ public class ClientSession
 	{
 		loggedUser = BusinessDelegate.login();
 		reloadBillImages();
+		
+		if (loggedUser != null) {
+			final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
+			prefs.put(PreferenceKey.SERVER_BASE_URL, BusinessDelegate.persistedProp(PreferenceKey.SERVER_BASE_URL).getValueOr(EMPTY_STRING));
+			try {
+				prefs.flush();
+			} catch (final BackingStoreException e) {
+				log.error(e.getMessage(), e);
+			}
+		}
 		return loggedUser;
 	}
 	
