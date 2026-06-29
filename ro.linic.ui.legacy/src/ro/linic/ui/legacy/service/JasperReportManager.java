@@ -451,6 +451,9 @@ public class JasperReportManager
 	public void printFactura_ClientDuplicate(final Bundle bundle, final AccountingDocument factura, AccountingDocument chitanta)
 			throws IOException, JRException
 	{
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		final boolean printConformitate = prefs.getBoolean(PreferenceKey.FACTURA_PRINT_CONFORMITATE_KEY, PreferenceKey.FACTURA_PRINT_CONFORMITATE_DEF);
+		
 		// sanity checks
 		if (chitanta != null && !AccountingDocument.CHITANTA_NAME.equalsIgnoreCase(chitanta.getDoc()))
 			chitanta = null;
@@ -458,8 +461,11 @@ public class JasperReportManager
 		final AccountingDocument facturaReload = loadFacturaWithoutConsumabile(factura);
 		JasperPrint clientReport = null;
 		
-		if (facturaReload != null)
+		if (facturaReload != null) {
 			clientReport = createFacturaPage(bundle, facturaReload, "1");
+			if (printConformitate)
+				clientReport.getPages().addAll(createConformitatePage(bundle, facturaReload).getPages());
+		}
 		
 		if (chitanta != null)
 		{
