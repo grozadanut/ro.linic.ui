@@ -111,9 +111,9 @@ public class ZFPLabECRDriver implements ECRDriver {
 		try {
 			switch(paymentType) {
 			case CASH:
-				return CompletableFuture.completedFuture(printReceiptCash(receipt, taxId));
+				return CompletableFuture.supplyAsync(() -> printReceiptCash(receipt, taxId));
 			case CARD:
-				return CompletableFuture.completedFuture(printReceiptCard(receipt, taxId));
+				return CompletableFuture.supplyAsync(() -> printReceiptCard(receipt, taxId));
 			default:
 				return CompletableFuture.failedFuture(new IllegalArgumentException(NLS.bind(Messages.ECRDriver_IllegalPaymentType, paymentType)));
 			}
@@ -135,22 +135,24 @@ public class ZFPLabECRDriver implements ECRDriver {
 		if (smallerThan(payments.values().stream().reduce(BigDecimal::add).orElse(BigDecimal.ZERO), receipt.total()))
 			return CompletableFuture.failedFuture(new IllegalArgumentException(Messages.ECRDriver_PaymentSmallerThanTotalErr));
 
-		try {
-			final FP fp = fp();
-			addSaleLines(fp, receipt, taxId);
-			/* payments
-			 */
-			for (final Entry<PaymentType, BigDecimal> paymentEntry : payments.entrySet()) {
-				fp.Payment(mapPaymentType(paymentEntry.getKey()), paymentEntry.getValue().doubleValue());
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				final FP fp = fp();
+				addSaleLines(fp, receipt, taxId);
+				/* payments
+				 */
+				for (final Entry<PaymentType, BigDecimal> paymentEntry : payments.entrySet()) {
+					fp.Payment(mapPaymentType(paymentEntry.getKey()), paymentEntry.getValue().doubleValue());
+				}
+				
+				// close receipt
+				fp.CloseReceipt();
+			} catch (final Exception e) {
+				log.error(e.getMessage(), e);
+				return Result.error(e.getMessage());
 			}
-			
-			// close receipt
-			fp.CloseReceipt();
-		} catch (final Exception e) {
-			log.error(e.getMessage(), e);
-			return CompletableFuture.completedFuture(Result.error(e.getMessage()));
-		}
-		return CompletableFuture.completedFuture(Result.ok());
+			return Result.ok();
+		});
 	}
 
 	private OptionPaymentType mapPaymentType(final PaymentType paymentType) {
@@ -180,24 +182,34 @@ public class ZFPLabECRDriver implements ECRDriver {
 		}
 	}
 	
-	private Result printReceiptCash(final Receipt receipt, final Optional<String> taxId) throws Exception
+	private Result printReceiptCash(final Receipt receipt, final Optional<String> taxId)
 	{
-		final FP fp = fp();
-		addSaleLines(fp, receipt, taxId);
-		
-		// close receipt
-		fp.CashPayCloseReceipt();
+		try {
+			final FP fp = fp();
+			addSaleLines(fp, receipt, taxId);
+			
+			// close receipt
+			fp.CashPayCloseReceipt();
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+			return Result.error(e.getMessage());
+		}
 		return Result.ok();
 	}
 	
-	private Result printReceiptCard(final Receipt receipt, final Optional<String> taxId) throws Exception
+	private Result printReceiptCard(final Receipt receipt, final Optional<String> taxId)
 	{
-		final FP fp = fp();
-		addSaleLines(fp, receipt, taxId);
-		
-		// close receipt
-		fp.PayExactSum(OptionPaymentType.Payment_1);
-		fp.CloseReceipt();
+		try {
+			final FP fp = fp();
+			addSaleLines(fp, receipt, taxId);
+
+			// close receipt
+			fp.PayExactSum(OptionPaymentType.Payment_1);
+			fp.CloseReceipt();
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+			return Result.error(e.getMessage());
+		}
 		return Result.ok();
 	}
 	
