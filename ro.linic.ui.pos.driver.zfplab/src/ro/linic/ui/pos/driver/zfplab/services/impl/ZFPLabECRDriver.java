@@ -17,7 +17,9 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.osgi.util.NLS;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 
 import ro.flexbiz.util.commons.NumberUtils;
 import ro.flexbiz.util.commons.StringUtils;
@@ -40,6 +42,58 @@ import ro.linic.ui.pos.driver.zfplab.preferences.PreferenceKey;
 @Component
 public class ZFPLabECRDriver implements ECRDriver {
 	private static final ILog log = UIUtils.logger(ZFPLabECRDriver.class);
+	
+	private FP fp;
+	
+	@Activate
+	public void activate() {
+		try {
+			openDeviceConnection();
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+			fp = null;
+		}
+	}
+	
+	@Deactivate
+	public void deactivate() {
+		try {
+			if (fp != null)
+				fp.ServerCloseDeviceConnection();
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	private FP fp() {
+		if (fp == null)
+			try {
+				openDeviceConnection();
+			} catch (final Exception e) {
+				log.error(e.getMessage(), e);
+				fp = null;
+			}
+		
+		return fp;
+	}
+	
+	private FP openDeviceConnection() throws Exception {
+		final Bundle bundle = FrameworkUtil.getBundle(getClass());
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
+		
+		final String serverAddress = prefs.get(PreferenceKey.SERVER_ADDRESS, PreferenceKey.SERVER_ADDRESS_DEF);
+		final String deviceIp = prefs.get(PreferenceKey.ECR_IP, null);
+		final int devicePort = prefs.getInt(PreferenceKey.ECR_PORT, PreferenceKey.ECR_PORT_DEF);
+		final String devicePassword = prefs.get(PreferenceKey.ECR_PASSWORD, PreferenceKey.ECR_PASSWORD_DEF);
+		
+		if (deviceIp == null)
+			throw new RuntimeException(Messages.ErrorECRDriver_SetIp);
+		
+		fp = new FP();
+        fp.ServerAddress = serverAddress;
+        fp.ServerSetDeviceTcpSettings(deviceIp, devicePort, devicePassword);
+        return fp;
+	}
 	
 	@Override
 	public boolean isECRSupported(final String ecrModel) {
@@ -82,7 +136,7 @@ public class ZFPLabECRDriver implements ECRDriver {
 			return CompletableFuture.failedFuture(new IllegalArgumentException(Messages.ECRDriver_PaymentSmallerThanTotalErr));
 
 		try {
-			final FP fp = openDeviceConnection();
+			final FP fp = fp();
 			addSaleLines(fp, receipt, taxId);
 			/* payments
 			 */
@@ -92,7 +146,6 @@ public class ZFPLabECRDriver implements ECRDriver {
 			
 			// close receipt
 			fp.CloseReceipt();
-			fp.ServerCloseDeviceConnection();
 		} catch (final Exception e) {
 			log.error(e.getMessage(), e);
 			return CompletableFuture.completedFuture(Result.error(e.getMessage()));
@@ -129,24 +182,22 @@ public class ZFPLabECRDriver implements ECRDriver {
 	
 	private Result printReceiptCash(final Receipt receipt, final Optional<String> taxId) throws Exception
 	{
-		final FP fp = openDeviceConnection();
+		final FP fp = fp();
 		addSaleLines(fp, receipt, taxId);
 		
 		// close receipt
 		fp.CashPayCloseReceipt();
-		fp.ServerCloseDeviceConnection();
 		return Result.ok();
 	}
 	
 	private Result printReceiptCard(final Receipt receipt, final Optional<String> taxId) throws Exception
 	{
-		final FP fp = openDeviceConnection();
+		final FP fp = fp();
 		addSaleLines(fp, receipt, taxId);
 		
 		// close receipt
 		fp.PayExactSum(OptionPaymentType.Payment_1);
 		fp.CloseReceipt();
-		fp.ServerCloseDeviceConnection();
 		return Result.ok();
 	}
 	
@@ -211,11 +262,10 @@ public class ZFPLabECRDriver implements ECRDriver {
 			final Bundle bundle = FrameworkUtil.getBundle(getClass());
 			final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 			
-			final FP fp = openDeviceConnection();
+			final FP fp = fp();
         	if (prefs.getBoolean(PreferenceKey.REPORT_Z_AND_D, PreferenceKey.REPORT_Z_AND_D_DEF))
         		fp.PrintDepartmentReport(OptionZeroing.Zeroing);
 			fp.PrintDailyReport(OptionZeroing.Zeroing);
-			fp.ServerCloseDeviceConnection();
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -224,9 +274,8 @@ public class ZFPLabECRDriver implements ECRDriver {
 	@Override
 	public void reportX() {
 		try {
-        	final FP fp = openDeviceConnection();
+        	final FP fp = fp();
 			fp.PrintDailyReport(OptionZeroing.Not_zeroing);
-			fp.ServerCloseDeviceConnection();
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -235,9 +284,8 @@ public class ZFPLabECRDriver implements ECRDriver {
 	@Override
 	public void reportD() {
 		try {
-        	final FP fp = openDeviceConnection();
+        	final FP fp = fp();
 			fp.PrintDepartmentReport(OptionZeroing.Not_zeroing);
-			fp.ServerCloseDeviceConnection();
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -262,30 +310,10 @@ public class ZFPLabECRDriver implements ECRDriver {
 	@Override
 	public void cancelReceipt() {
         try {
-        	final FP fp = openDeviceConnection();
+        	final FP fp = fp();
 			fp.CancelReceipt();
-			fp.ServerCloseDeviceConnection();
 		} catch (final Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-	
-	private FP openDeviceConnection() throws Exception {
-		final Bundle bundle = FrameworkUtil.getBundle(getClass());
-		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
-		
-		final String serverAddress = prefs.get(PreferenceKey.SERVER_ADDRESS, PreferenceKey.SERVER_ADDRESS_DEF);
-		final String deviceIp = prefs.get(PreferenceKey.ECR_IP, null);
-		final int devicePort = prefs.getInt(PreferenceKey.ECR_PORT, PreferenceKey.ECR_PORT_DEF);
-		final String devicePassword = prefs.get(PreferenceKey.ECR_PASSWORD, PreferenceKey.ECR_PASSWORD_DEF);
-		
-		if (deviceIp == null)
-			new RuntimeException(Messages.ErrorECRDriver_SetIp);
-		
-		final FP fp = new FP();
-        fp.ServerAddress = serverAddress;
-        fp.ServerCloseDeviceConnection();
-        fp.ServerSetDeviceTcpSettings(deviceIp, devicePort, devicePassword);
-        return fp;
 	}
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="ro.linic.ui.pos.driver.zfplab.services.impl.ZFPLabECRDriver">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" deactivate="deactivate" name="ro.linic.ui.pos.driver.zfplab.services.impl.ZFPLabECRDriver">
    <service>
       <provide interface="ro.linic.ui.pos.base.services.ECRDriver"/>
    </service>
