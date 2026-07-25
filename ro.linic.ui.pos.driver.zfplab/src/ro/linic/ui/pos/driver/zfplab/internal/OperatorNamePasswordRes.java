@@ -7,7 +7,7 @@ public class OperatorNamePasswordRes {
     public Double getNumber() {
        return Number;
     }
-    protected void setNumber(final Double value) {
+    protected void setNumber(Double value) {
        Number = value;
     }
 
@@ -18,7 +18,7 @@ public class OperatorNamePasswordRes {
     public String getName() {
        return Name;
     }
-    protected void setName(final String value) {
+    protected void setName(String value) {
        Name = value;
     }
 
@@ -29,7 +29,7 @@ public class OperatorNamePasswordRes {
     public String getPassword() {
        return Password;
     }
-    protected void setPassword(final String value) {
+    protected void setPassword(String value) {
        Password = value;
     }
 }

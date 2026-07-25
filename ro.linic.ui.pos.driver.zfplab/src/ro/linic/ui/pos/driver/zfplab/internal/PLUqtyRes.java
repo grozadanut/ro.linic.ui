@@ -7,7 +7,7 @@ public class PLUqtyRes {
     public Double getPLUNum() {
        return PLUNum;
     }
-    protected void setPLUNum(final Double value) {
+    protected void setPLUNum(Double value) {
        PLUNum = value;
     }
 
@@ -18,7 +18,7 @@ public class PLUqtyRes {
     public Double getAvailableQuantity() {
        return AvailableQuantity;
     }
-    protected void setAvailableQuantity(final Double value) {
+    protected void setAvailableQuantity(Double value) {
        AvailableQuantity = value;
     }
 
@@ -32,7 +32,7 @@ public class PLUqtyRes {
     public OptionQuantityType getOptionQuantityType() {
        return OptionQuantityType;
     }
-    protected void setOptionQuantityType(final OptionQuantityType value) {
+    protected void setOptionQuantityType(OptionQuantityType value) {
        OptionQuantityType = value;
     }
 }

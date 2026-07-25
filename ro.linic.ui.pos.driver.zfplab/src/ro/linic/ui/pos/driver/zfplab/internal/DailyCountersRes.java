@@ -8,7 +8,7 @@ public class DailyCountersRes {
     public Double getLastReportNumFromReset() {
        return LastReportNumFromReset;
     }
-    protected void setLastReportNumFromReset(final Double value) {
+    protected void setLastReportNumFromReset(Double value) {
        LastReportNumFromReset = value;
     }
 
@@ -19,7 +19,7 @@ public class DailyCountersRes {
     public Double getNumLastFMBlock() {
        return NumLastFMBlock;
     }
-    protected void setNumLastFMBlock(final Double value) {
+    protected void setNumLastFMBlock(Double value) {
        NumLastFMBlock = value;
     }
 
@@ -30,7 +30,7 @@ public class DailyCountersRes {
     public Double getNumEJ() {
        return NumEJ;
     }
-    protected void setNumEJ(final Double value) {
+    protected void setNumEJ(Double value) {
        NumEJ = value;
     }
 
@@ -42,7 +42,7 @@ public class DailyCountersRes {
     public Date getDateTime() {
        return DateTime;
     }
-    protected void setDateTime(final Date value) {
+    protected void setDateTime(Date value) {
        DateTime = value;
     }
 }

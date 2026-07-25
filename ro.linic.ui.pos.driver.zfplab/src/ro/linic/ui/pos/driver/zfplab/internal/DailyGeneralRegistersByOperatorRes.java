@@ -7,7 +7,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getOperNum() {
        return OperNum;
     }
-    protected void setOperNum(final Double value) {
+    protected void setOperNum(Double value) {
        OperNum = value;
     }
 
@@ -18,7 +18,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getCustomersNum() {
        return CustomersNum;
     }
-    protected void setCustomersNum(final Double value) {
+    protected void setCustomersNum(Double value) {
        CustomersNum = value;
     }
 
@@ -29,7 +29,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getDiscountsNum() {
        return DiscountsNum;
     }
-    protected void setDiscountsNum(final Double value) {
+    protected void setDiscountsNum(Double value) {
        DiscountsNum = value;
     }
 
@@ -40,7 +40,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getDiscountsAmount() {
        return DiscountsAmount;
     }
-    protected void setDiscountsAmount(final Double value) {
+    protected void setDiscountsAmount(Double value) {
        DiscountsAmount = value;
     }
 
@@ -51,7 +51,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getAdditionsNum() {
        return AdditionsNum;
     }
-    protected void setAdditionsNum(final Double value) {
+    protected void setAdditionsNum(Double value) {
        AdditionsNum = value;
     }
 
@@ -62,7 +62,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getAdditionsAmount() {
        return AdditionsAmount;
     }
-    protected void setAdditionsAmount(final Double value) {
+    protected void setAdditionsAmount(Double value) {
        AdditionsAmount = value;
     }
 
@@ -73,7 +73,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getCorrectionsNum() {
        return CorrectionsNum;
     }
-    protected void setCorrectionsNum(final Double value) {
+    protected void setCorrectionsNum(Double value) {
        CorrectionsNum = value;
     }
 
@@ -84,7 +84,7 @@ public class DailyGeneralRegistersByOperatorRes {
     public Double getCorrectionsAmount() {
        return CorrectionsAmount;
     }
-    protected void setCorrectionsAmount(final Double value) {
+    protected void setCorrectionsAmount(Double value) {
        CorrectionsAmount = value;
     }
 }

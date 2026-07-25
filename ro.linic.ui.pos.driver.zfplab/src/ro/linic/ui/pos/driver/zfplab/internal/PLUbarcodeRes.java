@@ -7,7 +7,7 @@ public class PLUbarcodeRes {
     public Double getPLUNum() {
        return PLUNum;
     }
-    protected void setPLUNum(final Double value) {
+    protected void setPLUNum(Double value) {
        PLUNum = value;
     }
 
@@ -18,7 +18,7 @@ public class PLUbarcodeRes {
     public String getBarcode() {
        return Barcode;
     }
-    protected void setBarcode(final String value) {
+    protected void setBarcode(String value) {
        Barcode = value;
     }
 }

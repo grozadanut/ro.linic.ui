@@ -10,7 +10,7 @@ public class FooterRes {
     public OptionFooterLine getOptionFooterLine() {
        return OptionFooterLine;
     }
-    protected void setOptionFooterLine(final OptionFooterLine value) {
+    protected void setOptionFooterLine(OptionFooterLine value) {
        OptionFooterLine = value;
     }
 
@@ -21,7 +21,7 @@ public class FooterRes {
     public String getFooterText() {
        return FooterText;
     }
-    protected void setFooterText(final String value) {
+    protected void setFooterText(String value) {
        FooterText = value;
     }
 }

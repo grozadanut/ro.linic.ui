@@ -7,7 +7,7 @@ public class CustomerDataRes {
     public Double getCustomerNum() {
        return CustomerNum;
     }
-    protected void setCustomerNum(final Double value) {
+    protected void setCustomerNum(Double value) {
        CustomerNum = value;
     }
 
@@ -18,7 +18,7 @@ public class CustomerDataRes {
     public String getCustomerVatNum() {
        return CustomerVatNum;
     }
-    protected void setCustomerVatNum(final String value) {
+    protected void setCustomerVatNum(String value) {
        CustomerVatNum = value;
     }
 
@@ -29,7 +29,7 @@ public class CustomerDataRes {
     public String getCustomerName() {
        return CustomerName;
     }
-    protected void setCustomerName(final String value) {
+    protected void setCustomerName(String value) {
        CustomerName = value;
     }
 
@@ -40,7 +40,7 @@ public class CustomerDataRes {
     public String getCustomerAddress() {
        return CustomerAddress;
     }
-    protected void setCustomerAddress(final String value) {
+    protected void setCustomerAddress(String value) {
        CustomerAddress = value;
     }
 
@@ -51,7 +51,7 @@ public class CustomerDataRes {
     public String getFreeLine1() {
        return FreeLine1;
     }
-    protected void setFreeLine1(final String value) {
+    protected void setFreeLine1(String value) {
        FreeLine1 = value;
     }
 
@@ -62,7 +62,7 @@ public class CustomerDataRes {
     public String getFreeLine2() {
        return FreeLine2;
     }
-    protected void setFreeLine2(final String value) {
+    protected void setFreeLine2(String value) {
        FreeLine2 = value;
     }
 
@@ -73,7 +73,7 @@ public class CustomerDataRes {
     public String getFreeLine3() {
        return FreeLine3;
     }
-    protected void setFreeLine3(final String value) {
+    protected void setFreeLine3(String value) {
        FreeLine3 = value;
     }
 
@@ -84,7 +84,7 @@ public class CustomerDataRes {
     public String getFreeLine4() {
        return FreeLine4;
     }
-    protected void setFreeLine4(final String value) {
+    protected void setFreeLine4(String value) {
        FreeLine4 = value;
     }
 
@@ -95,7 +95,7 @@ public class CustomerDataRes {
     public Double getCustTurnover() {
        return CustTurnover;
     }
-    protected void setCustTurnover(final Double value) {
+    protected void setCustTurnover(Double value) {
        CustTurnover = value;
     }
 }

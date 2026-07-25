@@ -1,16 +1,13 @@
 package ro.linic.ui.pos.driver.zfplab.internal;
+    public enum OptionExternalDispManagement {
+        Auto("0"),
+        Manual("1");
 
-public enum OptionExternalDispManagement {
-	Auto("0"), Manuel("1");
-
-	private final String value;
-
-	private OptionExternalDispManagement(final String value) {
-		this.value = value;
-	}
-
-	@Override
-	public String toString() {
-		return value;
-	}
-}
+        private final String value;
+        private OptionExternalDispManagement(String value) {
+            this.value = value;
+        }
+        public String toString() {
+            return value;
+        }
+    }

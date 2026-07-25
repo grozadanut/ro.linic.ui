@@ -9,7 +9,7 @@ public class ServiceContractDateRes {
     public String getPassword() {
        return Password;
     }
-    protected void setPassword(final String value) {
+    protected void setPassword(String value) {
        Password = value;
     }
 
@@ -20,7 +20,7 @@ public class ServiceContractDateRes {
     public Date getExpiryDate() {
        return ExpiryDate;
     }
-    protected void setExpiryDate(final Date value) {
+    protected void setExpiryDate(Date value) {
        ExpiryDate = value;
     }
 }

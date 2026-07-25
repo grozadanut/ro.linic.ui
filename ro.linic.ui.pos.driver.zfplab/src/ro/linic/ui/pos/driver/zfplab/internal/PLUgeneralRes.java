@@ -8,7 +8,7 @@ public class PLUgeneralRes {
     public Double getPLUNum() {
        return PLUNum;
     }
-    protected void setPLUNum(final Double value) {
+    protected void setPLUNum(Double value) {
        PLUNum = value;
     }
 
@@ -20,7 +20,7 @@ public class PLUgeneralRes {
     public String getPLUName() {
        return PLUName;
     }
-    protected void setPLUName(final String value) {
+    protected void setPLUName(String value) {
        PLUName = value;
     }
 
@@ -31,7 +31,7 @@ public class PLUgeneralRes {
     public Double getPrice() {
        return Price;
     }
-    protected void setPrice(final Double value) {
+    protected void setPrice(Double value) {
        Price = value;
     }
 
@@ -45,7 +45,7 @@ public class PLUgeneralRes {
     public OptionPrice getOptionPrice() {
        return OptionPrice;
     }
-    protected void setOptionPrice(final OptionPrice value) {
+    protected void setOptionPrice(OptionPrice value) {
        OptionPrice = value;
     }
 
@@ -62,7 +62,7 @@ public class PLUgeneralRes {
     public OptionVATClass getOptionVATClass() {
        return OptionVATClass;
     }
-    protected void setOptionVATClass(final OptionVATClass value) {
+    protected void setOptionVATClass(OptionVATClass value) {
        OptionVATClass = value;
     }
 
@@ -73,7 +73,7 @@ public class PLUgeneralRes {
     public int getBelongToDepNumber() {
        return BelongToDepNumber;
     }
-    protected void setBelongToDepNumber(final int value) {
+    protected void setBelongToDepNumber(int value) {
        BelongToDepNumber = value;
     }
 
@@ -84,7 +84,7 @@ public class PLUgeneralRes {
     public Double getAlteTaxNum() {
        return AlteTaxNum;
     }
-    protected void setAlteTaxNum(final Double value) {
+    protected void setAlteTaxNum(Double value) {
        AlteTaxNum = value;
     }
 
@@ -95,7 +95,7 @@ public class PLUgeneralRes {
     public Double getAlteTaxValue() {
        return AlteTaxValue;
     }
-    protected void setAlteTaxValue(final Double value) {
+    protected void setAlteTaxValue(Double value) {
        AlteTaxValue = value;
     }
 
@@ -106,7 +106,7 @@ public class PLUgeneralRes {
     public Double getTurnoverAmount() {
        return TurnoverAmount;
     }
-    protected void setTurnoverAmount(final Double value) {
+    protected void setTurnoverAmount(Double value) {
        TurnoverAmount = value;
     }
 
@@ -117,7 +117,7 @@ public class PLUgeneralRes {
     public Double getSoldQuantity() {
        return SoldQuantity;
     }
-    protected void setSoldQuantity(final Double value) {
+    protected void setSoldQuantity(Double value) {
        SoldQuantity = value;
     }
 
@@ -129,7 +129,7 @@ public class PLUgeneralRes {
     public Double getLastZReportNumber() {
        return LastZReportNumber;
     }
-    protected void setLastZReportNumber(final Double value) {
+    protected void setLastZReportNumber(Double value) {
        LastZReportNumber = value;
     }
 
@@ -140,7 +140,7 @@ public class PLUgeneralRes {
     public Date getLastZReportDate() {
        return LastZReportDate;
     }
-    protected void setLastZReportDate(final Date value) {
+    protected void setLastZReportDate(Date value) {
        LastZReportDate = value;
     }
 
@@ -153,7 +153,7 @@ public class PLUgeneralRes {
     public OptionSingleTransaction getOptionSingleTransaction() {
        return OptionSingleTransaction;
     }
-    protected void setOptionSingleTransaction(final OptionSingleTransaction value) {
+    protected void setOptionSingleTransaction(OptionSingleTransaction value) {
        OptionSingleTransaction = value;
     }
 
@@ -164,7 +164,7 @@ public class PLUgeneralRes {
     public Double getAlteTaxTurnover() {
        return AlteTaxTurnover;
     }
-    protected void setAlteTaxTurnover(final Double value) {
+    protected void setAlteTaxTurnover(Double value) {
        AlteTaxTurnover = value;
     }
 }

@@ -7,7 +7,7 @@ public class PLUpriceRes {
     public Double getPLUNum() {
        return PLUNum;
     }
-    protected void setPLUNum(final Double value) {
+    protected void setPLUNum(Double value) {
        PLUNum = value;
     }
 
@@ -18,7 +18,7 @@ public class PLUpriceRes {
     public Double getPrice() {
        return Price;
     }
-    protected void setPrice(final Double value) {
+    protected void setPrice(Double value) {
        Price = value;
     }
 
@@ -32,7 +32,7 @@ public class PLUpriceRes {
     public OptionPrice getOptionPrice() {
        return OptionPrice;
     }
-    protected void setOptionPrice(final OptionPrice value) {
+    protected void setOptionPrice(OptionPrice value) {
        OptionPrice = value;
     }
 
@@ -43,7 +43,7 @@ public class PLUpriceRes {
     public String getAlteTaxNum() {
        return AlteTaxNum;
     }
-    protected void setAlteTaxNum(final String value) {
+    protected void setAlteTaxNum(String value) {
        AlteTaxNum = value;
     }
 
@@ -54,7 +54,7 @@ public class PLUpriceRes {
     public Double getAlteTaxValue() {
        return AlteTaxValue;
     }
-    protected void setAlteTaxValue(final Double value) {
+    protected void setAlteTaxValue(Double value) {
        AlteTaxValue = value;
     }
 }

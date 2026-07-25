@@ -7,7 +7,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getOperNum() {
        return OperNum;
     }
-    protected void setOperNum(final Double value) {
+    protected void setOperNum(Double value) {
        OperNum = value;
     }
 
@@ -18,7 +18,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment0() {
        return ReceivedSalesAmountPayment0;
     }
-    protected void setReceivedSalesAmountPayment0(final Double value) {
+    protected void setReceivedSalesAmountPayment0(Double value) {
        ReceivedSalesAmountPayment0 = value;
     }
 
@@ -29,7 +29,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment1() {
        return ReceivedSalesAmountPayment1;
     }
-    protected void setReceivedSalesAmountPayment1(final Double value) {
+    protected void setReceivedSalesAmountPayment1(Double value) {
        ReceivedSalesAmountPayment1 = value;
     }
 
@@ -40,7 +40,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment2() {
        return ReceivedSalesAmountPayment2;
     }
-    protected void setReceivedSalesAmountPayment2(final Double value) {
+    protected void setReceivedSalesAmountPayment2(Double value) {
        ReceivedSalesAmountPayment2 = value;
     }
 
@@ -51,7 +51,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment3() {
        return ReceivedSalesAmountPayment3;
     }
-    protected void setReceivedSalesAmountPayment3(final Double value) {
+    protected void setReceivedSalesAmountPayment3(Double value) {
        ReceivedSalesAmountPayment3 = value;
     }
 
@@ -62,7 +62,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment4() {
        return ReceivedSalesAmountPayment4;
     }
-    protected void setReceivedSalesAmountPayment4(final Double value) {
+    protected void setReceivedSalesAmountPayment4(Double value) {
        ReceivedSalesAmountPayment4 = value;
     }
 
@@ -73,7 +73,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment5() {
        return ReceivedSalesAmountPayment5;
     }
-    protected void setReceivedSalesAmountPayment5(final Double value) {
+    protected void setReceivedSalesAmountPayment5(Double value) {
        ReceivedSalesAmountPayment5 = value;
     }
 
@@ -84,7 +84,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment6() {
        return ReceivedSalesAmountPayment6;
     }
-    protected void setReceivedSalesAmountPayment6(final Double value) {
+    protected void setReceivedSalesAmountPayment6(Double value) {
        ReceivedSalesAmountPayment6 = value;
     }
 
@@ -95,7 +95,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment7() {
        return ReceivedSalesAmountPayment7;
     }
-    protected void setReceivedSalesAmountPayment7(final Double value) {
+    protected void setReceivedSalesAmountPayment7(Double value) {
        ReceivedSalesAmountPayment7 = value;
     }
 
@@ -106,7 +106,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment8() {
        return ReceivedSalesAmountPayment8;
     }
-    protected void setReceivedSalesAmountPayment8(final Double value) {
+    protected void setReceivedSalesAmountPayment8(Double value) {
        ReceivedSalesAmountPayment8 = value;
     }
 
@@ -117,7 +117,7 @@ public class DailyReceivedSalesAmountsByOperatorRes {
     public Double getReceivedSalesAmountPayment9() {
        return ReceivedSalesAmountPayment9;
     }
-    protected void setReceivedSalesAmountPayment9(final Double value) {
+    protected void setReceivedSalesAmountPayment9(Double value) {
        ReceivedSalesAmountPayment9 = value;
     }
 }

@@ -7,7 +7,7 @@ public class DailyAmountsByVATRes {
     public Double getSaleAmountVATGrA() {
        return SaleAmountVATGrA;
     }
-    protected void setSaleAmountVATGrA(final Double value) {
+    protected void setSaleAmountVATGrA(Double value) {
        SaleAmountVATGrA = value;
     }
 
@@ -18,7 +18,7 @@ public class DailyAmountsByVATRes {
     public Double getSaleAmountVATGrB() {
        return SaleAmountVATGrB;
     }
-    protected void setSaleAmountVATGrB(final Double value) {
+    protected void setSaleAmountVATGrB(Double value) {
        SaleAmountVATGrB = value;
     }
 
@@ -29,7 +29,7 @@ public class DailyAmountsByVATRes {
     public Double getSaleAmountVATGrC() {
        return SaleAmountVATGrC;
     }
-    protected void setSaleAmountVATGrC(final Double value) {
+    protected void setSaleAmountVATGrC(Double value) {
        SaleAmountVATGrC = value;
     }
 
@@ -40,7 +40,7 @@ public class DailyAmountsByVATRes {
     public Double getSaleAmountVATGrD() {
        return SaleAmountVATGrD;
     }
-    protected void setSaleAmountVATGrD(final Double value) {
+    protected void setSaleAmountVATGrD(Double value) {
        SaleAmountVATGrD = value;
     }
 
@@ -51,7 +51,7 @@ public class DailyAmountsByVATRes {
     public Double getSaleAmountVATGrE() {
        return SaleAmountVATGrE;
     }
-    protected void setSaleAmountVATGrE(final Double value) {
+    protected void setSaleAmountVATGrE(Double value) {
        SaleAmountVATGrE = value;
     }
 
@@ -62,7 +62,7 @@ public class DailyAmountsByVATRes {
     public Double getSaleAmountAlteTaxeF() {
        return SaleAmountAlteTaxeF;
     }
-    protected void setSaleAmountAlteTaxeF(final Double value) {
+    protected void setSaleAmountAlteTaxeF(Double value) {
        SaleAmountAlteTaxeF = value;
     }
 }

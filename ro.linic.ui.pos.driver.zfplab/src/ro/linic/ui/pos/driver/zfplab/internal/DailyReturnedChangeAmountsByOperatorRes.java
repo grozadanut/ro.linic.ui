@@ -7,7 +7,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getOperNum() {
        return OperNum;
     }
-    protected void setOperNum(final Double value) {
+    protected void setOperNum(Double value) {
        OperNum = value;
     }
 
@@ -18,7 +18,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment0() {
        return ChangeAmountPayment0;
     }
-    protected void setChangeAmountPayment0(final Double value) {
+    protected void setChangeAmountPayment0(Double value) {
        ChangeAmountPayment0 = value;
     }
 
@@ -29,7 +29,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment1() {
        return ChangeAmountPayment1;
     }
-    protected void setChangeAmountPayment1(final Double value) {
+    protected void setChangeAmountPayment1(Double value) {
        ChangeAmountPayment1 = value;
     }
 
@@ -40,7 +40,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment2() {
        return ChangeAmountPayment2;
     }
-    protected void setChangeAmountPayment2(final Double value) {
+    protected void setChangeAmountPayment2(Double value) {
        ChangeAmountPayment2 = value;
     }
 
@@ -51,7 +51,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment3() {
        return ChangeAmountPayment3;
     }
-    protected void setChangeAmountPayment3(final Double value) {
+    protected void setChangeAmountPayment3(Double value) {
        ChangeAmountPayment3 = value;
     }
 
@@ -62,7 +62,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment4() {
        return ChangeAmountPayment4;
     }
-    protected void setChangeAmountPayment4(final Double value) {
+    protected void setChangeAmountPayment4(Double value) {
        ChangeAmountPayment4 = value;
     }
 
@@ -73,7 +73,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment5() {
        return ChangeAmountPayment5;
     }
-    protected void setChangeAmountPayment5(final Double value) {
+    protected void setChangeAmountPayment5(Double value) {
        ChangeAmountPayment5 = value;
     }
 
@@ -84,7 +84,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment6() {
        return ChangeAmountPayment6;
     }
-    protected void setChangeAmountPayment6(final Double value) {
+    protected void setChangeAmountPayment6(Double value) {
        ChangeAmountPayment6 = value;
     }
 
@@ -95,7 +95,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment7() {
        return ChangeAmountPayment7;
     }
-    protected void setChangeAmountPayment7(final Double value) {
+    protected void setChangeAmountPayment7(Double value) {
        ChangeAmountPayment7 = value;
     }
 
@@ -106,7 +106,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment8() {
        return ChangeAmountPayment8;
     }
-    protected void setChangeAmountPayment8(final Double value) {
+    protected void setChangeAmountPayment8(Double value) {
        ChangeAmountPayment8 = value;
     }
 
@@ -117,7 +117,7 @@ public class DailyReturnedChangeAmountsByOperatorRes {
     public Double getChangeAmountPayment9() {
        return ChangeAmountPayment9;
     }
-    protected void setChangeAmountPayment9(final Double value) {
+    protected void setChangeAmountPayment9(Double value) {
        ChangeAmountPayment9 = value;
     }
 }

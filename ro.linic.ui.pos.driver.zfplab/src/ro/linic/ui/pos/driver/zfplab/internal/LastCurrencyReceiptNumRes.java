@@ -8,7 +8,7 @@ public class LastCurrencyReceiptNumRes {
     public Double getLastReceiptNum() {
        return LastReceiptNum;
     }
-    protected void setLastReceiptNum(final Double value) {
+    protected void setLastReceiptNum(Double value) {
        LastReceiptNum = value;
     }
 
@@ -20,7 +20,7 @@ public class LastCurrencyReceiptNumRes {
     public Double getTotalReceiptCounter() {
        return TotalReceiptCounter;
     }
-    protected void setTotalReceiptCounter(final Double value) {
+    protected void setTotalReceiptCounter(Double value) {
        TotalReceiptCounter = value;
     }
 
@@ -32,7 +32,7 @@ public class LastCurrencyReceiptNumRes {
     public Double getDaily_Vanzari_RecCounter() {
        return Daily_Vanzari_RecCounter;
     }
-    protected void setDaily_Vanzari_RecCounter(final Double value) {
+    protected void setDaily_Vanzari_RecCounter(Double value) {
        Daily_Vanzari_RecCounter = value;
     }
 
@@ -44,7 +44,7 @@ public class LastCurrencyReceiptNumRes {
     public Double getDaily_Cumparari_RecCounter() {
        return Daily_Cumparari_RecCounter;
     }
-    protected void setDaily_Cumparari_RecCounter(final Double value) {
+    protected void setDaily_Cumparari_RecCounter(Double value) {
        Daily_Cumparari_RecCounter = value;
     }
 
@@ -56,7 +56,7 @@ public class LastCurrencyReceiptNumRes {
     public Double getDaily_Anulat_RecCounter() {
        return Daily_Anulat_RecCounter;
     }
-    protected void setDaily_Anulat_RecCounter(final Double value) {
+    protected void setDaily_Anulat_RecCounter(Double value) {
        Daily_Anulat_RecCounter = value;
     }
 }

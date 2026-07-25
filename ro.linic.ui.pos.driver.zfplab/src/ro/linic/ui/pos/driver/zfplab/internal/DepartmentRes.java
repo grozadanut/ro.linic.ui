@@ -8,7 +8,7 @@ public class DepartmentRes {
     public Double getDepNum() {
        return DepNum;
     }
-    protected void setDepNum(final Double value) {
+    protected void setDepNum(Double value) {
        DepNum = value;
     }
 
@@ -19,7 +19,7 @@ public class DepartmentRes {
     public String getDepName() {
        return DepName;
     }
-    protected void setDepName(final String value) {
+    protected void setDepName(String value) {
        DepName = value;
     }
 
@@ -36,7 +36,7 @@ public class DepartmentRes {
     public OptionVATClass getOptionVATClass() {
        return OptionVATClass;
     }
-    protected void setOptionVATClass(final OptionVATClass value) {
+    protected void setOptionVATClass(OptionVATClass value) {
        OptionVATClass = value;
     }
 
@@ -47,7 +47,7 @@ public class DepartmentRes {
     public Double getTurnover() {
        return Turnover;
     }
-    protected void setTurnover(final Double value) {
+    protected void setTurnover(Double value) {
        Turnover = value;
     }
 
@@ -58,7 +58,7 @@ public class DepartmentRes {
     public Double getSoldQuantity() {
        return SoldQuantity;
     }
-    protected void setSoldQuantity(final Double value) {
+    protected void setSoldQuantity(Double value) {
        SoldQuantity = value;
     }
 
@@ -69,7 +69,7 @@ public class DepartmentRes {
     public Double getLastZReportNumber() {
        return LastZReportNumber;
     }
-    protected void setLastZReportNumber(final Double value) {
+    protected void setLastZReportNumber(Double value) {
        LastZReportNumber = value;
     }
 
@@ -80,7 +80,7 @@ public class DepartmentRes {
     public Date getLastZReportDate() {
        return LastZReportDate;
     }
-    protected void setLastZReportDate(final Date value) {
+    protected void setLastZReportDate(Date value) {
        LastZReportDate = value;
     }
 
@@ -91,7 +91,7 @@ public class DepartmentRes {
     public Double getPrice() {
        return Price;
     }
-    protected void setPrice(final Double value) {
+    protected void setPrice(Double value) {
        Price = value;
     }
 
@@ -108,7 +108,7 @@ public class DepartmentRes {
     public OptionDepPrice getOptionDepPrice() {
        return OptionDepPrice;
     }
-    protected void setOptionDepPrice(final OptionDepPrice value) {
+    protected void setOptionDepPrice(OptionDepPrice value) {
        OptionDepPrice = value;
     }
 
@@ -119,7 +119,7 @@ public class DepartmentRes {
     public Double getCategory() {
        return Category;
     }
-    protected void setCategory(final Double value) {
+    protected void setCategory(Double value) {
        Category = value;
     }
 }

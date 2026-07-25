@@ -7,7 +7,7 @@ public class VATNumRes {
     public String getVATNum() {
        return VATNum;
     }
-    protected void setVATNum(final String value) {
+    protected void setVATNum(String value) {
        VATNum = value;
     }
 
@@ -18,7 +18,7 @@ public class VATNumRes {
     public String getFMnum() {
        return FMnum;
     }
-    protected void setFMnum(final String value) {
+    protected void setFMnum(String value) {
        FMnum = value;
     }
 
@@ -31,7 +31,7 @@ public class VATNumRes {
     public OptionTypeVATregistration getOptionTypeVATregistration() {
        return OptionTypeVATregistration;
     }
-    protected void setOptionTypeVATregistration(final OptionTypeVATregistration value) {
+    protected void setOptionTypeVATregistration(OptionTypeVATregistration value) {
        OptionTypeVATregistration = value;
     }
 }

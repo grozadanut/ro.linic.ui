@@ -1,14 +1,13 @@
 package ro.linic.ui.pos.driver.zfplab.internal;
-public enum OptionPowerDownInReceipt {
-	No("0"),
-	Yes("1");
+    public enum OptionPowerDownInReceipt {
+        No("0"),
+        Yes("1");
 
-	private final String value;
-	private OptionPowerDownInReceipt(final String value) {
-		this.value = value;
-	}
-	@Override
-	public String toString() {
-		return value;
-	}
-}
+        private final String value;
+        private OptionPowerDownInReceipt(String value) {
+            this.value = value;
+        }
+        public String toString() {
+            return value;
+        }
+    }

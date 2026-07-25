@@ -15,7 +15,7 @@ public class HeaderRes {
     public OptionHeaderLine getOptionHeaderLine() {
        return OptionHeaderLine;
     }
-    protected void setOptionHeaderLine(final OptionHeaderLine value) {
+    protected void setOptionHeaderLine(OptionHeaderLine value) {
        OptionHeaderLine = value;
     }
 
@@ -26,7 +26,7 @@ public class HeaderRes {
     public String getHeaderText() {
        return HeaderText;
     }
-    protected void setHeaderText(final String value) {
+    protected void setHeaderText(String value) {
        HeaderText = value;
     }
 }

@@ -9,7 +9,7 @@ public class CurrentReceiptInfoRes {
     public OptionIsReceiptOpened getOptionIsReceiptOpened() {
        return OptionIsReceiptOpened;
     }
-    protected void setOptionIsReceiptOpened(final OptionIsReceiptOpened value) {
+    protected void setOptionIsReceiptOpened(OptionIsReceiptOpened value) {
        OptionIsReceiptOpened = value;
     }
 
@@ -20,7 +20,7 @@ public class CurrentReceiptInfoRes {
     public String getSalesNumber() {
        return SalesNumber;
     }
-    protected void setSalesNumber(final String value) {
+    protected void setSalesNumber(String value) {
        SalesNumber = value;
     }
 
@@ -31,7 +31,7 @@ public class CurrentReceiptInfoRes {
     public Double getSubtotalAmountVATGA() {
        return SubtotalAmountVATGA;
     }
-    protected void setSubtotalAmountVATGA(final Double value) {
+    protected void setSubtotalAmountVATGA(Double value) {
        SubtotalAmountVATGA = value;
     }
 
@@ -42,7 +42,7 @@ public class CurrentReceiptInfoRes {
     public Double getSubtotalAmountVATGB() {
        return SubtotalAmountVATGB;
     }
-    protected void setSubtotalAmountVATGB(final Double value) {
+    protected void setSubtotalAmountVATGB(Double value) {
        SubtotalAmountVATGB = value;
     }
 
@@ -53,7 +53,7 @@ public class CurrentReceiptInfoRes {
     public Double getSubtotalAmountVATGC() {
        return SubtotalAmountVATGC;
     }
-    protected void setSubtotalAmountVATGC(final Double value) {
+    protected void setSubtotalAmountVATGC(Double value) {
        SubtotalAmountVATGC = value;
     }
 
@@ -64,7 +64,7 @@ public class CurrentReceiptInfoRes {
     public Double getSubtotalAmountVATGD() {
        return SubtotalAmountVATGD;
     }
-    protected void setSubtotalAmountVATGD(final Double value) {
+    protected void setSubtotalAmountVATGD(Double value) {
        SubtotalAmountVATGD = value;
     }
 
@@ -75,7 +75,7 @@ public class CurrentReceiptInfoRes {
     public Double getSubtotalAmountVATGE() {
        return SubtotalAmountVATGE;
     }
-    protected void setSubtotalAmountVATGE(final Double value) {
+    protected void setSubtotalAmountVATGE(Double value) {
        SubtotalAmountVATGE = value;
     }
 
@@ -88,7 +88,7 @@ public class CurrentReceiptInfoRes {
     public OptionForbiddenVoid getOptionForbiddenVoid() {
        return OptionForbiddenVoid;
     }
-    protected void setOptionForbiddenVoid(final OptionForbiddenVoid value) {
+    protected void setOptionForbiddenVoid(OptionForbiddenVoid value) {
        OptionForbiddenVoid = value;
     }
 
@@ -101,7 +101,7 @@ public class CurrentReceiptInfoRes {
     public OptionVATinReceipt getOptionVATinReceipt() {
        return OptionVATinReceipt;
     }
-    protected void setOptionVATinReceipt(final OptionVATinReceipt value) {
+    protected void setOptionVATinReceipt(OptionVATinReceipt value) {
        OptionVATinReceipt = value;
     }
 
@@ -114,7 +114,7 @@ public class CurrentReceiptInfoRes {
     public OptionReceiptFormat getOptionReceiptFormat() {
        return OptionReceiptFormat;
     }
-    protected void setOptionReceiptFormat(final OptionReceiptFormat value) {
+    protected void setOptionReceiptFormat(OptionReceiptFormat value) {
        OptionReceiptFormat = value;
     }
 
@@ -127,7 +127,7 @@ public class CurrentReceiptInfoRes {
     public OptionInitiatedPayment getOptionInitiatedPayment() {
        return OptionInitiatedPayment;
     }
-    protected void setOptionInitiatedPayment(final OptionInitiatedPayment value) {
+    protected void setOptionInitiatedPayment(OptionInitiatedPayment value) {
        OptionInitiatedPayment = value;
     }
 
@@ -140,22 +140,20 @@ public class CurrentReceiptInfoRes {
     public OptionFinalizedPayment getOptionFinalizedPayment() {
        return OptionFinalizedPayment;
     }
-    protected void setOptionFinalizedPayment(final OptionFinalizedPayment value) {
+    protected void setOptionFinalizedPayment(OptionFinalizedPayment value) {
        OptionFinalizedPayment = value;
     }
 
    /**
     *1 symbol with value: 
-    *- '0' - No  
-    *
-    *
+    *- '0' - No 
     *- '1' - Yes
     */
     public OptionPowerDownInReceipt OptionPowerDownInReceipt;
     public OptionPowerDownInReceipt getOptionPowerDownInReceipt() {
        return OptionPowerDownInReceipt;
     }
-    protected void setOptionPowerDownInReceipt(final OptionPowerDownInReceipt value) {
+    protected void setOptionPowerDownInReceipt(OptionPowerDownInReceipt value) {
        OptionPowerDownInReceipt = value;
     }
 
@@ -168,7 +166,7 @@ public class CurrentReceiptInfoRes {
     public OptionClientReceipt getOptionClientReceipt() {
        return OptionClientReceipt;
     }
-    protected void setOptionClientReceipt(final OptionClientReceipt value) {
+    protected void setOptionClientReceipt(OptionClientReceipt value) {
        OptionClientReceipt = value;
     }
 
@@ -180,12 +178,14 @@ public class CurrentReceiptInfoRes {
     public Double getChangeAmount() {
        return ChangeAmount;
     }
-    protected void setChangeAmount(final Double value) {
+    protected void setChangeAmount(Double value) {
        ChangeAmount = value;
     }
 
    /**
-    *1 symbols with value: 
+    *1 symbols with value:  
+    *
+    *
     * - '0' - Change In Cash 
     * - '1' - Same As The payment 
     * - '2' - Change In Currency
@@ -194,7 +194,7 @@ public class CurrentReceiptInfoRes {
     public OptionChangeType getOptionChangeType() {
        return OptionChangeType;
     }
-    protected void setOptionChangeType(final OptionChangeType value) {
+    protected void setOptionChangeType(OptionChangeType value) {
        OptionChangeType = value;
     }
 
@@ -205,7 +205,7 @@ public class CurrentReceiptInfoRes {
     public Double getAlteTaxeValue() {
        return AlteTaxeValue;
     }
-    protected void setAlteTaxeValue(final Double value) {
+    protected void setAlteTaxeValue(Double value) {
        AlteTaxeValue = value;
     }
 }

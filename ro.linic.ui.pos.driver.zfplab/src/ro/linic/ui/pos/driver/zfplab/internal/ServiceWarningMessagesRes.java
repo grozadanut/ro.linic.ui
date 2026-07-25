@@ -8,7 +8,7 @@ public class ServiceWarningMessagesRes {
     public String getPassword() {
        return Password;
     }
-    protected void setPassword(final String value) {
+    protected void setPassword(String value) {
        Password = value;
     }
 
@@ -19,7 +19,7 @@ public class ServiceWarningMessagesRes {
     public String getLine1() {
        return Line1;
     }
-    protected void setLine1(final String value) {
+    protected void setLine1(String value) {
        Line1 = value;
     }
 
@@ -30,7 +30,7 @@ public class ServiceWarningMessagesRes {
     public String getLine2() {
        return Line2;
     }
-    protected void setLine2(final String value) {
+    protected void setLine2(String value) {
        Line2 = value;
     }
 
@@ -41,7 +41,7 @@ public class ServiceWarningMessagesRes {
     public String getLine3() {
        return Line3;
     }
-    protected void setLine3(final String value) {
+    protected void setLine3(String value) {
        Line3 = value;
     }
 }

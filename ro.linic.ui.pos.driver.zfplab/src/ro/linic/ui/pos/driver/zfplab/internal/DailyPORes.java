@@ -7,7 +7,7 @@ public class DailyPORes {
     public Double getAmountPayment0() {
        return AmountPayment0;
     }
-    protected void setAmountPayment0(final Double value) {
+    protected void setAmountPayment0(Double value) {
        AmountPayment0 = value;
     }
 
@@ -18,7 +18,7 @@ public class DailyPORes {
     public Double getAmountPayment1() {
        return AmountPayment1;
     }
-    protected void setAmountPayment1(final Double value) {
+    protected void setAmountPayment1(Double value) {
        AmountPayment1 = value;
     }
 
@@ -29,7 +29,7 @@ public class DailyPORes {
     public Double getAmountPayment2() {
        return AmountPayment2;
     }
-    protected void setAmountPayment2(final Double value) {
+    protected void setAmountPayment2(Double value) {
        AmountPayment2 = value;
     }
 
@@ -40,7 +40,7 @@ public class DailyPORes {
     public Double getAmountPayment3() {
        return AmountPayment3;
     }
-    protected void setAmountPayment3(final Double value) {
+    protected void setAmountPayment3(Double value) {
        AmountPayment3 = value;
     }
 
@@ -51,7 +51,7 @@ public class DailyPORes {
     public Double getAmountPayment4() {
        return AmountPayment4;
     }
-    protected void setAmountPayment4(final Double value) {
+    protected void setAmountPayment4(Double value) {
        AmountPayment4 = value;
     }
 
@@ -62,7 +62,7 @@ public class DailyPORes {
     public Double getAmountPayment5() {
        return AmountPayment5;
     }
-    protected void setAmountPayment5(final Double value) {
+    protected void setAmountPayment5(Double value) {
        AmountPayment5 = value;
     }
 
@@ -73,7 +73,7 @@ public class DailyPORes {
     public Double getAmountPayment6() {
        return AmountPayment6;
     }
-    protected void setAmountPayment6(final Double value) {
+    protected void setAmountPayment6(Double value) {
        AmountPayment6 = value;
     }
 
@@ -84,7 +84,7 @@ public class DailyPORes {
     public Double getAmountPayment7() {
        return AmountPayment7;
     }
-    protected void setAmountPayment7(final Double value) {
+    protected void setAmountPayment7(Double value) {
        AmountPayment7 = value;
     }
 
@@ -95,7 +95,7 @@ public class DailyPORes {
     public Double getAmountPayment8() {
        return AmountPayment8;
     }
-    protected void setAmountPayment8(final Double value) {
+    protected void setAmountPayment8(Double value) {
        AmountPayment8 = value;
     }
 
@@ -106,7 +106,7 @@ public class DailyPORes {
     public Double getAmountPayment9() {
        return AmountPayment9;
     }
-    protected void setAmountPayment9(final Double value) {
+    protected void setAmountPayment9(Double value) {
        AmountPayment9 = value;
     }
 
@@ -117,7 +117,7 @@ public class DailyPORes {
     public Double getNumPO() {
        return NumPO;
     }
-    protected void setNumPO(final Double value) {
+    protected void setNumPO(Double value) {
        NumPO = value;
     }
 }

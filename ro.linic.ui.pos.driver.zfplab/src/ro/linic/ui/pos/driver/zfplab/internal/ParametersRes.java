@@ -7,7 +7,7 @@ public class ParametersRes {
     public Double getPOSNum() {
        return POSNum;
     }
-    protected void setPOSNum(final Double value) {
+    protected void setPOSNum(Double value) {
        POSNum = value;
     }
 
@@ -20,7 +20,7 @@ public class ParametersRes {
     public OptionPrintLogo getOptionPrintLogo() {
        return OptionPrintLogo;
     }
-    protected void setOptionPrintLogo(final OptionPrintLogo value) {
+    protected void setOptionPrintLogo(OptionPrintLogo value) {
        OptionPrintLogo = value;
     }
 
@@ -33,33 +33,35 @@ public class ParametersRes {
     public OptionAutoOpenDrawer getOptionAutoOpenDrawer() {
        return OptionAutoOpenDrawer;
     }
-    protected void setOptionAutoOpenDrawer(final OptionAutoOpenDrawer value) {
+    protected void setOptionAutoOpenDrawer(OptionAutoOpenDrawer value) {
        OptionAutoOpenDrawer = value;
     }
 
    /**
     *(Auto Cut) 1 symbol of value: 
-    * - '1' - Yes 
+    * - '1' - Yes  
+    *
+    *
     * - '0' - No
     */
     public OptionAutoCut OptionAutoCut;
     public OptionAutoCut getOptionAutoCut() {
        return OptionAutoCut;
     }
-    protected void setOptionAutoCut(final OptionAutoCut value) {
+    protected void setOptionAutoCut(OptionAutoCut value) {
        OptionAutoCut = value;
     }
 
    /**
     *(External Display Management) 1 symbol of value: 
-    * - '1' - Manuel 
+    * - '1' - Manual 
     * - '0' - Auto
     */
     public OptionExternalDispManagement OptionExternalDispManagement;
     public OptionExternalDispManagement getOptionExternalDispManagement() {
        return OptionExternalDispManagement;
     }
-    protected void setOptionExternalDispManagement(final OptionExternalDispManagement value) {
+    protected void setOptionExternalDispManagement(OptionExternalDispManagement value) {
        OptionExternalDispManagement = value;
     }
 
@@ -72,7 +74,7 @@ public class ParametersRes {
     public OptionEnableCurrency getOptionEnableCurrency() {
        return OptionEnableCurrency;
     }
-    protected void setOptionEnableCurrency(final OptionEnableCurrency value) {
+    protected void setOptionEnableCurrency(OptionEnableCurrency value) {
        OptionEnableCurrency = value;
     }
 
@@ -85,7 +87,7 @@ public class ParametersRes {
     public OptionUSBHost getOptionUSBHost() {
        return OptionUSBHost;
     }
-    protected void setOptionUSBHost(final OptionUSBHost value) {
+    protected void setOptionUSBHost(OptionUSBHost value) {
        OptionUSBHost = value;
     }
 }

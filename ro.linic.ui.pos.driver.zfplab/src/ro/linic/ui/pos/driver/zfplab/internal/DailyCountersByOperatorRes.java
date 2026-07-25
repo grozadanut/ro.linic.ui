@@ -8,7 +8,7 @@ public class DailyCountersByOperatorRes {
     public Double getOperNum() {
        return OperNum;
     }
-    protected void setOperNum(final Double value) {
+    protected void setOperNum(Double value) {
        OperNum = value;
     }
 
@@ -19,7 +19,7 @@ public class DailyCountersByOperatorRes {
     public Double getWorkOperatorsCounter() {
        return WorkOperatorsCounter;
     }
-    protected void setWorkOperatorsCounter(final Double value) {
+    protected void setWorkOperatorsCounter(Double value) {
        WorkOperatorsCounter = value;
     }
 
@@ -31,7 +31,7 @@ public class DailyCountersByOperatorRes {
     public Date getLastOperatorReportDateTime() {
        return LastOperatorReportDateTime;
     }
-    protected void setLastOperatorReportDateTime(final Date value) {
+    protected void setLastOperatorReportDateTime(Date value) {
        LastOperatorReportDateTime = value;
     }
 }

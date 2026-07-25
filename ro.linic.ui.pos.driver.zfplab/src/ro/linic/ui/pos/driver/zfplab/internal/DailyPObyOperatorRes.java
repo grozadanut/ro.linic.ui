@@ -7,7 +7,7 @@ public class DailyPObyOperatorRes {
     public Double getOperNum() {
        return OperNum;
     }
-    protected void setOperNum(final Double value) {
+    protected void setOperNum(Double value) {
        OperNum = value;
     }
 
@@ -18,7 +18,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment0() {
        return AmountPO_Payment0;
     }
-    protected void setAmountPO_Payment0(final Double value) {
+    protected void setAmountPO_Payment0(Double value) {
        AmountPO_Payment0 = value;
     }
 
@@ -29,7 +29,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment1() {
        return AmountPO_Payment1;
     }
-    protected void setAmountPO_Payment1(final Double value) {
+    protected void setAmountPO_Payment1(Double value) {
        AmountPO_Payment1 = value;
     }
 
@@ -40,7 +40,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment2() {
        return AmountPO_Payment2;
     }
-    protected void setAmountPO_Payment2(final Double value) {
+    protected void setAmountPO_Payment2(Double value) {
        AmountPO_Payment2 = value;
     }
 
@@ -51,7 +51,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment3() {
        return AmountPO_Payment3;
     }
-    protected void setAmountPO_Payment3(final Double value) {
+    protected void setAmountPO_Payment3(Double value) {
        AmountPO_Payment3 = value;
     }
 
@@ -62,7 +62,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment4() {
        return AmountPO_Payment4;
     }
-    protected void setAmountPO_Payment4(final Double value) {
+    protected void setAmountPO_Payment4(Double value) {
        AmountPO_Payment4 = value;
     }
 
@@ -73,7 +73,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment5() {
        return AmountPO_Payment5;
     }
-    protected void setAmountPO_Payment5(final Double value) {
+    protected void setAmountPO_Payment5(Double value) {
        AmountPO_Payment5 = value;
     }
 
@@ -84,7 +84,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment6() {
        return AmountPO_Payment6;
     }
-    protected void setAmountPO_Payment6(final Double value) {
+    protected void setAmountPO_Payment6(Double value) {
        AmountPO_Payment6 = value;
     }
 
@@ -95,7 +95,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment7() {
        return AmountPO_Payment7;
     }
-    protected void setAmountPO_Payment7(final Double value) {
+    protected void setAmountPO_Payment7(Double value) {
        AmountPO_Payment7 = value;
     }
 
@@ -106,7 +106,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment8() {
        return AmountPO_Payment8;
     }
-    protected void setAmountPO_Payment8(final Double value) {
+    protected void setAmountPO_Payment8(Double value) {
        AmountPO_Payment8 = value;
     }
 
@@ -117,7 +117,7 @@ public class DailyPObyOperatorRes {
     public Double getAmountPO_Payment9() {
        return AmountPO_Payment9;
     }
-    protected void setAmountPO_Payment9(final Double value) {
+    protected void setAmountPO_Payment9(Double value) {
        AmountPO_Payment9 = value;
     }
 
@@ -128,7 +128,7 @@ public class DailyPObyOperatorRes {
     public Double getNumPO() {
        return NumPO;
     }
-    protected void setNumPO(final Double value) {
+    protected void setNumPO(Double value) {
        NumPO = value;
     }
 }

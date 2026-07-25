@@ -142,7 +142,7 @@ public class ZFPLabECRDriver implements ECRDriver {
 				/* payments
 				 */
 				for (final Entry<PaymentType, BigDecimal> paymentEntry : payments.entrySet()) {
-					fp.Payment(mapPaymentType(paymentEntry.getKey()), paymentEntry.getValue().doubleValue());
+					fp.Payment(mapPaymentType(paymentEntry.getKey()), paymentEntry.getValue().doubleValue(), null);
 				}
 				
 				// close receipt
@@ -204,7 +204,7 @@ public class ZFPLabECRDriver implements ECRDriver {
 			addSaleLines(fp, receipt, taxId);
 
 			// close receipt
-			fp.PayExactSum(OptionPaymentType.Payment_1);
+			fp.PayExactSum(OptionPaymentType.Payment_1, null);
 			fp.CloseReceipt();
 		} catch (final Exception e) {
 			log.error(e.getMessage(), e);

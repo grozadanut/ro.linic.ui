@@ -7,7 +7,7 @@ public class LastAndTotalReceiptNumRes {
     public Double getLastReceiptNum() {
        return LastReceiptNum;
     }
-    protected void setLastReceiptNum(final Double value) {
+    protected void setLastReceiptNum(Double value) {
        LastReceiptNum = value;
     }
 
@@ -18,7 +18,7 @@ public class LastAndTotalReceiptNumRes {
     public Double getTotalReceiptCounter() {
        return TotalReceiptCounter;
     }
-    protected void setTotalReceiptCounter(final Double value) {
+    protected void setTotalReceiptCounter(Double value) {
        TotalReceiptCounter = value;
     }
 }

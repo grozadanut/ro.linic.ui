@@ -8,19 +8,19 @@ public class DailyCurrencyRes {
     public Double getVanzari() {
        return Vanzari;
     }
-    protected void setVanzari(final Double value) {
+    protected void setVanzari(Double value) {
        Vanzari = value;
     }
 
    /**
-    *Up to 12 symbols for accumulated amount of currency purchase 
-    *without commission
+    *Up to 12 symbols for accumulated amount of currency purchase without 
+    *commission
     */
     public Double Cumparari;
     public Double getCumparari() {
        return Cumparari;
     }
-    protected void setCumparari(final Double value) {
+    protected void setCumparari(Double value) {
        Cumparari = value;
     }
 
@@ -31,19 +31,18 @@ public class DailyCurrencyRes {
     public Double getCommission_vanzari() {
        return Commission_vanzari;
     }
-    protected void setCommission_vanzari(final Double value) {
+    protected void setCommission_vanzari(Double value) {
        Commission_vanzari = value;
     }
 
    /**
-    *Up to 12 symbols for accumulated amount of commissions in 
-    *purchase
+    *Up to 12 symbols for accumulated amount of commissions in purchase
     */
     public Double Commission_cumparari;
     public Double getCommission_cumparari() {
        return Commission_cumparari;
     }
-    protected void setCommission_cumparari(final Double value) {
+    protected void setCommission_cumparari(Double value) {
        Commission_cumparari = value;
     }
 }

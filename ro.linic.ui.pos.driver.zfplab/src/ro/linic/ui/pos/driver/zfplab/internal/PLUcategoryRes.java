@@ -7,7 +7,7 @@ public class PLUcategoryRes {
     public Double getPLUNum() {
        return PLUNum;
     }
-    protected void setPLUNum(final Double value) {
+    protected void setPLUNum(Double value) {
        PLUNum = value;
     }
 
@@ -18,7 +18,7 @@ public class PLUcategoryRes {
     public Double getCategory() {
        return Category;
     }
-    protected void setCategory(final Double value) {
+    protected void setCategory(Double value) {
        Category = value;
     }
 }

@@ -7,7 +7,7 @@ public class VATratesRes {
     public Double getVATrateA() {
        return VATrateA;
     }
-    protected void setVATrateA(final Double value) {
+    protected void setVATrateA(Double value) {
        VATrateA = value;
     }
 
@@ -18,7 +18,7 @@ public class VATratesRes {
     public Double getVATrateB() {
        return VATrateB;
     }
-    protected void setVATrateB(final Double value) {
+    protected void setVATrateB(Double value) {
        VATrateB = value;
     }
 
@@ -29,7 +29,7 @@ public class VATratesRes {
     public Double getVATrateC() {
        return VATrateC;
     }
-    protected void setVATrateC(final Double value) {
+    protected void setVATrateC(Double value) {
        VATrateC = value;
     }
 
@@ -40,7 +40,7 @@ public class VATratesRes {
     public Double getVATrateD() {
        return VATrateD;
     }
-    protected void setVATrateD(final Double value) {
+    protected void setVATrateD(Double value) {
        VATrateD = value;
     }
 
@@ -51,7 +51,7 @@ public class VATratesRes {
     public Double getVATrateE() {
        return VATrateE;
     }
-    protected void setVATrateE(final Double value) {
+    protected void setVATrateE(Double value) {
        VATrateE = value;
     }
 
@@ -62,7 +62,7 @@ public class VATratesRes {
     public Double getAlteTaxeF() {
        return AlteTaxeF;
     }
-    protected void setAlteTaxeF(final Double value) {
+    protected void setAlteTaxeF(Double value) {
        AlteTaxeF = value;
     }
 }

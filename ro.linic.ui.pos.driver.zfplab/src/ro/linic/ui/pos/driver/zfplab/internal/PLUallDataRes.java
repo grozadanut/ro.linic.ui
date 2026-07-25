@@ -8,7 +8,7 @@ public class PLUallDataRes {
     public Double getPLUNum() {
        return PLUNum;
     }
-    protected void setPLUNum(final Double value) {
+    protected void setPLUNum(Double value) {
        PLUNum = value;
     }
 
@@ -20,7 +20,7 @@ public class PLUallDataRes {
     public String getPLUName() {
        return PLUName;
     }
-    protected void setPLUName(final String value) {
+    protected void setPLUName(String value) {
        PLUName = value;
     }
 
@@ -31,7 +31,7 @@ public class PLUallDataRes {
     public Double getPrice() {
        return Price;
     }
-    protected void setPrice(final Double value) {
+    protected void setPrice(Double value) {
        Price = value;
     }
 
@@ -54,7 +54,7 @@ public class PLUallDataRes {
     public byte getFlagsPricePLU() {
        return FlagsPricePLU;
     }
-    protected void setFlagsPricePLU(final byte value) {
+    protected void setFlagsPricePLU(byte value) {
        FlagsPricePLU = value;
     }
 
@@ -71,7 +71,7 @@ public class PLUallDataRes {
     public OptionVATClass getOptionVATClass() {
        return OptionVATClass;
     }
-    protected void setOptionVATClass(final OptionVATClass value) {
+    protected void setOptionVATClass(OptionVATClass value) {
        OptionVATClass = value;
     }
 
@@ -82,7 +82,7 @@ public class PLUallDataRes {
     public int getBelongToDepNumber() {
        return BelongToDepNumber;
     }
-    protected void setBelongToDepNumber(final int value) {
+    protected void setBelongToDepNumber(int value) {
        BelongToDepNumber = value;
     }
 
@@ -93,7 +93,7 @@ public class PLUallDataRes {
     public Double getAlteTaxNum() {
        return AlteTaxNum;
     }
-    protected void setAlteTaxNum(final Double value) {
+    protected void setAlteTaxNum(Double value) {
        AlteTaxNum = value;
     }
 
@@ -104,7 +104,7 @@ public class PLUallDataRes {
     public Double getAlteTaxValue() {
        return AlteTaxValue;
     }
-    protected void setAlteTaxValue(final Double value) {
+    protected void setAlteTaxValue(Double value) {
        AlteTaxValue = value;
     }
 
@@ -115,7 +115,7 @@ public class PLUallDataRes {
     public Double getTurnover() {
        return Turnover;
     }
-    protected void setTurnover(final Double value) {
+    protected void setTurnover(Double value) {
        Turnover = value;
     }
 
@@ -126,7 +126,7 @@ public class PLUallDataRes {
     public Double getQuantitySold() {
        return QuantitySold;
     }
-    protected void setQuantitySold(final Double value) {
+    protected void setQuantitySold(Double value) {
        QuantitySold = value;
     }
 
@@ -137,7 +137,7 @@ public class PLUallDataRes {
     public Double getLastZReportNumber() {
        return LastZReportNumber;
     }
-    protected void setLastZReportNumber(final Double value) {
+    protected void setLastZReportNumber(Double value) {
        LastZReportNumber = value;
     }
 
@@ -148,7 +148,7 @@ public class PLUallDataRes {
     public Date getLastZReportDate() {
        return LastZReportDate;
     }
-    protected void setLastZReportDate(final Date value) {
+    protected void setLastZReportDate(Date value) {
        LastZReportDate = value;
     }
 
@@ -159,7 +159,7 @@ public class PLUallDataRes {
     public Double getAvailableQTY() {
        return AvailableQTY;
     }
-    protected void setAvailableQTY(final Double value) {
+    protected void setAvailableQTY(Double value) {
        AvailableQTY = value;
     }
 
@@ -170,7 +170,7 @@ public class PLUallDataRes {
     public String getBarcode() {
        return Barcode;
     }
-    protected void setBarcode(final String value) {
+    protected void setBarcode(String value) {
        Barcode = value;
     }
 
@@ -181,7 +181,7 @@ public class PLUallDataRes {
     public Double getAlteTaxAmount() {
        return AlteTaxAmount;
     }
-    protected void setAlteTaxAmount(final Double value) {
+    protected void setAlteTaxAmount(Double value) {
        AlteTaxAmount = value;
     }
 
@@ -192,7 +192,7 @@ public class PLUallDataRes {
     public Double getCategory() {
        return Category;
     }
-    protected void setCategory(final Double value) {
+    protected void setCategory(Double value) {
        Category = value;
     }
 }

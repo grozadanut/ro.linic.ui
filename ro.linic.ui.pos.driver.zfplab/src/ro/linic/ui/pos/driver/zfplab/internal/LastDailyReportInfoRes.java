@@ -8,7 +8,7 @@ public class LastDailyReportInfoRes {
     public Date getLastZDailyReportDate() {
        return LastZDailyReportDate;
     }
-    protected void setLastZDailyReportDate(final Date value) {
+    protected void setLastZDailyReportDate(Date value) {
        LastZDailyReportDate = value;
     }
 
@@ -19,7 +19,7 @@ public class LastDailyReportInfoRes {
     public Double getLastZDailyReportNum() {
        return LastZDailyReportNum;
     }
-    protected void setLastZDailyReportNum(final Double value) {
+    protected void setLastZDailyReportNum(Double value) {
        LastZDailyReportNum = value;
     }
 
@@ -30,7 +30,7 @@ public class LastDailyReportInfoRes {
     public Double getLastRAMResetNum() {
        return LastRAMResetNum;
     }
-    protected void setLastRAMResetNum(final Double value) {
+    protected void setLastRAMResetNum(Double value) {
        LastRAMResetNum = value;
     }
 }

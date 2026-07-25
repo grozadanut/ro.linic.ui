@@ -7,7 +7,7 @@ public class PaymentsRes {
     public String getNamePaym0() {
        return NamePaym0;
     }
-    protected void setNamePaym0(final String value) {
+    protected void setNamePaym0(String value) {
        NamePaym0 = value;
     }
 
@@ -18,7 +18,7 @@ public class PaymentsRes {
     public String getNamePaym1() {
        return NamePaym1;
     }
-    protected void setNamePaym1(final String value) {
+    protected void setNamePaym1(String value) {
        NamePaym1 = value;
     }
 
@@ -29,7 +29,7 @@ public class PaymentsRes {
     public String getNamePaym2() {
        return NamePaym2;
     }
-    protected void setNamePaym2(final String value) {
+    protected void setNamePaym2(String value) {
        NamePaym2 = value;
     }
 
@@ -40,7 +40,7 @@ public class PaymentsRes {
     public String getNamePaym3() {
        return NamePaym3;
     }
-    protected void setNamePaym3(final String value) {
+    protected void setNamePaym3(String value) {
        NamePaym3 = value;
     }
 
@@ -51,7 +51,7 @@ public class PaymentsRes {
     public String getNamePaym4() {
        return NamePaym4;
     }
-    protected void setNamePaym4(final String value) {
+    protected void setNamePaym4(String value) {
        NamePaym4 = value;
     }
 
@@ -62,7 +62,7 @@ public class PaymentsRes {
     public String getNamePaym5() {
        return NamePaym5;
     }
-    protected void setNamePaym5(final String value) {
+    protected void setNamePaym5(String value) {
        NamePaym5 = value;
     }
 
@@ -73,7 +73,7 @@ public class PaymentsRes {
     public String getNamePaym6() {
        return NamePaym6;
     }
-    protected void setNamePaym6(final String value) {
+    protected void setNamePaym6(String value) {
        NamePaym6 = value;
     }
 
@@ -84,7 +84,7 @@ public class PaymentsRes {
     public String getNamePaym7() {
        return NamePaym7;
     }
-    protected void setNamePaym7(final String value) {
+    protected void setNamePaym7(String value) {
        NamePaym7 = value;
     }
 
@@ -95,7 +95,7 @@ public class PaymentsRes {
     public String getNamePaym8() {
        return NamePaym8;
     }
-    protected void setNamePaym8(final String value) {
+    protected void setNamePaym8(String value) {
        NamePaym8 = value;
     }
 
@@ -106,7 +106,7 @@ public class PaymentsRes {
     public String getNamePaym9() {
        return NamePaym9;
     }
-    protected void setNamePaym9(final String value) {
+    protected void setNamePaym9(String value) {
        NamePaym9 = value;
     }
 
@@ -117,7 +117,7 @@ public class PaymentsRes {
     public Double getExchangeRate() {
        return ExchangeRate;
     }
-    protected void setExchangeRate(final Double value) {
+    protected void setExchangeRate(Double value) {
        ExchangeRate = value;
     }
 }

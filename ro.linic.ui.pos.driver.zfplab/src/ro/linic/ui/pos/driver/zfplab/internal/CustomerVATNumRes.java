@@ -7,7 +7,7 @@ public class CustomerVATNumRes {
     public String getCustomerVATNum() {
        return CustomerVATNum;
     }
-    protected void setCustomerVATNum(final String value) {
+    protected void setCustomerVATNum(String value) {
        CustomerVATNum = value;
     }
 
@@ -20,7 +20,7 @@ public class CustomerVATNumRes {
     public OptionTypeVATregistration getOptionTypeVATregistration() {
        return OptionTypeVATregistration;
     }
-    protected void setOptionTypeVATregistration(final OptionTypeVATregistration value) {
+    protected void setOptionTypeVATregistration(OptionTypeVATregistration value) {
        OptionTypeVATregistration = value;
     }
 }
