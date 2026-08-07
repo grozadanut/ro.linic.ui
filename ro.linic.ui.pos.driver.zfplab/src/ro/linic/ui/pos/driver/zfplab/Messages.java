@@ -24,4 +24,9 @@ public class Messages {
 	public static String ECRDriver_PaymentSmallerThanTotalErr;
 	public static String ECRDriver_PaymentTypeError;
 	public static String ECRDriverPage_ZAndD;
+	public static String ECRDriverPage_LanConnect;
+	public static String ZFPECRDriverPage_ComPort;
+	public static String ZFPECRDriverPage_BaudRate;
+	public static String ErrorECRDriver_SetComPort;
+	public static String ErrorECRDriver_SetPositiveBaudRate;
 }

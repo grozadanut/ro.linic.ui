@@ -2,6 +2,7 @@ package ro.linic.ui.pos.driver.zfplab.services.impl;
 
 import static ro.flexbiz.util.commons.NumberUtils.smallerThan;
 import static ro.flexbiz.util.commons.PresentationUtils.safeString;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -82,16 +83,35 @@ public class ZFPLabECRDriver implements ECRDriver {
 		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 		
 		final String serverAddress = prefs.get(PreferenceKey.SERVER_ADDRESS, PreferenceKey.SERVER_ADDRESS_DEF);
-		final String deviceIp = prefs.get(PreferenceKey.ECR_IP, null);
-		final int devicePort = prefs.getInt(PreferenceKey.ECR_PORT, PreferenceKey.ECR_PORT_DEF);
-		final String devicePassword = prefs.get(PreferenceKey.ECR_PASSWORD, PreferenceKey.ECR_PASSWORD_DEF);
 		
-		if (deviceIp == null)
-			throw new RuntimeException(Messages.ErrorECRDriver_SetIp);
+		if (prefs.getBoolean(PreferenceKey.ECR_LAN_CONNECT, PreferenceKey.ECR_LAN_CONNECT_DEFAULT)) {
+			final String deviceIp = prefs.get(PreferenceKey.ECR_IP, null);
+			final int devicePort = prefs.getInt(PreferenceKey.ECR_PORT, PreferenceKey.ECR_PORT_DEF);
+			final String devicePassword = prefs.get(PreferenceKey.ECR_PASSWORD, PreferenceKey.ECR_PASSWORD_DEF);
+			
+			if (isEmpty(deviceIp))
+				throw new RuntimeException(Messages.ErrorECRDriver_SetIp);
+			
+			fp = new FP();
+			fp.ServerAddress = serverAddress;
+			fp.ServerCloseDeviceConnection();
+			fp.ServerSetDeviceTcpSettings(deviceIp, devicePort, devicePassword);
+		} else {
+			final String comPort = prefs.get(PreferenceKey.ECR_COM_PORT, null);
+			final int baudRate = prefs.getInt(PreferenceKey.ECR_BAUD_RATE, 0);
+			
+			if (isEmpty(comPort))
+				throw new RuntimeException(Messages.ErrorECRDriver_SetComPort);
+			
+			if (baudRate <= 0)
+				throw new RuntimeException(Messages.ErrorECRDriver_SetPositiveBaudRate);
+			
+			fp = new FP();
+            fp.ServerAddress = serverAddress;
+            fp.ServerCloseDeviceConnection();
+            fp.ServerSetDeviceSerialPortSettings(comPort, baudRate);
+		}
 		
-		fp = new FP();
-        fp.ServerAddress = serverAddress;
-        fp.ServerSetDeviceTcpSettings(deviceIp, devicePort, devicePassword);
         return fp;
 	}
 	
@@ -271,6 +291,8 @@ public class ZFPLabECRDriver implements ECRDriver {
 	@Override
 	public void reportZ() {
 		try {
+			openDeviceConnection();
+			
 			final Bundle bundle = FrameworkUtil.getBundle(getClass());
 			final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 			
@@ -286,6 +308,8 @@ public class ZFPLabECRDriver implements ECRDriver {
 	@Override
 	public void reportX() {
 		try {
+			openDeviceConnection();
+			
         	final FP fp = fp();
 			fp.PrintDailyReport(OptionZeroing.Not_zeroing);
 		} catch (final Exception e) {
@@ -296,6 +320,8 @@ public class ZFPLabECRDriver implements ECRDriver {
 	@Override
 	public void reportD() {
 		try {
+			openDeviceConnection();
+			
         	final FP fp = fp();
 			fp.PrintDepartmentReport(OptionZeroing.Not_zeroing);
 		} catch (final Exception e) {
@@ -322,6 +348,8 @@ public class ZFPLabECRDriver implements ECRDriver {
 	@Override
 	public void cancelReceipt() {
         try {
+        	openDeviceConnection();
+        	
         	final FP fp = fp();
 			fp.CancelReceipt();
 		} catch (final Exception e) {

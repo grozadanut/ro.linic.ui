@@ -18,6 +18,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     	
 		if (node != null)
 		{
+			node.putBoolean(PreferenceKey.ECR_LAN_CONNECT, PreferenceKey.ECR_LAN_CONNECT_DEFAULT);
 			node.put(PreferenceKey.SERVER_ADDRESS, PreferenceKey.SERVER_ADDRESS_DEF);
 			node.putInt(PreferenceKey.ECR_PORT, PreferenceKey.ECR_PORT_DEF);
 			node.put(PreferenceKey.ECR_PASSWORD, PreferenceKey.ECR_PASSWORD_DEF);
