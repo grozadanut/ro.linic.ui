@@ -96,6 +96,7 @@ public class SysAdminPart
 	private List users;
 	private Button replaceUser;
 	private Button fixStocuri;
+	private Button updateWoocommerce;
 	
 	private ImmutableList<User> allUsers;
 	
@@ -185,6 +186,12 @@ public class SysAdminPart
 		replaceUser.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 		replaceUser.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		UIUtils.setBoldFont(replaceUser);
+		
+		updateWoocommerce = new Button(container, SWT.PUSH);
+		updateWoocommerce.setText("Actualizeaza toate produsele pe Woocommerce");
+		updateWoocommerce.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+		updateWoocommerce.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		UIUtils.setBoldFont(updateWoocommerce);
 		
 		persistedPropTable = new PersistedPropNatTable();
 		persistedPropTable.afterChange(op -> part.setDirty(true));
@@ -388,6 +395,15 @@ public class SysAdminPart
 					new ReplaceUserDialog(replaceUser.getShell(), selectedUser().get(), allUsers).open();
 					refresh();
 				}
+			}
+		});
+		
+		updateWoocommerce.addSelectionListener(new SelectionAdapter()
+		{
+			@Override public void widgetSelected(final SelectionEvent e)
+			{
+				if (MessageDialog.openConfirm(updateWoocommerce.getShell(), "Confirma", "Actualizeaza toate produsele?"))
+					showResult(BusinessDelegate.updateAllWoocommerceProducts());
 			}
 		});
 		

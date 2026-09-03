@@ -1864,4 +1864,10 @@ public class BusinessDelegate
 			job.schedule();
 		return job;
 	}
+	
+	public static InvocationResult updateAllWoocommerceProducts()
+	{
+		final ManagerBeanRemote bean = ServiceLocator.getBusinessService(ManagerBean.class, ManagerBeanRemote.class);
+		return bean.updateAllWoocommerceProducts();
+	}
 }
