@@ -66,44 +66,44 @@ public class MessagingServiceImpl implements MessagingService {
 	}
 
 	@Override
-	public void sendMessage(final String tenandId, final String subject, final String body) {
+	public void sendMessage(final String tenantId, final String subject, final String body) {
 		if (nc == null)
 			return;
 		
 		try {
-			nc.publish(tenandId+"."+subject, body == null ? null : body.getBytes(StandardCharsets.UTF_8));
+			nc.publish(tenantId+"."+subject, body == null ? null : body.getBytes(StandardCharsets.UTF_8));
 		} catch (final Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void sendMessage(final String tenandId, final String subject, final Serializable body) {
+	public void sendMessage(final String tenantId, final String subject, final Serializable body) {
 		if (nc == null)
 			return;
 		
 		try {
-			nc.publish(tenandId+"."+subject, UIUtils.serialize(body));
+			nc.publish(tenantId+"."+subject, UIUtils.serialize(body));
 		} catch (final Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 	
 	@Override
-	public void sendMessage(final String tenandId, final String userId, final String subject, final Serializable body) {
+	public void sendMessage(final String tenantId, final String userId, final String subject, final Serializable body) {
 		if (nc == null)
 			return;
 		
 		try {
-			nc.publish(tenandId+"."+userId+"."+subject, UIUtils.serialize(body));
+			nc.publish(tenantId+"."+userId+"."+subject, UIUtils.serialize(body));
 		} catch (final Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 	
 	@Override
-	public Optional<Message> requestReply(final String tenandId, final String subject, final Serializable body, final Duration timeout) {
-		return requestReply(tenandId, null, subject, body, timeout);
+	public Optional<Message> requestReply(final String tenantId, final String subject, final Serializable body, final Duration timeout) {
+		return requestReply(tenantId, null, subject, body, timeout);
 	}
 	
 	@Override
@@ -119,12 +119,12 @@ public class MessagingServiceImpl implements MessagingService {
 	}
 	
 	@Override
-	public Optional<Message> requestReply(final String tenandId, final String userId, final String subject, final Serializable body, final Duration timeout) {
+	public Optional<Message> requestReply(final String tenantId, final String userId, final String subject, final Serializable body, final Duration timeout) {
 		if (nc == null)
 			return Optional.empty();
 		
 		try {
-			final StringBuilder sb = new StringBuilder(tenandId);
+			final StringBuilder sb = new StringBuilder(tenantId);
 			if (notEmpty(userId))
 				sb.append("."+userId);
 			sb.append("."+subject);
@@ -136,24 +136,24 @@ public class MessagingServiceImpl implements MessagingService {
 	}
 	
 	@Override
-	public void subscribe(final String tenandId, final String subject, final MessageHandler handler) {
+	public void subscribe(final String tenantId, final String subject, final MessageHandler handler) {
 		if (nc == null)
 			return;
 		
 		try {
-			nc.createDispatcher(handler).subscribe(tenandId+"."+subject);
+			nc.createDispatcher(handler).subscribe(tenantId+"."+subject);
 		} catch (final Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 	
 	@Override
-	public void subscribe(final String tenandId, final String userId, final String subject, final MessageHandler handler) {
+	public void subscribe(final String tenantId, final String userId, final String subject, final MessageHandler handler) {
 		if (nc == null)
 			return;
 		
 		try {
-			nc.createDispatcher(handler).subscribe(tenandId+"."+userId+"."+subject);
+			nc.createDispatcher(handler).subscribe(tenantId+"."+userId+"."+subject);
 		} catch (final Exception e) {
 			log.error(e.getMessage(), e);
 		}
