@@ -1478,7 +1478,7 @@ public class ManagerPart implements IMouseAction
 		.addUrlParam("requirementTypeEnumId", "RqTpInventory")
 		.addUrlParam("statusId", "RqmtStOrdered")
 		.addUrlParam("productId", p.get().getId().toString())
-		.sync(GenericValue.class, t -> UIUtils.showException(t, sync))
+		.sync(GenericValue.class, t -> log.error(t, t.getMessage()))
 		.ifPresent(result -> ordersHolder.getData().removeIf(gv -> gv.getInt(Product.ID_FIELD).equals(p.get().getId())));
 	}
 
