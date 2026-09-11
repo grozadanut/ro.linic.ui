@@ -191,14 +191,14 @@ public class ReceptieEFacturaDialog extends TitleAreaDialog {
 		for (final GenericValue line : anafInvoiceLines.stream()
 				.sorted(NumberAwareStringComparator.comparing(gv -> gv.getString("id")))
 				.toList()) {
-			summary.append(line.getString("lineId")).append(PresentationUtils.SPACE)
-			.append(line.getString("name")).append(PresentationUtils.SPACE)
+			summary.append(line.getString("quantity")).append(PresentationUtils.SPACE)
+			.append(line.getString("uom")).append(" X ")
 			.append(line.getString("price")).append(PresentationUtils.SPACE)
-			.append(line.getString("priceCurrency")).append(" X ")
-			.append(line.getString("quantity")).append(PresentationUtils.SPACE)
-			.append(line.getString("uom")).append(" = ")
+			.append(line.getString("priceCurrency")).append(" = ")
 			.append(line.getString("total")).append(PresentationUtils.SPACE)
-			.append(line.getString("totalCurrency")).append(PresentationUtils.NEWLINE);
+			.append(line.getString("totalCurrency")).append("\t")
+			.append(line.getString("lineId")).append(PresentationUtils.SPACE)
+			.append(line.getString("name")).append(PresentationUtils.NEWLINE);
 		}
 		
 		return summary.toString();
