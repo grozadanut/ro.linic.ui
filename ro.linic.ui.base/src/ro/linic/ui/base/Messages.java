@@ -22,4 +22,5 @@ public class Messages extends NLS {
 	public static String ServerUrl;
 	public static String NatsUrl;
 	public static String Confirm;
+	public static String BarcodeScannerChannel;
 }

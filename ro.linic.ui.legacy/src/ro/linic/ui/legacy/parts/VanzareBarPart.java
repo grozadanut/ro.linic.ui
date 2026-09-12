@@ -872,6 +872,19 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 						search.getText().strip().equalsIgnoreCase(p.getPhoneNumber()))
 				.findFirst();
 	}
+	
+	@Override
+	public void addNewOperationToBon(final String productId, final BigDecimal quantity) {
+		cantitateText.setText(quantity.toString());
+		
+		final Optional<ro.linic.ui.pos.base.model.Product> product = allProductsTable.getSourceData().stream()
+				.filter(p -> p.getId().equals(ro.flexbiz.util.commons.NumberUtils.parseToLong(productId))).findFirst();
+		if (product.isEmpty()) {
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Produs lipsa", "Produsul cu id "+productId+" nu a fost gasit!");
+		}
+		
+		addNewOperationToBon(product);
+	}
 
 	private void addNewOperationToBon(final Optional<ro.linic.ui.pos.base.model.Product> product) {
 		if (!product.isPresent())
@@ -1352,5 +1365,10 @@ public class VanzareBarPart implements VanzareInterface, IMouseAction {
 
 	public boolean bonTableNotEmpty() {
 		return !bonDeschisTable.getSourceData().isEmpty();
+	}
+	
+	@Override
+	public MPart getPart() {
+		return part;
 	}
 }

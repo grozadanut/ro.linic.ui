@@ -2,6 +2,7 @@ package ro.linic.ui.legacy;
 
 import static ro.colibri.util.PresentationUtils.NEWLINE;
 import static ro.colibri.util.ServerConstants.L1_NAME;
+import static ro.flexbiz.util.commons.StringUtils.isEmpty;
 import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_DEFAULT;
 import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_KEY;
 
@@ -26,6 +27,8 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.internal.p2.core.helpers.LogHelper;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
@@ -48,9 +51,12 @@ import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.ServerConstants;
 import ro.linic.ui.base.services.LocalDatabase;
 import ro.linic.ui.base.services.UtilServices;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.HttpUtils;
 import ro.linic.ui.http.RestCaller;
 import ro.linic.ui.legacy.dialogs.ReleaseNotesDialog;
+import ro.linic.ui.legacy.handlers.OpenNewVanzariPartHandler;
+import ro.linic.ui.legacy.parts.components.VanzareInterface;
 import ro.linic.ui.legacy.service.InAppNotificationService;
 import ro.linic.ui.legacy.service.PeripheralService;
 import ro.linic.ui.legacy.service.components.BarcodePrintable;
@@ -117,6 +123,7 @@ public class LoginAddon {
 
 		registerBarcodePrinter(log, bundle, nats);
 		new JMSGeneralTopicHandler(log, bundle, sync, nats);
+		registerBarcodeScannerListener(log, bundle, workbenchContext, nats);
 		
 		workbenchContext.set("ro.linic.ui.legacy.prefStore",
 				new ScopedPreferenceStore(ConfigurationScope.INSTANCE, bundle.getSymbolicName()));
@@ -264,6 +271,17 @@ public class LoginAddon {
 			nats.subscribe(ClientSession.instance().getCompany().getId()+"", subject, new PrintTopicListener(log, bundle));
 	}
 	
+	private void registerBarcodeScannerListener(final Logger log, final Bundle bundle, final IEclipseContext ctx,
+			final ro.linic.ui.base.services.MessagingService nats)
+	{
+		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode("ro.linic.ui.base");
+		final String channel = prefs.get(ro.linic.ui.base.services.preferences.PreferenceKey.BARCODE_SCANNER_CHANNEL_KEY,
+				System.getProperty(ro.linic.ui.base.services.preferences.PreferenceKey.BARCODE_SCANNER_CHANNEL_KEY));
+		
+		if (!isEmpty(channel))
+			nats.subscribe(channel, "scanner.barcode", new BarcodeScannerListener(log, bundle, ctx, channel));
+	}
+	
 	private void initSQLite(final IEclipseContext workbenchContext) {
 		final LocalDatabase localDatabase = workbenchContext.get(LocalDatabase.class);
 		
@@ -364,6 +382,53 @@ public class LoginAddon {
 			{
 				log.error(e);
 			}
+		}
+	}
+	
+	private static class BarcodeScannerListener implements MessageHandler {
+		private Logger log;
+		private Bundle bundle;
+		private IEclipseContext ctx;
+		private String channel;
+
+		public BarcodeScannerListener(final Logger log, final Bundle bundle, final IEclipseContext ctx, final String channel) {
+			this.log = log;
+			this.bundle = bundle;
+			this.ctx = ctx;
+			this.channel = channel;
+		}
+
+		@Override
+		public void onMessage(final Message msg) {
+			ctx.get(UISynchronize.class).asyncExec(() -> {
+				try {
+					final GenericValue gv = HttpUtils.fromJSON(new String(msg.getData()), GenericValue.class);
+					final EPartService partService = ctx.get(EPartService.class);
+
+					MPart scannerPart = null;
+					for (final MPart mpart : partService.getParts()) {
+						if (channel.equalsIgnoreCase(mpart.getContainerData())) {
+							scannerPart = mpart;
+							break;
+						}
+					}
+
+					VanzareInterface salePart;
+					if (scannerPart == null) {
+						salePart = OpenNewVanzariPartHandler.openNewSalesPart(ctx);
+						salePart.getPart().setContainerData(channel);
+						salePart.getPart().setLabel(channel);
+					} else {
+						partService.activate(scannerPart);
+						salePart = (VanzareInterface) scannerPart.getObject();
+					}
+
+					salePart.addNewOperationToBon(gv.getString("pseudoId"), gv.getBigDecimal("quantity"));
+
+				} catch (final Exception e) {
+					log.error(e);
+				}
+			});
 		}
 	}
 }

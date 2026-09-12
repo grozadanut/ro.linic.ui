@@ -1,8 +1,10 @@
 package ro.linic.ui.legacy.parts.components;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.osgi.framework.Bundle;
 
 import ro.colibri.entities.comercial.AccountingDocument;
@@ -18,4 +20,6 @@ public interface VanzareInterface
 	Collection<Product> selection();
 	void closeBon(final TipInchidere tipInchidere);
 	boolean canCloseReceipt();
+	MPart getPart();
+	void addNewOperationToBon(String productId, BigDecimal quantity);
 }

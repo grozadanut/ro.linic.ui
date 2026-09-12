@@ -15,5 +15,6 @@ public class SettingsPage extends FieldEditorPreferencePage {
 	@Override
 	protected void createFieldEditors() {
 		addField(new StringFieldEditor(PreferenceKey.NATS_URL, Messages.NatsUrl, getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceKey.BARCODE_SCANNER_CHANNEL_KEY, Messages.BarcodeScannerChannel, getFieldEditorParent()));
 	}
 }

@@ -702,6 +702,20 @@ public class VanzarePart implements VanzareInterface
 					.map(PresentationUtils::displayBigDecimal).orElse("0")); //$NON-NLS-1$
 		}
 	}
+	
+	@Override
+	public void addNewOperationToBon(final String productId, final BigDecimal quantity) {
+		cantitateText.setText(quantity.toString());
+		
+		final Optional<Product> product = allProductsTable.getSourceData().stream()
+				.filter(p -> p.getId().equals(ro.flexbiz.util.commons.NumberUtils.parseToInt(productId))).findFirst();
+		if (product.isEmpty()) {
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Produs lipsa", "Produsul cu id "+productId+" nu a fost gasit!");
+		}
+		
+		denumireText.setText(product.map(Product::getBarcode).get());
+		addNewOperationToBon(true);
+	}
 
 	private void addNewOperationToBon(final boolean negativeAllowedInitial)
 	{
@@ -974,6 +988,11 @@ public class VanzarePart implements VanzareInterface
 	@Override
 	public boolean canCloseReceipt() {
 		return bonCasa != null;
+	}
+	
+	@Override
+	public MPart getPart() {
+		return part;
 	}
 	
 	private void filterModeChange(final ModifyEvent e)

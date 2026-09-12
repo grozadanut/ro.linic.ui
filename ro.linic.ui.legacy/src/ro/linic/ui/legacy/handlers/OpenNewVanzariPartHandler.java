@@ -17,13 +17,14 @@ import ro.colibri.security.Permissions;
 import ro.linic.ui.legacy.parts.VanzareBarPart;
 import ro.linic.ui.legacy.parts.VanzareMoquiPart;
 import ro.linic.ui.legacy.parts.VanzarePart;
+import ro.linic.ui.legacy.parts.components.VanzareInterface;
 import ro.linic.ui.legacy.preferences.PreferenceKey;
 import ro.linic.ui.legacy.preferences.PreferenceKey.SalesPartType;
 import ro.linic.ui.legacy.session.ClientSession;
 import ro.linic.ui.security.services.AuthenticationSession;
 
 public class OpenNewVanzariPartHandler {
-	public static void openNewSalesPart(final IEclipseContext ctx) {
+	public static VanzareInterface openNewSalesPart(final IEclipseContext ctx) {
 		final Bundle bundle = FrameworkUtil.getBundle(PreferenceKey.class);
 		final IEclipsePreferences prefs = ConfigurationScope.INSTANCE.getNode(bundle.getSymbolicName());
 		
@@ -31,12 +32,12 @@ public class OpenNewVanzariPartHandler {
 				System.getProperty(VanzarePart.VANZARE_PART_TYPE_KEY, PreferenceKey.VANZARE_PART_TYPE_DEFAULT.name()));
 		
 		if ("1".equals(vanzarePartType) || SalesPartType.STANDARD.name().equals(vanzarePartType)) {
-		    VanzarePart.newPartForBon(ctx, null);
+		    return VanzarePart.newPartForBon(ctx, null);
 		} else if (SalesPartType.BETA.name().equals(vanzarePartType)) {
-		    VanzareMoquiPart.newPartForBon(ctx, null);
+		    return VanzareMoquiPart.newPartForBon(ctx, null);
 		} else {
 		    // This catches "0", SalesPartType.CAFE, and any other default values
-		    VanzareBarPart.newPartForBon(ctx, null);
+		    return VanzareBarPart.newPartForBon(ctx, null);
 		}
 	}
 
