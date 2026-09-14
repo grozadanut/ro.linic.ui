@@ -13,6 +13,7 @@ public interface MessagingService {
 	public void sendMessage(String tenantId, String userId, String subject, Serializable body);
 	public Optional<Message> requestReply(String tenantId, String subject, Serializable body, Duration timeout);
 	public Optional<Message> requestReply(String tenantId, String userId, String subject, Serializable body, Duration timeout);
+	public void sendReply(Message replyTo, String body);
 	public void sendReply(Message replyTo, Serializable body);
 	public void subscribe(String tenantId, String subject, MessageHandler handler);
 	public void subscribe(String tenantId, String userId, String subject, MessageHandler handler);

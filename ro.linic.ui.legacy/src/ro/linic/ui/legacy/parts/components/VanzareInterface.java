@@ -9,6 +9,7 @@ import org.osgi.framework.Bundle;
 
 import ro.colibri.entities.comercial.AccountingDocument;
 import ro.colibri.entities.comercial.Product;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.legacy.wizards.InchideBonWizard.TipInchidere;
 
 public interface VanzareInterface
@@ -21,5 +22,5 @@ public interface VanzareInterface
 	void closeBon(final TipInchidere tipInchidere);
 	boolean canCloseReceipt();
 	MPart getPart();
-	void addNewOperationToBon(String productId, BigDecimal quantity);
+	GenericValue addNewOperationToBon(String productId, BigDecimal quantity);
 }

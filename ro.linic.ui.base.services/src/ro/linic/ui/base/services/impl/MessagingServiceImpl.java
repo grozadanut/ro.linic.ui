@@ -119,6 +119,18 @@ public class MessagingServiceImpl implements MessagingService {
 	}
 	
 	@Override
+	public void sendReply(final Message replyTo, final String body) {
+		if (nc == null)
+			return;
+		
+		try {
+			nc.publish(replyTo.getReplyTo(), body.getBytes(StandardCharsets.UTF_8));
+		} catch (final Exception e) {
+			log.error(e.getMessage(), e);
+		}
+	}
+	
+	@Override
 	public Optional<Message> requestReply(final String tenantId, final String userId, final String subject, final Serializable body, final Duration timeout) {
 		if (nc == null)
 			return Optional.empty();

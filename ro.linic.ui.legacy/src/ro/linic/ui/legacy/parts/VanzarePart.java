@@ -85,6 +85,7 @@ import ro.colibri.util.InvocationResult;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.StringUtils.TextFilterMethod;
 import ro.linic.ui.base.dialogs.SelectEntityDialog;
+import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.legacy.components.AsyncLoadData;
 import ro.linic.ui.legacy.dialogs.AdaugaPartnerDialog;
 import ro.linic.ui.legacy.dialogs.ManagerCasaDialog;
@@ -704,17 +705,19 @@ public class VanzarePart implements VanzareInterface
 	}
 	
 	@Override
-	public void addNewOperationToBon(final String productId, final BigDecimal quantity) {
+	public GenericValue addNewOperationToBon(final String productId, final BigDecimal quantity) {
 		cantitateText.setText(quantity.toString());
 		
 		final Optional<Product> product = allProductsTable.getSourceData().stream()
 				.filter(p -> p.getId().equals(ro.flexbiz.util.commons.NumberUtils.parseToInt(productId))).findFirst();
 		if (product.isEmpty()) {
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Produs lipsa", "Produsul cu id "+productId+" nu a fost gasit!");
+			return GenericValue.of("", "", "total", BigDecimal.ZERO, "error", "Produsul cu id "+productId+" nu a fost gasit!");
 		}
 		
 		denumireText.setText(product.map(Product::getBarcode).get());
 		addNewOperationToBon(true);
+		return GenericValue.of("", "", "total", Optional.ofNullable(this.bonCasa).map(AccountingDocument::getTotal).orElse(BigDecimal.ZERO));
 	}
 
 	private void addNewOperationToBon(final boolean negativeAllowedInitial)

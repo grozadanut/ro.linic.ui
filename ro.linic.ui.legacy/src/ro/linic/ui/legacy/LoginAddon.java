@@ -7,6 +7,7 @@ import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_DEFAULT;
 import static ro.linic.ui.legacy.session.UIUtils.FONT_SIZE_KEY;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.sql.SQLException;
@@ -50,6 +51,7 @@ import jakarta.annotation.PostConstruct;
 import ro.colibri.util.PresentationUtils;
 import ro.colibri.util.ServerConstants;
 import ro.linic.ui.base.services.LocalDatabase;
+import ro.linic.ui.base.services.MessagingService;
 import ro.linic.ui.base.services.UtilServices;
 import ro.linic.ui.base.services.model.GenericValue;
 import ro.linic.ui.http.HttpUtils;
@@ -279,7 +281,7 @@ public class LoginAddon {
 				System.getProperty(ro.linic.ui.base.services.preferences.PreferenceKey.BARCODE_SCANNER_CHANNEL_KEY));
 		
 		if (!isEmpty(channel))
-			nats.subscribe(channel, "scanner.barcode", new BarcodeScannerListener(log, bundle, ctx, channel));
+			nats.subscribe(channel, "scanner.barcode", new BarcodeScannerListener(log, bundle, ctx, channel, nats));
 	}
 	
 	private void initSQLite(final IEclipseContext workbenchContext) {
@@ -390,12 +392,14 @@ public class LoginAddon {
 		private Bundle bundle;
 		private IEclipseContext ctx;
 		private String channel;
+		private MessagingService nats;
 
-		public BarcodeScannerListener(final Logger log, final Bundle bundle, final IEclipseContext ctx, final String channel) {
+		public BarcodeScannerListener(final Logger log, final Bundle bundle, final IEclipseContext ctx, final String channel, final MessagingService nats) {
 			this.log = log;
 			this.bundle = bundle;
 			this.ctx = ctx;
 			this.channel = channel;
+			this.nats = nats;
 		}
 
 		@Override
@@ -423,10 +427,11 @@ public class LoginAddon {
 						salePart = (VanzareInterface) scannerPart.getObject();
 					}
 
-					salePart.addNewOperationToBon(gv.getString("pseudoId"), gv.getBigDecimal("quantity"));
-
+					final GenericValue result = salePart.addNewOperationToBon(gv.getString("pseudoId"), gv.getBigDecimal("quantity"));
+					nats.sendReply(msg, HttpUtils.toJSON(result));
 				} catch (final Exception e) {
 					log.error(e);
+					nats.sendReply(msg, HttpUtils.toJSON(GenericValue.of("", "", "total", BigDecimal.ZERO, "error", e.getMessage())));
 				}
 			});
 		}
