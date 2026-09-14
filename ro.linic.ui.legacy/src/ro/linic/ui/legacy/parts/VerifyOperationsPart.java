@@ -145,6 +145,7 @@ public class VerifyOperationsPart
 			shell.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW));
 		sync.asyncExec(() -> {
 			if (UtilServices.isFreshUI()) {
+				// placeholder??
 				OpenNewVanzariPartHandler.openNewSalesPart(ctx);
 				UtilServices.setFreshUI(false);
 			}

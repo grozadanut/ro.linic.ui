@@ -51,6 +51,7 @@ public class OpenNewVanzariPartHandler {
 
 	@Execute
 	public void execute(final IEclipseContext ctx) {
+		// Recompile?
 		openNewSalesPart(ctx);
 	}
 
